@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>利用 Hexo 搭建个人博客 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="〇、前言本文将会讨论，如何将 CSDN 上的博客，拉取到本地，然后PicGo、Hexo、Github 等工具建立个人博客，环境为 Ubuntu 20.04。 一、利用 Hexo预备工作首先安装 Node.js、npm、git工具。 123456&gt; node -vv12.22.9&gt; npm -v8.5.1&gt; git versiongit version 2.34.1  安装 H">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用 Hexo 搭建个人博客">
+<meta property="og:url" content="http://example.com/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="〇、前言本文将会讨论，如何将 CSDN 上的博客，拉取到本地，然后PicGo、Hexo、Github 等工具建立个人博客，环境为 Ubuntu 20.04。 一、利用 Hexo预备工作首先安装 Node.js、npm、git工具。 123456&gt; node -vv12.22.9&gt; npm -v8.5.1&gt; git versiongit version 2.34.1  安装 H">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/hexotest.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/hexotest.png">
+<meta property="article:published_time" content="2024-07-06T13:57:40.000Z">
+<meta property="article:modified_time" content="2024-07-06T14:51:02.285Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/hexotest.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-利用 Hexo 搭建个人博客" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" class="article-date">
+  <time class="dt-published" datetime="2024-07-06T13:57:40.000Z" itemprop="datePublished">2024-07-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E5%AE%A2/">博客</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      利用 Hexo 搭建个人博客
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文将会讨论，如何将 CSDN 上的博客，拉取到本地，然后PicGo、Hexo、Github 等工具建立个人博客，环境为 Ubuntu 20.04。</p>
+<h2 id="一、利用-Hexo"><a href="#一、利用-Hexo" class="headerlink" title="一、利用 Hexo"></a>一、利用 Hexo</h2><h3 id="预备工作"><a href="#预备工作" class="headerlink" title="预备工作"></a>预备工作</h3><p>首先安装 Node.js、npm、git工具。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; node -v</span><br><span class="line">v12.22.9</span><br><span class="line">&gt; npm -v</span><br><span class="line">8.5.1</span><br><span class="line">&gt; git version</span><br><span class="line">git version 2.34.1</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装-Hexo"><a href="#安装-Hexo" class="headerlink" title="安装 Hexo"></a>安装 Hexo</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br><span class="line"></span><br><span class="line">&gt; hexo -v</span><br><span class="line">INFO  Validating config</span><br><span class="line">hexo: 7.3.0</span><br><span class="line">hexo-cli: 4.3.2</span><br><span class="line">os: linux 5.15.0-107-generic Ubuntu 22.04.4 LTS 22.04.4 LTS (Jammy Jellyfish)</span><br><span class="line">node: 12.22.9</span><br><span class="line">v8: 7.8.279.23-node.56</span><br><span class="line">uv: 1.43.0</span><br><span class="line">zlib: 1.2.11</span><br><span class="line">brotli: 1.0.9</span><br><span class="line">ares: 1.18.1</span><br><span class="line">modules: 72</span><br><span class="line">nghttp2: 1.43.0</span><br><span class="line">napi: 8</span><br><span class="line">llhttp: 2.1.6</span><br><span class="line">http_parser: 2.9.4</span><br><span class="line">openssl: 1.1.1m</span><br><span class="line">cldr: 40.0</span><br><span class="line">icu: 70.1</span><br><span class="line">tz: 2024a</span><br><span class="line">unicode: 14.0</span><br></pre></td></tr></table></figure>
+
+<h3 id="小试牛刀"><a href="#小试牛刀" class="headerlink" title="小试牛刀"></a>小试牛刀</h3><p>首先创建一个文件夹，比如 hexotest。这个文件的目的是，我们打算在它里面创建博客，并且它是一个博客网站项目根目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> hexotest</span><br><span class="line"><span class="built_in">cd</span> hexotest</span><br></pre></td></tr></table></figure>
+
+<p>之后，就可以初始化这个文件夹了，初始化的目的是，它会创建一个 helloword.md 文件，然后利用 node.js 等将这个 markdown 文件渲染成一个 html 文件，然后在本地开启一个网络服务器以供前端访问：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; hexo init</span><br><span class="line">INFO  Cloning hexo-starter https://github.com/hexojs/hexo-starter.git</span><br><span class="line">INFO  Install dependencies</span><br><span class="line">INFO  Start blogging with Hexo!</span><br></pre></td></tr></table></figure>
+
+<p>接着启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; hexo s</span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Start processing</span><br><span class="line">INFO  Hexo is running at http://localhost:4000/ . Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以在前端看到博客了：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/hexotest.png" alt="博客">)</p>
+<h2 id="二、利用-Hexo-将博客部署在-github"><a href="#二、利用-Hexo-将博客部署在-github" class="headerlink" title="二、利用 Hexo 将博客部署在 github"></a>二、利用 Hexo 将博客部署在 github</h2><p>这里创建 github 账户、创建博客仓库什么的就不啰嗦了，只提重点。</p>
+<h3 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h3><p>进入文件夹 hexotest，之后修改配置文件 _config.yml:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: git@github.com:Luyoung0001/Luyoung0001.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
+
+<p>之后，需要一个小工具将博客部署上去， 原理主要就是 push到远端仓库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，每一个项目根目录都需要执行一次这个命令，这个命令会在本地生成一些脚本，然后把脚本放在 node_modules 目录中。</p>
+<p>之后执行下面的命令就可以了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo c   <span class="comment">#清除缓存文件 db.json 和已生成的静态文件 public</span></span><br><span class="line">hexo g       <span class="comment">#生成网站静态文件到默认设置的 public 文件夹(hexo generate 的缩写)</span></span><br><span class="line">hexo d       <span class="comment">#自动生成网站静态文件，并部署到设定的仓库(hexo deploy 的缩写)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="访问"><a href="#访问" class="headerlink" title="访问"></a>访问</h3><p>通过浏览器访问：<a target="_blank" rel="noopener" href="https://luyoung0001.github.io/">https://luyoung0001.github.io</a> 就可以了：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/hexotest.png" alt="博客">)</p>
+<p>至此，博客系统就初步搭建起来了。</p>
+<h3 id="更新博客"><a href="#更新博客" class="headerlink" title="更新博客"></a>更新博客</h3><p>事实上，可以向 <code>hexotest/source/_post</code> 中放置大量的 markdown 文件，这些文件就是你想要写发布的博客。</p>
+<p>写好了以后，继续执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo c</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+<p>就好了。</p>
+<h2 id="三、从-csdn-到-github"><a href="#三、从-csdn-到-github" class="headerlink" title="三、从 csdn 到 github"></a>三、从 csdn 到 github</h2><p>经过寻找，终于让我在网上找到了这个项目：<a target="_blank" rel="noopener" href="https://github.com/flytam/blog-sync-tool?tab=readme-ov-file">https://github.com/flytam/blog-sync-tool?tab=readme-ov-file</a></p>
+<p>这个工具可以将博客从 csdn 等博客网站下载到本地，而且还支持图片下载，这意味着你csdn 中博客的图片都可以下载下来。</p>
+<h3 id="转移文章"><a href="#转移文章" class="headerlink" title="转移文章"></a>转移文章</h3><p>参考 <code>csdnsynchexo</code> 的 文档，首先安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx csdnsynchexo@latest  --<span class="built_in">help</span></span><br></pre></td></tr></table></figure>
+<p>安装好了就可以爬取了，但是别忘了需要阅读、修改等权限，谁的权限最高？当然是 csdn 作者本人了，因此这里需要你登录你自己的 csdn 账号后，获取到 csdn 的 cookie，并将其写入到配置文件。</p>
+<h4 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h4><p>可以将这个配置文件 <code>config.json</code> 放到任何地方，但是我还是建议在 ~ 目录下 创建一个 csdn目录，然后将这配置文件放置到 csdn 中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">        <span class="string">&quot;userId&quot;</span>: <span class="string">&quot;m0_73651896&quot;</span>,</span><br><span class="line">        <span class="string">&quot;type&quot;</span>: <span class="string">&quot;csdn&quot;</span>,</span><br><span class="line">        <span class="string">&quot;output&quot;</span>: <span class="string">&quot;./blogfromcsdn&quot;</span>,</span><br><span class="line">        <span class="string">&quot;cookie&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>userId 就是 csdn 的 userID,output 就是将文章爬取下来后存入的目录，至于 cookie，这很重要。</p>
+<p>获取方式：新开一个页面，F12(mac: cmd+shift+i)打开控制台，点击抓包这个<a target="_blank" rel="noopener" href="https://blog-console-api.csdn.net/v1/editor/getArticle?id=104101476">请求</a>的request headers中的cookie后面那段值。这个值很多，建议全部粘贴。</p>
+<h4 id="爬取"><a href="#爬取" class="headerlink" title="爬取"></a>爬取</h4><p>然后就可以执行了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx csdnsynchexo@latest --config ./config.json</span><br></pre></td></tr></table></figure>
+
+<p>执行完成后，就可以在目标文件夹看到爬取下来的文件了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span></span><br><span class="line"><span class="string">&#x27;(1) DNS Protocol Analysis Based on Wireshark at the Application Layer.md&#x27;</span></span><br><span class="line"><span class="string">&#x27;2022 Personal Summary.md&#x27;</span></span><br><span class="line"><span class="string">&#x27;2023 个人总结.md&#x27;</span></span><br><span class="line"><span class="string">&#x27;2024.06.16 刷题日记.md&#x27;</span></span><br><span class="line"><span class="string">&#x27;2024.06.17 刷题日记.md&#x27;</span></span><br><span class="line"><span class="string">&#x27;2024.06.18 刷题日记.md&#x27;</span></span><br><span class="line"><span class="string">&#x27;2024.06.19 刷题日记.md&#x27;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h3 id="将文件拷贝到博客目录"><a href="#将文件拷贝到博客目录" class="headerlink" title="将文件拷贝到博客目录"></a>将文件拷贝到博客目录</h3><p>将爬取下来的文章拷贝到 <code>hexotest/source/_post</code>，然后继续 <code>hexo cgd</code> 就可以了。</p>
+<h2 id="四、爬取图片"><a href="#四、爬取图片" class="headerlink" title="四、爬取图片"></a>四、爬取图片</h2><p>这个很重要，因为这里还牵扯到将以后写的文章的图片存储到哪里的问题。</p>
+<p>好消息是 csdnsynchexo 支持爬取图片，并将这些图片上传到图床，然后将图床中图片的链接统一地在 markdown 中置换，这简直太棒了！</p>
+<p>支持这一功能的是 PicGo，PicGo 是一个强大的用于快速上传图片并获取图片 URL 链接的工具，PicGo 本体支持如下图床：</p>
+<ul>
+<li>七牛图床 v1.0</li>
+<li>腾讯云 COS v4\v5 版本 v1.1 &amp; v1.5.0</li>
+<li>又拍云 v1.2.0</li>
+<li>GitHub v1.5.0</li>
+<li>SM.MS V2 v2.3.0-beta.0</li>
+<li>阿里云 OSS v1.6.0</li>
+<li>Imgur v1.6.0</li>
+</ul>
+<p>这里支持的很多，但是个人建议选取 github，因为未来我们要用到 CloudFlare+github 的形式来做cdn。</p>
+<p>csdnsynchexo 中配置文件只需要这样修改以及添加：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;userId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;m0_73651896&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;csdn&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;imgConfig&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./img.json&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;output&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./blogfromcsdn&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;cookie&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>然后继续添加一个图片配置文件img.json：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;accessKey&quot;</span><span class="punctuation">:</span> <span class="string">&quot;xxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;secretKey&quot;</span><span class="punctuation">:</span> <span class="string">&quot;xxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;bucket&quot;</span><span class="punctuation">:</span> <span class="string">&quot;xxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;area&quot;</span><span class="punctuation">:</span> <span class="string">&quot;z2&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;options&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./blogfromcsdn&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;picBed&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;uploader&quot;</span><span class="punctuation">:</span> <span class="string">&quot;github&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;github&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;repo&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Luyoung0001/picBed&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;token&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;branch&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;picgoPlugins&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>具体配置方法，参考 <a target="_blank" rel="noopener" href="https://picgo.github.io/PicGo-Doc/zh/guide/config.html#github%E5%9B%BE%E5%BA%8A">GitHub 图床</a>。需要注意的是，一定要放置图床的仓库设为公开仓库，毕竟要从外面访问，要有访问权限。</p>
+<p>之后，重新爬取、转移、生成、布置就好了！</p>
+<h2 id="五、写附带图片的文章"><a href="#五、写附带图片的文章" class="headerlink" title="五、写附带图片的文章"></a>五、写附带图片的文章</h2><p>写文章很简单，就在<code>hexotest/source/_post</code>目录下进行创作就行了，但是插入图片怎么办呢？我们继续使用网络图片，放置自己picbed 中的图片。</p>
+<p>问题是怎么上床呢？简单方法是直接 push 到这个仓库，然后抛链接，但是这不正规，况且文件的命名都是麻烦事。这里最好使用 PicGo。</p>
+<h2 id="六、配置使用-PicGo"><a href="#六、配置使用-PicGo" class="headerlink" title="六、配置使用 PicGo"></a>六、配置使用 PicGo</h2><p>首先下载 <a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/PicGo/releases">PicGo</a>:<br>选择一个合适的发行版，然后就可以在本地操作了。</p>
+<p>具体参考<a target="_blank" rel="noopener" href="https://picgo.github.io/PicGo-Doc/zh/guide/config.html#github%E5%9B%BE%E5%BA%8A">这里</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是个人博客搭建的全过程，经过一上午的从 0 到 1,博客终于实现了，以后还得学习学习怎么添加一些feature。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" data-id="clya8srak0000k2r6299phrlc" data-title="利用 Hexo 搭建个人博客" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">2024.07.05 刷题日记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/8086/">8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-debugger/">C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/CM3/">CM3</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6/">Golang Golang_框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6-Web/">Golang Golang_框架 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Web/">Golang Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF/">Golang 前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF-Web/">Golang 前端 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LeetCode/">LeetCode</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Missing-Semester/">Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-OS-Web/">NetWork OS Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-Web/">NetWork Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-Unix-Linux/">OS Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">OS 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Personal-Summary/">Personal_Summary</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools/">Some_Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Golang-Unix-Linux/">Some_Tools Golang Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Missing-Semester/">Some_Tools Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tests-for-Basic-Knowledge-of-C/">Tests for Basic Knowledge of C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Things-about-C/">Things about C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/socket-Web-Unix-Linux/">socket Web Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80-%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97%E5%AF%BC%E8%AE%BA/">代数基础 量子计算导论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E5%AE%A2/">博客</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">教师工资管理系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/">离散数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">离散数学 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C-debugger/">系统编程 C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C%E8%AF%AD%E8%A8%80/">系统编程 C语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-8086/">经验方法 8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-C/">经验方法 C++</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" rel="tag">CM3 汇编 QEMU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" rel="tag">MIT 6.S081 学习 笔记 xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag">NP 数学 信息学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">Shell 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" rel="tag">Web 内网穿透</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-debugger/" rel="tag">c++ debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-linux/" rel="tag">c++ linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb/" rel="tag">c++ lldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb-debugger/" rel="tag">c++ lldb debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">c++ 多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">c++ 开发语言 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" rel="tag">c语言 开发语言 命令行工具 个人记录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" rel="tag">docker 系统编程 tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" rel="tag">docker 网络 容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" rel="tag">gin Context golang Web 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">golang 前端 gin 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">golang 前端 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" rel="tag">golang 后端 前端 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 算法 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" rel="tag">golang 服务器 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">golang 爬虫 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-servlet/" rel="tag">java jvm servlet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java jvm 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" rel="tag">java jvm 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95/" rel="tag">leetcode 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">leetcode 算法 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c/" rel="tag">linux c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c-%E7%AE%97%E6%B3%95/" rel="tag">linux c++ 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" rel="tag">linux unix 服务器 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-vscode-macos-c/" rel="tag">linux vscode macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" rel="tag">linux 服务器 运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">macos linux 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" rel="tag">macos 汇编 DOSBox 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">redis bootstrap 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">rust 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-golang-linux/" rel="tag">ubuntu golang linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" rel="tag">ubuntu 阿里云 网络 网络工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unix-linux-udp/" rel="tag">unix linux udp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode-ide-macos-c/" rel="tag">vscode ide macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">wireshark 网络 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 OS 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 操作系统 OS 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" rel="tag">xv6 操作系统 笔记 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%B6%E4%BB%96/" rel="tag">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" rel="tag">前端 golang gin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" rel="tag">图论 离散数学 代数系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" rel="tag">图论 离散数学 特殊的图 数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" rel="tag">学习 笔记 OS xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" rel="tag">学习 笔记 bash 脚本</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" rel="tag">学习 笔记 xv6 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统 文件系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" rel="tag">学习 笔记 操作系统 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" rel="tag">学习 笔记 操作系统 xv6 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" rel="tag">总结 个人总结</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" rel="tag">抽象代数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" rel="tag">操作系统 Hackintosh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 学习 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">操作系统 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" rel="tag">操作系统 笔记 学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" rel="tag">汇编 QEMU 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" rel="tag">汇编 QEMU CM3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" rel="tag">矩阵 线性代数 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" rel="tag">离散数学 数学 关系 集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" rel="tag">离散数学 数学 逻辑推理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">笔记 学习 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode/" rel="tag">算法 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">算法 leetcode 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">算法 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" rel="tag">算法 数据结构 哈希算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" rel="tag">系统调用 mmap 文件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">翻译 xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">链表 c语言 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">链表 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" rel="tag">链表 数据结构 算法</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" style="font-size: 10px;">CM3 汇编 QEMU</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" style="font-size: 10px;">MIT 6.S081 学习 笔记 xv6</a> <a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" style="font-size: 10px;">NP 数学 信息学</a> <a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Shell 学习 笔记</a> <a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" style="font-size: 10px;">Web 内网穿透</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/c-debugger/" style="font-size: 15px;">c++ debugger</a> <a href="/tags/c-linux/" style="font-size: 10px;">c++ linux</a> <a href="/tags/c-lldb/" style="font-size: 11.67px;">c++ lldb</a> <a href="/tags/c-lldb-debugger/" style="font-size: 11.67px;">c++ lldb debugger</a> <a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 11.67px;">c++ 多线程</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 18.33px;">c++ 开发语言</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">c++ 开发语言 学习 笔记</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 c++ 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" style="font-size: 10px;">c语言 开发语言 命令行工具 个人记录</a> <a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" style="font-size: 10px;">docker 系统编程 tips</a> <a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" style="font-size: 10px;">docker 网络 容器</a> <a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">gin Context golang Web 网络</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">golang 前端 gin 服务器</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 11.67px;">golang 前端 数据库</a> <a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">golang 后端 前端 网络</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 后端</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 算法 后端</a> <a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 服务器 后端</a> <a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">golang 爬虫 开发语言</a> <a href="/tags/java-jvm-servlet/" style="font-size: 10px;">java jvm servlet</a> <a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java jvm 开发语言</a> <a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">java jvm 算法</a> <a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java 开发语言</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95/" style="font-size: 11.67px;">leetcode 算法</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 15px;">leetcode 算法 数据结构</a> <a href="/tags/linux/" style="font-size: 11.67px;">linux</a> <a href="/tags/linux-c/" style="font-size: 11.67px;">linux c++</a> <a href="/tags/linux-c-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">linux c++ 算法</a> <a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">linux unix 服务器 网络</a> <a href="/tags/linux-vscode-macos-c/" style="font-size: 10px;">linux vscode macos c++</a> <a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">linux 服务器 运维</a> <a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">macos linux 服务器</a> <a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" style="font-size: 10px;">macos 汇编 DOSBox 8086</a> <a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">redis bootstrap 数据库</a> <a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">rust 开发语言 后端</a> <a href="/tags/ubuntu-golang-linux/" style="font-size: 10px;">ubuntu golang linux</a> <a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" style="font-size: 10px;">ubuntu 阿里云 网络 网络工具</a> <a href="/tags/unix-linux-udp/" style="font-size: 10px;">unix linux udp</a> <a href="/tags/vscode-ide-macos-c/" style="font-size: 10px;">vscode ide macos c++</a> <a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">wireshark 网络 服务器</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 OS 学习 笔记</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 学习 笔记 操作系统</a> <a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 操作系统</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 操作系统 OS 笔记</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">xv6 操作系统 笔记 翻译</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" style="font-size: 11.67px;">前端 golang gin</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">图论 离散数学 代数系统</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">图论 离散数学 特殊的图 数学</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" style="font-size: 10px;">学习 笔记 OS xv6</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" style="font-size: 10px;">学习 笔记 bash 脚本</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" style="font-size: 10px;">学习 笔记 xv6 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 13.33px;">学习 笔记 xv6 OS 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">学习 笔记 xv6 OS 操作系统 文件系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 11.67px;">学习 笔记 xv6 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 xv6 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 MIT 6.S081</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 xv6 MIT 6.S081</a> <a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" style="font-size: 10px;">总结 个人总结</a> <a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" style="font-size: 10px;">抽象代数</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" style="font-size: 10px;">操作系统 Hackintosh</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 11.67px;">操作系统 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">操作系统 学习 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">操作系统 学习 笔记</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">操作系统 笔记 学习</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" style="font-size: 10px;">汇编 QEMU 8086</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" style="font-size: 10px;">汇编 QEMU CM3</a> <a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">矩阵 线性代数 算法</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" style="font-size: 10px;">离散数学 数学 关系 集合</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" style="font-size: 10px;">离散数学 数学 逻辑推理</a> <a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">笔记 学习 xv6 操作系统 OS</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode/" style="font-size: 10px;">算法 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16.67px;">算法 leetcode 数据结构</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 18.33px;">算法 数据结构 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法 数据结构 哈希算法</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" style="font-size: 10px;">系统调用 mmap 文件</a> <a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">翻译 xv6 OS 学习 笔记 操作系统</a> <a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 10px;">链表 c语言 数据结构</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 11.67px;">链表 数据结构 leetcode</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" style="font-size: 13.33px;">链表 数据结构 算法</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">May 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">March 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">December 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">November 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">利用 Hexo 搭建个人博客</a>
+          </li>
+        
+          <li>
+            <a href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.05 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.02 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.30 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.29 刷题日记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
