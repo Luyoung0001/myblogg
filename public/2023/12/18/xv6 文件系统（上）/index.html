@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>xv6 文件系统（上） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="〇、前言本文将会结合 xv6 源码讨论文件系统的工作原理。 一、文件系统实现概述 xv6 文件系统可以用下面的图来表示： 按照分层的方式进行理解：  在最底层是磁盘，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。 在这之上是buffer cache或者说 block cache，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。 为了保证持久性，再往">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 文件系统（上）">
+<meta property="og:url" content="http://example.com/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="〇、前言本文将会结合 xv6 源码讨论文件系统的工作原理。 一、文件系统实现概述 xv6 文件系统可以用下面的图来表示： 按照分层的方式进行理解：  在最底层是磁盘，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。 在这之上是buffer cache或者说 block cache，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。 为了保证持久性，再往">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/30fe0488ebb94e3c923471bcec6e0b31_1720253687327.png?token=ANB4BCLBDV23KBET47CTY6TGRD6TO">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5ddd240a426a45d0923a595d5941f384_1720253687327.png?token=ANB4BCPT6SB7PRRYEKLKIKLGRD6TQ">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/04e09f55418a4ec78b30579c533a2499_1720253687327.png?token=ANB4BCOBPNV633LQZDFNZM3GRD6TS">
+<meta property="article:published_time" content="2023-12-18T09:00:59.000Z">
+<meta property="article:modified_time" content="2024-07-06T08:19:56.038Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="笔记 学习 xv6 操作系统 OS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/30fe0488ebb94e3c923471bcec6e0b31_1720253687327.png?token=ANB4BCLBDV23KBET47CTY6TGRD6TO">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-xv6 文件系统（上）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2023-12-18T09:00:59.000Z" itemprop="datePublished">2023-12-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/OS/">OS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      xv6 文件系统（上）
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文将会结合 <strong>xv6</strong> 源码讨论文件系统的工作原理。</p>
+<h2 id="一、文件系统实现概述"><a href="#一、文件系统实现概述" class="headerlink" title="一、文件系统实现概述"></a>一、文件系统实现概述</h2><p> xv6 文件系统可以用下面的图来表示：<br> <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/30fe0488ebb94e3c923471bcec6e0b31_1720253687327.png?token=ANB4BCLBDV23KBET47CTY6TGRD6TO" alt="在这里插入图片描述"><br>按照分层的方式进行理解：</p>
+<ul>
+<li>在最底层是<strong>磁盘</strong>，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。</li>
+<li>在这之上是<strong>buffer cache</strong>或者说 <strong>block cache</strong>，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。</li>
+<li>为了保证持久性，再往上通常会有一个<strong>logging层</strong>。</li>
+<li>在logging层之上，xv6有<strong>inode cache</strong>，这主要是为了同步（synchronization）。inode通常小于一个disk block，所以多个inode通常会打包存储在一个disk block中。为了向单个inode提供同步操作，xv6维护了<strong>inode cache</strong>。</li>
+<li>再往上就是<strong>inode本身</strong>了。它实现了read&#x2F;write。</li>
+<li>再往上，就是<strong>文件名</strong>&amp;<strong>文件描述符</strong>操作。</li>
+</ul>
+<h2 id="二、文件系统怎么使用硬盘"><a href="#二、文件系统怎么使用硬盘" class="headerlink" title="二、文件系统怎么使用硬盘"></a>二、文件系统怎么使用硬盘</h2><p>有些术语有点让人困惑，它们是 <strong>sectors</strong> 和 <strong>blocks</strong>：</p>
+<ul>
+<li><strong>sector</strong> 通常是磁盘驱动可以读写的最小单元，它过去通常是<strong>512</strong>字节；</li>
+<li><strong>block</strong> 通常是操作系统或者文件系统视角的数据。它由文件系统定义，在xv6中它是1024字节。<strong>所以 xv6 中一个block对应两个sector</strong>。通常来说一个block对应了一个或者多个sector。</li>
+</ul>
+<p>有的时候，人们也将磁盘上的 <strong>sector</strong> 称为 <strong>block</strong>，所以这里的术语也不是很精确。</p>
+<p>从文件系统的角度来看磁盘还是很直观的。因为对于磁盘就是读写 <strong>block</strong> 或者 <strong>sector</strong>，我们可以将磁盘看作是一个巨大的<strong>block</strong>的<strong>数组</strong>，数组从<strong>0</strong>开始，一直增长到磁盘的最后。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5ddd240a426a45d0923a595d5941f384_1720253687327.png?token=ANB4BCPT6SB7PRRYEKLKIKLGRD6TQ" alt="在这里插入图片描述"></p>
+<p>而文件系统的工作就是将所有的数据结构以一种能够在重启之后重新构建文件系统的方式，存放在磁盘上。虽然有不同的方式，但是 <strong>xv6</strong> 使用了一种非常简单，但是还挺常见的布局结构。通常来说：</p>
+<ul>
+<li><strong>block0</strong> 要么没有用，要么被用作<strong>boot sector</strong>来启动操作系统。</li>
+<li><strong>block1</strong> 通常被称为<strong>super block</strong>，它描述了文件系统。它可能包含磁盘上有多少个block共同构成了文件系统这样的信息。我们之后会看到XV6在里面会存更多的信息，你可以通过block1构造出大部分的文件系统信息。</li>
+<li>在<strong>xv6</strong> 中，<strong>log</strong>从 <strong>block2</strong> 开始，到 <strong>block32</strong> 结束。实际上 <strong>log</strong> 的大小可能不同，<strong>这里在super block中会定义log就是30个block</strong>。</li>
+<li>接下来在 <strong>block32</strong> 到 <strong>block45</strong> 之间，<strong>xv6</strong> 存储了 <strong>inode</strong>。</li>
+<li>之后是 <strong>bitmap block</strong>，这是我们构建文件系统的默认方法，<strong>它只占据一个block</strong>。它记录了数据block是否空闲。</li>
+<li>之后就全是<strong>数据block</strong>了，<strong>数据block</strong>存储了文件的内容和目录的内容（目录也是文件）。</li>
+</ul>
+<p>通常来说，<strong>bitmap block，inode blocks和log blocks被统称为metadata block</strong>。它们虽然不存储实际的数据，但是它们存储了能<strong>帮助文件系统完成工作</strong>的元数据。</p>
+<p>假设 <strong>inode</strong> 是 <strong>64</strong> 字节，如果你想要读取 <strong>inode10</strong>，那么你应该按照下面的公式去对应的 <strong>block</strong> 读取 <strong>inode</strong>：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/04e09f55418a4ec78b30579c533a2499_1720253687327.png?token=ANB4BCOBPNV633LQZDFNZM3GRD6TS" alt="在这里插入图片描述"><br>所以 <strong>inode0</strong> 在 <strong>block32</strong>，<strong>inode17</strong> 会在 <strong>block33</strong>。只要有 <strong>inode</strong> 的编号，我们总是可以找到 <strong>inode</strong> 在磁盘上存储的位置。</p>
+<h2 id="三、inode-结构"><a href="#三、inode-结构" class="headerlink" title="三、inode 结构"></a>三、inode 结构</h2><p><strong>inode</strong> 结构体在内存中的表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NDIRECT 12</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// in-memory copy of an inode</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">inode</span> &#123;</span></span><br><span class="line">  uint dev;           <span class="comment">// Device number</span></span><br><span class="line">  uint inum;          <span class="comment">// Inode number</span></span><br><span class="line">  <span class="type">int</span> ref;            <span class="comment">// Reference count</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sleeplock</span> <span class="title">lock</span>;</span> <span class="comment">// protects everything below here</span></span><br><span class="line">  <span class="type">int</span> valid;          <span class="comment">// inode has been read from disk?</span></span><br><span class="line"></span><br><span class="line">  <span class="type">short</span> type;         <span class="comment">// copy of disk inode</span></span><br><span class="line">  <span class="type">short</span> major;</span><br><span class="line">  <span class="type">short</span> minor;</span><br><span class="line">  <span class="type">short</span> nlink;</span><br><span class="line">  uint size;</span><br><span class="line">  uint addrs[NDIRECT+<span class="number">1</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在硬盘中的表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// On-disk inode structure</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">dinode</span> &#123;</span></span><br><span class="line">  <span class="type">short</span> type;           <span class="comment">// File type</span></span><br><span class="line">  <span class="type">short</span> major;          <span class="comment">// Major device number (T_DEVICE only)</span></span><br><span class="line">  <span class="type">short</span> minor;          <span class="comment">// Minor device number (T_DEVICE only)</span></span><br><span class="line">  <span class="type">short</span> nlink;          <span class="comment">// Number of links to inode in file system</span></span><br><span class="line">  uint size;            <span class="comment">// Size of file (bytes)</span></span><br><span class="line">  uint addrs[NDIRECT+<span class="number">1</span>];   <span class="comment">// Data block addresses</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们先研究在硬盘的 <strong>inode</strong> 结构：</p>
+<ul>
+<li>通常来说它有一个 <strong>type</strong> 字段，表明 <strong>inode</strong> 是文件还是目录。</li>
+<li><strong>nlink</strong>字段，也就是 <strong>link计数器</strong>，用来跟踪究竟有多少文件名指向了当前的<strong>inode</strong>。</li>
+<li><strong>size</strong>字段，表明了文件数据有多少个字节。</li>
+<li>不同文件系统中的表达方式可能不一样，不过在 <strong>xv6</strong> 中接下来是一些 <strong>block</strong> 的编号，例如编号0，编号1，等等。<strong>xv6</strong>的 <strong>inode</strong> 中总共有<strong>12</strong>个 <strong>block编号</strong>。这些被称为<strong>direct block number</strong>。这 <strong>12</strong> 个 <strong>block</strong> 编号指向了构成文件的前 <strong>12</strong> 个 <strong>block</strong>。举个例子，如果文件只有<strong>2</strong>个字节，那么只会有一个<strong>block</strong>编号<strong>0</strong>，它包含的数字是磁盘上文件前2个字节的<strong>block</strong>的位置。</li>
+<li>之后还有一个 <strong>indirect block number</strong>，它对应了磁盘上一个 <strong>block</strong>，这个 <strong>block</strong> 包含了<strong>256</strong>个 <strong>block number</strong>，这 <strong>256</strong> 个 <strong>block number</strong> 包含了文件的数据。所以 <strong>inode</strong> 中 <strong>block number0</strong> 到 <strong>block number11</strong> 都是<strong>direct block number</strong>，而 <strong>block number12</strong>保存的 <strong>indirect block number</strong> 指向了另一个<strong>block</strong>。所以数组 <code>addrs[NDIRECT+1]</code> 的长度为 <strong>13</strong>。</li>
+</ul>
+<p>如果一个 <strong>block号</strong> 占 <strong>4</strong> 个字节，那么一个<strong>block</strong> 就可以存储 <code>1024/4 = 256</code> 个 <strong>block号</strong>。所以我们很轻易地计算出 <strong>xv6</strong> 中一个文件的大小上限：<code>(256+12)*1KB</code>。因为一个块号占 4 个字节，那么 xv6 一共可以寻址 <code>2^32</code>个 block，一个 block 大小为 1KB，那么 xv6 一共可以安装的硬盘大小为  <code>2^42</code>B，也就是 <strong>4TB</strong>。</p>
+<h2 id="四、目录"><a href="#四、目录" class="headerlink" title="四、目录"></a>四、目录</h2><p>文件系统的酷炫特性就是<strong>层次化的命名空间</strong>（<strong>hierarchical namespace</strong>），你可以在文件系统中保存对用户友好的文件名。大部分 <strong>Unix文件系统</strong> 有趣的点在于，一个目录本质上是一个文件加上一些文件系统能够理解的结构。在 <strong>xv6</strong> 中，这里的结构极其简单。每一个目录包含了<strong>directory entries</strong>，每一条 <strong>entry</strong> 都有固定的格式：</p>
+<ul>
+<li>前 <strong>2</strong> 个字节包含了目录中文件或者子目录的 <strong>inode</strong> 编号;</li>
+<li>接下来的 <strong>14</strong> 个字节包含了文件或者子目录名。</li>
+</ul>
+<p>所以每个 <strong>entry</strong> 总共是<strong>16</strong>个字节。</p>
+<p>对于实现路径名查找，这里的信息就足够了。假设我们要查找路径名 <strong>“&#x2F;y&#x2F;x”</strong>，我们该怎么做呢？</p>
+<p>从路径名我们知道，应该从 <strong>root inode</strong> 开始查找。通常 <strong>root inode</strong> 会有固定的 <strong>inode</strong> 编号，在 <strong>xv6</strong> 中，这个编号是<strong>1</strong>。我们该如何根据编号找到 <strong>root inode</strong> 呢？</p>
+<p>从前一节我们可以知道，<strong>inode</strong> 从 <strong>block32</strong> 开始，如果是 <strong>inode1</strong>，那么必然在<strong>block32</strong> 中的 <strong>64</strong> 到 <strong>128</strong> 字节的位置。所以文件系统可以直接读到 <strong>root inode</strong> 的内容。</p>
+<p>由于 <strong>inode</strong>（<strong>in-memory copy of an inode</strong>） 中包含对于路径名查找程序，接下来就是扫描 <strong>root inode</strong> 包含的所有 <strong>block</strong>，就是为了找到 <strong>“y”</strong> 。该怎么找到 <strong>root inode</strong> 所有对应的 <strong>block</strong> 呢？根据前一节的内容就是读取所有的 <strong>direct block number</strong>和<strong>indirect block number</strong>。</p>
+<p>如果找到了，那么 <strong>目录y</strong> 也会有一个 <strong>inode</strong> 编号，假设是 <strong>251</strong>。我们可以继续从<strong>inode251</strong>查找，先用公式计算出 <strong>block号</strong>，然后再根据偏移量读取 <strong>inode251</strong> 的内容，之后再扫描 <strong>inode</strong> 所有对应的<strong>block</strong>，以找到 <strong>“x”</strong>并得到<strong>文件x</strong>对应的<strong>inode编号</strong>，最后将其作为<strong>路径名查找的结果</strong>返回。</p>
+<p>这么简单的一件事，上面的过程一共查询了三次 <strong>inode</strong>（两次<strong>目录node</strong>，一次<strong>文件x</strong> 的 <strong>inode</strong> ），两次 <strong>扫描block</strong> 操作。</p>
+<p>很明现，这里的结构不是很有效。<strong>为了找到一个目录名，需要线性扫描</strong>。实际的文件系统会使用更复杂的数据结构来使得查找更快，当然这又是设计数据结构的问题，而不是设计操作系统的问题。出于简单和更容易解释的目的，<strong>xv6</strong> 使用了这里这种非常简单的数据结构。</p>
+<h2 id="五、文件系统工作示例"><a href="#五、文件系统工作示例" class="headerlink" title="五、文件系统工作示例"></a>五、文件系统工作示例</h2><p>首先启动 <strong>xv6</strong>，启动 <strong>xv6</strong> 的过程中，调用了<strong>makefs</strong>指令，来创建一个文件系统。</p>
+<p>所以<strong>makefs</strong>创建了一个全新的磁盘镜像，在这个磁盘镜像中包含了我们在指令中传入的一些文件。<strong>makefs</strong>为你创建了一个<strong>包含这些文件的新的文件系统</strong>。</p>
+<p>xv6 总是会打印文件系统的一些信息，所以从指令的下方可以看出有<strong>46</strong>个<strong>meta block</strong>，其中包括了：</p>
+<ul>
+<li>boot block</li>
+<li>super block</li>
+<li>30个log block</li>
+<li>13个inode block</li>
+<li>1个bitmap block</li>
+</ul>
+<p>之后是<strong>954</strong>个<strong>data block</strong>。所以这是一个袖珍级的文件系统，总共就包含了<strong>1000</strong>个<strong>block</strong>。</p>
+<p>稍微修改了一下 <strong>xv6</strong>之后，使得任何时候写入 <strong>block</strong> 都会打印出 <strong>block</strong> 的编号：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">log_write</span><span class="params">(<span class="keyword">struct</span> buf *b)</span></span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;write: %d\n&quot;</span>,b-&gt;blockno);     <span class="comment">// 打印使用的 block 号</span></span><br><span class="line">  <span class="built_in">log</span>.lh.block[i] = b-&gt;blockno;</span><br><span class="line">  <span class="keyword">if</span> (i == <span class="built_in">log</span>.lh.n) &#123;  <span class="comment">// Add new block to log?</span></span><br><span class="line">    bpin(b);</span><br><span class="line">    <span class="built_in">log</span>.lh.n++;</span><br><span class="line">  &#125;</span><br><span class="line">  release(&amp;<span class="built_in">log</span>.lock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>接下来我们运行一个命令 <code>echo hi &gt; x</code>，来看一下特定的命令对哪些 <strong>block</strong> 做了写操作，并理解为什么要对这些 <strong>block</strong> 写入数据。</p>
+<p>我们通过<code>echo hi &gt; x</code>，来创建一个<strong>文件x</strong>，并写入字符 <code>hi</code>，这会打印以下信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> hi &gt; x</span><br><span class="line">1	write: 33</span><br><span class="line">2	write: 33</span><br><span class="line">3	write: 46</span><br><span class="line">4	write: 32</span><br><span class="line">5	write: 33</span><br><span class="line">6	write: 45</span><br><span class="line">7	write: 908</span><br><span class="line">8	write: 908</span><br><span class="line">9	write: 33</span><br><span class="line">10	write: 908</span><br><span class="line">11	write: 33</span><br></pre></td></tr></table></figure>
+
+<p>这里会有几个阶段：</p>
+<ul>
+<li>第一阶段是创建<strong>文件x</strong>；</li>
+<li>第二阶段将 <code>hi</code>写入文件；</li>
+<li>第三阶段将 <code>\n</code>换行符写入到文件；</li>
+</ul>
+<p>看一下<code>user/echo.c</code>的代码实现，基本就是这3个阶段：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i = <span class="number">1</span>; i &lt; argc; i++)&#123;</span><br><span class="line">    write(<span class="number">1</span>, argv[i], <span class="built_in">strlen</span>(argv[i]));</span><br><span class="line">    <span class="keyword">if</span>(i + <span class="number">1</span> &lt; argc)&#123;</span><br><span class="line">      write(<span class="number">1</span>, <span class="string">&quot; &quot;</span>, <span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      write(<span class="number">1</span>, <span class="string">&quot;\n&quot;</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>首先它将 <code>hi</code>写入到标准输出（我们在此处已经重定向了，对于 <code>echo()</code>，<code>argc==2</code> ），然后继续写入 <code>\n</code>。</p>
+<h3 id="1、创建文件x"><a href="#1、创建文件x" class="headerlink" title="1、创建文件x"></a>1、创建文件x</h3><p>我们已经了解到，<strong>x文件</strong>是创建在根目录下的。既然是创建文件，第一步肯定是分配一个 <strong>inode</strong>。因此要在空闲 inode 列表中找一个空闲的 inode，然后打上标记。</p>
+<p>然后我们要在此 <strong>inode</strong> 中写入一些信息，比如 <strong>inode</strong> 的引用计数、<strong>addrs</strong>等内容。</p>
+<p>以上两步对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1	write: 33</span><br><span class="line">2	write: 33</span><br></pre></td></tr></table></figure>
+
+<p>由于我们在根目录下创建了一个<strong>文件x</strong>，因此根目录的 <strong>inode</strong>、<strong>inode</strong> 映射的<strong>addrs</strong>中的内容都要被修改。首先修改的是根目录中的第一个 <strong>block</strong>，<strong>文件x</strong> 是根目录下的一个 <strong>entry</strong>，自然要修改这个 <strong>block</strong>。然后根目录的 <strong>inode</strong> 也要修改，因为根目录大小变了。之后，又修改了一次<strong>文件x</strong> 的 <strong>inode</strong>。</p>
+<p>以上两步对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">3	write: 46</span><br><span class="line">4	write: 32</span><br><span class="line">5	write: 33</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、写入文件x-hi"><a href="#2、写入文件x-hi" class="headerlink" title="2、写入文件x hi"></a>2、写入文件x <code>hi</code></h3><p>因为要引用某个块，所以要更新 <strong>bitmap</strong>。之后要往某个 <strong>direct block</strong> 中写两个字符。最后还需要更改<strong>文件x</strong> <strong>inode</strong>中的<strong>size</strong>字段，而且还会将 <strong>inode</strong> 与 <strong>block</strong> 关联起来，即修改 <code>addrs</code> 字段。这对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">6	write: 45</span><br><span class="line">7	write: 908</span><br><span class="line">8	write: 908</span><br><span class="line">9	write: 33</span><br></pre></td></tr></table></figure>
+
+<p>这意味着文件系统挑选了 <strong>block 908</strong>。</p>
+<h3 id="3、写入-n"><a href="#3、写入-n" class="headerlink" title="3、写入\n"></a>3、写入<code>\n</code></h3><p>这就很简单了，写文件，修改 <strong>inode</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">10	write: 908</span><br><span class="line">11	write: 33</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4、再执行一条命令"><a href="#4、再执行一条命令" class="headerlink" title="4、再执行一条命令"></a>4、再执行一条命令</h3><p>通过再执行一条命令 <code>echo hii &gt; x</code>：这条命令会将 <strong>文件x</strong> 中内容覆盖，并且重新写 <code>hii</code>、<code>\n</code>（注意这是分开写的）。因为<strong>文件x</strong> 已经创建过了，因此这个写入<strong>block</strong> 的记录和上面的那个命令是不同的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> hii &gt; x</span><br><span class="line">1	write: 45</span><br><span class="line">2	write: 33</span><br><span class="line">3	write: 45</span><br><span class="line">4	write: 908</span><br><span class="line">5	write: 908</span><br><span class="line">6	write: 33</span><br><span class="line">7	write: 908</span><br><span class="line">8	write: 33</span><br></pre></td></tr></table></figure>
+<p>首先修改<strong>bitmap</strong>，然后修改 <strong>inode</strong>。这是为了将 <strong>x文件</strong>中的内容全部清空，那么这个<strong>block</strong> 自然就不用了，需要修改 <strong>inode</strong> 中 的 <strong>size</strong>、<strong>addrs</strong>字段等。这对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1	write: 45</span><br><span class="line">2	write: 33</span><br></pre></td></tr></table></figure>
+
+<p>之后又要继续写 <code>hii</code>。这意味着要重新启用这个 <strong>block</strong>，因此要修改 <strong>bitmap</strong>。之后写入 <code>hii</code>，写完后，继续更新 <strong>inode</strong>，这对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">3	write: 45</span><br><span class="line">4	write: 908</span><br><span class="line">5	write: 908</span><br><span class="line">6	write: 33</span><br></pre></td></tr></table></figure>
+
+<p>因为写入了 3 个字符，但是这里的 <strong>block</strong> 被写了两次，<em>目前还找不到原因</em>。事实上，我尝试写了几十个字符，也只有两次写入 <strong>block</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> asdfsdfasdf &gt; x</span><br><span class="line">write: 45</span><br><span class="line">write: 33</span><br><span class="line">write: 45</span><br><span class="line">write: 908</span><br><span class="line">write: 908</span><br><span class="line">write: 33</span><br><span class="line">write: 908</span><br><span class="line">write: 33</span><br></pre></td></tr></table></figure>
+
+<p>然后就是写入<code>\n</code>了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">7	write: 908</span><br><span class="line">8	write: 33</span><br></pre></td></tr></table></figure>
+<p>以上就是文件系统的工作示例了。</p>
+<h2 id="五、代码"><a href="#五、代码" class="headerlink" title="五、代码"></a>五、代码</h2><p><code>sysfile.c</code>中包含了所有与文件系统相关的函数，分配<strong>inode</strong>发生在<code>sys_open()</code>函数中，这个函数会负责创建文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_open</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">char</span> path[MAXPATH];</span><br><span class="line">  <span class="type">int</span> fd, omode;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">f</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">ip</span>;</span></span><br><span class="line">  <span class="type">int</span> n;</span><br><span class="line"></span><br><span class="line">  argint(<span class="number">1</span>, &amp;omode);</span><br><span class="line">  <span class="keyword">if</span>((n = argstr(<span class="number">0</span>, path, MAXPATH)) &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  begin_op();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(omode &amp; O_CREATE)&#123;</span><br><span class="line">    ip = create(path, T_FILE, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(ip == <span class="number">0</span>)&#123;</span><br><span class="line">      end_op();</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; </span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>superblock</strong> 中存储着各种各样的信息，包括 <strong>inode</strong> 的数量 <strong>ninodes</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Disk layout:</span></span><br><span class="line"><span class="comment">// [ boot block | super block | log | inode blocks |</span></span><br><span class="line"><span class="comment">//                                          free bit map | data blocks]</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// mkfs computes the super block and builds an initial file system. The</span></span><br><span class="line"><span class="comment">// super block describes the disk layout:</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">superblock</span> &#123;</span></span><br><span class="line">  uint magic;        <span class="comment">// Must be FSMAGIC</span></span><br><span class="line">  uint size;         <span class="comment">// Size of file system image (blocks)</span></span><br><span class="line">  uint nblocks;      <span class="comment">// Number of data blocks</span></span><br><span class="line">  uint ninodes;      <span class="comment">// Number of inodes.</span></span><br><span class="line">  uint nlog;         <span class="comment">// Number of log blocks</span></span><br><span class="line">  uint logstart;     <span class="comment">// Block number of first log block</span></span><br><span class="line">  uint inodestart;   <span class="comment">// Block number of first inode block</span></span><br><span class="line">  uint bmapstart;    <span class="comment">// Block number of first free map block</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>创建的过程中，它会调用 <code>create()</code>函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">struct</span> inode*</span><br><span class="line"><span class="title function_">create</span><span class="params">(<span class="type">char</span> *path, <span class="type">short</span> type, <span class="type">short</span> major, <span class="type">short</span> minor)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">ip</span>, *<span class="title">dp</span>;</span></span><br><span class="line">  <span class="type">char</span> name[DIRSIZ];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>((dp = nameiparent(path, name)) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  ilock(dp);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>((ip = dirlookup(dp, name, <span class="number">0</span>)) != <span class="number">0</span>)&#123;</span><br><span class="line">    iunlockput(dp);</span><br><span class="line">    ilock(ip);</span><br><span class="line">    <span class="keyword">if</span>(type == T_FILE &amp;&amp; (ip-&gt;type == T_FILE || ip-&gt;type == T_DEVICE))</span><br><span class="line">      <span class="keyword">return</span> ip;</span><br><span class="line">    iunlockput(ip);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>((ip = ialloc(dp-&gt;dev, type)) == <span class="number">0</span>)&#123;</span><br><span class="line">    iunlockput(dp);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ilock(ip);</span><br><span class="line">  ip-&gt;major = major;</span><br><span class="line">  ip-&gt;minor = minor;</span><br><span class="line">  ip-&gt;nlink = <span class="number">1</span>;</span><br><span class="line">  iupdate(ip);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(type == T_DIR)&#123;  <span class="comment">// Create . and .. entries.</span></span><br><span class="line">    <span class="comment">// No ip-&gt;nlink++ for &quot;.&quot;: avoid cyclic ref count.</span></span><br><span class="line">    <span class="keyword">if</span>(dirlink(ip, <span class="string">&quot;.&quot;</span>, ip-&gt;inum) &lt; <span class="number">0</span> || dirlink(ip, <span class="string">&quot;..&quot;</span>, dp-&gt;inum) &lt; <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">goto</span> fail;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(dirlink(dp, name, ip-&gt;inum) &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">goto</span> fail;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(type == T_DIR)&#123;</span><br><span class="line">    <span class="comment">// now that success is guaranteed:</span></span><br><span class="line">    dp-&gt;nlink++;  <span class="comment">// for &quot;..&quot;</span></span><br><span class="line">    iupdate(dp);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  iunlockput(dp);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> ip;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>create()</code>函数中首先会解析路径名并找到最后一个目录，之后会查看文件是否存在，如果存在的话会返回错误。之后就会调用<code>ialloc()</code>，这个函数会为 <strong>文件x</strong> 分配<strong>inode</strong>。<strong>ialloc</strong>函数位于<code>fs.c</code>文件中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Allocate an inode on device dev.</span></span><br><span class="line"><span class="comment">// Mark it as allocated by  giving it type type.</span></span><br><span class="line"><span class="comment">// Returns an unlocked but allocated and referenced inode,</span></span><br><span class="line"><span class="comment">// or NULL if there is no free inode.</span></span><br><span class="line"><span class="keyword">struct</span> inode*</span><br><span class="line"><span class="title function_">ialloc</span><span class="params">(uint dev, <span class="type">short</span> type)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> inum;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">buf</span> *<span class="title">bp</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">dinode</span> *<span class="title">dip</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(inum = <span class="number">1</span>; inum &lt; sb.ninodes; inum++)&#123;</span><br><span class="line">    bp = bread(dev, IBLOCK(inum, sb));</span><br><span class="line">    dip = (<span class="keyword">struct</span> dinode*)bp-&gt;data + inum%IPB;</span><br><span class="line">    <span class="keyword">if</span>(dip-&gt;type == <span class="number">0</span>)&#123;  <span class="comment">// a free inode</span></span><br><span class="line">      <span class="built_in">memset</span>(dip, <span class="number">0</span>, <span class="keyword">sizeof</span>(*dip));</span><br><span class="line">      dip-&gt;type = type;</span><br><span class="line">      log_write(bp);   <span class="comment">// mark it allocated on the disk</span></span><br><span class="line">      brelse(bp);</span><br><span class="line">      <span class="keyword">return</span> iget(dev, inum);</span><br><span class="line">    &#125;</span><br><span class="line">    brelse(bp);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;ialloc: no inodes\n&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它会遍历所有可能的 <strong>inode编号</strong>，<code>IBLOCK(inum, sb)</code>可以将通过<strong>inum</strong>找到 <strong>superblock</strong> 对应的 <strong>block number</strong>。<code>bread()</code>可以通过<strong>设备名和 blockno</strong> 可以得到硬盘中的 <strong>block</strong> 在内存中的<strong>缓存</strong>，记为 <strong>bp</strong>。由于 <strong>bp</strong> 是 <strong>dblock</strong> 中的一个拷贝，因此接下来就直接在 <strong>bp</strong> 中操作了。</p>
+<p>找到<strong>inode</strong>所在的<strong>block</strong>，再看位于<strong>block</strong>中的<strong>inode</strong>数据的<strong>type字段</strong>。如果这是一个空闲的 <strong>inode</strong>，那么将其<strong>type</strong>字段设置为文件，<strong>这会将inode标记为已被分配</strong>。函数中的<code>log_write()</code> 就是我们之前看到在<strong>console</strong>中有关写<strong>block</strong>的输出。这里的 <code>log_write()</code> 是我们看到的<strong>整个输出的第一个</strong>。</p>
+<p>以上就是第一次写磁盘涉及到的函数调用。</p>
+<p>这里有个有趣的问题，<strong>如果有多个进程同时调用create函数会发生什么？</strong> 对于一个多核的计算机，进程可能并行运行，两个进程可能同时会调用到 <strong>ialloc函数</strong>，然后进而调用 <code>bread()</code> 函数。所以必须要有一些机制确保这两个进程不会互相影响。</p>
+<p>这个已经在上一个实验中讨论了，就不再赘述了。</p>
+<h2 id="六、总结（大模型总结）"><a href="#六、总结（大模型总结）" class="headerlink" title="六、总结（大模型总结）"></a>六、总结（大模型总结）</h2><p>这篇文章深入探讨了文件系统在 <strong>xv6</strong> 环境下的工作原理，分层次地介绍了文件系统的实现概述、硬盘使用、<strong>inode</strong> 结构、目录、以及文件系统的工作示例。文章详细解释了<strong>inode</strong>和<strong>block</strong>在磁盘上的分布方式，以及文件的创建、写入和元数据修改的过程。它提供了清晰的代码示例和相关函数的解释，为理解文件系统的内部机制提供了深入而全面的认识。</p>
+<p>文章非常详尽地描述了 <strong>xv6</strong> 文件系统的内部机制和数据结构，从底层的磁盘操作到高层的文件操作都有涉及。它还着重强调了在文件系统设计中的一些限制和简化，尤其是对于路径查找等操作的效率问题。这样的详细解释对于想要深入了解文件系统工作原理的读者来说是非常有帮助的。</p>
+<p>全文完，感谢阅读。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" data-id="cly9q78k200evdyr6ddi0e3fc" data-title="xv6 文件系统（上）" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">笔记 学习 xv6 操作系统 OS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          xv6 文件系统（下）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MIT 6.S081学习笔记（第七章）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/8086/">8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-debugger/">C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/CM3/">CM3</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6/">Golang Golang_框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6-Web/">Golang Golang_框架 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Web/">Golang Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF/">Golang 前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF-Web/">Golang 前端 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LeetCode/">LeetCode</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Missing-Semester/">Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-OS-Web/">NetWork OS Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-Web/">NetWork Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-Unix-Linux/">OS Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">OS 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Personal-Summary/">Personal_Summary</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools/">Some_Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Golang-Unix-Linux/">Some_Tools Golang Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Missing-Semester/">Some_Tools Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tests-for-Basic-Knowledge-of-C/">Tests for Basic Knowledge of C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Things-about-C/">Things about C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/socket-Web-Unix-Linux/">socket Web Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80-%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97%E5%AF%BC%E8%AE%BA/">代数基础 量子计算导论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">教师工资管理系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/">离散数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">离散数学 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C-debugger/">系统编程 C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C%E8%AF%AD%E8%A8%80/">系统编程 C语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-8086/">经验方法 8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-C/">经验方法 C++</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" rel="tag">CM3 汇编 QEMU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" rel="tag">MIT 6.S081 学习 笔记 xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag">NP 数学 信息学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">Shell 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" rel="tag">Web 内网穿透</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-debugger/" rel="tag">c++ debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-linux/" rel="tag">c++ linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb/" rel="tag">c++ lldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb-debugger/" rel="tag">c++ lldb debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">c++ 多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">c++ 开发语言 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" rel="tag">c语言 开发语言 命令行工具 个人记录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" rel="tag">docker 系统编程 tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" rel="tag">docker 网络 容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" rel="tag">gin Context golang Web 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">golang 前端 gin 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">golang 前端 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" rel="tag">golang 后端 前端 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 算法 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" rel="tag">golang 服务器 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">golang 爬虫 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-servlet/" rel="tag">java jvm servlet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java jvm 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" rel="tag">java jvm 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95/" rel="tag">leetcode 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">leetcode 算法 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c/" rel="tag">linux c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c-%E7%AE%97%E6%B3%95/" rel="tag">linux c++ 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" rel="tag">linux unix 服务器 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-vscode-macos-c/" rel="tag">linux vscode macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" rel="tag">linux 服务器 运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">macos linux 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" rel="tag">macos 汇编 DOSBox 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">redis bootstrap 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">rust 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-golang-linux/" rel="tag">ubuntu golang linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" rel="tag">ubuntu 阿里云 网络 网络工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unix-linux-udp/" rel="tag">unix linux udp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode-ide-macos-c/" rel="tag">vscode ide macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">wireshark 网络 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 OS 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 操作系统 OS 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" rel="tag">xv6 操作系统 笔记 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%B6%E4%BB%96/" rel="tag">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" rel="tag">前端 golang gin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" rel="tag">图论 离散数学 代数系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" rel="tag">图论 离散数学 特殊的图 数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" rel="tag">学习 笔记 OS xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" rel="tag">学习 笔记 bash 脚本</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" rel="tag">学习 笔记 xv6 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统 文件系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" rel="tag">学习 笔记 操作系统 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" rel="tag">学习 笔记 操作系统 xv6 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" rel="tag">总结 个人总结</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" rel="tag">抽象代数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" rel="tag">操作系统 Hackintosh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 学习 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">操作系统 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" rel="tag">操作系统 笔记 学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" rel="tag">汇编 QEMU 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" rel="tag">汇编 QEMU CM3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" rel="tag">矩阵 线性代数 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" rel="tag">离散数学 数学 关系 集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" rel="tag">离散数学 数学 逻辑推理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">笔记 学习 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode/" rel="tag">算法 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">算法 leetcode 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">算法 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" rel="tag">算法 数据结构 哈希算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" rel="tag">系统调用 mmap 文件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">翻译 xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">链表 c语言 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">链表 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" rel="tag">链表 数据结构 算法</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" style="font-size: 10px;">CM3 汇编 QEMU</a> <a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" style="font-size: 10px;">MIT 6.S081 学习 笔记 xv6</a> <a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" style="font-size: 10px;">NP 数学 信息学</a> <a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Shell 学习 笔记</a> <a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" style="font-size: 10px;">Web 内网穿透</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/c-debugger/" style="font-size: 15px;">c++ debugger</a> <a href="/tags/c-linux/" style="font-size: 10px;">c++ linux</a> <a href="/tags/c-lldb/" style="font-size: 11.67px;">c++ lldb</a> <a href="/tags/c-lldb-debugger/" style="font-size: 11.67px;">c++ lldb debugger</a> <a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 11.67px;">c++ 多线程</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 18.33px;">c++ 开发语言</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">c++ 开发语言 学习 笔记</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 c++ 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" style="font-size: 10px;">c语言 开发语言 命令行工具 个人记录</a> <a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" style="font-size: 10px;">docker 系统编程 tips</a> <a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" style="font-size: 10px;">docker 网络 容器</a> <a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">gin Context golang Web 网络</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">golang 前端 gin 服务器</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 11.67px;">golang 前端 数据库</a> <a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">golang 后端 前端 网络</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 后端</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 算法 后端</a> <a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 服务器 后端</a> <a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">golang 爬虫 开发语言</a> <a href="/tags/java-jvm-servlet/" style="font-size: 10px;">java jvm servlet</a> <a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java jvm 开发语言</a> <a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">java jvm 算法</a> <a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java 开发语言</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95/" style="font-size: 11.67px;">leetcode 算法</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 15px;">leetcode 算法 数据结构</a> <a href="/tags/linux/" style="font-size: 11.67px;">linux</a> <a href="/tags/linux-c/" style="font-size: 11.67px;">linux c++</a> <a href="/tags/linux-c-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">linux c++ 算法</a> <a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">linux unix 服务器 网络</a> <a href="/tags/linux-vscode-macos-c/" style="font-size: 10px;">linux vscode macos c++</a> <a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">linux 服务器 运维</a> <a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">macos linux 服务器</a> <a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" style="font-size: 10px;">macos 汇编 DOSBox 8086</a> <a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">redis bootstrap 数据库</a> <a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">rust 开发语言 后端</a> <a href="/tags/ubuntu-golang-linux/" style="font-size: 10px;">ubuntu golang linux</a> <a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" style="font-size: 10px;">ubuntu 阿里云 网络 网络工具</a> <a href="/tags/unix-linux-udp/" style="font-size: 10px;">unix linux udp</a> <a href="/tags/vscode-ide-macos-c/" style="font-size: 10px;">vscode ide macos c++</a> <a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">wireshark 网络 服务器</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 OS 学习 笔记</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 学习 笔记 操作系统</a> <a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 操作系统</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 操作系统 OS 笔记</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">xv6 操作系统 笔记 翻译</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" style="font-size: 11.67px;">前端 golang gin</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">图论 离散数学 代数系统</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">图论 离散数学 特殊的图 数学</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" style="font-size: 10px;">学习 笔记 OS xv6</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" style="font-size: 10px;">学习 笔记 bash 脚本</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" style="font-size: 10px;">学习 笔记 xv6 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 13.33px;">学习 笔记 xv6 OS 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">学习 笔记 xv6 OS 操作系统 文件系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 11.67px;">学习 笔记 xv6 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 xv6 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 MIT 6.S081</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 xv6 MIT 6.S081</a> <a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" style="font-size: 10px;">总结 个人总结</a> <a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" style="font-size: 10px;">抽象代数</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" style="font-size: 10px;">操作系统 Hackintosh</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 11.67px;">操作系统 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">操作系统 学习 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">操作系统 学习 笔记</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">操作系统 笔记 学习</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" style="font-size: 10px;">汇编 QEMU 8086</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" style="font-size: 10px;">汇编 QEMU CM3</a> <a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">矩阵 线性代数 算法</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" style="font-size: 10px;">离散数学 数学 关系 集合</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" style="font-size: 10px;">离散数学 数学 逻辑推理</a> <a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">笔记 学习 xv6 操作系统 OS</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode/" style="font-size: 10px;">算法 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16.67px;">算法 leetcode 数据结构</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 18.33px;">算法 数据结构 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法 数据结构 哈希算法</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" style="font-size: 10px;">系统调用 mmap 文件</a> <a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">翻译 xv6 OS 学习 笔记 操作系统</a> <a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 10px;">链表 c语言 数据结构</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 11.67px;">链表 数据结构 leetcode</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" style="font-size: 13.33px;">链表 数据结构 算法</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">May 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">March 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">December 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">November 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.05 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.02 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.30 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.29 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/2024.06.28%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.28 刷题日记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

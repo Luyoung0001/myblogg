@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>C++：左值（引用）&amp;右值（引用） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="〇、前言本文会讨论C++中的左值，右值，左值引用，右值引用，以及会理清它们之间的关系。 一、左值与右值（一）概述　　1. 左值是一般指表达式结束后依然存在的持久化对象。右值指表达式结束时就不再存在的临时对象。便捷的判断方法：能对表达式取地址、有名字的对象为左值。反之，不能取地址、匿名的对象为右值。 　　2. C++ 表达式（运算符带上其操作数、字面量、变量名等）有两种独立的属性：类型和值类别">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++：左值（引用）&amp;右值（引用）">
+<meta property="og:url" content="http://example.com/2024/05/10/C++%EF%BC%9A%E5%B7%A6%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89&%E5%8F%B3%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="〇、前言本文会讨论C++中的左值，右值，左值引用，右值引用，以及会理清它们之间的关系。 一、左值与右值（一）概述　　1. 左值是一般指表达式结束后依然存在的持久化对象。右值指表达式结束时就不再存在的临时对象。便捷的判断方法：能对表达式取地址、有名字的对象为左值。反之，不能取地址、匿名的对象为右值。 　　2. C++ 表达式（运算符带上其操作数、字面量、变量名等）有两种独立的属性：类型和值类别">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-05-10T14:09:59.000Z">
+<meta property="article:modified_time" content="2024-07-06T06:10:16.341Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-C++：左值（引用）&amp;右值（引用）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/05/10/C++%EF%BC%9A%E5%B7%A6%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89&%E5%8F%B3%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2024-05-10T14:09:59.000Z" itemprop="datePublished">2024-05-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/C/">C++</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      C++：左值（引用）&amp;右值（引用）
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文会讨论C++中的左值，右值，左值引用，右值引用，以及会理清它们之间的关系。</p>
+<h2 id="一、左值与右值"><a href="#一、左值与右值" class="headerlink" title="一、左值与右值"></a>一、左值与右值</h2><h3 id="（一）概述"><a href="#（一）概述" class="headerlink" title="（一）概述"></a>（一）概述</h3><p>　　1. 左值是一般指表达式结束后依然存在的持久化对象。右值指表达式结束时就不再存在的临时对象。便捷的判断方法：能对表达式取地址、有名字的对象为左值。反之，不能取地址、匿名的对象为右值。</p>
+<p>　　2. C++ 表达式（运算符带上其操作数、字面量、变量名等）有两种独立的属性：<strong>类型</strong>和<strong>值类别</strong> 。类型指变量声明时的类型，而值类别是表达式结果的类型，<strong>它必属于左值、纯右值或将亡值三者之一</strong>。如<code>int&amp;&amp; x;</code>其中 <strong>x</strong> 的类型为<strong>右值引用</strong>，但作为表达式使用时其值类别为左值（<strong>因为有名字，可以取址</strong>）。比如：
+　　</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">int</span> &amp;&amp;b)</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;b: &quot;</span> &lt;&lt; b &lt;&lt; <span class="string">&quot; addr: &quot;</span> &lt;&lt; &amp;b &lt;&lt; std::endl;</span><br><span class="line">    b++;</span><br><span class="line">    std::cout &lt;&lt; b &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> c = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">func</span>(std::<span class="built_in">move</span>(c));</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;c: &quot;</span> &lt;&lt; c &lt;&lt; <span class="string">&quot; addr: &quot;</span> &lt;&lt; &amp;c &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上例中的 <strong>b</strong> 就是一个右值引用，它接受了一个右值 <strong>c</strong>。在 <code>main()</code> 中，<strong>c</strong> 被转化为<strong>右值引用</strong>传入 <code>func()</code>，因此，<code>func()</code> 中的 <strong>b</strong> 其实就是 <code>main()</code> 中的 <strong>c</strong> 别名，它们指向的是同一块内存区域。需要注意的是，<code>func()</code> 中的 <strong>b</strong> 其实是一个左值，<strong>换句话说，右值引用如果绑定了一个右值，它会延长这个右值的生命周期。</strong> 这种生命周期的延长意味着，尽管原始表达式产生的值是一个右值，<strong>一旦它被一个右值引用所绑定，它就不再是一个”即将销毁的临时值”，而更像是一个普通的变量。</strong> 这允许开发者在保证效率的同时，也能够更灵活地控制这些值。</p>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g++ 1.cxx -o main -std=c++14</span><br><span class="line">./main</span><br><span class="line">b: 10 addr: 0x16ba16e28</span><br><span class="line">11</span><br><span class="line">c: 11 addr: 0x16ba16e28</span><br></pre></td></tr></table></figure>
+<p>我们需要注意的是，<code>main()</code> 中的 <strong>c</strong> 被转换成了右值引用，但是它的状态没有发生任何改变。它在 <strong>func</strong> 中被修改，并在 <strong>func</strong> 返回后仍然保持有效。<code>std::move</code> 只是告诉编译器一个对象可以被“安全地”当作右值来使用，这样就允许在移动语义上下文中使用该对象。</p>
+<h3 id="（二）右值的分类"><a href="#（二）右值的分类" class="headerlink" title="（二）右值的分类"></a>（二）右值的分类</h3><p>　　1. 纯右值(prvalue)：用于识别临时变量和一些不与对象关联的值。<strong>函数返回值为非引用类型、表达式临时值(如1+3)、lambda表达式</strong>等。</p>
+<p>　　2. 将亡值(xvalue)：是与右值引用相关的表达式，通常指将要被移动的对象。如，函数返回类型为<code>T&amp;&amp;</code>、<code>std::move</code>的返回值、转换为<code>T&amp;&amp;</code>的类型转换函数的返回值（注意，这些都是与右值引用相关的表达式）或临时对象。</p>
+<p>表格形式：</p>
+<table>
+<thead>
+<tr>
+<th>类型分类</th>
+<th>特征</th>
+<th>绑定规则和类型安全转换</th>
+<th>实例和特殊情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>左值 (lvalue)</strong></td>
+<td>存在变量、函数调用产生的对象，有固定地址。</td>
+<td>可绑定到左值引用，例如 <code>int&amp; x = a;</code></td>
+<td>变量 <code>int a = 10;</code> 函数调用（返回引用）例如 <code>int&amp; foo();</code></td>
+</tr>
+<tr>
+<td><strong>纯右值 (prvalue)</strong></td>
+<td>不适宜被移动，不具有可识别的地址。</td>
+<td>可绑定到右值引用或 const 左值引用，例如 <code>int&amp;&amp; x = 5;</code></td>
+<td>字面量例如 <code>42</code>，表达式例如 <code>a + b</code>，函数调用（返回非引用）例如 <code>int foo();</code></td>
+</tr>
+<tr>
+<td><strong>将亡值 (xvalue)</strong></td>
+<td>适宜被移动，具有地址但对象即将被销毁。</td>
+<td>可绑定到右值引用，例如使用 <code>std::move</code> 例如 <code>int&amp;&amp; x = std::move(a);</code></td>
+<td>通过 <code>std::move</code> 生成的将亡值，例如 <code>std::move(a)</code>；使用移动构造函数或移动赋值操作时，传递的实际参数。</td>
+</tr>
+<tr>
+<td><strong>泛左值 (glvalue)</strong></td>
+<td>概括左值和将亡值，即拥有特定身份（地址）且可能即将被销毁。</td>
+<td>可以绑定到左值引用或右值引用，取决于上下文。</td>
+<td>例如使用 <code>decltype</code> 捕获引用时，<code>decltype((a)) x = a;</code> 捕获的是 <code>a</code> 的引用。</td>
+</tr>
+</tbody></table>
+<h2 id="二、左值引用与右值引用"><a href="#二、左值引用与右值引用" class="headerlink" title="二、左值引用与右值引用"></a>二、左值引用与右值引用</h2><h3 id="（一）概述-1"><a href="#（一）概述-1" class="headerlink" title="（一）概述"></a>（一）概述</h3><p>　　1. 左值引用和右值引用都属于引用类型。无论是声明一个左值引用还是右值引用<strong>都必须立即进行初始化</strong>（今天考试刚考到）。</p>
+<p>　　2. 左值引用都是左值。<strong>但具名的右值引用是左值，而匿名的右值引用是右值</strong>（比如上面的 func 中的 b，虽然它是右值引用，但是它是一个左值）。</p>
+<h3 id="（二）可绑定的值类型-设T是个具体类型"><a href="#（二）可绑定的值类型-设T是个具体类型" class="headerlink" title="（二）可绑定的值类型(设T是个具体类型)"></a>（二）可绑定的值类型(设T是个具体类型)</h3><p>　　1. 左值引用（<strong>T&amp;<strong>）：</strong>只能绑定到左值（非常量左值）</strong></p>
+<p>　　2. 右值引用（<strong>T&amp;&amp;<strong>）：</strong>只能绑定到右值（非常量右值）</strong></p>
+<p>　　3. 常量左值引用（<code>const T&amp;</code>）：常量左值引用是个“万能”的引用类型：<strong>它既可以绑定到左值也可以绑定到右值，它像右值引用一样可以延长右值的生命期</strong>。不过相比于右值引用所引用的右值，<strong>常量左值引用的右值在它的“余生”中只能是只读的</strong>。对于这点，可以参考这个例子：
+　　</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">const</span> <span class="type">int</span> &amp;b)</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;b: &quot;</span> &lt;&lt; b &lt;&lt; <span class="string">&quot; addr: &quot;</span> &lt;&lt; &amp;b &lt;&lt; std::endl;</span><br><span class="line">    b++; <span class="comment">// 会报错</span></span><br><span class="line">    std::cout &lt;&lt; b &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> c = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">func</span>(std::<span class="built_in">move</span>(c));</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;c: &quot;</span> &lt;&lt; c &lt;&lt; <span class="string">&quot; addr: &quot;</span> &lt;&lt; &amp;c &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译出错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">g++ 2.cxx -o main -std=c++14</span><br><span class="line">2.cxx:4:6: error: cannot assign to variable <span class="string">&#x27;b&#x27;</span> with const-qualified <span class="built_in">type</span> <span class="string">&#x27;const int &amp;&#x27;</span></span><br><span class="line">    b++;</span><br><span class="line">    ~^</span><br><span class="line">2.cxx:2:22: note: variable <span class="string">&#x27;b&#x27;</span> declared const here</span><br><span class="line">void func(const int &amp;b) &#123;</span><br><span class="line">          ~~~~~~~~~~~^</span><br><span class="line">1 error generated.</span><br></pre></td></tr></table></figure>
+
+<p>　　4. 常量右值引用(<code>const T&amp;&amp;</code>)：可绑定到右值或常量右值。由于移动语义需要右值可以被修改，因此常量右值引用没有实际用处。如果需要引用右值且让其不可更改，则常量左值引用就足够了。</p>
+<h2 id="三、万能引用（universal-reference）"><a href="#三、万能引用（universal-reference）" class="headerlink" title="三、万能引用（universal reference）"></a>三、万能引用（universal reference）</h2><h3 id="（一）T-的含义"><a href="#（一）T-的含义" class="headerlink" title="（一）T&amp;&amp;的含义"></a>（一）T&amp;&amp;的含义</h3><p>　　1. 当T是一个具体的类型时，<code>T&amp;&amp;</code> 表示右值引用，只能绑定到右值。</p>
+<p>　　2. 当涉及<strong>T类型推导</strong>时，<code>T&amp;&amp;</code> 为万能引用。<strong>若用右值初始化万能引用，则T&amp;&amp;为右值引用。若用左值初始化万能引用，则T&amp;&amp;为左值引用。但不管哪种情况，T&amp;&amp;都是一种引用类型</strong>。</p>
+<h3 id="（二）万能引用"><a href="#（二）万能引用" class="headerlink" title="（二）万能引用"></a>（二）万能引用</h3><p>  　　1. <code>T&amp;&amp;</code>是万能引用的两个条件：</p>
+<p>　　　　（1）<strong>必须涉及类型推导</strong>；</p>
+<p>　　　　（2）声明的形式也必须正好形如 <code>T&amp;&amp;</code> 。<strong>并且该形式被限定死了，任何对其修饰都将剥夺T&amp;&amp;成为万能引用的资格</strong>。</p>
+<p>  　　2. 万能引用使用的场景</p>
+<p>　　　　（1）函数模板形参<br>　　　　<br>（2）<code>auto&amp;&amp;</code></p>
+<p>一个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Widget</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func1</span><span class="params">(Widget &amp;&amp;param)</span></span>&#123;&#125;; <span class="comment">// param为右值引用类型(不涉及类型推导)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func2</span><span class="params">(T &amp;&amp;param)</span> </span>&#123;&#125; <span class="comment">// param为万能引用（涉及类型推导）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func3</span><span class="params">(std::vector&lt;T&gt; &amp;&amp;param)</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func4</span><span class="params">(<span class="type">const</span> T &amp;&amp;param)</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt; <span class="keyword">class</span> <span class="title class_">MyVector</span> &#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">push_back</span><span class="params">(T &amp;&amp;x)</span> </span>&#123;</span><br><span class="line">    &#125; <span class="comment">// x为右值引用。因为当定义一个MyVector对象后，T己确定。当调用该函数时T的类型不用再推导！</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">class</span>... Args&gt;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">emplace_back</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        Args</span></span></span><br><span class="line"><span class="params"><span class="function">            &amp;&amp;...args)</span></span>&#123;&#125;; <span class="comment">// args为万能引用，因为Args独立于T的类型，当调用该函数时，需推导Args的类型。</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Widget w;</span><br><span class="line">    <span class="built_in">func2</span>(w);            <span class="comment">// 万能引用, func2(T&amp;&amp; param)，param为Widget&amp;（左值引用）</span></span><br><span class="line">    <span class="built_in">func2</span>(std::<span class="built_in">move</span>(w)); <span class="comment">// 万能引用, param为Widget&amp;&amp;，是个右值引用。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> x = <span class="number">0</span>;</span><br><span class="line">    Widget &amp;&amp;var1 = <span class="built_in">Widget</span>(); <span class="comment">// var1为右值引用（不涉及类型推导）</span></span><br><span class="line">    <span class="keyword">auto</span> &amp;&amp;var2 = var1; <span class="comment">//万能引用，auto&amp;&amp;被推导为Widget&amp;（左值引用）</span></span><br><span class="line">    <span class="keyword">auto</span> &amp;&amp;var3 = x; <span class="comment">//万能引用，被推导为int&amp;;(左值引用）</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 计算任意函数的执行时间：auto&amp;&amp;用于lambda表达式形参（C++14）</span></span><br><span class="line">    <span class="keyword">auto</span> timefunc = [](<span class="keyword">auto</span> &amp;&amp;func, <span class="keyword">auto</span> &amp;&amp;...params) &#123;</span><br><span class="line">        <span class="comment">//计时器启动</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//调用func(param...)函数</span></span><br><span class="line">        std::forward&lt;<span class="keyword">decltype</span>(func)&gt;(</span><br><span class="line">            func)( <span class="comment">//根据func的左右值特性来调用相应的重载&amp;或&amp;&amp;版本的成员函数</span></span><br><span class="line">            std::forward&lt;<span class="keyword">decltype</span>(params)&gt;(params)... <span class="comment">//保持参数的左/右值特性</span></span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="comment">//计时器停止并记录流逝的时间</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">timefunc</span>(func1, std::<span class="built_in">move</span>(w)); <span class="comment">//计算func1函数的执行时间</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在你提供的代码中，<strong>main</strong> 函数涉及到万能引用的语句如下：</p>
+<ol>
+<li><p><code>func2(w);</code> 和 <code>func2(std::move(w));</code> — 这里的 <code>func2</code> 函数模板参数 <code>T&amp;&amp;</code> 是一个万能引用。它可以绑定到左值和右值。在这两个调用中，第一次调用时 <code>T</code> 被推导为 <code>Widget&amp;</code>（因为 <code>w</code> 是一个左值），而第二次调用时 <code>T</code> 被推导为 <code>Widget</code>（因为 <code>std::move(w)</code> 产生一个右值）。</p>
+</li>
+<li><p><code>auto &amp;&amp;var2 = var1;</code> — 这里使用了 <code>auto&amp;&amp;</code>，它也是一个万能引用。<code>var1</code> 是一个左值（尽管它本身是一个绑定到临时对象的右值引用），所以 <code>var2</code> 被推导为 <code>Widget&amp;</code>。</p>
+</li>
+<li><p><code>auto &amp;&amp;var3 = x;</code> — 这同样使用了 <code>auto&amp;&amp;</code>，这是一个万能引用。由于 <code>x</code> 是一个左值，<code>var3</code> 被推导为 <code>int&amp;</code>。</p>
+</li>
+<li><p>在 <code>timefunc</code> lambda 表达式的定义中，参数列表 <code>(auto &amp;&amp;func, auto &amp;&amp;...params)</code> 使用了万能引用。这里 <code>auto&amp;&amp;</code> 用于单个参数和参数包，允许这个 lambda 接受任意数量的任意类型的参数，并保持他们的值类别（左值或右值）。</p>
+</li>
+</ol>
+<p>这些例子展示了万能引用在模板类型推导中的强大功能，尤其是在<strong>泛型编程和函数重载解析</strong>中的应用。通过万能引用，可以写出更灵活的函数和模板，使得它们能够同时接受左值和右值，而无需重载函数。</p>
+<h2 id="四、参考"><a href="#四、参考" class="headerlink" title="四、参考"></a>四、参考</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/5iedu/p/11308158.html">这里</a>。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2024/05/10/C++%EF%BC%9A%E5%B7%A6%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89&%E5%8F%B3%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89/" data-id="cly9q78g8002fdyr60n9jf07c" data-title="C++：左值（引用）&amp;右值（引用）" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/" rel="tag">c++</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/05/11/C++%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%EF%BC%88std!move%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          C++：移动语义（std::move）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/05/10/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%EF%BC%88%E4%BA%8C%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">C++并发：线程函数传参（二）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/8086/">8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-debugger/">C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/CM3/">CM3</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6/">Golang Golang_框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6-Web/">Golang Golang_框架 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Web/">Golang Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF/">Golang 前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF-Web/">Golang 前端 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LeetCode/">LeetCode</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Missing-Semester/">Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-OS-Web/">NetWork OS Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-Web/">NetWork Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-Unix-Linux/">OS Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">OS 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Personal-Summary/">Personal_Summary</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools/">Some_Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Golang-Unix-Linux/">Some_Tools Golang Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Missing-Semester/">Some_Tools Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tests-for-Basic-Knowledge-of-C/">Tests for Basic Knowledge of C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Things-about-C/">Things about C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/socket-Web-Unix-Linux/">socket Web Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80-%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97%E5%AF%BC%E8%AE%BA/">代数基础 量子计算导论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">教师工资管理系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/">离散数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">离散数学 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C-debugger/">系统编程 C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C%E8%AF%AD%E8%A8%80/">系统编程 C语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-8086/">经验方法 8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-C/">经验方法 C++</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" rel="tag">CM3 汇编 QEMU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" rel="tag">MIT 6.S081 学习 笔记 xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag">NP 数学 信息学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">Shell 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" rel="tag">Web 内网穿透</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-debugger/" rel="tag">c++ debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-linux/" rel="tag">c++ linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb/" rel="tag">c++ lldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb-debugger/" rel="tag">c++ lldb debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">c++ 多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">c++ 开发语言 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" rel="tag">c语言 开发语言 命令行工具 个人记录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" rel="tag">docker 系统编程 tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" rel="tag">docker 网络 容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" rel="tag">gin Context golang Web 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">golang 前端 gin 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">golang 前端 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" rel="tag">golang 后端 前端 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 算法 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" rel="tag">golang 服务器 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">golang 爬虫 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-servlet/" rel="tag">java jvm servlet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java jvm 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" rel="tag">java jvm 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95/" rel="tag">leetcode 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">leetcode 算法 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c/" rel="tag">linux c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c-%E7%AE%97%E6%B3%95/" rel="tag">linux c++ 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" rel="tag">linux unix 服务器 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-vscode-macos-c/" rel="tag">linux vscode macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" rel="tag">linux 服务器 运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">macos linux 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" rel="tag">macos 汇编 DOSBox 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">redis bootstrap 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">rust 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-golang-linux/" rel="tag">ubuntu golang linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" rel="tag">ubuntu 阿里云 网络 网络工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unix-linux-udp/" rel="tag">unix linux udp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode-ide-macos-c/" rel="tag">vscode ide macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">wireshark 网络 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 OS 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 操作系统 OS 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" rel="tag">xv6 操作系统 笔记 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%B6%E4%BB%96/" rel="tag">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" rel="tag">前端 golang gin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" rel="tag">图论 离散数学 代数系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" rel="tag">图论 离散数学 特殊的图 数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" rel="tag">学习 笔记 OS xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" rel="tag">学习 笔记 bash 脚本</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" rel="tag">学习 笔记 xv6 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统 文件系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" rel="tag">学习 笔记 操作系统 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" rel="tag">学习 笔记 操作系统 xv6 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" rel="tag">总结 个人总结</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" rel="tag">抽象代数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" rel="tag">操作系统 Hackintosh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 学习 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">操作系统 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" rel="tag">操作系统 笔记 学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" rel="tag">汇编 QEMU 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" rel="tag">汇编 QEMU CM3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" rel="tag">矩阵 线性代数 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" rel="tag">离散数学 数学 关系 集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" rel="tag">离散数学 数学 逻辑推理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">笔记 学习 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode/" rel="tag">算法 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">算法 leetcode 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">算法 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" rel="tag">算法 数据结构 哈希算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" rel="tag">系统调用 mmap 文件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">翻译 xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">链表 c语言 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">链表 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" rel="tag">链表 数据结构 算法</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" style="font-size: 10px;">CM3 汇编 QEMU</a> <a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" style="font-size: 10px;">MIT 6.S081 学习 笔记 xv6</a> <a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" style="font-size: 10px;">NP 数学 信息学</a> <a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Shell 学习 笔记</a> <a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" style="font-size: 10px;">Web 内网穿透</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/c-debugger/" style="font-size: 15px;">c++ debugger</a> <a href="/tags/c-linux/" style="font-size: 10px;">c++ linux</a> <a href="/tags/c-lldb/" style="font-size: 11.67px;">c++ lldb</a> <a href="/tags/c-lldb-debugger/" style="font-size: 11.67px;">c++ lldb debugger</a> <a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 11.67px;">c++ 多线程</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 18.33px;">c++ 开发语言</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">c++ 开发语言 学习 笔记</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 c++ 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" style="font-size: 10px;">c语言 开发语言 命令行工具 个人记录</a> <a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" style="font-size: 10px;">docker 系统编程 tips</a> <a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" style="font-size: 10px;">docker 网络 容器</a> <a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">gin Context golang Web 网络</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">golang 前端 gin 服务器</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 11.67px;">golang 前端 数据库</a> <a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">golang 后端 前端 网络</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 后端</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 算法 后端</a> <a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 服务器 后端</a> <a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">golang 爬虫 开发语言</a> <a href="/tags/java-jvm-servlet/" style="font-size: 10px;">java jvm servlet</a> <a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java jvm 开发语言</a> <a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">java jvm 算法</a> <a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java 开发语言</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95/" style="font-size: 11.67px;">leetcode 算法</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 15px;">leetcode 算法 数据结构</a> <a href="/tags/linux/" style="font-size: 11.67px;">linux</a> <a href="/tags/linux-c/" style="font-size: 11.67px;">linux c++</a> <a href="/tags/linux-c-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">linux c++ 算法</a> <a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">linux unix 服务器 网络</a> <a href="/tags/linux-vscode-macos-c/" style="font-size: 10px;">linux vscode macos c++</a> <a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">linux 服务器 运维</a> <a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">macos linux 服务器</a> <a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" style="font-size: 10px;">macos 汇编 DOSBox 8086</a> <a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">redis bootstrap 数据库</a> <a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">rust 开发语言 后端</a> <a href="/tags/ubuntu-golang-linux/" style="font-size: 10px;">ubuntu golang linux</a> <a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" style="font-size: 10px;">ubuntu 阿里云 网络 网络工具</a> <a href="/tags/unix-linux-udp/" style="font-size: 10px;">unix linux udp</a> <a href="/tags/vscode-ide-macos-c/" style="font-size: 10px;">vscode ide macos c++</a> <a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">wireshark 网络 服务器</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 OS 学习 笔记</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 学习 笔记 操作系统</a> <a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 操作系统</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 操作系统 OS 笔记</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">xv6 操作系统 笔记 翻译</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" style="font-size: 11.67px;">前端 golang gin</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">图论 离散数学 代数系统</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">图论 离散数学 特殊的图 数学</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" style="font-size: 10px;">学习 笔记 OS xv6</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" style="font-size: 10px;">学习 笔记 bash 脚本</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" style="font-size: 10px;">学习 笔记 xv6 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 13.33px;">学习 笔记 xv6 OS 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">学习 笔记 xv6 OS 操作系统 文件系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 11.67px;">学习 笔记 xv6 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 xv6 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 MIT 6.S081</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 xv6 MIT 6.S081</a> <a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" style="font-size: 10px;">总结 个人总结</a> <a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" style="font-size: 10px;">抽象代数</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" style="font-size: 10px;">操作系统 Hackintosh</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 11.67px;">操作系统 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">操作系统 学习 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">操作系统 学习 笔记</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">操作系统 笔记 学习</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" style="font-size: 10px;">汇编 QEMU 8086</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" style="font-size: 10px;">汇编 QEMU CM3</a> <a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">矩阵 线性代数 算法</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" style="font-size: 10px;">离散数学 数学 关系 集合</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" style="font-size: 10px;">离散数学 数学 逻辑推理</a> <a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">笔记 学习 xv6 操作系统 OS</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode/" style="font-size: 10px;">算法 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16.67px;">算法 leetcode 数据结构</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 18.33px;">算法 数据结构 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法 数据结构 哈希算法</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" style="font-size: 10px;">系统调用 mmap 文件</a> <a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">翻译 xv6 OS 学习 笔记 操作系统</a> <a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 10px;">链表 c语言 数据结构</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 11.67px;">链表 数据结构 leetcode</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" style="font-size: 13.33px;">链表 数据结构 算法</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">May 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">March 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">December 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">November 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.05 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.02 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.30 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.29 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/2024.06.28%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.28 刷题日记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Course Shell of Missing Semester（一） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="〇、前言本文是 The Missing Semester of Your CS Education 课程的课后题答案，课程网站点击这里，以后系列文章不再描述前言。 本文实验环境：阿里云Ubuntu 22.04 Course shell1、本课程需要使用类Unix shell，例如 Bash 或 ZSH。如果您在 Linux 或者 MacOS 上面完成本课程的练习，则不需要做任何特殊的操作。如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Course Shell of Missing Semester（一）">
+<meta property="og:url" content="http://example.com/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="〇、前言本文是 The Missing Semester of Your CS Education 课程的课后题答案，课程网站点击这里，以后系列文章不再描述前言。 本文实验环境：阿里云Ubuntu 22.04 Course shell1、本课程需要使用类Unix shell，例如 Bash 或 ZSH。如果您在 Linux 或者 MacOS 上面完成本课程的练习，则不需要做任何特殊的操作。如果">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-12-22T13:42:32.000Z">
+<meta property="article:modified_time" content="2024-07-06T06:10:16.341Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Shell 学习 笔记">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Course Shell of Missing Semester（一）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2023-12-22T13:42:32.000Z" itemprop="datePublished">2023-12-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Missing-Semester/">Missing Semester</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Course Shell of Missing Semester（一）
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文是 <strong>The Missing Semester of Your CS Education</strong> 课程的课后题答案，课程网站点击<a target="_blank" rel="noopener" href="https://missing.csail.mit.edu/">这里</a>，以后系列文章不再描述<strong>前言</strong>。</p>
+<p>本文实验环境：<strong>阿里云Ubuntu 22.04</strong></p>
+<h2 id="Course-shell"><a href="#Course-shell" class="headerlink" title="Course shell"></a>Course shell</h2><h3 id="1、本课程需要使用类Unix-shell，例如-Bash-或-ZSH。如果您在-Linux-或者-MacOS-上面完成本课程的练习，则不需要做任何特殊的操作。如果您使用的是-Windows，则您不应该使用-cmd-或是-Powershell；您可以使用Windows-Subsystem-for-Linux或者是-Linux-虚拟机。使用echo-SHELL命令可以查看您的-shell-是否满足要求。如果打印结果为-bin-bash或-usr-bin-zsh则是可以的"><a href="#1、本课程需要使用类Unix-shell，例如-Bash-或-ZSH。如果您在-Linux-或者-MacOS-上面完成本课程的练习，则不需要做任何特殊的操作。如果您使用的是-Windows，则您不应该使用-cmd-或是-Powershell；您可以使用Windows-Subsystem-for-Linux或者是-Linux-虚拟机。使用echo-SHELL命令可以查看您的-shell-是否满足要求。如果打印结果为-bin-bash或-usr-bin-zsh则是可以的" class="headerlink" title="1、本课程需要使用类Unix shell，例如 Bash 或 ZSH。如果您在 Linux 或者 MacOS 上面完成本课程的练习，则不需要做任何特殊的操作。如果您使用的是 Windows，则您不应该使用 cmd 或是 Powershell；您可以使用Windows Subsystem for Linux或者是 Linux 虚拟机。使用echo $SHELL命令可以查看您的 shell 是否满足要求。如果打印结果为&#x2F;bin&#x2F;bash或&#x2F;usr&#x2F;bin&#x2F;zsh则是可以的"></a>1、本课程需要使用类Unix shell，例如 Bash 或 ZSH。如果您在 Linux 或者 MacOS 上面完成本课程的练习，则不需要做任何特殊的操作。如果您使用的是 Windows，则您不应该使用 cmd 或是 Powershell；您可以使用Windows Subsystem for Linux或者是 Linux 虚拟机。使用echo $SHELL命令可以查看您的 shell 是否满足要求。如果打印结果为&#x2F;bin&#x2F;bash或&#x2F;usr&#x2F;bin&#x2F;zsh则是可以的</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="variable">$SHELL</span></span><br><span class="line">/bin/bash</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、在-tmp-下新建一个名为-missing-的文件夹"><a href="#2、在-tmp-下新建一个名为-missing-的文件夹" class="headerlink" title="2、在 &#x2F;tmp 下新建一个名为 missing 的文件夹"></a>2、在 &#x2F;tmp 下新建一个名为 missing 的文件夹</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> /tmp/missing</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、用-man-查看程序-touch-的使用手册"><a href="#3、用-man-查看程序-touch-的使用手册" class="headerlink" title="3、用 man 查看程序 touch 的使用手册"></a>3、用 man 查看程序 touch 的使用手册</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man <span class="built_in">touch</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4、用-touch-在-missing-文件夹中新建一个叫-semester-的文件"><a href="#4、用-touch-在-missing-文件夹中新建一个叫-semester-的文件" class="headerlink" title="4、用 touch 在 missing 文件夹中新建一个叫 semester 的文件"></a>4、用 touch 在 missing 文件夹中新建一个叫 semester 的文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> /tmp/missing/semester</span><br></pre></td></tr></table></figure>
+
+<h3 id="5、将以下内容一行一行地写入-semester-文件："><a href="#5、将以下内容一行一行地写入-semester-文件：" class="headerlink" title="5、将以下内容一行一行地写入 semester 文件："></a>5、将以下内容一行一行地写入 semester 文件：</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/sh</span></span><br><span class="line"><span class="built_in">curl</span> <span class="literal">--head</span> <span class="literal">--silent</span> https://missing.csail.mit.edu</span><br></pre></td></tr></table></figure>
+<p>直接运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;#!/bin/sh</span></span><br><span class="line"><span class="string"> curl --head --silent https://missing.csail.mit.edu&#x27;</span> &gt; /tmp/missing/semester</span><br></pre></td></tr></table></figure>
+<h3 id="6、尝试执行这个文件。例如，将该脚本的路径（-semester）输入到您的shell中并回车。如果程序无法执行，请使用-ls-命令来获取信息并理解其不能执行的原因"><a href="#6、尝试执行这个文件。例如，将该脚本的路径（-semester）输入到您的shell中并回车。如果程序无法执行，请使用-ls-命令来获取信息并理解其不能执行的原因" class="headerlink" title="6、尝试执行这个文件。例如，将该脚本的路径（.&#x2F;semester）输入到您的shell中并回车。如果程序无法执行，请使用 ls 命令来获取信息并理解其不能执行的原因"></a>6、尝试执行这个文件。例如，将该脚本的路径（.&#x2F;semester）输入到您的shell中并回车。如果程序无法执行，请使用 ls 命令来获取信息并理解其不能执行的原因</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./semester</span><br><span class="line">bash: ./semester: No such file or directory</span><br></pre></td></tr></table></figure>
+<p>这肯定不能运行的，因为当前目录是 <strong>home</strong> <code>~</code>，应该首先切换到目标文件得目录或者输入完整目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/tmp/missing/semester</span><br><span class="line">bash: /tmp/missing/semester: Permission denied</span><br></pre></td></tr></table></figure>
+<p>没有权限，这很正常。</p>
+<h3 id="7、查看-chmod-的手册-例如，使用-man-chmod-命令"><a href="#7、查看-chmod-的手册-例如，使用-man-chmod-命令" class="headerlink" title="7、查看 chmod 的手册(例如，使用 man chmod 命令)"></a>7、查看 chmod 的手册(例如，使用 man chmod 命令)</h3><h3 id="8、使用-chmod-命令改变权限，使-semester-能够成功执行，不要使用-sh-semester-来执行该程序。您的-shell-是如何知晓这个文件需要使用-sh-来解析呢？"><a href="#8、使用-chmod-命令改变权限，使-semester-能够成功执行，不要使用-sh-semester-来执行该程序。您的-shell-是如何知晓这个文件需要使用-sh-来解析呢？" class="headerlink" title="8、使用 chmod 命令改变权限，使 .&#x2F;semester 能够成功执行，不要使用 sh semester 来执行该程序。您的 shell 是如何知晓这个文件需要使用 sh 来解析呢？"></a>8、使用 chmod 命令改变权限，使 .&#x2F;semester 能够成功执行，不要使用 sh semester 来执行该程序。您的 shell 是如何知晓这个文件需要使用 sh 来解析呢？</h3><p>加执行权限执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x /tmp/missing/semester</span><br><span class="line"></span><br><span class="line">/tmp/missing/semester</span><br><span class="line"></span><br><span class="line">HTTP/2 200</span><br><span class="line">server: GitHub.com</span><br><span class="line">content-type: text/html; charset=utf-8</span><br><span class="line">last-modified: Wed, 29 Nov 2023 09:35:41 GMT</span><br><span class="line">access-control-allow-origin: *</span><br><span class="line">etag: <span class="string">&quot;656705ed-2015&quot;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>执行成功。</p>
+<p>这个脚本：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/sh</span></span><br><span class="line"> <span class="built_in">curl</span> <span class="literal">--head</span> <span class="literal">--silent</span> https://missing.csail.mit.edu</span><br></pre></td></tr></table></figure>
+<p>第一行表明脚本解释器为：<code>/bin/sh</code>，看看 <code>bin</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> /bin | grep sh</span><br><span class="line">sh</span><br><span class="line"><span class="built_in">sha1sum</span></span><br><span class="line"><span class="built_in">sha224sum</span></span><br><span class="line"><span class="built_in">sha256sum</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>其中，<strong>sh</strong> 就是指定的脚本解释器。</p>
+<p>这里需要注意的是，有多种方式执行这个脚本，但是归根结底分为两类：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">. /tmp/missing/semester</span><br><span class="line">/tmp/missing/semester</span><br></pre></td></tr></table></figure>
+<p>前一种，指明在当前 shell 中执行，后一种会打开一个子 shell，然后在子 shell 中执行这个脚本。这意味着，如果我们在当前 shell 中执行脚本，无需用 <strong>shebang</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> /tmp/missing/semester1</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;curl --head --silent https://missing.csail.mit.edu&#x27;</span> &gt; /tmp/missing/semester1</span><br><span class="line">. /tmp/missing/semester1</span><br><span class="line">HTTP/2 200</span><br><span class="line">server: GitHub.com</span><br><span class="line">content-type: text/html; charset=utf-8</span><br><span class="line">last-modified: Wed, 29 Nov 2023 09:35:41 GMT</span><br><span class="line">access-control-allow-origin: *</span><br><span class="line">etag: <span class="string">&quot;656705ed-2015&quot;</span></span><br><span class="line">expires: Fri, 22 Dec 2023 13:19:52 GMT</span><br><span class="line">cache-control: max-age=600</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>它为什么能运行成功？它没有执行权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l /tmp/missing/</span><br><span class="line">total 8</span><br><span class="line">-rwxr-xr-x 1 root root 62 Dec 22 21:04 semester</span><br><span class="line">-rw-r--r-- 1 root root 53 Dec 22 21:18 semester1</span><br></pre></td></tr></table></figure>
+
+<p>如果使用 <code>.</code> 命令（或 <code>source</code> 命令）来执行脚本，即使脚本没有执行权限，也可以成功执行。</p>
+<p>这是因为 <code>.</code> 命令是在当前shell中执行脚本，而不是通过创建子shell来执行。当使用 <code>.</code> 命令执行脚本时，脚本中的命令将直接在当前shell中运行，而不需要执行权限。</p>
+<p>相比之下，如果您直接运行脚本（例如 <code>./semester1</code>），则需要确保脚本具有执行权限，否则会出现权限错误。因此，如果您希望在没有执行权限的情况下执行脚本，可以使用 <code>.</code> 命令或 <code>source</code> 命令来运行它。<strong>换句话说，当用 shebang 指定解释器后，我们希望这个脚本像一个命令那样自然得运行；不用 shebang 指定解释器时，它完全就是一段文本，当然不需要什么执行权限了</strong>。当然，本质依然是，子<strong>shell</strong> 执行需要执行权限。</p>
+<h3 id="9、使用-和-，将-semester-文件输出的最后更改日期信息，写入主目录下的-last-modified-txt-的文件中"><a href="#9、使用-和-，将-semester-文件输出的最后更改日期信息，写入主目录下的-last-modified-txt-的文件中" class="headerlink" title="9、使用 | 和 &gt; ，将 semester 文件输出的最后更改日期信息，写入主目录下的 last-modified.txt 的文件中"></a>9、使用 | 和 &gt; ，将 semester 文件输出的最后更改日期信息，写入主目录下的 last-modified.txt 的文件中</h3><p>获取最后修改时间：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">stat</span> -c %y /tmp/missing/semester</span><br><span class="line">2023-12-22 21:04:37.621639025 +0800</span><br></pre></td></tr></table></figure>
+<p>用重定向符追加到 <code>/tmp/missing/last-modified.txt</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">stat</span> -c %y /tmp/missing/semester &gt;&gt; /tmp/missing/last-modified.txt</span><br></pre></td></tr></table></figure>
+
+<p>确实增加进去了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /tmp/missing/last-modified.txt</span><br><span class="line">2023-12-22 21:04:37.621639025 +0800</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="总结（大模型总结）"><a href="#总结（大模型总结）" class="headerlink" title="总结（大模型总结）"></a>总结（大模型总结）</h2><p>这个实验是一个很好的 <strong>Unix shell</strong> 基础练习，涉及文件操作、权限管理和 <strong>shell</strong>脚本的执行。主要涵盖了以下内容：</p>
+<ol>
+<li>创建文件夹及文件，查看文件的使用手册，修改文件权限以及文件执行。</li>
+<li>使用<strong>chmod</strong>命令改变文件权限，使其具有执行权限。</li>
+<li>使用<strong>shebang</strong>指定脚本解释器，理解不同方式执行脚本的区别。</li>
+<li>了解子<strong>shell</strong>执行脚本时的权限要求，以及如何使用<code>.</code>命令或<code>source</code>命令执行没有执行权限的脚本。</li>
+<li>使用<code>|</code>和<code>&gt;</code>操作符将文件输出结果追加到另一个文件中，实现信息提取和写入文件。</li>
+</ol>
+<p>这些操作涵盖了 <strong>Unix shell</strong> 常见的文件操作和权限管理知识点，对于熟悉 <strong>Unix&#x2F;Linux</strong> 系统的基本操作和 <strong>shell</strong> 脚本的编写都有很好的帮助。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/" data-id="cly9q78gp003kdyr65taudduq" data-title="Course Shell of Missing Semester（一）" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">Shell 学习 笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/12/23/Shell%20Tools%20of%20Missing%20Semester%EF%BC%88%E4%BA%8C%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Shell Tools of Missing Semester（二）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/12/21/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MIT 6.S081学习笔记（第八章）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/8086/">8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-debugger/">C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/CM3/">CM3</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6/">Golang Golang_框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6-Web/">Golang Golang_框架 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Web/">Golang Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF/">Golang 前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF-Web/">Golang 前端 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LeetCode/">LeetCode</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Missing-Semester/">Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-OS-Web/">NetWork OS Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-Web/">NetWork Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-Unix-Linux/">OS Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">OS 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Personal-Summary/">Personal_Summary</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools/">Some_Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Golang-Unix-Linux/">Some_Tools Golang Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Missing-Semester/">Some_Tools Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tests-for-Basic-Knowledge-of-C/">Tests for Basic Knowledge of C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Things-about-C/">Things about C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/socket-Web-Unix-Linux/">socket Web Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80-%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97%E5%AF%BC%E8%AE%BA/">代数基础 量子计算导论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">教师工资管理系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/">离散数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">离散数学 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C-debugger/">系统编程 C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C%E8%AF%AD%E8%A8%80/">系统编程 C语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-8086/">经验方法 8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-C/">经验方法 C++</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" rel="tag">CM3 汇编 QEMU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" rel="tag">MIT 6.S081 学习 笔记 xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag">NP 数学 信息学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">Shell 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" rel="tag">Web 内网穿透</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-debugger/" rel="tag">c++ debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-linux/" rel="tag">c++ linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb/" rel="tag">c++ lldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb-debugger/" rel="tag">c++ lldb debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">c++ 多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">c++ 开发语言 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" rel="tag">c语言 开发语言 命令行工具 个人记录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" rel="tag">docker 系统编程 tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" rel="tag">docker 网络 容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" rel="tag">gin Context golang Web 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">golang 前端 gin 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">golang 前端 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" rel="tag">golang 后端 前端 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 算法 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" rel="tag">golang 服务器 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">golang 爬虫 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-servlet/" rel="tag">java jvm servlet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java jvm 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" rel="tag">java jvm 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95/" rel="tag">leetcode 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">leetcode 算法 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c/" rel="tag">linux c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c-%E7%AE%97%E6%B3%95/" rel="tag">linux c++ 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" rel="tag">linux unix 服务器 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-vscode-macos-c/" rel="tag">linux vscode macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" rel="tag">linux 服务器 运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">macos linux 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" rel="tag">macos 汇编 DOSBox 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">redis bootstrap 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">rust 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-golang-linux/" rel="tag">ubuntu golang linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" rel="tag">ubuntu 阿里云 网络 网络工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unix-linux-udp/" rel="tag">unix linux udp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode-ide-macos-c/" rel="tag">vscode ide macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">wireshark 网络 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 OS 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 操作系统 OS 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" rel="tag">xv6 操作系统 笔记 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%B6%E4%BB%96/" rel="tag">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" rel="tag">前端 golang gin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" rel="tag">图论 离散数学 代数系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" rel="tag">图论 离散数学 特殊的图 数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" rel="tag">学习 笔记 OS xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" rel="tag">学习 笔记 bash 脚本</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" rel="tag">学习 笔记 xv6 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统 文件系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" rel="tag">学习 笔记 操作系统 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" rel="tag">学习 笔记 操作系统 xv6 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" rel="tag">总结 个人总结</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" rel="tag">抽象代数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" rel="tag">操作系统 Hackintosh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 学习 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">操作系统 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" rel="tag">操作系统 笔记 学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" rel="tag">汇编 QEMU 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" rel="tag">汇编 QEMU CM3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" rel="tag">矩阵 线性代数 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" rel="tag">离散数学 数学 关系 集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" rel="tag">离散数学 数学 逻辑推理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">笔记 学习 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode/" rel="tag">算法 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">算法 leetcode 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">算法 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" rel="tag">算法 数据结构 哈希算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" rel="tag">系统调用 mmap 文件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">翻译 xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">链表 c语言 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">链表 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" rel="tag">链表 数据结构 算法</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" style="font-size: 10px;">CM3 汇编 QEMU</a> <a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" style="font-size: 10px;">MIT 6.S081 学习 笔记 xv6</a> <a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" style="font-size: 10px;">NP 数学 信息学</a> <a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Shell 学习 笔记</a> <a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" style="font-size: 10px;">Web 内网穿透</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/c-debugger/" style="font-size: 15px;">c++ debugger</a> <a href="/tags/c-linux/" style="font-size: 10px;">c++ linux</a> <a href="/tags/c-lldb/" style="font-size: 11.67px;">c++ lldb</a> <a href="/tags/c-lldb-debugger/" style="font-size: 11.67px;">c++ lldb debugger</a> <a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 11.67px;">c++ 多线程</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 18.33px;">c++ 开发语言</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">c++ 开发语言 学习 笔记</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 c++ 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" style="font-size: 10px;">c语言 开发语言 命令行工具 个人记录</a> <a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" style="font-size: 10px;">docker 系统编程 tips</a> <a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" style="font-size: 10px;">docker 网络 容器</a> <a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">gin Context golang Web 网络</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">golang 前端 gin 服务器</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 11.67px;">golang 前端 数据库</a> <a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">golang 后端 前端 网络</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 后端</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 算法 后端</a> <a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 服务器 后端</a> <a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">golang 爬虫 开发语言</a> <a href="/tags/java-jvm-servlet/" style="font-size: 10px;">java jvm servlet</a> <a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java jvm 开发语言</a> <a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">java jvm 算法</a> <a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java 开发语言</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95/" style="font-size: 11.67px;">leetcode 算法</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 15px;">leetcode 算法 数据结构</a> <a href="/tags/linux/" style="font-size: 11.67px;">linux</a> <a href="/tags/linux-c/" style="font-size: 11.67px;">linux c++</a> <a href="/tags/linux-c-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">linux c++ 算法</a> <a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">linux unix 服务器 网络</a> <a href="/tags/linux-vscode-macos-c/" style="font-size: 10px;">linux vscode macos c++</a> <a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">linux 服务器 运维</a> <a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">macos linux 服务器</a> <a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" style="font-size: 10px;">macos 汇编 DOSBox 8086</a> <a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">redis bootstrap 数据库</a> <a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">rust 开发语言 后端</a> <a href="/tags/ubuntu-golang-linux/" style="font-size: 10px;">ubuntu golang linux</a> <a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" style="font-size: 10px;">ubuntu 阿里云 网络 网络工具</a> <a href="/tags/unix-linux-udp/" style="font-size: 10px;">unix linux udp</a> <a href="/tags/vscode-ide-macos-c/" style="font-size: 10px;">vscode ide macos c++</a> <a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">wireshark 网络 服务器</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 OS 学习 笔记</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 学习 笔记 操作系统</a> <a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 操作系统</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 操作系统 OS 笔记</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">xv6 操作系统 笔记 翻译</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" style="font-size: 11.67px;">前端 golang gin</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">图论 离散数学 代数系统</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">图论 离散数学 特殊的图 数学</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" style="font-size: 10px;">学习 笔记 OS xv6</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" style="font-size: 10px;">学习 笔记 bash 脚本</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" style="font-size: 10px;">学习 笔记 xv6 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 13.33px;">学习 笔记 xv6 OS 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">学习 笔记 xv6 OS 操作系统 文件系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 11.67px;">学习 笔记 xv6 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 xv6 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 MIT 6.S081</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 xv6 MIT 6.S081</a> <a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" style="font-size: 10px;">总结 个人总结</a> <a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" style="font-size: 10px;">抽象代数</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" style="font-size: 10px;">操作系统 Hackintosh</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 11.67px;">操作系统 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">操作系统 学习 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">操作系统 学习 笔记</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">操作系统 笔记 学习</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" style="font-size: 10px;">汇编 QEMU 8086</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" style="font-size: 10px;">汇编 QEMU CM3</a> <a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">矩阵 线性代数 算法</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" style="font-size: 10px;">离散数学 数学 关系 集合</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" style="font-size: 10px;">离散数学 数学 逻辑推理</a> <a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">笔记 学习 xv6 操作系统 OS</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode/" style="font-size: 10px;">算法 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16.67px;">算法 leetcode 数据结构</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 18.33px;">算法 数据结构 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法 数据结构 哈希算法</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" style="font-size: 10px;">系统调用 mmap 文件</a> <a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">翻译 xv6 OS 学习 笔记 操作系统</a> <a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 10px;">链表 c语言 数据结构</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 11.67px;">链表 数据结构 leetcode</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" style="font-size: 13.33px;">链表 数据结构 算法</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">May 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">March 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">December 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">November 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.05 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.02 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.30 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.29 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/2024.06.28%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.28 刷题日记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

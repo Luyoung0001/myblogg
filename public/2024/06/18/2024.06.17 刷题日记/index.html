@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>2024.06.17 刷题日记 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="42. 接雨水这道题的关键点是基于贪心策略，同时设置双指针，left_max 追踪左边的最大值 height[left]，right_max 同理。如果 height[left] &lt; height[right]，那么就可以收集雨水，雨水量为 water +&#x3D; left_max - height[left]，同时右移左指针；反之同理： 1234567891011121314151">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024.06.17 刷题日记">
+<meta property="og:url" content="http://example.com/2024/06/18/2024.06.17%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="42. 接雨水这道题的关键点是基于贪心策略，同时设置双指针，left_max 追踪左边的最大值 height[left]，right_max 同理。如果 height[left] &lt; height[right]，那么就可以收集雨水，雨水量为 water +&#x3D; left_max - height[left]，同时右移左指针；反之同理： 1234567891011121314151">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-06-18T09:27:55.000Z">
+<meta property="article:modified_time" content="2024-07-06T06:10:16.341Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="算法 数据结构 leetcode">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2024.06.17 刷题日记" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/06/18/2024.06.17%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" class="article-date">
+  <time class="dt-published" datetime="2024-06-18T09:27:55.000Z" itemprop="datePublished">2024-06-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/LeetCode/">LeetCode</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      2024.06.17 刷题日记
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <span id="more"></span>
+
+<h2 id="42-接雨水"><a href="#42-接雨水" class="headerlink" title="42. 接雨水"></a>42. 接雨水</h2><p>这道题的关键点是基于贪心策略，同时设置双指针，left_max 追踪左边的最大值 height[left]，right_max 同理。如果 height[left] &lt; height[right]，那么就可以收集雨水，雨水量为 water +&#x3D; left_max - height[left]，同时右移左指针；反之同理：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">trap</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; height)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> left_max = <span class="number">0</span>, right_max = <span class="number">0</span>, water = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> left = <span class="number">0</span>, right = height.<span class="built_in">size</span>()<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">while</span> (left &lt; right) &#123;</span><br><span class="line">            left_max = <span class="built_in">max</span>(height[left], left_max);</span><br><span class="line">            right_max = <span class="built_in">max</span>(height[right], right_max);</span><br><span class="line">            <span class="keyword">if</span> (height[left] &lt; height[right]) &#123;</span><br><span class="line">                water += left_max - height[left];</span><br><span class="line">                ++left;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                water += right_max - height[right];</span><br><span class="line">                --right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> water;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="3-无重复字符的最长子串"><a href="#3-无重复字符的最长子串" class="headerlink" title="3. 无重复字符的最长子串"></a>3. 无重复字符的最长子串</h2><p>这道题目还是双指针，右指针用来探索是否和现在维护的子串重复。如果重复，就更新现有窗口，将 left 更新为最靠右的值：即重复的位置的下一个位置。然后将右指针指的值收集起来，更新最大长度：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 滑动窗口</span></span><br><span class="line">        <span class="type">int</span> len = s.<span class="built_in">length</span>(), left = <span class="number">0</span>, right = <span class="number">0</span>;</span><br><span class="line">        unordered_map&lt;<span class="type">char</span>, <span class="type">int</span>&gt; map;</span><br><span class="line">        <span class="type">int</span> maxLen = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (; right &lt; len; right++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (map.<span class="built_in">find</span>(s[right]) != map.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                <span class="comment">// 如果找到了，就更新 left</span></span><br><span class="line">                <span class="comment">// 更新 left 到最右的位置：</span></span><br><span class="line">                <span class="comment">// 出现的位置的下一个位置,这主要是为了忽略它</span></span><br><span class="line">                left = <span class="built_in">max</span>(left, map[s[right]] + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            map[s[right]] = right;</span><br><span class="line">            maxLen = <span class="built_in">max</span>(maxLen, right - left + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxLen;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="438-找到字符串中所有字母异位词"><a href="#438-找到字符串中所有字母异位词" class="headerlink" title="438. 找到字符串中所有字母异位词"></a>438. 找到字符串中所有字母异位词</h2><p>这道题目的思路是，等宽窗口，利用哈希化的 vector 来进行判断是否是异位词。首先收集目标串的各频率，然后在 s 中滑动窗口，窗口大小为 p 的长度。如果 right - left + 1 &#x3D;&#x3D; len &amp;&amp; sv &#x3D;&#x3D; pv，就把 left 收集到答案，然后移动 left：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">findAnagrams</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">pv</span><span class="params">(<span class="number">26</span>, <span class="number">0</span>)</span>, <span class="title">sv</span><span class="params">(<span class="number">26</span>, <span class="number">0</span>)</span>, res</span>;</span><br><span class="line">        <span class="keyword">if</span> (s.<span class="built_in">size</span>() &lt; p.<span class="built_in">size</span>())</span><br><span class="line">            <span class="keyword">return</span> res; <span class="comment">// 若 s 的长度小于 p，则直接返回空结果</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 先计算 p 中各字符的频率</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> c : p)</span><br><span class="line">            pv[c - <span class="string">&#x27;a&#x27;</span>]++;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 开始在 s 中滑动窗口，窗口大小和 p 的长度相同</span></span><br><span class="line">        <span class="type">int</span> left = <span class="number">0</span>, right = <span class="number">0</span>, len = p.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">while</span> (right &lt; s.<span class="built_in">size</span>()) &#123;</span><br><span class="line">            <span class="comment">// 增加右边新字符的计数</span></span><br><span class="line">            sv[s[right] - <span class="string">&#x27;a&#x27;</span>]++;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 当窗口大小等于 p 的长度时，比较两个向量</span></span><br><span class="line">            <span class="keyword">if</span> (right - left + <span class="number">1</span> == len) &#123;</span><br><span class="line">                <span class="keyword">if</span> (pv == sv)</span><br><span class="line">                    res.<span class="built_in">push_back</span>(left);  <span class="comment">// 如果匹配，记录当前左索引</span></span><br><span class="line">                <span class="comment">// 移动窗口前，减少左边字符的计数</span></span><br><span class="line">                sv[s[left] - <span class="string">&#x27;a&#x27;</span>]--;</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">            right++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="560-和为-K-的子数组"><a href="#560-和为-K-的子数组" class="headerlink" title="560. 和为 K 的子数组"></a>560. 和为 K 的子数组</h2><p>这个题目用了前缀和的思路，如果在前缀和中找到了前缀和-k ，那么就说明前面肯定有一个子数组的和为 k。这是为什么呢？考虑到，a1+a2+a3+a4+…+ak &#x3D; sum，考虑到 prefix_count &#x3D; {a1:a1,a2+a1:a2,a1+a2+a3:a3… sum:ak} 这种模式，如果prefix_count 中存在sum-k的值那么必然有一个子数组的值为 k，比如：</p>
+<h3 id="示例-1："><a href="#示例-1：" class="headerlink" title="示例 1："></a>示例 1：</h3><p>假设有一个数组：<code>arr = [3, 4, -1, 5, 5]</code>，我们想找出子数组之和为 <code>k = 9</code> 的情况。</p>
+<ol>
+<li><p><strong>计算前缀和：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">index:     0   1   2   3   4</span><br><span class="line">arr:       3   4  -1   5   5</span><br><span class="line">prefixSum: 3   7   6  11  16</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>检查前缀和差值是否为 9：</strong></p>
+<ul>
+<li>从 <code>prefixSum[3]</code> 到 <code>prefixSum[1]</code>，差值为 <code>11 - 7 = 4</code>。</li>
+<li>因此，<code>arr[2]</code> 到 <code>arr[3]</code> 的子数组和为 <code>(-1) + 5 = 4</code>，这不是我们想要的结果。</li>
+<li>但检查更进一步，<code>prefixSum[4]</code> 减去 <code>prefixSum[1]</code> 也是 9 (<code>16 - 7 = 9</code>)，这表明 <code>arr[2]</code> 到 <code>arr[4]</code> 的子数组和是 <code>-1 + 5 + 5 = 9</code>，正是我们想找的。</li>
+</ul>
+</li>
+</ol>
+<h3 id="示例-2："><a href="#示例-2：" class="headerlink" title="示例 2："></a>示例 2：</h3><p>假设有另一个数组：<code>arr = [1, 2, 3, 4, 5]</code>，我们想找出子数组之和为 <code>k = 9</code> 的情况。</p>
+<ol>
+<li><p><strong>计算前缀和：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">index:     0   1   2   3   4</span><br><span class="line">arr:       1   2   3   4   5</span><br><span class="line">prefixSum: 1   3   6  10  15</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>检查前缀和差值是否为 9：</strong></p>
+<ul>
+<li>从 <code>prefixSum[4]</code> 到 <code>prefixSum[1]</code>，差值为 <code>15 - 6 = 9</code>。</li>
+<li>因此，<code>arr[2]</code> 到 <code>arr[4]</code> 的子数组和为 <code>3 + 4 + 5 = 12</code>，但这不是我们想要的。</li>
+<li>但检查 <code>prefixSum[3]</code> 到 <code>prefixSum[0]</code> 的差值，差值为 <code>10 - 1 = 9</code>，这表明 <code>arr[1]</code> 到 <code>arr[3]</code> 的子数组和是 <code>2 + 3 + 4 = 9</code>，正是我们需要的。</li>
+</ul>
+</li>
+</ol>
+<p>通过这种方法，我们可以高效地通过<strong>维护一个前缀和数组并查找差值来确定是否存在特定的子数组之和</strong>。这种方法的复杂度通常是线性的，特别是当我们使用哈希表来存储前缀和及其出现的次数时，可以进一步优化查找过程。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">subarraySum</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; prefix_count;</span><br><span class="line">        prefix_count[<span class="number">0</span>] =</span><br><span class="line">            <span class="number">1</span>; <span class="comment">// 初始化，前缀和为0的情况有一个（考虑从头开始的子数组）</span></span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> current_sum = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> num : nums) &#123;</span><br><span class="line">            current_sum += num; <span class="comment">// 更新当前前缀和</span></span><br><span class="line">            <span class="comment">// 检查是否存在之前的前缀和，使得 current_sum - 前缀和 = k</span></span><br><span class="line">            <span class="keyword">if</span> (prefix_count.<span class="built_in">find</span>(current_sum - k) != prefix_count.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                count += prefix_count[current_sum - k];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 更新当前前缀和的计数</span></span><br><span class="line">            prefix_count[current_sum]++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="239-滑动窗口最大值"><a href="#239-滑动窗口最大值" class="headerlink" title="239. 滑动窗口最大值"></a>239. 滑动窗口最大值</h2><p>这道题目的思路是用双端队列，队列中存储的是下标，如果超出范围就将队首元素踢掉；如果当前值比队尾大，就一直弹出元素，然后插入。当窗口和 k 一样大的时候，就可以收集结果了：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">maxSlidingWindow</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 双端队列</span></span><br><span class="line">        deque&lt;<span class="type">int</span>&gt; que;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">            <span class="comment">// 如果超出范围，直接踢掉</span></span><br><span class="line">            <span class="keyword">if</span> (!que.<span class="built_in">empty</span>() &amp;&amp; que.<span class="built_in">front</span>() == i - k) &#123;</span><br><span class="line">                que.<span class="built_in">pop_front</span>();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果当前值比队尾大，一直弹出，直到小于等于</span></span><br><span class="line">            <span class="keyword">while</span> (!que.<span class="built_in">empty</span>() &amp;&amp; nums[que.<span class="built_in">back</span>()] &lt; nums[i]) &#123;</span><br><span class="line">                que.<span class="built_in">pop_back</span>();</span><br><span class="line">            &#125;</span><br><span class="line">            que.<span class="built_in">push_back</span>(i);</span><br><span class="line">            <span class="comment">// 收集结果</span></span><br><span class="line">            <span class="keyword">if</span> (i &gt;= k - <span class="number">1</span>)</span><br><span class="line">                ans.<span class="built_in">push_back</span>(nums[que.<span class="built_in">front</span>()]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="总结（gpt4）"><a href="#总结（gpt4）" class="headerlink" title="总结（gpt4）"></a>总结（gpt4）</h2><h3 id="1-接雨水（贪心策略和双指针）"><a href="#1-接雨水（贪心策略和双指针）" class="headerlink" title="1. 接雨水（贪心策略和双指针）"></a>1. 接雨水（贪心策略和双指针）</h3><p>这个问题使用了双指针来确定每个位置上可以积水的量。关键是维护两个指针 <code>left</code> 和 <code>right</code>，以及它们各自的最大值 <code>left_max</code> 和 <code>right_max</code>。根据左右最大值的比较，决定是移动左指针还是右指针，并更新积水量。这种方法利用了贪心的思想，每一步都尽可能多地积水。</p>
+<h3 id="2-无重复字符的最长子串（双指针滑动窗口）"><a href="#2-无重复字符的最长子串（双指针滑动窗口）" class="headerlink" title="2. 无重复字符的最长子串（双指针滑动窗口）"></a>2. 无重复字符的最长子串（双指针滑动窗口）</h3><p>这个问题中，双指针定义了一个可变滑动窗口，用以维护一个没有重复字符的子串。通过右指针探索新字符，并利用哈希表记录字符出现的位置，左指针根据情况进行调整，确保窗口内无重复字符。这个方法在保证了窗口内字符的唯一性的同时，能够动态调整窗口的大小。</p>
+<h3 id="3-找到字符串中所有字母异位词（固定大小的滑动窗口）"><a href="#3-找到字符串中所有字母异位词（固定大小的滑动窗口）" class="headerlink" title="3. 找到字符串中所有字母异位词（固定大小的滑动窗口）"></a>3. 找到字符串中所有字母异位词（固定大小的滑动窗口）</h3><p>通过维持一个固定大小的滑动窗口，以及两个频率向量（哈希化的向量）来比较窗口内的字符串和目标字符串的字符频率是否一致。如果匹配，则记录当前窗口的起始位置。这种方法特别适用于需要在源字符串中找到所有与目标字符串字符组成相同的子串的场景。</p>
+<h3 id="4-和为-K-的子数组（前缀和和哈希表）"><a href="#4-和为-K-的子数组（前缀和和哈希表）" class="headerlink" title="4. 和为 K 的子数组（前缀和和哈希表）"></a>4. 和为 K 的子数组（前缀和和哈希表）</h3><p>利用前缀和来确定子数组的和。如果前缀和中存在 <code>current_sum - k</code>，那么表示存在一个子数组的和为 <code>k</code>。通过哈希表来存储不同前缀和出现的次数，这种方法能够快速检查是否存在满足条件的子数组，并计算这样的子数组出现的次数。</p>
+<h3 id="5-滑动窗口最大值（双端队列）"><a href="#5-滑动窗口最大值（双端队列）" class="headerlink" title="5. 滑动窗口最大值（双端队列）"></a>5. 滑动窗口最大值（双端队列）</h3><p>使用双端队列来维持滑动窗口内的最大值。队列中存储元素的索引，并保持队列的首元素为当前窗口的最大值。通过合理地弹出队尾元素和队首元素，保证队列的有效性和最大值的即时更新。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2024/06/18/2024.06.17%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" data-id="cly9q78fd0005dyr67gsgh143" data-title="2024.06.17 刷题日记" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">算法 数据结构 leetcode</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2024/06/18/2024.06.18%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          2024.06.18 刷题日记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/06/16/2024.06.16%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">2024.06.16 刷题日记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/8086/">8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C/">C++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/C-debugger/">C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/CM3/">CM3</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6/">Golang Golang_框架</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6-Web/">Golang Golang_框架 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-Web/">Golang Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF/">Golang 前端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Golang-%E5%89%8D%E7%AB%AF-Web/">Golang 前端 Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/LeetCode/">LeetCode</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Missing-Semester/">Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork/">NetWork</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-OS-Web/">NetWork OS Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NetWork-Web/">NetWork Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS/">OS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-Unix-Linux/">OS Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/OS-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">OS 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Personal-Summary/">Personal_Summary</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools/">Some_Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Golang-Unix-Linux/">Some_Tools Golang Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Some-Tools-Missing-Semester/">Some_Tools Missing Semester</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tests-for-Basic-Knowledge-of-C/">Tests for Basic Knowledge of C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Things-about-C/">Things about C</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/socket-Web-Unix-Linux/">socket Web Unix/Linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80-%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97%E5%AF%BC%E8%AE%BA/">代数基础 量子计算导论</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">教师工资管理系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/">离散数学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">离散数学 经验方法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C-debugger/">系统编程 C++ debugger</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C%E8%AF%AD%E8%A8%80/">系统编程 C语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-8086/">经验方法 8086</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-C/">经验方法 C++</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" rel="tag">CM3 汇编 QEMU</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" rel="tag">MIT 6.S081 学习 笔记 xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" rel="tag">NP 数学 信息学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">Shell 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" rel="tag">Web 内网穿透</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-debugger/" rel="tag">c++ debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-linux/" rel="tag">c++ linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb/" rel="tag">c++ lldb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-lldb-debugger/" rel="tag">c++ lldb debugger</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">c++ 多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">c++ 开发语言 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 c++ 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">c语言 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" rel="tag">c语言 开发语言 命令行工具 个人记录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" rel="tag">docker 系统编程 tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" rel="tag">docker 网络 容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" rel="tag">gin Context golang Web 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">golang 前端 gin 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">golang 前端 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" rel="tag">golang 后端 前端 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" rel="tag">golang 开发语言 算法 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" rel="tag">golang 服务器 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">golang 爬虫 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-servlet/" rel="tag">java jvm servlet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java jvm 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" rel="tag">java jvm 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" rel="tag">java 开发语言</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95/" rel="tag">leetcode 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">leetcode 算法 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c/" rel="tag">linux c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-c-%E7%AE%97%E6%B3%95/" rel="tag">linux c++ 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" rel="tag">linux unix 服务器 网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-vscode-macos-c/" rel="tag">linux vscode macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" rel="tag">linux 服务器 运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">macos linux 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" rel="tag">macos 汇编 DOSBox 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">redis bootstrap 数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" rel="tag">rust 开发语言 后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-golang-linux/" rel="tag">ubuntu golang linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" rel="tag">ubuntu 阿里云 网络 网络工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unix-linux-udp/" rel="tag">unix linux udp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode-ide-macos-c/" rel="tag">vscode ide macos c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">wireshark 网络 服务器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 OS 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" rel="tag">xv6 操作系统 OS 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" rel="tag">xv6 操作系统 笔记 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%B6%E4%BB%96/" rel="tag">其他</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" rel="tag">前端 golang gin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" rel="tag">图论 离散数学 代数系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" rel="tag">图论 离散数学 特殊的图 数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" rel="tag">学习 笔记 OS xv6</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" rel="tag">学习 笔记 bash 脚本</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" rel="tag">学习 笔记 xv6 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 OS 操作系统 文件系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">学习 笔记 xv6 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" rel="tag">学习 笔记 操作系统 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">学习 笔记 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" rel="tag">学习 笔记 操作系统 xv6 MIT 6.S081</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" rel="tag">总结 个人总结</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" rel="tag">抽象代数</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" rel="tag">操作系统 Hackintosh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" rel="tag">操作系统 学习 xv6 翻译</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" rel="tag">操作系统 学习 笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" rel="tag">操作系统 笔记 学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" rel="tag">汇编 QEMU 8086</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" rel="tag">汇编 QEMU CM3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" rel="tag">矩阵 线性代数 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" rel="tag">离散数学 数学 关系 集合</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" rel="tag">离散数学 数学 逻辑推理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" rel="tag">笔记 学习 xv6 操作系统 OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode/" rel="tag">算法 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">算法 leetcode 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">算法 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" rel="tag">算法 数据结构 哈希算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" rel="tag">系统调用 mmap 文件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">翻译 xv6 OS 学习 笔记 操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">链表 c语言 数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" rel="tag">链表 数据结构 leetcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" rel="tag">链表 数据结构 算法</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" style="font-size: 10px;">CM3 汇编 QEMU</a> <a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" style="font-size: 10px;">MIT 6.S081 学习 笔记 xv6</a> <a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/" style="font-size: 10px;">NP 数学 信息学</a> <a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">Shell 学习 笔记</a> <a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" style="font-size: 10px;">Web 内网穿透</a> <a href="/tags/c/" style="font-size: 20px;">c++</a> <a href="/tags/c-debugger/" style="font-size: 15px;">c++ debugger</a> <a href="/tags/c-linux/" style="font-size: 10px;">c++ linux</a> <a href="/tags/c-lldb/" style="font-size: 11.67px;">c++ lldb</a> <a href="/tags/c-lldb-debugger/" style="font-size: 11.67px;">c++ lldb debugger</a> <a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 11.67px;">c++ 多线程</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 18.33px;">c++ 开发语言</a> <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">c++ 开发语言 学习 笔记</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 c++ 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">c语言 开发语言</a> <a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/" style="font-size: 10px;">c语言 开发语言 命令行工具 个人记录</a> <a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/" style="font-size: 10px;">docker 系统编程 tips</a> <a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/" style="font-size: 10px;">docker 网络 容器</a> <a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">gin Context golang Web 网络</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">golang 前端 gin 服务器</a> <a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 11.67px;">golang 前端 数据库</a> <a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">golang 后端 前端 网络</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 后端</a> <a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 开发语言 算法 后端</a> <a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">golang 服务器 后端</a> <a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">golang 爬虫 开发语言</a> <a href="/tags/java-jvm-servlet/" style="font-size: 10px;">java jvm servlet</a> <a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java jvm 开发语言</a> <a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">java jvm 算法</a> <a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">java 开发语言</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95/" style="font-size: 11.67px;">leetcode 算法</a> <a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 15px;">leetcode 算法 数据结构</a> <a href="/tags/linux/" style="font-size: 11.67px;">linux</a> <a href="/tags/linux-c/" style="font-size: 11.67px;">linux c++</a> <a href="/tags/linux-c-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">linux c++ 算法</a> <a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">linux unix 服务器 网络</a> <a href="/tags/linux-vscode-macos-c/" style="font-size: 10px;">linux vscode macos c++</a> <a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">linux 服务器 运维</a> <a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">macos linux 服务器</a> <a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/" style="font-size: 10px;">macos 汇编 DOSBox 8086</a> <a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">redis bootstrap 数据库</a> <a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">rust 开发语言 后端</a> <a href="/tags/ubuntu-golang-linux/" style="font-size: 10px;">ubuntu golang linux</a> <a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" style="font-size: 10px;">ubuntu 阿里云 网络 网络工具</a> <a href="/tags/unix-linux-udp/" style="font-size: 10px;">unix linux udp</a> <a href="/tags/vscode-ide-macos-c/" style="font-size: 10px;">vscode ide macos c++</a> <a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">wireshark 网络 服务器</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 OS 学习 笔记</a> <a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 学习 笔记 操作系统</a> <a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">xv6 OS 操作系统</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">xv6 操作系统 OS 笔记</a> <a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">xv6 操作系统 笔记 翻译</a> <a href="/tags/%E5%85%B6%E4%BB%96/" style="font-size: 10px;">其他</a> <a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/" style="font-size: 11.67px;">前端 golang gin</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">图论 离散数学 代数系统</a> <a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">图论 离散数学 特殊的图 数学</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/" style="font-size: 10px;">学习 笔记 OS xv6</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" style="font-size: 10px;">学习 笔记 bash 脚本</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/" style="font-size: 10px;">学习 笔记 xv6 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 13.33px;">学习 笔记 xv6 OS 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">学习 笔记 xv6 OS 操作系统 文件系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 11.67px;">学习 笔记 xv6 操作系统</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 xv6 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 MIT 6.S081</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">学习 笔记 操作系统 OS</a> <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/" style="font-size: 10px;">学习 笔记 操作系统 xv6 MIT 6.S081</a> <a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" style="font-size: 10px;">总结 个人总结</a> <a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" style="font-size: 10px;">抽象代数</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/" style="font-size: 10px;">操作系统 Hackintosh</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 11.67px;">操作系统 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">操作系统 学习 xv6 翻译</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">操作系统 学习 笔记</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/" style="font-size: 10px;">操作系统 笔记 学习</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" style="font-size: 10px;">汇编 QEMU 8086</a> <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" style="font-size: 10px;">汇编 QEMU CM3</a> <a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/" style="font-size: 10px;">矩阵 线性代数 算法</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/" style="font-size: 10px;">离散数学 数学 关系 集合</a> <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/" style="font-size: 10px;">离散数学 数学 逻辑推理</a> <a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/" style="font-size: 10px;">笔记 学习 xv6 操作系统 OS</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode/" style="font-size: 10px;">算法 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 16.67px;">算法 leetcode 数据结构</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 18.33px;">算法 数据结构 leetcode</a> <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法 数据结构 哈希算法</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" style="font-size: 10px;">系统调用 mmap 文件</a> <a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">翻译 xv6 OS 学习 笔记 操作系统</a> <a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 10px;">链表 c语言 数据结构</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" style="font-size: 11.67px;">链表 数据结构 leetcode</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" style="font-size: 13.33px;">链表 数据结构 算法</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">May 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">March 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">December 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">November 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.05 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.07.02 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.30 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.29 刷题日记</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/2024.06.28%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">2024.06.28 刷题日记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
