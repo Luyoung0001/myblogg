@@ -1,170 +1,959 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Hexo</title><noscript>Please enable JavaScript to view the site</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.3"><!-- inject head--><link rel="canonical" href="http://example.com/page/5/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Hexo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '1.12.3' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="我自飞扬临天下。————《遮天》孔雀王">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Luyoung">
+<meta property="og:url" content="http://blog.luliang.online/page/5/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="我自飞扬临天下。————《遮天》孔雀王">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Luyoung">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
     
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-    
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-    
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-    
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
+
+<div class="header-inner" style="height: 100vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-                if (name && keyObj[name]) return
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
         
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2023-04-20 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: {"limit":50,"author":"Author: John Doe","link":"Link: ","source":"Source: Hexo","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."},
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"Dark","light":"Light"},"copy":{"success":"Copied","error":"Copy failed"},"backtop":"Back to top","time":{"day":" days ago","hour":" hours ago","just":"just","min":" minutes ago","month":" months ago"},"day":" days","f12":"Developer mode is turned on, please follow the GPL.","totalk":"You don't need to delete blank lines, just type in your comments."},
-    aside: {
-        sayhello: {
-            morning: '一日之计在于晨',
-            noon: '吃饱了才有力气干活',
-            afternoon: '集中精力，攻克难关',
-            night: '不要太劳累了，早睡更健康',
-            goodnight: '睡个好觉，保证精力充沛',
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: 'Long time no see,',
-            back: 'Welcome back again,',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: false,
-    is_page: false,
-    is_home: true,
-    page: 'solitude',
-    toc: false,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body" data-type="solitude"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="Day and night switching"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="Sidebar display control"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Archives</div><div class="length-num">143</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">89</div></a></div></div></div><span class="sidebar-menu-item-title">Function</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>Display mode</span></span></div><span class="sidebar-menu-item-title">Tags</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E5%85%B6%E4%BB%96/">其他<sup>1</sup></a><a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">总结 个人总结<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">算法 数据结构 哈希算法<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">算法 数据结构 leetcode<sup>9</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法 leetcode 数据结构<sup>5</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95/">leetcode 算法<sup>2</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">汇编 QEMU 8086<sup>1</sup></a><a href="/tags/c-linux/">c++ linux<sup>1</sup></a><a href="/tags/c/">c++<sup>13</sup></a><a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">c++ 多线程<sup>2</sup></a><a href="/tags/c-lldb/">c++ lldb<sup>2</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c++ 开发语言<sup>9</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">c++ 开发语言 学习 笔记<sup>1</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">汇编 QEMU CM3<sup>1</sup></a><a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">CM3 汇编 QEMU<sup>1</sup></a><a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">Shell 学习 笔记<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 开发语言<sup>2</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">链表 c语言 数据结构<sup>1</sup></a><a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/">docker 网络 容器<sup>1</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/">golang 前端 数据库<sup>2</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/">golang 前端 gin 服务器<sup>1</sup></a><a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/">前端 golang gin<sup>2</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">golang 开发语言 后端<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/">操作系统 Hackintosh<sup>1</sup></a><a href="/tags/java-jvm-servlet/">java jvm servlet<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/">学习 笔记 OS xv6<sup>1</sup></a><a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 操作系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 操作系统<sup>2</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统<sup>3</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 操作系统 OS<sup>1</sup></a><a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/">redis bootstrap 数据库<sup>1</sup></a><a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/">linux 服务器 运维<sup>1</sup></a><a href="/tags/ubuntu-golang-linux/">ubuntu golang linux<sup>1</sup></a><a href="/tags/unix-linux-udp/">unix linux udp<sup>1</sup></a><a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/">linux unix 服务器 网络<sup>1</sup></a><a href="/tags/c-debugger/">c++ debugger<sup>4</sup></a><a href="/tags/c-lldb-debugger/">c++ lldb debugger<sup>2</sup></a><a href="/tags/linux/">linux<sup>2</sup></a><a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/">gin Context golang Web 网络<sup>1</sup></a><a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/">golang 后端 前端 网络<sup>1</sup></a><a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/">macos 汇编 DOSBox 8086<sup>1</sup></a><a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/">macos linux 服务器<sup>1</sup></a><a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/">系统调用 mmap 文件<sup>1</sup></a><a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">Web 内网穿透<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/">操作系统 学习 xv6 翻译<sup>1</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/">xv6 操作系统 OS 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">xv6 OS 学习 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/">操作系统 笔记 学习<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">操作系统 学习 笔记<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/">图论 离散数学 代数系统<sup>1</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/">golang 开发语言 算法 后端<sup>1</sup></a><a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">golang 爬虫 开发语言<sup>1</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">leetcode 算法 数据结构<sup>4</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">链表 数据结构 算法<sup>3</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode/">算法 leetcode<sup>1</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">链表 数据结构 leetcode<sup>2</sup></a><a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数<sup>1</sup></a><a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/">docker 系统编程 tips<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">c语言 开发语言 命令行工具 个人记录<sup>1</sup></a><a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/">矩阵 线性代数 算法<sup>1</sup></a><a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">rust 开发语言 后端<sup>1</sup></a><a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">ubuntu 阿里云 网络 网络工具<sup>1</sup></a><a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java jvm 开发语言<sup>1</sup></a><a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java 开发语言<sup>1</sup></a><a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/">wireshark 网络 服务器<sup>1</sup></a><a href="/tags/linux-vscode-macos-c/">linux vscode macos c++<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 c++ 开发语言<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/">学习 笔记 操作系统 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/">学习 笔记 操作系统 xv6 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/">学习 笔记 xv6 OS<sup>1</sup></a><a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/">MIT 6.S081 学习 笔记 xv6<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统 文件系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/">学习 笔记 bash 脚本<sup>1</sup></a><a href="/tags/linux-c-%E7%AE%97%E6%B3%95/">linux c++ 算法<sup>1</sup></a><a href="/tags/linux-c/">linux c++<sup>2</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/">操作系统 xv6 翻译<sup>2</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/">xv6 操作系统 笔记 翻译<sup>1</sup></a><a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">笔记 学习 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/">图论 离散数学 特殊的图 数学<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/">离散数学 数学 逻辑推理<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/">离散数学 数学 关系 集合<sup>1</sup></a><a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/">golang 服务器 后端<sup>1</sup></a><a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/">NP 数学 信息学<sup>1</sup></a><a href="/tags/vscode-ide-macos-c/">vscode ide macos c++<sup>1</sup></a><a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/">java jvm 算法<sup>1</sup></a><a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">翻译 xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="page" id="body-wrap"><header class="not-top-img" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="Back to home"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">Hexo</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav></header><main class="layout" id="content-inner"><div id="home"><div id="category-bar"><div class="category-bar-items home" id="category-bar-items"><div class="category-bar-item select" id="category-bar-home"><a href="/">Home</a></div><div class="category-bar-item"><a href="/archives/">All articles</a></div><div class="category-bar-item" id="Personal_Summary"><a href="/categories/Personal-Summary/">Personal_Summary</a></div><div class="category-bar-item" id="LeetCode"><a href="/categories/LeetCode/">LeetCode</a></div><div class="category-bar-item" id="8086"><a href="/categories/8086/">8086</a></div><div class="category-bar-item" id="Things about C"><a href="/categories/Things-about-C/">Things about C</a></div><div class="category-bar-item" id="C++"><a href="/categories/C/">C++</a></div><div class="category-bar-item" id="经验方法 C++"><a href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-C/">经验方法 C++</a></div><div class="category-bar-item" id="CM3"><a href="/categories/CM3/">CM3</a></div><div class="category-bar-item" id="Missing Semester"><a href="/categories/Missing-Semester/">Missing Semester</a></div><div class="category-bar-item" id="NetWork OS Web"><a href="/categories/NetWork-OS-Web/">NetWork OS Web</a></div><div class="category-bar-item" id="Golang 前端"><a href="/categories/Golang-%E5%89%8D%E7%AB%AF/">Golang 前端</a></div><div class="category-bar-item" id="Golang Golang_框架"><a href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6/">Golang Golang_框架</a></div><div class="category-bar-item" id="OS 经验方法"><a href="/categories/OS-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">OS 经验方法</a></div><div class="category-bar-item" id="Java基础知识"><a href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a></div><div class="category-bar-item" id="OS"><a href="/categories/OS/">OS</a></div><div class="category-bar-item" id="Golang Web"><a href="/categories/Golang-Web/">Golang Web</a></div><div class="category-bar-item" id="Some_Tools Golang Unix/Linux"><a href="/categories/Some-Tools-Golang-Unix-Linux/">Some_Tools Golang Unix/Linux</a></div><div class="category-bar-item" id="socket Web Unix/Linux"><a href="/categories/socket-Web-Unix-Linux/">socket Web Unix/Linux</a></div><div class="category-bar-item" id="C++ debugger"><a href="/categories/C-debugger/">C++ debugger</a></div><div class="category-bar-item" id="系统编程"><a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a></div><div class="category-bar-item" id="Golang Golang_框架 Web"><a href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6-Web/">Golang Golang_框架 Web</a></div><div class="category-bar-item" id="Golang 前端 Web"><a href="/categories/Golang-%E5%89%8D%E7%AB%AF-Web/">Golang 前端 Web</a></div><div class="category-bar-item" id="经验方法 8086"><a href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95-8086/">经验方法 8086</a></div><div class="category-bar-item" id="Some_Tools"><a href="/categories/Some-Tools/">Some_Tools</a></div><div class="category-bar-item" id="OS Unix/Linux"><a href="/categories/OS-Unix-Linux/">OS Unix/Linux</a></div><div class="category-bar-item" id="NetWork Web"><a href="/categories/NetWork-Web/">NetWork Web</a></div><div class="category-bar-item" id="离散数学"><a href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/">离散数学</a></div><div class="category-bar-item" id="Golang"><a href="/categories/Golang/">Golang</a></div><div class="category-bar-item" id="代数基础 量子计算导论"><a href="/categories/%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80-%E9%87%8F%E5%AD%90%E8%AE%A1%E7%AE%97%E5%AF%BC%E8%AE%BA/">代数基础 量子计算导论</a></div><div class="category-bar-item" id="OS 系统编程 Unix/Linux"><a href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></div><div class="category-bar-item" id="系统编程 C语言"><a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C%E8%AF%AD%E8%A8%80/">系统编程 C语言</a></div><div class="category-bar-item" id="Web"><a href="/categories/Web/">Web</a></div><div class="category-bar-item" id="NetWork"><a href="/categories/NetWork/">NetWork</a></div><div class="category-bar-item" id="Some_Tools Missing Semester"><a href="/categories/Some-Tools-Missing-Semester/">Some_Tools Missing Semester</a></div><div class="category-bar-item" id="Tests for Basic Knowledge of C"><a href="/categories/Tests-for-Basic-Knowledge-of-C/">Tests for Basic Knowledge of C</a></div><div class="category-bar-item" id="系统编程 C++ debugger"><a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-C-debugger/">系统编程 C++ debugger</a></div><div class="category-bar-item" id="离散数学 经验方法"><a href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/">离散数学 经验方法</a></div><div class="category-bar-item" id="教师工资管理系统"><a href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">教师工资管理系统</a></div><div class="category-bar-item" id="博客"><a href="/categories/%E5%8D%9A%E5%AE%A2/">博客</a></div></div><div class="category-bar-right"><div class="category-bar-next" id="category-bar-next" onclick="sco.scrollCategoryBarToRight()"><i class="solitude st-show-right-line"></i></div><a class="category-bar-more" href="/categories/">More</a></div></div><div class="recent-posts" id="recent-posts"><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/28/CM3%EF%BC%9Alldb%20%E8%B0%83%E8%AF%95%20qemu%20%E8%B7%91%E7%9A%84%E7%A8%8B%E5%BA%8F/')"><div class="post_cover"><a href="/2024/04/28/CM3%EF%BC%9Alldb%20%E8%B0%83%E8%AF%95%20qemu%20%E8%B7%91%E7%9A%84%E7%A8%8B%E5%BA%8F/" title="CM3：lldb 调试 qemu 跑的程序"><img class="post_bg" src="/" alt="CM3：lldb 调试 qemu 跑的程序"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">CM3</span><a class="unvisited-post" href="/2024/04/28/CM3%EF%BC%9Alldb%20%E8%B0%83%E8%AF%95%20qemu%20%E8%B7%91%E7%9A%84%E7%A8%8B%E5%BA%8F/">Unread</a></div><a class="article-title" href="/2024/04/28/CM3%EF%BC%9Alldb%20%E8%B0%83%E8%AF%95%20qemu%20%E8%B7%91%E7%9A%84%E7%A8%8B%E5%BA%8F/" title="CM3：lldb 调试 qemu 跑的程序">CM3：lldb 调试 qemu 跑的程序</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/" onclick="event.stopPropagation();"><span class="tags-punctuation">汇编 QEMU CM3</span></a></span><span class="post-meta-date"><time datetime="2024-04-28T03:50:57.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/27/CM3%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/')"><div class="post_cover"><a href="/2024/04/27/CM3%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" title="CM3：qemu执行汇编"><img class="post_bg" src="/" alt="CM3：qemu执行汇编"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">CM3</span><a class="unvisited-post" href="/2024/04/27/CM3%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/">Unread</a></div><a class="article-title" href="/2024/04/27/CM3%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" title="CM3：qemu执行汇编">CM3：qemu执行汇编</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/" onclick="event.stopPropagation();"><span class="tags-punctuation">CM3 汇编 QEMU</span></a></span><span class="post-meta-date"><time datetime="2024-04-27T05:14:57.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/26/8086%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/')"><div class="post_cover"><a href="/2024/04/26/8086%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" title="8086：qemu执行汇编"><img class="post_bg" src="/" alt="8086：qemu执行汇编"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">8086</span><a class="unvisited-post" href="/2024/04/26/8086%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/">Unread</a></div><a class="article-title" href="/2024/04/26/8086%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" title="8086：qemu执行汇编">8086：qemu执行汇编</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/" onclick="event.stopPropagation();"><span class="tags-punctuation">汇编 QEMU 8086</span></a></span><span class="post-meta-date"><time datetime="2024-04-26T15:33:14.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/24/C++%EF%BC%9A%E5%87%BD%E6%95%B0%E7%AC%A6%EF%BC%88%E4%B8%80%EF%BC%89/')"><div class="post_cover"><a href="/2024/04/24/C++%EF%BC%9A%E5%87%BD%E6%95%B0%E7%AC%A6%EF%BC%88%E4%B8%80%EF%BC%89/" title="C++：函数符（一）"><img class="post_bg" src="/" alt="C++：函数符（一）"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">C++</span><a class="unvisited-post" href="/2024/04/24/C++%EF%BC%9A%E5%87%BD%E6%95%B0%E7%AC%A6%EF%BC%88%E4%B8%80%EF%BC%89/">Unread</a></div><a class="article-title" href="/2024/04/24/C++%EF%BC%9A%E5%87%BD%E6%95%B0%E7%AC%A6%EF%BC%88%E4%B8%80%EF%BC%89/" title="C++：函数符（一）">C++：函数符（一）</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" onclick="event.stopPropagation();"><span class="tags-punctuation">c++ 开发语言</span></a></span><span class="post-meta-date"><time datetime="2024-04-24T14:00:35.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/24/C++%EF%BC%9A%E9%80%82%E9%85%8D%E5%99%A8/')"><div class="post_cover"><a href="/2024/04/24/C++%EF%BC%9A%E9%80%82%E9%85%8D%E5%99%A8/" title="C++：适配器"><img class="post_bg" src="/" alt="C++：适配器"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">C++</span><a class="unvisited-post" href="/2024/04/24/C++%EF%BC%9A%E9%80%82%E9%85%8D%E5%99%A8/">Unread</a></div><a class="article-title" href="/2024/04/24/C++%EF%BC%9A%E9%80%82%E9%85%8D%E5%99%A8/" title="C++：适配器">C++：适配器</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" onclick="event.stopPropagation();"><span class="tags-punctuation">c++ 开发语言</span></a></span><span class="post-meta-date"><time datetime="2024-04-24T13:30:19.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/23/C++%EF%BC%9A%E8%BF%AD%E4%BB%A3%E5%99%A8/')"><div class="post_cover"><a href="/2024/04/23/C++%EF%BC%9A%E8%BF%AD%E4%BB%A3%E5%99%A8/" title="C++：迭代器"><img class="post_bg" src="/" alt="C++：迭代器"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">C++</span><a class="unvisited-post" href="/2024/04/23/C++%EF%BC%9A%E8%BF%AD%E4%BB%A3%E5%99%A8/">Unread</a></div><a class="article-title" href="/2024/04/23/C++%EF%BC%9A%E8%BF%AD%E4%BB%A3%E5%99%A8/" title="C++：迭代器">C++：迭代器</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" onclick="event.stopPropagation();"><span class="tags-punctuation">c++ 开发语言</span></a></span><span class="post-meta-date"><time datetime="2024-04-23T13:45:57.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%BA%8C%EF%BC%89/')"><div class="post_cover"><a href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%BA%8C%EF%BC%89/" title="C++：智能指针（二）"><img class="post_bg" src="/" alt="C++：智能指针（二）"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">C++</span><a class="unvisited-post" href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%BA%8C%EF%BC%89/">Unread</a></div><a class="article-title" href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%BA%8C%EF%BC%89/" title="C++：智能指针（二）">C++：智能指针（二）</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" onclick="event.stopPropagation();"><span class="tags-punctuation">c++ 开发语言</span></a></span><span class="post-meta-date"><time datetime="2024-04-21T15:52:29.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/')"><div class="post_cover"><a href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/" title="C++：智能指针（一）"><img class="post_bg" src="/" alt="C++：智能指针（一）"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">C++</span><a class="unvisited-post" href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/">Unread</a></div><a class="article-title" href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/" title="C++：智能指针（一）">C++：智能指针（一）</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" onclick="event.stopPropagation();"><span class="tags-punctuation">c++ 开发语言</span></a></span><span class="post-meta-date"><time datetime="2024-04-21T15:18:59.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/')"><div class="post_cover"><a href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" title="C++：返回值优化"><img class="post_bg" src="/" alt="C++：返回值优化"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">C++</span><a class="unvisited-post" href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/">Unread</a></div><a class="article-title" href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" title="C++：返回值优化">C++：返回值优化</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" onclick="event.stopPropagation();"><span class="tags-punctuation">c++ 开发语言</span></a></span><span class="post-meta-date"><time datetime="2024-04-17T11:25:57.000Z"></time></span></div></div></div><div class="recent-post-item" onclick="pjax.loadUrl('/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/')"><div class="post_cover"><a href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" title="C++：异常处理"><img class="post_bg" src="/" alt="C++：异常处理"></a></div><div class="recent-post-info"><div class="recent-post-info-top"><div class="recent-post-info-top-tips"><span class="original">C++</span><a class="unvisited-post" href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">Unread</a></div><a class="article-title" href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" title="C++：异常处理">C++：异常处理</a></div><break></break><div class="article-meta-wrap"><span class="article-meta tags"><a class="article-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/" onclick="event.stopPropagation();"><span class="tags-punctuation">c++ 开发语言 学习 笔记</span></a></span><span class="post-meta-date"><time datetime="2024-04-17T10:01:19.000Z"></time></span></div></div></div><!-- pagination--><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/4/"><i class="solitude st-arrow-left-bold"></i> <div class="pagination_tips_prev">Prev</div></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/6/"><div class="pagination_tips_next">Next</div> <i class="solitude st-arrow-right-bold"></i></a><div class="toPageGroup"><input id="toPageText" oninput="value=value.replace(/[^0-9]/g,'')" maxlength="3" title="To page" onkeyup="if (this.value === '0') this.value = ''"><a id="toPageButton" onclick="sco.toPage()"><i class="solitude st-show-right-line"></i></a></div></div></nav></div></div><!-- aside--><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="Avatar" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="Mood sticker"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">John Doe</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="webinfo"><div class="webinfo-item"><div class="webinfo-item-title"><i class="item-icon solitude st-folder-fill"></i><div class="item-name">Posts :</div></div><div class="item-count">143</div></div><div class="webinfo-item"><div class="webinfo-item-title"><i class="item-icon solitude st-calendar-todo-fill"></i><div class="item-name">Runtime :</div></div><div class="item-count" id="runtimeshow"></div></div><div class="webinfo-item"><div class="webinfo-item-title"><i class="item-icon solitude st-loop-left-fill"></i><div class="item-name">Last update :</div></div><time class="item-count" datetime="2024-07-07T04:01:28.631Z"></time></div></div></div></div></div></main><footer id="footer"><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">John Doe</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.3"></script><script src="/js/main.js?v=1.12.3"></script><script src="/js/third_party/waterfall.min.js?v=1.12.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.3"></script><script>dark()
-</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
 
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
+  
 
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="An elegant Material-Design theme for Hexo"></span>
+          
+        </div>
 
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
+        
+      </div>
+
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div id="board"
+          style="margin-top: 0">
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/28/CM3%EF%BC%9Alldb%20%E8%B0%83%E8%AF%95%20qemu%20%E8%B7%91%E7%9A%84%E7%A8%8B%E5%BA%8F/" target="_self">
+          CM3：lldb 调试 qemu 跑的程序
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/28/CM3%EF%BC%9Alldb%20%E8%B0%83%E8%AF%95%20qemu%20%E8%B7%91%E7%9A%84%E7%A8%8B%E5%BA%8F/" target="_self">
+        <div>
+          正文环境：macOS M1。QEMU可以通过启动一个GDB调试端口来允许使用GDB调试正在运行的虚拟机，我们要做的就是通过 gdb 或者 lldb 连接到这个端口，然后进行调试。我们先写一个简单的CM3 程序： 123456789101112131415161718192021    .equ STACK_TOP, 0x20000800    .text    .global _start
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-28 11:50" pubdate>
+              2024-04-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CM3/" class="category-chain-item">CM3</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">#汇编 QEMU CM3</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/27/CM3%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" target="_self">
+          CM3：qemu执行汇编
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/27/CM3%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" target="_self">
+        <div>
+          正文环境：macOS M1。前文讨论了 qemu 模拟8086 的平台运行8086 汇编代码，本文将讨论 qemu 模拟arm 平台运行 CM3 代码。代码： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162.sy
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-27 13:14" pubdate>
+              2024-04-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CM3/" class="category-chain-item">CM3</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">#CM3 汇编 QEMU</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/26/8086%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" target="_self">
+          8086：qemu执行汇编
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/26/8086%EF%BC%9Aqemu%E6%89%A7%E8%A1%8C%E6%B1%87%E7%BC%96/" target="_self">
+        <div>
+          正文环境：macOS M1。 QEMU（Quick EMUlator）是一个开源的虚拟机监视器，可以模拟多种硬件平台，包括处理器架构、设备和操作系统。QEMU具有以下主要功能和用途：  硬件模拟器：QEMU可以模拟多种处理器架构，如x86、ARM、MIPS等，以及各种设备，如网络适配器、显卡、存储设备等。这使得开发人员可以在虚拟环境中测试和调试他们的软件，而无需实际硬件设备。  虚拟机管理：Q
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-26 23:33" pubdate>
+              2024-04-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/8086/" class="category-chain-item">8086</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">#汇编 QEMU 8086</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/24/C++%EF%BC%9A%E5%87%BD%E6%95%B0%E7%AC%A6%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+          C++：函数符（一）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/24/C++%EF%BC%9A%E5%87%BD%E6%95%B0%E7%AC%A6%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+        <div>
+          正文函数对象也叫函数符，函数符是可以以函数方式与()结合使用的任意对象。这包括函数名、指向函数的指针和重载了()运算符的类对象。 上面这句话的意思是指：函数名、指向函数的指针和重载了括号运算符的类对象与括号结合，从而以函数方式实现某种功能。对于 for_each()，第三个参数我们一般可以写一个函数名，或者类的对象（该类必须对括号运算符进行了重载），但是不可以为一个函数指针，因为函数指针的类型
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-24 22:00" pubdate>
+              2024-04-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#c++ 开发语言</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/24/C++%EF%BC%9A%E9%80%82%E9%85%8D%E5%99%A8/" target="_self">
+          C++：适配器
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/24/C++%EF%BC%9A%E9%80%82%E9%85%8D%E5%99%A8/" target="_self">
+        <div>
+          正文当两个类的接口不兼容时，可以使用适配器模式将一个类的接口适配成另一个类的接口，使它们可以协同工作。下面是一个简单的示例，展示如何使用适配器模式将一个旧的类的接口适配成一个新的类的接口： 假设有一个旧的类 OldClass，它有一个名为 oldMethod 的方法，但我们希望将其适配成一个新的类 NewClass，并且新类中有一个名为 newMethod 的方法。我们可以使用适配器模式来实现
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-24 21:30" pubdate>
+              2024-04-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#c++ 开发语言</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/23/C++%EF%BC%9A%E8%BF%AD%E4%BB%A3%E5%99%A8/" target="_self">
+          C++：迭代器
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/23/C++%EF%BC%9A%E8%BF%AD%E4%BB%A3%E5%99%A8/" target="_self">
+        <div>
+          〇、前言在C++中，STL（标准模板库）提供了一组强大的数据结构和算法，其中使用了迭代器来实现数据访问和操作的通用接口。 迭代器是一种行为类似指针的对象，它允许对容器中的元素进行迭代（遍历）。STL定义了几种迭代器类型，包括输入迭代器、输出迭代器、前向迭代器、双向迭代器和随机访问迭代器。这些迭代器类型具有不同的功能和约束条件，使得它们适用于不同类型的数据结构和操作。 关于概念，它在C++中是一
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-23 21:45" pubdate>
+              2024-04-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#c++ 开发语言</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_self">
+          C++：智能指针（二）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_self">
+        <div>
+          正文为什么要设计智能指针？看看下面的例子： 12345678910111213141516171819202122232425262728293031323334#include &lt;iostream&gt;#include &lt;memory&gt;#include &lt;string&gt;using namespace std;void memoryLeak1() &#123;
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-21 23:52" pubdate>
+              2024-04-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#c++ 开发语言</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+          C++：智能指针（一）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+        <div>
+          正文关于这个例子： 1234567891011121314151617181920#include &lt;iostream&gt;#include &lt;memory&gt;#include &lt;string&gt;std::unique_ptr&lt;std::string&gt; demo(const char *s) &#123;    std::unique_ptr&lt;st
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-21 23:18" pubdate>
+              2024-04-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#c++ 开发语言</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" target="_self">
+          C++：返回值优化
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" target="_self">
+        <div>
+          正文对于返回一个对象的函数，它在返回后前，应该在栈外用复制构造函数创建一个临时对象t2，然后返回 t1，随后 t1 在栈内被析构掉，t2 被传回。如下： 1234567891011121314151617181920212223242526272829303132333435363738394041424344#include &lt;iostream&gt;#include &lt;stri
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-17 19:25" pubdate>
+              2024-04-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#c++ 开发语言</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
+          C++：异常处理
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
+        <div>
+          异常处理中对象参数与引用参数的选择User：  catch()中的参数如果使用基类的引用，是不是相当于声明了一个引用，它是基类类型的，catch 到 throw的抛出的对象之后，就相当于这个基类引用指向了抛出的对象？  ChatGPT：   是的，你说得很对。当在 catch 块中使用基类的引用作为参数时，相当于声明了一个引用，它是基类类型的。当程序抛出一个异常并且在调用栈中找到匹配的 cat
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-17 18:01" pubdate>
+              2024-04-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">#c++ 开发语言 学习 笔记</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/page/4/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/#board">6</a><a class="page-number" href="/page/7/#board">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/#board">15</a><a class="extend next" rel="next" href="/page/6/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
     })
+  </script>
 
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
-})
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
-    }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
-    }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/07/06/利用 Hexo 搭建个人博客/","2024/07/05/2024.07.05 刷题日记/","2024/07/02/2024.07.02 刷题日记/","2024/06/30/2024.06.30 刷题日记/","2024/06/29/2024.06.29 刷题日记/","2024/06/28/2024.06.28 刷题日记/","2024/06/26/2024.06.26 刷题日记/","2024/06/25/2024.06.25 刷题日记/","2024/06/24/2024.06.24 刷题日记/","2024/06/23/2024.06.23 刷题日记/","2024/06/23/2024.06.22 刷题日记/","2024/06/21/2024.06.21 刷题日记/","2024/06/20/2024.06.20 刷题日记/","2024/06/19/2024.06.19 刷题日记/","2024/06/18/2024.06.18 刷题日记/","2024/06/18/2024.06.17 刷题日记/","2024/06/16/2024.06.16 刷题日记/","2024/06/12/mmap() 的几种用法/","2024/06/11/debugger（七）：栈帧（backtrace）/","2024/06/11/debugger（六）：source level 断点/","2024/06/11/debugger（五）：source level stepping/","2024/06/10/debugger（四）：源代码/","2024/06/10/debugger（三）：dwarf 文件/","2024/06/10/debugger（二）：读、写内存以及寄存器/","2024/05/25/debugger（一）：打断点的实现以及案例分析/","2024/05/20/C++内存模型/","2024/05/18/C++：再谈智能指针/","2024/05/17/C++调试：函数调用过程和堆栈/","2024/05/16/C++调试：内存管理/","2024/05/15/C++并发：构建线程安全的队列/","2024/05/15/C++并发：等待条件成立/","2024/05/14/C++：并发保护/","2024/05/14/C++并发：锁/","2024/05/12/C++：完美转发（二）（std!forward）/","2024/05/12/C++：完美转发（一）（std!forward）/","2024/05/11/C++：移动语义（std!move）/","2024/05/10/C++：左值（引用）&右值（引用）/","2024/05/10/C++并发：线程函数传参（二）/","2024/05/09/C++并发：线程函数传参（一）/","2024/05/05/macOS DOSBox 汇编环境搭建/","2024/04/28/CM3：lldb 调试 qemu 跑的程序/","2024/04/27/CM3：qemu执行汇编/","2024/04/26/8086：qemu执行汇编/","2024/04/24/C++：函数符（一）/","2024/04/24/C++：适配器/","2024/04/23/C++：迭代器/","2024/04/21/C++：智能指针（二）/","2024/04/21/C++：智能指针（一）/","2024/04/17/C++：返回值优化/","2024/04/17/C++：异常处理/","2024/04/11/C++：弃值表达式/","2024/03/31/关于一篇知乎答案的重现/","2023/12/31/2023 个人总结/","2023/12/24/mit6.s081【目录】/","2023/12/24/MIT 6.S081学习笔记（第十章）/","2023/12/23/MIT 6.S081学习笔记（第九章）/","2023/12/23/Shell Tools of Missing Semester（二）/","2023/12/22/Course Shell of Missing Semester（一）/","2023/12/21/MIT 6.S081学习笔记（第八章）/","2023/12/20/xv6 文件系统面临的问题/","2023/12/19/实现个人日志命令行工具（C语言）/","2023/12/18/xv6 文件系统（下）/","2023/12/18/xv6 文件系统（上）/","2023/12/13/MIT 6.S081学习笔记（第七章）/","2023/12/11/xv6 中的一些系统调用（下）/","2023/12/10/xv6 中的一些系统调用（上）/","2023/12/08/MIT 6.S081学习笔记（第六章）（下）/","2023/12/07/MIT 6.S081学习笔记（第六章）（上）/","2023/12/06/MIT 6.S081学习笔记（第五章）/","2023/12/04/xv6 book Chapter7 中文翻译/","2023/12/04/xv6 book Chapter6 中文翻译/","2023/12/04/xv6 book Chapter5 中文翻译/","2023/12/04/xv6 book Chapter4 中文翻译/","2023/11/24/MIT 6.S081学习笔记（第四章）/","2023/11/22/MIT 6.S081学习笔记（第三章）/","2023/11/18/xv6 book Chapter3 中文翻译/","2023/11/13/《OSTEP》信号量（chap31）/","2023/11/11/《OSTEP》条件变量（chap30）/","2023/10/05/MIT 6.S081学习笔记（第二章）/","2023/09/29/ngrok内网穿透以及原理/","2023/09/24/什么是P问题、NP问题和NPC问题/","2023/09/10/MIT 6.S081学习笔记（第一章）/","2023/09/07/MIT 6.S081学习笔记（第〇章）/","2023/09/02/go Session的实现（一）/","2023/08/01/gin 框架中的 gin.Context/","2023/07/31/Redis （一）消息订阅和发送测试/","2023/07/27/Hackintosh 入门/","2023/07/04/Docker网络模型以及容器网络初探（一）/","2023/06/29/Ubuntu 升级 golang 版本完美步骤/","2023/06/26/阿里云 Ubuntu 网络设置/","2023/06/17/《离散数学》：特殊的图/","2023/06/16/《离散数学》：代数系统和图论导论/","2023/06/15/《离散数学》：集合、关系和函数/","2023/06/14/《离散数学》：逻辑/","2023/06/08/Unix!Linux编程：UDS 数据报/","2023/06/07/Unix!Linux编程：UDS 流（Stream）/","2023/06/06/Golang框架：cobra/","2023/06/04/Go Web下GORM框架使用（二）/","2023/06/01/Go Web下GORM框架使用（一）/","2023/06/01/Go Web下gin框架使用（二）/","2023/06/01/泡利矩阵（一）/","2023/06/01/代数入门（〇）/","2023/05/31/Go Web下gin框架使用（一）/","2023/05/23/Go Web下gin框架的模板渲染/","2023/05/08/【Golang】多线程排序/","2023/05/07/【Golang】多线程下载器的实现/","2023/05/05/【Golang】多线程爬虫的实现/","2023/03/23/【day11】链表高精度加法/","2023/03/22/【day10】链表的合并/","2023/03/21/【day09】链表的旋转与反转/","2023/03/20/【day08】移除与插入链表元素/","2023/03/19/【day07】二维数组及滚动数组/","2023/03/13/【day06】数组的遍历/","2023/03/12/【day05】统计数组中的元素/","2023/03/11/exec()函数家族详细/","2023/03/11/对fork() 函数的理解/","2023/03/11/【day04】数组的旋转/","2023/03/10/【day03】数组的改变与移动/","2023/03/08/【day02】之链表操作/","2023/03/08/简单的 ls命令的实现（四.完结）/","2023/03/07/Java将 List 类型转化为 Array 的方法/","2023/03/07/【day01】之N数之和/","2023/02/28/教师工资管理系统之随机产生教师详细信息/","2023/02/28/C语言链表的头插法与尾插法/","2023/02/24/C语言实现删除匹配的某一行文本/","2023/02/17/简单的 ls 命令的实现（三）/","2023/02/17/简单的 ls 命令的实现（二）/","2023/02/15/简单的 ls 命令的实现（一）/","2023/01/17/C语言指针——从入门到精通/","2023/01/13/（三）抽象类/","2023/01/12/（二）常量池的探索/","2023/01/12/（一）Java 中 final 关键字的用法总结/","2023/01/10/对环境变量的探究/","2023/01/10/macOS下binutils 的安装/","2023/01/10/2022 Personal Summary/","2023/01/10/Analysis of the Location of Initialized!Uninitialized Global!Static!Local Variables!Constants in Mem/","2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/","2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/","2022/12/28/Start to write a simple Linux kernel Module/","2022/11/29/About the problem of struct structure assignment/","2022/11/16/Solutions for Xiyou Linux Group 2020 Interview Questions/","2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/","2022/11/15/Solutions for Xiyou Linux Group 2022 Interview Questions/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

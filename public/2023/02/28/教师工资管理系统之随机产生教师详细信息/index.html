@@ -1,183 +1,658 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>教师工资管理系统之随机产生教师详细信息 | Hexo</title><noscript>Please enable JavaScript to view the site</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.3"><!-- inject head--><link rel="canonical" href="http://example.com/2023/02/28/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E4%B9%8B%E9%9A%8F%E6%9C%BA%E4%BA%A7%E7%94%9F%E6%95%99%E5%B8%88%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="〇、前言想要做一个教师工资管理系统，就必须得准备好数据，但是这些数据如果用手一行一行地敲，那么工作量是非常大的。因此，我就产生了用 C语言实现直接生成大量的教师基本信息的想法。 一、教师的基本信息1234567891011typedef struct teacher &amp;#123; int"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Hexo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '1.12.3' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言想要做一个教师工资管理系统，就必须得准备好数据，但是这些数据如果用手一行一行地敲，那么工作量是非常大的。因此，我就产生了用 C语言实现直接生成大量的教师基本信息的想法。 一、教师的基本信息1234567891011typedef struct teacher &#123;    int teaNo;           &#x2F;&#x2F; 教工号    char* teaName;       &#x2F;&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="教师工资管理系统之随机产生教师详细信息">
+<meta property="og:url" content="http://blog.luliang.online/2023/02/28/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E4%B9%8B%E9%9A%8F%E6%9C%BA%E4%BA%A7%E7%94%9F%E6%95%99%E5%B8%88%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言想要做一个教师工资管理系统，就必须得准备好数据，但是这些数据如果用手一行一行地敲，那么工作量是非常大的。因此，我就产生了用 C语言实现直接生成大量的教师基本信息的想法。 一、教师的基本信息1234567891011typedef struct teacher &#123;    int teaNo;           &#x2F;&#x2F; 教工号    char* teaName;       &#x2F;&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-28T11:06:20.000Z">
+<meta property="article:modified_time" content="2024-07-07T07:26:40.571Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++ 开发语言">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>教师工资管理系统之随机产生教师详细信息 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
     
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-    
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-    
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-    
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-                if (name && keyObj[name]) return
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
         
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2023-04-20 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: {"limit":50,"author":"Author: John Doe","link":"Link: ","source":"Source: Hexo","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."},
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"Dark","light":"Light"},"copy":{"success":"Copied","error":"Copy failed"},"backtop":"Back to top","time":{"day":" days ago","hour":" hours ago","just":"just","min":" minutes ago","month":" months ago"},"day":" days","f12":"Developer mode is turned on, please follow the GPL.","totalk":"You don't need to delete blank lines, just type in your comments."},
-    aside: {
-        sayhello: {
-            morning: '一日之计在于晨',
-            noon: '吃饱了才有力气干活',
-            afternoon: '集中精力，攻克难关',
-            night: '不要太劳累了，早睡更健康',
-            goodnight: '睡个好觉，保证精力充沛',
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: 'Long time no see,',
-            back: 'Welcome back again,',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: false,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="Day and night switching"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="Sidebar display control"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Archives</div><div class="length-num">143</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">89</div></a></div></div></div><span class="sidebar-menu-item-title">Function</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>Display mode</span></span></div><span class="sidebar-menu-item-title">Tags</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E5%85%B6%E4%BB%96/">其他<sup>1</sup></a><a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">总结 个人总结<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">算法 数据结构 哈希算法<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">算法 数据结构 leetcode<sup>9</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法 leetcode 数据结构<sup>5</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95/">leetcode 算法<sup>2</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">汇编 QEMU 8086<sup>1</sup></a><a href="/tags/c-linux/">c++ linux<sup>1</sup></a><a href="/tags/c/">c++<sup>13</sup></a><a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">c++ 多线程<sup>2</sup></a><a href="/tags/c-lldb/">c++ lldb<sup>2</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c++ 开发语言<sup>9</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">c++ 开发语言 学习 笔记<sup>1</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">汇编 QEMU CM3<sup>1</sup></a><a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">CM3 汇编 QEMU<sup>1</sup></a><a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">Shell 学习 笔记<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 开发语言<sup>2</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">链表 c语言 数据结构<sup>1</sup></a><a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/">docker 网络 容器<sup>1</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/">golang 前端 数据库<sup>2</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/">golang 前端 gin 服务器<sup>1</sup></a><a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/">前端 golang gin<sup>2</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">golang 开发语言 后端<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/">操作系统 Hackintosh<sup>1</sup></a><a href="/tags/java-jvm-servlet/">java jvm servlet<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/">学习 笔记 OS xv6<sup>1</sup></a><a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 操作系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 操作系统<sup>2</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统<sup>3</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 操作系统 OS<sup>1</sup></a><a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/">redis bootstrap 数据库<sup>1</sup></a><a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/">linux 服务器 运维<sup>1</sup></a><a href="/tags/ubuntu-golang-linux/">ubuntu golang linux<sup>1</sup></a><a href="/tags/unix-linux-udp/">unix linux udp<sup>1</sup></a><a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/">linux unix 服务器 网络<sup>1</sup></a><a href="/tags/c-debugger/">c++ debugger<sup>4</sup></a><a href="/tags/c-lldb-debugger/">c++ lldb debugger<sup>2</sup></a><a href="/tags/linux/">linux<sup>2</sup></a><a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/">gin Context golang Web 网络<sup>1</sup></a><a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/">golang 后端 前端 网络<sup>1</sup></a><a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/">macos 汇编 DOSBox 8086<sup>1</sup></a><a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/">macos linux 服务器<sup>1</sup></a><a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/">系统调用 mmap 文件<sup>1</sup></a><a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">Web 内网穿透<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/">操作系统 学习 xv6 翻译<sup>1</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/">xv6 操作系统 OS 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">xv6 OS 学习 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/">操作系统 笔记 学习<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">操作系统 学习 笔记<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/">图论 离散数学 代数系统<sup>1</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/">golang 开发语言 算法 后端<sup>1</sup></a><a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">golang 爬虫 开发语言<sup>1</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">leetcode 算法 数据结构<sup>4</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">链表 数据结构 算法<sup>3</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode/">算法 leetcode<sup>1</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">链表 数据结构 leetcode<sup>2</sup></a><a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数<sup>1</sup></a><a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/">docker 系统编程 tips<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">c语言 开发语言 命令行工具 个人记录<sup>1</sup></a><a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/">矩阵 线性代数 算法<sup>1</sup></a><a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">rust 开发语言 后端<sup>1</sup></a><a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">ubuntu 阿里云 网络 网络工具<sup>1</sup></a><a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java jvm 开发语言<sup>1</sup></a><a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java 开发语言<sup>1</sup></a><a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/">wireshark 网络 服务器<sup>1</sup></a><a href="/tags/linux-vscode-macos-c/">linux vscode macos c++<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 c++ 开发语言<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/">学习 笔记 操作系统 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/">学习 笔记 操作系统 xv6 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/">学习 笔记 xv6 OS<sup>1</sup></a><a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/">MIT 6.S081 学习 笔记 xv6<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统 文件系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/">学习 笔记 bash 脚本<sup>1</sup></a><a href="/tags/linux-c-%E7%AE%97%E6%B3%95/">linux c++ 算法<sup>1</sup></a><a href="/tags/linux-c/">linux c++<sup>2</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/">操作系统 xv6 翻译<sup>2</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/">xv6 操作系统 笔记 翻译<sup>1</sup></a><a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">笔记 学习 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/">图论 离散数学 特殊的图 数学<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/">离散数学 数学 逻辑推理<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/">离散数学 数学 关系 集合<sup>1</sup></a><a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/">golang 服务器 后端<sup>1</sup></a><a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/">NP 数学 信息学<sup>1</sup></a><a href="/tags/vscode-ide-macos-c/">vscode ide macos c++<sup>1</sup></a><a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/">java jvm 算法<sup>1</sup></a><a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">翻译 xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="Back to home"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">教师工资管理系统之随机产生教师详细信息</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/" alt="教师工资管理系统之随机产生教师详细信息"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="This article is a Original article, pay attention to the copyright.">Original</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">教师工资管理系统</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/"><span class="tags-name tags-punctuation">c++ 开发语言</span></a></div></div></div></div><h1 class="post-title">教师工资管理系统之随机产生教师详细信息</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><span id="more"></span>
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="教师工资管理系统之随机产生教师详细信息"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-28 19:06" pubdate>
+          2023年2月28日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          37 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">教师工资管理系统之随机产生教师详细信息</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
 
 <h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>想要做一个教师工资管理系统，就必须得准备好数据，但是这些数据如果用手一行一行地敲，那么工作量是非常大的。因此，我就产生了用 C语言实现直接生成大量的教师基本信息的想法。</p>
-<h2 id="一、教师的基本信息"><a href="#一、教师的基本信息" class="headerlink" title="一、教师的基本信息"></a>一、教师的基本信息</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">teacher</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> teaNo;           <span class="comment">// 教工号</span></span><br><span class="line">    <span class="type">char</span>* teaName;       <span class="comment">// 教师名字</span></span><br><span class="line">    <span class="type">char</span>* teaSex;        <span class="comment">// 教师性别</span></span><br><span class="line">    <span class="type">char</span>* workUnitName;  <span class="comment">// 工作单位</span></span><br><span class="line">    <span class="type">char</span>* address;       <span class="comment">// 家庭住址</span></span><br><span class="line">    <span class="type">char</span>* telNo;         <span class="comment">// 电话号码</span></span><br><span class="line">    <span class="type">double</span> basicWage;    <span class="comment">// 基本工资</span></span><br><span class="line">    <span class="type">double</span> allowance;    <span class="comment">// 津贴</span></span><br><span class="line">    <span class="type">double</span> tax;          <span class="comment">// 所得税</span></span><br><span class="line">&#125; Teacher;</span><br></pre></td></tr></table></figure>
-<h2 id="二、生成姓名"><a href="#二、生成姓名" class="headerlink" title="二、生成姓名"></a>二、生成姓名</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span>* <span class="title function_">nameGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 产生姓名</span></span><br><span class="line">    <span class="comment">// 21个姓</span></span><br><span class="line">    <span class="type">char</span> LastName[<span class="number">21</span>][<span class="number">8</span>] = &#123;<span class="string">&quot;赵&quot;</span>, <span class="string">&quot;钱&quot;</span>, <span class="string">&quot;孙&quot;</span>, <span class="string">&quot;李&quot;</span>, <span class="string">&quot;周&quot;</span>, <span class="string">&quot;吴&quot;</span>, <span class="string">&quot;郑&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;王&quot;</span>, <span class="string">&quot;黄&quot;</span>, <span class="string">&quot;路&quot;</span>, <span class="string">&quot;蔡&quot;</span>, <span class="string">&quot;司&quot;</span>, <span class="string">&quot;张&quot;</span>, <span class="string">&quot;高&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;刘&quot;</span>, <span class="string">&quot;胡&quot;</span>, <span class="string">&quot;侯&quot;</span>, <span class="string">&quot;花&quot;</span>, <span class="string">&quot;柳&quot;</span>, <span class="string">&quot;韩&quot;</span>, <span class="string">&quot;常&quot;</span>&#125;;</span><br><span class="line">    <span class="comment">// 16 个名</span></span><br><span class="line">    <span class="type">char</span> FirstName[<span class="number">16</span>][<span class="number">8</span>] = &#123;<span class="string">&quot;长&quot;</span>, <span class="string">&quot;广&quot;</span>, <span class="string">&quot;亮&quot;</span>, <span class="string">&quot;乐&quot;</span>, <span class="string">&quot;璐&quot;</span>, <span class="string">&quot;泉&quot;</span>, <span class="string">&quot;雨&quot;</span>, <span class="string">&quot;楠&quot;</span>,</span><br><span class="line">                             <span class="string">&quot;同&quot;</span>, <span class="string">&quot;曈&quot;</span>, <span class="string">&quot;火&quot;</span>, <span class="string">&quot;淼&quot;</span>, <span class="string">&quot;旺&quot;</span>, <span class="string">&quot;富&quot;</span>, <span class="string">&quot;健&quot;</span>, <span class="string">&quot;康&quot;</span>&#125;;</span><br><span class="line">    <span class="type">int</span> ran_LastName = rand() % <span class="number">21</span>;</span><br><span class="line">    <span class="type">int</span> ran_FirstName1 = rand() % <span class="number">16</span>;</span><br><span class="line">    <span class="type">int</span> ran_FirstName2 = rand() % <span class="number">16</span>;</span><br><span class="line">    <span class="type">char</span>* fullName = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>) * <span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;fullName[<span class="number">0</span>], LastName[ran_LastName]);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len1 = <span class="built_in">strlen</span>(fullName);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;fullName[len1], FirstName[ran_FirstName1]);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len2 = <span class="built_in">strlen</span>(fullName);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;fullName[len2], FirstName[ran_FirstName2]);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len3 = <span class="built_in">strlen</span>(fullName);</span><br><span class="line">    fullName[len3] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> fullName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="三、生成地址"><a href="#三、生成地址" class="headerlink" title="三、生成地址"></a>三、生成地址</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span>* <span class="title function_">addrGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 产生 10 个地址</span></span><br><span class="line">    <span class="type">int</span> rand0 = rand() % <span class="number">5</span>;</span><br><span class="line">    <span class="type">int</span> rand1 = rand() % <span class="number">52</span>;</span><br><span class="line">    <span class="type">char</span> City[<span class="number">5</span>][<span class="number">40</span>] = &#123;<span class="string">&quot;西安市雁塔区春林四路&quot;</span>, <span class="string">&quot;西安市莲湖区西北一路&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;西安市碑林区长安北路&quot;</span>, <span class="string">&quot;西安市经济技术尚苑路&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;西安市高新区高新一路&quot;</span>&#125;;</span><br><span class="line">    <span class="type">char</span>* addr = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>) * <span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> *temp = City[rand0];</span><br><span class="line">    <span class="type">int</span> len = <span class="built_in">strlen</span>(temp);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;addr[<span class="number">0</span>], temp);</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> No[<span class="number">3</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;No[<span class="number">0</span>],transfer(rand1));</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;addr[len], No);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len1 = <span class="built_in">strlen</span>(addr);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;addr[len1], <span class="string">&quot;号&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len3 = <span class="built_in">strlen</span>(addr);</span><br><span class="line">    addr[len3] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> addr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="四、生成电话号码"><a href="#四、生成电话号码" class="headerlink" title="四、生成电话号码"></a>四、生成电话号码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span>* <span class="title function_">TelGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 随机产生电话号码</span></span><br><span class="line">    <span class="comment">// 号码头</span></span><br><span class="line">    <span class="type">char</span> num[<span class="number">10</span>][<span class="number">4</span>] = &#123;<span class="string">&quot;135&quot;</span>, <span class="string">&quot;136&quot;</span>, <span class="string">&quot;137&quot;</span>, <span class="string">&quot;139&quot;</span>, <span class="string">&quot;151&quot;</span>,</span><br><span class="line">                       <span class="string">&quot;158&quot;</span>, <span class="string">&quot;155&quot;</span>, <span class="string">&quot;159&quot;</span>, <span class="string">&quot;173&quot;</span>, <span class="string">&quot;177&quot;</span>&#125;;</span><br><span class="line">    <span class="comment">// 号码尾 1</span></span><br><span class="line">    <span class="type">char</span> numbody1[<span class="number">10</span>][<span class="number">4</span>] = &#123;<span class="string">&quot;123&quot;</span>, <span class="string">&quot;666&quot;</span>, <span class="string">&quot;345&quot;</span>, <span class="string">&quot;176&quot;</span>, <span class="string">&quot;124&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;342&quot;</span>, <span class="string">&quot;342&quot;</span>, <span class="string">&quot;453&quot;</span>, <span class="string">&quot;333&quot;</span>, <span class="string">&quot;888&quot;</span>&#125;;</span><br><span class="line">    <span class="comment">// 号码尾 2</span></span><br><span class="line">    <span class="type">char</span> numbody2[<span class="number">10</span>][<span class="number">6</span>] = &#123;<span class="string">&quot;33345&quot;</span>, <span class="string">&quot;54555&quot;</span>, <span class="string">&quot;34545&quot;</span>, <span class="string">&quot;66456&quot;</span>, <span class="string">&quot;77777&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;11781&quot;</span>, <span class="string">&quot;08704&quot;</span>, <span class="string">&quot;57855&quot;</span>, <span class="string">&quot;37842&quot;</span>, <span class="string">&quot;56798&quot;</span>&#125;;</span><br><span class="line">    <span class="type">int</span> ran1 = rand() % <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> ran2 = rand() % <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> ran3 = rand() % <span class="number">10</span>;</span><br><span class="line">    <span class="type">char</span>* Tell = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>) * <span class="number">12</span>);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;Tell[<span class="number">0</span>], num[ran1]);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;Tell[<span class="number">3</span>], numbody1[ran2]);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;Tell[<span class="number">6</span>], numbody2[ran3]);</span><br><span class="line">    <span class="keyword">return</span> Tell;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="五、代码总览"><a href="#五、代码总览" class="headerlink" title="五、代码总览"></a>五、代码总览</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="comment">// 文件路径宏</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TEADIR <span class="string">&quot;/Users/****/CProjects/****/Data/teacherinfo.txt&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MANDIR <span class="string">&quot;/Users/****/CProjects/****/Data/maninfo.txt&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TEAPW <span class="string">&quot;/Users/****/CProjects/****/Password/pw_tea.txt&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MANPW <span class="string">&quot;/Users/****/CProjects/****/Password/pw_man.txt&quot;</span></span></span><br><span class="line"><span class="comment">// 教师申诉缓冲池 以及 管理员待办缓冲池 的路径宏</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FROMTEA <span class="string">&quot;/Users/****/CProjects/****/Message/from_tea.txt&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TOMAN <span class="string">&quot;/Users/*****/CProjects/****/Message/to_man.txt&quot;</span></span></span><br><span class="line"><span class="comment">// 其它函数声明</span></span><br><span class="line"><span class="type">char</span>* <span class="title function_">transfer</span><span class="params">(<span class="type">int</span> num)</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">teacher</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> teaNo;           <span class="comment">// 教工号</span></span><br><span class="line">    <span class="type">char</span>* teaName;       <span class="comment">// 教师名字</span></span><br><span class="line">    <span class="type">char</span>* teaSex;        <span class="comment">// 教师性别</span></span><br><span class="line">    <span class="type">char</span>* workUnitName;  <span class="comment">// 工作单位</span></span><br><span class="line">    <span class="type">char</span>* address;       <span class="comment">// 家庭住址</span></span><br><span class="line">    <span class="type">char</span>* telNo;         <span class="comment">// 电话号码</span></span><br><span class="line">    <span class="type">double</span> basicWage;    <span class="comment">// 基本工资</span></span><br><span class="line">    <span class="type">double</span> allowance;    <span class="comment">// 津贴</span></span><br><span class="line">    <span class="type">double</span> tax;          <span class="comment">// 所得税</span></span><br><span class="line">&#125; Teacher;</span><br><span class="line"><span class="type">char</span>* <span class="title function_">nameGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 产生姓名</span></span><br><span class="line">    <span class="comment">// 21个姓</span></span><br><span class="line">    <span class="type">char</span> LastName[<span class="number">21</span>][<span class="number">8</span>] = &#123;<span class="string">&quot;赵&quot;</span>, <span class="string">&quot;钱&quot;</span>, <span class="string">&quot;孙&quot;</span>, <span class="string">&quot;李&quot;</span>, <span class="string">&quot;周&quot;</span>, <span class="string">&quot;吴&quot;</span>, <span class="string">&quot;郑&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;王&quot;</span>, <span class="string">&quot;黄&quot;</span>, <span class="string">&quot;路&quot;</span>, <span class="string">&quot;蔡&quot;</span>, <span class="string">&quot;司&quot;</span>, <span class="string">&quot;张&quot;</span>, <span class="string">&quot;高&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;刘&quot;</span>, <span class="string">&quot;胡&quot;</span>, <span class="string">&quot;侯&quot;</span>, <span class="string">&quot;花&quot;</span>, <span class="string">&quot;柳&quot;</span>, <span class="string">&quot;韩&quot;</span>, <span class="string">&quot;常&quot;</span>&#125;;</span><br><span class="line">    <span class="comment">// 16 个名</span></span><br><span class="line">    <span class="type">char</span> FirstName[<span class="number">16</span>][<span class="number">8</span>] = &#123;<span class="string">&quot;长&quot;</span>, <span class="string">&quot;广&quot;</span>, <span class="string">&quot;亮&quot;</span>, <span class="string">&quot;乐&quot;</span>, <span class="string">&quot;璐&quot;</span>, <span class="string">&quot;泉&quot;</span>, <span class="string">&quot;雨&quot;</span>, <span class="string">&quot;楠&quot;</span>,</span><br><span class="line">                             <span class="string">&quot;同&quot;</span>, <span class="string">&quot;曈&quot;</span>, <span class="string">&quot;火&quot;</span>, <span class="string">&quot;淼&quot;</span>, <span class="string">&quot;旺&quot;</span>, <span class="string">&quot;富&quot;</span>, <span class="string">&quot;健&quot;</span>, <span class="string">&quot;康&quot;</span>&#125;;</span><br><span class="line">    <span class="type">int</span> ran_LastName = rand() % <span class="number">21</span>;</span><br><span class="line">    <span class="type">int</span> ran_FirstName1 = rand() % <span class="number">16</span>;</span><br><span class="line">    <span class="type">int</span> ran_FirstName2 = rand() % <span class="number">16</span>;</span><br><span class="line">    <span class="type">char</span>* fullName = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>) * <span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;fullName[<span class="number">0</span>], LastName[ran_LastName]);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len1 = <span class="built_in">strlen</span>(fullName);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;fullName[len1], FirstName[ran_FirstName1]);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len2 = <span class="built_in">strlen</span>(fullName);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;fullName[len2], FirstName[ran_FirstName2]);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len3 = <span class="built_in">strlen</span>(fullName);</span><br><span class="line">    fullName[len3] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> fullName;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">char</span>* <span class="title function_">sexGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 产生性别</span></span><br><span class="line">    <span class="type">char</span>* sex = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>) * <span class="number">3</span>);</span><br><span class="line">    <span class="type">int</span> ran = rand() % <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">if</span> (ran == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">strcpy</span>(&amp;sex[<span class="number">0</span>], <span class="string">&quot;男&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">strcpy</span>(&amp;sex[<span class="number">0</span>], <span class="string">&quot;女&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    sex[<span class="number">3</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> sex;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">char</span>* <span class="title function_">addrGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 产生 10 个地址</span></span><br><span class="line">    <span class="type">int</span> rand0 = rand() % <span class="number">5</span>;</span><br><span class="line">    <span class="type">int</span> rand1 = rand() % <span class="number">52</span>;</span><br><span class="line">    <span class="type">char</span> City[<span class="number">5</span>][<span class="number">40</span>] = &#123;<span class="string">&quot;西安市雁塔区春林四路&quot;</span>, <span class="string">&quot;西安市莲湖区西北一路&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;西安市碑林区长安北路&quot;</span>, <span class="string">&quot;西安市经济技术尚苑路&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;西安市高新区高新一路&quot;</span>&#125;;</span><br><span class="line">    <span class="type">char</span>* addr = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>) * <span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> *temp = City[rand0];</span><br><span class="line">    <span class="type">int</span> len = <span class="built_in">strlen</span>(temp);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;addr[<span class="number">0</span>], temp);</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> No[<span class="number">3</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;No[<span class="number">0</span>],transfer(rand1));</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;addr[len], No);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len1 = <span class="built_in">strlen</span>(addr);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;addr[len1], <span class="string">&quot;号&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> len3 = <span class="built_in">strlen</span>(addr);</span><br><span class="line">    addr[len3] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> addr;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">char</span>* <span class="title function_">transfer</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">    <span class="type">int</span> a = num%<span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> b = num/<span class="number">10</span>;</span><br><span class="line">    <span class="type">char</span> *str = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>)*<span class="number">2</span>);</span><br><span class="line">    str[<span class="number">0</span>] = a+<span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">    str[<span class="number">1</span>] = b+<span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">    str[<span class="number">2</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">char</span>* <span class="title function_">TelGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 随机产生电话号码</span></span><br><span class="line">    <span class="comment">// 号码头</span></span><br><span class="line">    <span class="type">char</span> num[<span class="number">10</span>][<span class="number">4</span>] = &#123;<span class="string">&quot;135&quot;</span>, <span class="string">&quot;136&quot;</span>, <span class="string">&quot;137&quot;</span>, <span class="string">&quot;139&quot;</span>, <span class="string">&quot;151&quot;</span>,</span><br><span class="line">                       <span class="string">&quot;158&quot;</span>, <span class="string">&quot;155&quot;</span>, <span class="string">&quot;159&quot;</span>, <span class="string">&quot;173&quot;</span>, <span class="string">&quot;177&quot;</span>&#125;;</span><br><span class="line">    <span class="comment">// 号码尾 1</span></span><br><span class="line">    <span class="type">char</span> numbody1[<span class="number">10</span>][<span class="number">4</span>] = &#123;<span class="string">&quot;123&quot;</span>, <span class="string">&quot;666&quot;</span>, <span class="string">&quot;345&quot;</span>, <span class="string">&quot;176&quot;</span>, <span class="string">&quot;124&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;342&quot;</span>, <span class="string">&quot;342&quot;</span>, <span class="string">&quot;453&quot;</span>, <span class="string">&quot;333&quot;</span>, <span class="string">&quot;888&quot;</span>&#125;;</span><br><span class="line">    <span class="comment">// 号码尾 2</span></span><br><span class="line">    <span class="type">char</span> numbody2[<span class="number">10</span>][<span class="number">6</span>] = &#123;<span class="string">&quot;33345&quot;</span>, <span class="string">&quot;54555&quot;</span>, <span class="string">&quot;34545&quot;</span>, <span class="string">&quot;66456&quot;</span>, <span class="string">&quot;77777&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;11781&quot;</span>, <span class="string">&quot;08704&quot;</span>, <span class="string">&quot;57855&quot;</span>, <span class="string">&quot;37842&quot;</span>, <span class="string">&quot;56798&quot;</span>&#125;;</span><br><span class="line">    <span class="type">int</span> ran1 = rand() % <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> ran2 = rand() % <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> ran3 = rand() % <span class="number">10</span>;</span><br><span class="line">    <span class="type">char</span>* Tell = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="type">char</span>) * <span class="number">12</span>);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;Tell[<span class="number">0</span>], num[ran1]);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;Tell[<span class="number">3</span>], numbody1[ran2]);</span><br><span class="line">    <span class="built_in">strcpy</span>(&amp;Tell[<span class="number">6</span>], numbody2[ran3]);</span><br><span class="line">    <span class="keyword">return</span> Tell;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">double</span> <span class="title function_">basicWageGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 随机产生基本工资</span></span><br><span class="line">    <span class="type">int</span> wage1 = (rand() % <span class="number">3</span>) * <span class="number">1000</span> + <span class="number">3000</span>;</span><br><span class="line">    <span class="type">double</span> wage2 = (rand() % <span class="number">30</span>) * <span class="number">1.87</span> + <span class="number">600</span>;</span><br><span class="line">    <span class="type">double</span> wageTotal = wage1 + wage2;</span><br><span class="line">    <span class="keyword">return</span> wageTotal;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">double</span> <span class="title function_">alloGen</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">double</span> allo = (rand() % <span class="number">20</span>) * <span class="number">1.87</span> + <span class="number">456</span>;</span><br><span class="line">    <span class="keyword">return</span> allo;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">double</span> <span class="title function_">taxGen</span><span class="params">(<span class="type">int</span> totalWage)</span> &#123;</span><br><span class="line">    <span class="comment">// 经过计算,税前收入最高为 5654.23 元</span></span><br><span class="line">    <span class="comment">// 税收将会按照 3%进行征收，且征收起点为 5000 元</span></span><br><span class="line">    <span class="type">double</span> tax = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (totalWage &lt;= <span class="number">5000</span>) &#123;</span><br><span class="line">        tax = <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        tax = totalWage * <span class="number">0.03</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> tax;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">10000</span>; i &lt; <span class="number">10300</span>; i++) &#123;</span><br><span class="line">        Teacher teacher;</span><br><span class="line"></span><br><span class="line">        teacher.teaNo = i;</span><br><span class="line">        teacher.teaName = nameGen();</span><br><span class="line">        teacher.teaSex = sexGen();</span><br><span class="line">        teacher.workUnitName = <span class="string">&quot;航天城第四小学&quot;</span>;</span><br><span class="line">        teacher.address = addrGen();</span><br><span class="line">        teacher.telNo = TelGen();</span><br><span class="line">        teacher.basicWage = basicWageGen();</span><br><span class="line">        teacher.allowance = alloGen();</span><br><span class="line">        teacher.tax = taxGen(teacher.basicWage + teacher.allowance);</span><br><span class="line">        <span class="comment">// 打开文件,进行读写</span></span><br><span class="line">        FILE* fp = fopen(TEADIR, <span class="string">&quot;a&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (fp == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;打开文件失败,请重新确认路径!\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">fprintf</span>(fp, <span class="string">&quot;%d %s %s %s %s %s %.2f元 %.2f元 %.2f元\n&quot;</span>, teacher.teaNo,</span><br><span class="line">                teacher.teaName, teacher.teaSex, teacher.workUnitName,</span><br><span class="line">                teacher.address, teacher.telNo, teacher.basicWage,</span><br><span class="line">                teacher.allowance, teacher.tax);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="一、教师的基本信息"><a href="#一、教师的基本信息" class="headerlink" title="一、教师的基本信息"></a>一、教师的基本信息</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">teacher</span> &#123;</span><br>    <span class="hljs-type">int</span> teaNo;           <span class="hljs-comment">// 教工号</span><br>    <span class="hljs-type">char</span>* teaName;       <span class="hljs-comment">// 教师名字</span><br>    <span class="hljs-type">char</span>* teaSex;        <span class="hljs-comment">// 教师性别</span><br>    <span class="hljs-type">char</span>* workUnitName;  <span class="hljs-comment">// 工作单位</span><br>    <span class="hljs-type">char</span>* address;       <span class="hljs-comment">// 家庭住址</span><br>    <span class="hljs-type">char</span>* telNo;         <span class="hljs-comment">// 电话号码</span><br>    <span class="hljs-type">double</span> basicWage;    <span class="hljs-comment">// 基本工资</span><br>    <span class="hljs-type">double</span> allowance;    <span class="hljs-comment">// 津贴</span><br>    <span class="hljs-type">double</span> tax;          <span class="hljs-comment">// 所得税</span><br>&#125; Teacher;<br></code></pre></td></tr></table></figure>
+<h2 id="二、生成姓名"><a href="#二、生成姓名" class="headerlink" title="二、生成姓名"></a>二、生成姓名</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">char</span>* <span class="hljs-title function_">nameGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 产生姓名</span><br>    <span class="hljs-comment">// 21个姓</span><br>    <span class="hljs-type">char</span> LastName[<span class="hljs-number">21</span>][<span class="hljs-number">8</span>] = &#123;<span class="hljs-string">&quot;赵&quot;</span>, <span class="hljs-string">&quot;钱&quot;</span>, <span class="hljs-string">&quot;孙&quot;</span>, <span class="hljs-string">&quot;李&quot;</span>, <span class="hljs-string">&quot;周&quot;</span>, <span class="hljs-string">&quot;吴&quot;</span>, <span class="hljs-string">&quot;郑&quot;</span>,<br>                            <span class="hljs-string">&quot;王&quot;</span>, <span class="hljs-string">&quot;黄&quot;</span>, <span class="hljs-string">&quot;路&quot;</span>, <span class="hljs-string">&quot;蔡&quot;</span>, <span class="hljs-string">&quot;司&quot;</span>, <span class="hljs-string">&quot;张&quot;</span>, <span class="hljs-string">&quot;高&quot;</span>,<br>                            <span class="hljs-string">&quot;刘&quot;</span>, <span class="hljs-string">&quot;胡&quot;</span>, <span class="hljs-string">&quot;侯&quot;</span>, <span class="hljs-string">&quot;花&quot;</span>, <span class="hljs-string">&quot;柳&quot;</span>, <span class="hljs-string">&quot;韩&quot;</span>, <span class="hljs-string">&quot;常&quot;</span>&#125;;<br>    <span class="hljs-comment">// 16 个名</span><br>    <span class="hljs-type">char</span> FirstName[<span class="hljs-number">16</span>][<span class="hljs-number">8</span>] = &#123;<span class="hljs-string">&quot;长&quot;</span>, <span class="hljs-string">&quot;广&quot;</span>, <span class="hljs-string">&quot;亮&quot;</span>, <span class="hljs-string">&quot;乐&quot;</span>, <span class="hljs-string">&quot;璐&quot;</span>, <span class="hljs-string">&quot;泉&quot;</span>, <span class="hljs-string">&quot;雨&quot;</span>, <span class="hljs-string">&quot;楠&quot;</span>,<br>                             <span class="hljs-string">&quot;同&quot;</span>, <span class="hljs-string">&quot;曈&quot;</span>, <span class="hljs-string">&quot;火&quot;</span>, <span class="hljs-string">&quot;淼&quot;</span>, <span class="hljs-string">&quot;旺&quot;</span>, <span class="hljs-string">&quot;富&quot;</span>, <span class="hljs-string">&quot;健&quot;</span>, <span class="hljs-string">&quot;康&quot;</span>&#125;;<br>    <span class="hljs-type">int</span> ran_LastName = rand() % <span class="hljs-number">21</span>;<br>    <span class="hljs-type">int</span> ran_FirstName1 = rand() % <span class="hljs-number">16</span>;<br>    <span class="hljs-type">int</span> ran_FirstName2 = rand() % <span class="hljs-number">16</span>;<br>    <span class="hljs-type">char</span>* fullName = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * <span class="hljs-number">16</span>);<br><br>    <span class="hljs-built_in">strcpy</span>(&amp;fullName[<span class="hljs-number">0</span>], LastName[ran_LastName]);<br><br>    <span class="hljs-type">int</span> len1 = <span class="hljs-built_in">strlen</span>(fullName);<br>    <span class="hljs-built_in">strcpy</span>(&amp;fullName[len1], FirstName[ran_FirstName1]);<br><br>    <span class="hljs-type">int</span> len2 = <span class="hljs-built_in">strlen</span>(fullName);<br>    <span class="hljs-built_in">strcpy</span>(&amp;fullName[len2], FirstName[ran_FirstName2]);<br><br>    <span class="hljs-type">int</span> len3 = <span class="hljs-built_in">strlen</span>(fullName);<br>    fullName[len3] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> fullName;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="三、生成地址"><a href="#三、生成地址" class="headerlink" title="三、生成地址"></a>三、生成地址</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">char</span>* <span class="hljs-title function_">addrGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 产生 10 个地址</span><br>    <span class="hljs-type">int</span> rand0 = rand() % <span class="hljs-number">5</span>;<br>    <span class="hljs-type">int</span> rand1 = rand() % <span class="hljs-number">52</span>;<br>    <span class="hljs-type">char</span> City[<span class="hljs-number">5</span>][<span class="hljs-number">40</span>] = &#123;<span class="hljs-string">&quot;西安市雁塔区春林四路&quot;</span>, <span class="hljs-string">&quot;西安市莲湖区西北一路&quot;</span>,<br>                        <span class="hljs-string">&quot;西安市碑林区长安北路&quot;</span>, <span class="hljs-string">&quot;西安市经济技术尚苑路&quot;</span>,<br>                        <span class="hljs-string">&quot;西安市高新区高新一路&quot;</span>&#125;;<br>    <span class="hljs-type">char</span>* addr = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * <span class="hljs-number">1024</span>);<br><br>    <span class="hljs-type">char</span> *temp = City[rand0];<br>    <span class="hljs-type">int</span> len = <span class="hljs-built_in">strlen</span>(temp);<br>    <span class="hljs-built_in">strcpy</span>(&amp;addr[<span class="hljs-number">0</span>], temp);<br><br>    <span class="hljs-type">char</span> No[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    <span class="hljs-built_in">strcpy</span>(&amp;No[<span class="hljs-number">0</span>],transfer(rand1));<br>    <span class="hljs-built_in">strcpy</span>(&amp;addr[len], No);<br><br>    <span class="hljs-type">int</span> len1 = <span class="hljs-built_in">strlen</span>(addr);<br>    <span class="hljs-built_in">strcpy</span>(&amp;addr[len1], <span class="hljs-string">&quot;号&quot;</span>);<br><br>    <span class="hljs-type">int</span> len3 = <span class="hljs-built_in">strlen</span>(addr);<br>    addr[len3] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> addr;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="四、生成电话号码"><a href="#四、生成电话号码" class="headerlink" title="四、生成电话号码"></a>四、生成电话号码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">char</span>* <span class="hljs-title function_">TelGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 随机产生电话号码</span><br>    <span class="hljs-comment">// 号码头</span><br>    <span class="hljs-type">char</span> num[<span class="hljs-number">10</span>][<span class="hljs-number">4</span>] = &#123;<span class="hljs-string">&quot;135&quot;</span>, <span class="hljs-string">&quot;136&quot;</span>, <span class="hljs-string">&quot;137&quot;</span>, <span class="hljs-string">&quot;139&quot;</span>, <span class="hljs-string">&quot;151&quot;</span>,<br>                       <span class="hljs-string">&quot;158&quot;</span>, <span class="hljs-string">&quot;155&quot;</span>, <span class="hljs-string">&quot;159&quot;</span>, <span class="hljs-string">&quot;173&quot;</span>, <span class="hljs-string">&quot;177&quot;</span>&#125;;<br>    <span class="hljs-comment">// 号码尾 1</span><br>    <span class="hljs-type">char</span> numbody1[<span class="hljs-number">10</span>][<span class="hljs-number">4</span>] = &#123;<span class="hljs-string">&quot;123&quot;</span>, <span class="hljs-string">&quot;666&quot;</span>, <span class="hljs-string">&quot;345&quot;</span>, <span class="hljs-string">&quot;176&quot;</span>, <span class="hljs-string">&quot;124&quot;</span>,<br>                            <span class="hljs-string">&quot;342&quot;</span>, <span class="hljs-string">&quot;342&quot;</span>, <span class="hljs-string">&quot;453&quot;</span>, <span class="hljs-string">&quot;333&quot;</span>, <span class="hljs-string">&quot;888&quot;</span>&#125;;<br>    <span class="hljs-comment">// 号码尾 2</span><br>    <span class="hljs-type">char</span> numbody2[<span class="hljs-number">10</span>][<span class="hljs-number">6</span>] = &#123;<span class="hljs-string">&quot;33345&quot;</span>, <span class="hljs-string">&quot;54555&quot;</span>, <span class="hljs-string">&quot;34545&quot;</span>, <span class="hljs-string">&quot;66456&quot;</span>, <span class="hljs-string">&quot;77777&quot;</span>,<br>                            <span class="hljs-string">&quot;11781&quot;</span>, <span class="hljs-string">&quot;08704&quot;</span>, <span class="hljs-string">&quot;57855&quot;</span>, <span class="hljs-string">&quot;37842&quot;</span>, <span class="hljs-string">&quot;56798&quot;</span>&#125;;<br>    <span class="hljs-type">int</span> ran1 = rand() % <span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span> ran2 = rand() % <span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span> ran3 = rand() % <span class="hljs-number">10</span>;<br>    <span class="hljs-type">char</span>* Tell = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * <span class="hljs-number">12</span>);<br>    <span class="hljs-built_in">strcpy</span>(&amp;Tell[<span class="hljs-number">0</span>], num[ran1]);<br>    <span class="hljs-built_in">strcpy</span>(&amp;Tell[<span class="hljs-number">3</span>], numbody1[ran2]);<br>    <span class="hljs-built_in">strcpy</span>(&amp;Tell[<span class="hljs-number">6</span>], numbody2[ran3]);<br>    <span class="hljs-keyword">return</span> Tell;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="五、代码总览"><a href="#五、代码总览" class="headerlink" title="五、代码总览"></a>五、代码总览</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><span class="hljs-comment">// 文件路径宏</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> TEADIR <span class="hljs-string">&quot;/Users/****/CProjects/****/Data/teacherinfo.txt&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MANDIR <span class="hljs-string">&quot;/Users/****/CProjects/****/Data/maninfo.txt&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> TEAPW <span class="hljs-string">&quot;/Users/****/CProjects/****/Password/pw_tea.txt&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MANPW <span class="hljs-string">&quot;/Users/****/CProjects/****/Password/pw_man.txt&quot;</span></span><br><span class="hljs-comment">// 教师申诉缓冲池 以及 管理员待办缓冲池 的路径宏</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> FROMTEA <span class="hljs-string">&quot;/Users/****/CProjects/****/Message/from_tea.txt&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> TOMAN <span class="hljs-string">&quot;/Users/*****/CProjects/****/Message/to_man.txt&quot;</span></span><br><span class="hljs-comment">// 其它函数声明</span><br><span class="hljs-type">char</span>* <span class="hljs-title function_">transfer</span><span class="hljs-params">(<span class="hljs-type">int</span> num)</span>;<br><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">teacher</span> &#123;</span><br>    <span class="hljs-type">int</span> teaNo;           <span class="hljs-comment">// 教工号</span><br>    <span class="hljs-type">char</span>* teaName;       <span class="hljs-comment">// 教师名字</span><br>    <span class="hljs-type">char</span>* teaSex;        <span class="hljs-comment">// 教师性别</span><br>    <span class="hljs-type">char</span>* workUnitName;  <span class="hljs-comment">// 工作单位</span><br>    <span class="hljs-type">char</span>* address;       <span class="hljs-comment">// 家庭住址</span><br>    <span class="hljs-type">char</span>* telNo;         <span class="hljs-comment">// 电话号码</span><br>    <span class="hljs-type">double</span> basicWage;    <span class="hljs-comment">// 基本工资</span><br>    <span class="hljs-type">double</span> allowance;    <span class="hljs-comment">// 津贴</span><br>    <span class="hljs-type">double</span> tax;          <span class="hljs-comment">// 所得税</span><br>&#125; Teacher;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">nameGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 产生姓名</span><br>    <span class="hljs-comment">// 21个姓</span><br>    <span class="hljs-type">char</span> LastName[<span class="hljs-number">21</span>][<span class="hljs-number">8</span>] = &#123;<span class="hljs-string">&quot;赵&quot;</span>, <span class="hljs-string">&quot;钱&quot;</span>, <span class="hljs-string">&quot;孙&quot;</span>, <span class="hljs-string">&quot;李&quot;</span>, <span class="hljs-string">&quot;周&quot;</span>, <span class="hljs-string">&quot;吴&quot;</span>, <span class="hljs-string">&quot;郑&quot;</span>,<br>                            <span class="hljs-string">&quot;王&quot;</span>, <span class="hljs-string">&quot;黄&quot;</span>, <span class="hljs-string">&quot;路&quot;</span>, <span class="hljs-string">&quot;蔡&quot;</span>, <span class="hljs-string">&quot;司&quot;</span>, <span class="hljs-string">&quot;张&quot;</span>, <span class="hljs-string">&quot;高&quot;</span>,<br>                            <span class="hljs-string">&quot;刘&quot;</span>, <span class="hljs-string">&quot;胡&quot;</span>, <span class="hljs-string">&quot;侯&quot;</span>, <span class="hljs-string">&quot;花&quot;</span>, <span class="hljs-string">&quot;柳&quot;</span>, <span class="hljs-string">&quot;韩&quot;</span>, <span class="hljs-string">&quot;常&quot;</span>&#125;;<br>    <span class="hljs-comment">// 16 个名</span><br>    <span class="hljs-type">char</span> FirstName[<span class="hljs-number">16</span>][<span class="hljs-number">8</span>] = &#123;<span class="hljs-string">&quot;长&quot;</span>, <span class="hljs-string">&quot;广&quot;</span>, <span class="hljs-string">&quot;亮&quot;</span>, <span class="hljs-string">&quot;乐&quot;</span>, <span class="hljs-string">&quot;璐&quot;</span>, <span class="hljs-string">&quot;泉&quot;</span>, <span class="hljs-string">&quot;雨&quot;</span>, <span class="hljs-string">&quot;楠&quot;</span>,<br>                             <span class="hljs-string">&quot;同&quot;</span>, <span class="hljs-string">&quot;曈&quot;</span>, <span class="hljs-string">&quot;火&quot;</span>, <span class="hljs-string">&quot;淼&quot;</span>, <span class="hljs-string">&quot;旺&quot;</span>, <span class="hljs-string">&quot;富&quot;</span>, <span class="hljs-string">&quot;健&quot;</span>, <span class="hljs-string">&quot;康&quot;</span>&#125;;<br>    <span class="hljs-type">int</span> ran_LastName = rand() % <span class="hljs-number">21</span>;<br>    <span class="hljs-type">int</span> ran_FirstName1 = rand() % <span class="hljs-number">16</span>;<br>    <span class="hljs-type">int</span> ran_FirstName2 = rand() % <span class="hljs-number">16</span>;<br>    <span class="hljs-type">char</span>* fullName = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * <span class="hljs-number">16</span>);<br><br>    <span class="hljs-built_in">strcpy</span>(&amp;fullName[<span class="hljs-number">0</span>], LastName[ran_LastName]);<br><br>    <span class="hljs-type">int</span> len1 = <span class="hljs-built_in">strlen</span>(fullName);<br>    <span class="hljs-built_in">strcpy</span>(&amp;fullName[len1], FirstName[ran_FirstName1]);<br><br>    <span class="hljs-type">int</span> len2 = <span class="hljs-built_in">strlen</span>(fullName);<br>    <span class="hljs-built_in">strcpy</span>(&amp;fullName[len2], FirstName[ran_FirstName2]);<br><br>    <span class="hljs-type">int</span> len3 = <span class="hljs-built_in">strlen</span>(fullName);<br>    fullName[len3] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> fullName;<br>&#125;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">sexGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 产生性别</span><br>    <span class="hljs-type">char</span>* sex = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * <span class="hljs-number">3</span>);<br>    <span class="hljs-type">int</span> ran = rand() % <span class="hljs-number">2</span>;<br>    <span class="hljs-keyword">if</span> (ran == <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">strcpy</span>(&amp;sex[<span class="hljs-number">0</span>], <span class="hljs-string">&quot;男&quot;</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">strcpy</span>(&amp;sex[<span class="hljs-number">0</span>], <span class="hljs-string">&quot;女&quot;</span>);<br>    &#125;<br>    sex[<span class="hljs-number">3</span>] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> sex;<br>&#125;<br><br><span class="hljs-type">char</span>* <span class="hljs-title function_">addrGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 产生 10 个地址</span><br>    <span class="hljs-type">int</span> rand0 = rand() % <span class="hljs-number">5</span>;<br>    <span class="hljs-type">int</span> rand1 = rand() % <span class="hljs-number">52</span>;<br>    <span class="hljs-type">char</span> City[<span class="hljs-number">5</span>][<span class="hljs-number">40</span>] = &#123;<span class="hljs-string">&quot;西安市雁塔区春林四路&quot;</span>, <span class="hljs-string">&quot;西安市莲湖区西北一路&quot;</span>,<br>                        <span class="hljs-string">&quot;西安市碑林区长安北路&quot;</span>, <span class="hljs-string">&quot;西安市经济技术尚苑路&quot;</span>,<br>                        <span class="hljs-string">&quot;西安市高新区高新一路&quot;</span>&#125;;<br>    <span class="hljs-type">char</span>* addr = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * <span class="hljs-number">1024</span>);<br><br>    <span class="hljs-type">char</span> *temp = City[rand0];<br>    <span class="hljs-type">int</span> len = <span class="hljs-built_in">strlen</span>(temp);<br>    <span class="hljs-built_in">strcpy</span>(&amp;addr[<span class="hljs-number">0</span>], temp);<br><br>    <span class="hljs-type">char</span> No[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    <span class="hljs-built_in">strcpy</span>(&amp;No[<span class="hljs-number">0</span>],transfer(rand1));<br>    <span class="hljs-built_in">strcpy</span>(&amp;addr[len], No);<br><br>    <span class="hljs-type">int</span> len1 = <span class="hljs-built_in">strlen</span>(addr);<br>    <span class="hljs-built_in">strcpy</span>(&amp;addr[len1], <span class="hljs-string">&quot;号&quot;</span>);<br><br>    <span class="hljs-type">int</span> len3 = <span class="hljs-built_in">strlen</span>(addr);<br>    addr[len3] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> addr;<br>&#125;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">transfer</span><span class="hljs-params">(<span class="hljs-type">int</span> num)</span>&#123;<br>    <span class="hljs-type">int</span> a = num%<span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span> b = num/<span class="hljs-number">10</span>;<br>    <span class="hljs-type">char</span> *str = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>)*<span class="hljs-number">2</span>);<br>    str[<span class="hljs-number">0</span>] = a+<span class="hljs-string">&#x27;0&#x27;</span>;<br>    str[<span class="hljs-number">1</span>] = b+<span class="hljs-string">&#x27;0&#x27;</span>;<br>    str[<span class="hljs-number">2</span>] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> str;<br>&#125;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">TelGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 随机产生电话号码</span><br>    <span class="hljs-comment">// 号码头</span><br>    <span class="hljs-type">char</span> num[<span class="hljs-number">10</span>][<span class="hljs-number">4</span>] = &#123;<span class="hljs-string">&quot;135&quot;</span>, <span class="hljs-string">&quot;136&quot;</span>, <span class="hljs-string">&quot;137&quot;</span>, <span class="hljs-string">&quot;139&quot;</span>, <span class="hljs-string">&quot;151&quot;</span>,<br>                       <span class="hljs-string">&quot;158&quot;</span>, <span class="hljs-string">&quot;155&quot;</span>, <span class="hljs-string">&quot;159&quot;</span>, <span class="hljs-string">&quot;173&quot;</span>, <span class="hljs-string">&quot;177&quot;</span>&#125;;<br>    <span class="hljs-comment">// 号码尾 1</span><br>    <span class="hljs-type">char</span> numbody1[<span class="hljs-number">10</span>][<span class="hljs-number">4</span>] = &#123;<span class="hljs-string">&quot;123&quot;</span>, <span class="hljs-string">&quot;666&quot;</span>, <span class="hljs-string">&quot;345&quot;</span>, <span class="hljs-string">&quot;176&quot;</span>, <span class="hljs-string">&quot;124&quot;</span>,<br>                            <span class="hljs-string">&quot;342&quot;</span>, <span class="hljs-string">&quot;342&quot;</span>, <span class="hljs-string">&quot;453&quot;</span>, <span class="hljs-string">&quot;333&quot;</span>, <span class="hljs-string">&quot;888&quot;</span>&#125;;<br>    <span class="hljs-comment">// 号码尾 2</span><br>    <span class="hljs-type">char</span> numbody2[<span class="hljs-number">10</span>][<span class="hljs-number">6</span>] = &#123;<span class="hljs-string">&quot;33345&quot;</span>, <span class="hljs-string">&quot;54555&quot;</span>, <span class="hljs-string">&quot;34545&quot;</span>, <span class="hljs-string">&quot;66456&quot;</span>, <span class="hljs-string">&quot;77777&quot;</span>,<br>                            <span class="hljs-string">&quot;11781&quot;</span>, <span class="hljs-string">&quot;08704&quot;</span>, <span class="hljs-string">&quot;57855&quot;</span>, <span class="hljs-string">&quot;37842&quot;</span>, <span class="hljs-string">&quot;56798&quot;</span>&#125;;<br>    <span class="hljs-type">int</span> ran1 = rand() % <span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span> ran2 = rand() % <span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span> ran3 = rand() % <span class="hljs-number">10</span>;<br>    <span class="hljs-type">char</span>* Tell = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * <span class="hljs-number">12</span>);<br>    <span class="hljs-built_in">strcpy</span>(&amp;Tell[<span class="hljs-number">0</span>], num[ran1]);<br>    <span class="hljs-built_in">strcpy</span>(&amp;Tell[<span class="hljs-number">3</span>], numbody1[ran2]);<br>    <span class="hljs-built_in">strcpy</span>(&amp;Tell[<span class="hljs-number">6</span>], numbody2[ran3]);<br>    <span class="hljs-keyword">return</span> Tell;<br>&#125;<br><span class="hljs-type">double</span> <span class="hljs-title function_">basicWageGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 随机产生基本工资</span><br>    <span class="hljs-type">int</span> wage1 = (rand() % <span class="hljs-number">3</span>) * <span class="hljs-number">1000</span> + <span class="hljs-number">3000</span>;<br>    <span class="hljs-type">double</span> wage2 = (rand() % <span class="hljs-number">30</span>) * <span class="hljs-number">1.87</span> + <span class="hljs-number">600</span>;<br>    <span class="hljs-type">double</span> wageTotal = wage1 + wage2;<br>    <span class="hljs-keyword">return</span> wageTotal;<br>&#125;<br><span class="hljs-type">double</span> <span class="hljs-title function_">alloGen</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">double</span> allo = (rand() % <span class="hljs-number">20</span>) * <span class="hljs-number">1.87</span> + <span class="hljs-number">456</span>;<br>    <span class="hljs-keyword">return</span> allo;<br>&#125;<br><span class="hljs-type">double</span> <span class="hljs-title function_">taxGen</span><span class="hljs-params">(<span class="hljs-type">int</span> totalWage)</span> &#123;<br>    <span class="hljs-comment">// 经过计算,税前收入最高为 5654.23 元</span><br>    <span class="hljs-comment">// 税收将会按照 3%进行征收，且征收起点为 5000 元</span><br>    <span class="hljs-type">double</span> tax = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">if</span> (totalWage &lt;= <span class="hljs-number">5000</span>) &#123;<br>        tax = <span class="hljs-number">0</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        tax = totalWage * <span class="hljs-number">0.03</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> tax;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">10000</span>; i &lt; <span class="hljs-number">10300</span>; i++) &#123;<br>        Teacher teacher;<br><br>        teacher.teaNo = i;<br>        teacher.teaName = nameGen();<br>        teacher.teaSex = sexGen();<br>        teacher.workUnitName = <span class="hljs-string">&quot;航天城第四小学&quot;</span>;<br>        teacher.address = addrGen();<br>        teacher.telNo = TelGen();<br>        teacher.basicWage = basicWageGen();<br>        teacher.allowance = alloGen();<br>        teacher.tax = taxGen(teacher.basicWage + teacher.allowance);<br>        <span class="hljs-comment">// 打开文件,进行读写</span><br>        FILE* fp = fopen(TEADIR, <span class="hljs-string">&quot;a&quot;</span>);<br>        <span class="hljs-keyword">if</span> (fp == <span class="hljs-literal">NULL</span>) &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;打开文件失败,请重新确认路径!\n&quot;</span>);<br>        &#125;<br>        <span class="hljs-built_in">fprintf</span>(fp, <span class="hljs-string">&quot;%d %s %s %s %s %s %.2f元 %.2f元 %.2f元\n&quot;</span>, teacher.teaNo,<br>                teacher.teaName, teacher.teaSex, teacher.workUnitName,<br>                teacher.address, teacher.telNo, teacher.basicWage,<br>                teacher.allowance, teacher.tax);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 <h2 id="六、数据生成效果"><a href="#六、数据生成效果" class="headerlink" title="六、数据生成效果"></a>六、数据生成效果</h2><blockquote>
 <p>10000 王广曈 女 航天城第四小学 西安市雁塔区春林四路42号 15133366456 4600.00元 465.35元 151.95元<br>10001 赵亮乐 男 航天城第四小学 西安市碑林区长安北路54号 13534566456 4616.83元 487.79元 153.12元<br>10002 钱泉淼 女 航天城第四小学 西安市莲湖区西北一路13号 15934234545 4637.40元 480.31元 153.51元<br>10003 王富乐 男 航天城第四小学 西安市碑林区长安北路61号 13934211781 5614.96元 476.57元 182.73元<br>10004 郑泉曈 男 航天城第四小学 西安市经济技术尚苑路02号 17312377777 5600.00元 461.61元 181.83元<br>10005 韩火泉 女 航天城第四小学 西安市莲湖区西北一路14号 15933337842 4652.36元 457.87元 153.30元<br>10006 韩富曈 女 航天城第四小学 西安市经济技术尚苑路42号 15888811781 4616.83元 457.87元 152.22元<br>10007 黄乐曈 女 航天城第四小学 西安市莲湖区西北一路01号 17317611781 4622.44元 467.22元 152.67元<br>10008 高广雨 女 航天城第四小学 西安市莲湖区西北一路71号 13633357855 5613.09元 487.79元 183.00元<br>10009 张长曈 男 航天城第四小学 西安市雁塔区春林四路74号 15833334545 4614.96元 478.44元 152.79元<br>10010 郑泉火 女 航天城第四小学 西安市雁塔区春林四路84号 13912308704 3641.14元 465.35元 0.00元<br>10011 蔡旺康 男 航天城第四小学 西安市雁塔区春林四路84号 13666633345 3614.96元 487.79元 0.00元<br>10012 蔡健同 男 航天城第四小学 西安市雁塔区春林四路24号 13733311781 3644.88元 461.61元 0.00元<br>10013 钱同曈 女 航天城第四小学 西安市经济技术尚苑路22号 13912337842 4600.00元 463.48元 151.89元<br>10014 钱雨火 女 航天城第四小学 西安市经济技术尚苑路41号 15112333345 3624.31元 469.09元 0.00元<br>10015 高广同 男 航天城第四小学 西安市碑林区长安北路33号 15534266456 4626.18元 470.96元 152.91元<br>10016 侯淼曈 女 航天城第四小学 西安市碑林区长安北路72号 17734577777 4614.96元 485.92元 153.00元<br>10017 柳楠康 男 航天城第四小学 西安市高新区高新一路94号 13945311781 5603.74元 476.57元 182.40元<br>10018 郑广曈 男 航天城第四小学 西安市雁塔区春林四路80号 15834257855 4607.48元 476.57元 152.52元<br>10019 李富同 女 航天城第四小学 西安市高新区高新一路00号 15888857855 3624.31元 472.83元 0.00元<br>10020 花康楠 女 航天城第四小学 西安市经济技术尚苑路43号 15533356798 3644.88元 489.66元 0.00元<br>10021 赵富淼 男 航天城第四小学 西安市经济技术尚苑路70号 13612456798 4654.23元 456.00元 153.30元<br>10022 高楠雨 女 航天城第四小学 西安市碑林区长安北路73号 15934233345 5626.18元 487.79元 183.39元<br>10023 胡同健 女 航天城第四小学 西安市莲湖区西北一路44号 15145377777 5652.36元 465.35元 183.51元<br>10024 黄乐广 男 航天城第四小学 西安市经济技术尚苑路30号 15945366456 5628.05元 485.92元 183.39元<br>10025 常同雨 女 航天城第四小学 西安市雁塔区春林四路82号 13534208704 5628.05元 480.31元 183.24元<br>10026 常长火 女 航天城第四小学 西安市碑林区长安北路13号 17312456798 3643.01元 476.57元 0.00元<br>10027 侯火曈 男 航天城第四小学 西安市莲湖区西北一路04号 17717657855 4633.66元 456.00元 152.67元<br>10028 高长乐 男 航天城第四小学 西安市雁塔区春林四路83号 15834257855 5600.00元 467.22元 182.01元<br>10029 韩曈曈 女 航天城第四小学 西安市经济技术尚苑路23号 15133357855 3616.83元 484.05元 0.00元<br>10030 常雨泉 男 航天城第四小学 西安市高新区高新一路30号 15988811781 3605.61元 461.61元 0.00元<br>10031 郑广火 男 航天城第四小学 西安市莲湖区西北一路05号 15134566456 4650.49元 456.00元 153.18元<br>10032 赵康长 男 航天城第四小学 西安市雁塔区春林四路63号 13933366456 5618.70元 482.18元 183.00元<br>10033 黄楠同 女 航天城第四小学 西安市高新区高新一路05号 17766633345 4624.31元 474.70元 152.97元<br>10034 胡乐亮 男 航天城第四小学 西安市高新区高新一路62号 15588833345 4648.62元 463.48元 153.36元<br>10035 郑健长 男 航天城第四小学 西安市高新区高新一路00号 17366633345 5639.27元 457.87元 182.91元<br>10036 常同亮 女 航天城第四小学 西安市高新区高新一路33号 13534234545 3652.36元 487.79元 0.00元<br>10037 蔡健旺 男 航天城第四小学 西安市碑林区长安北路34号 13534233345 5605.61元 465.35元 182.10元<br>10038 常雨淼 女 航天城第四小学 西安市碑林区长安北路54号 13512356798 3620.57元 469.09元 0.00元<br>10039 黄曈广 男 航天城第四小学 西安市经济技术尚苑路60号 15812411781 5637.40元 476.57元 183.39元<br>10040 孙健曈 男 航天城第四小学 西安市经济技术尚苑路50号 15534277777 5633.66元 478.44元 183.36元<br>10041 胡璐旺 男 航天城第四小学 西安市碑林区长安北路11号 17366654555 5620.57元 476.57元 182.91元<br>10042 王康富 男 航天城第四小学 西安市雁塔区春林四路04号 17317657855 4601.87元 461.61元 151.89元<br>10043 王富康 男 航天城第四小学 西安市雁塔区春林四路11号 13734208704 4644.88元 457.87元 153.06元<br>10044 王泉康 女 航天城第四小学 西安市经济技术尚苑路42号 13634233345 4609.35元 480.31元 152.67元<br>10045 韩长楠 男 航天城第四小学 西安市雁塔区春林四路74号 15533311781 4631.79元 472.83元 153.12元<br>10046 常健同 女 航天城第四小学 西安市碑林区长安北路82号 15166633345 5639.27元 463.48元 183.06元<br>10047 侯雨健 男 航天城第四小学 西安市碑林区长安北路31号 17312411781 3652.36元 472.83元 0.00元<br>10048 胡楠同 女 航天城第四小学 西安市雁塔区春林四路42号 15817637842 3601.87元 478.44元 0.00元<br>10049 柳璐泉 男 航天城第四小学 西安市雁塔区春林四路22号 15834533345 3631.79元 491.53元 0.00元<br>10050 胡乐富 男 航天城第四小学 西安市高新区高新一路44号 17766611781 5652.36元 480.31元 183.96元<br>10051 郑广雨 男 航天城第四小学 西安市莲湖区西北一路24号 13933308704 4654.23元 485.92元 154.20元<br>10052 常旺楠 男 航天城第四小学 西安市雁塔区春林四路74号 13712456798 5644.88元 469.09元 183.39元<br>10053 周楠泉 女 航天城第四小学 西安市莲湖区西北一路31号 17766666456 4652.36元 491.53元 154.29元<br>10054 吴康楠 男 航天城第四小学 西安市莲湖区西北一路13号 15134254555 4611.22元 474.70元 152.55元<br>10055 韩长同 男 航天城第四小学 西安市高新区高新一路92号 15912356798 4613.09元 459.74元 152.16元<br>10056 高泉旺 女 航天城第四小学 西安市碑林区长安北路73号 17733366456 5639.27元 478.44元 183.51元<br>10057 周富富 女 航天城第四小学 西安市雁塔区春林四路05号 15134254555 3624.31元 469.09元 0.00元<br>10058 黄璐楠 女 航天城第四小学 西安市碑林区长安北路00号 13517656798 5635.53元 467.22元 183.06元<br>10059 黄广淼 女 航天城第四小学 西安市莲湖区西北一路11号 13512366456 5646.75元 461.61元 183.24元<br>10060 常康同 女 航天城第四小学 西安市高新区高新一路34号 17712308704 5631.79元 480.31元 183.36元<br>10061 高广火 男 航天城第四小学 西安市莲湖区西北一路92号 13612454555 4611.22元 476.57元 152.61元<br>10062 李火璐 女 航天城第四小学 西安市高新区高新一路92号 13645356798 5631.79元 474.70元 183.18元<br>10063 孙泉泉 女 航天城第四小学 西安市碑林区长安北路04号 15188857855 3603.74元 474.70元 0.00元<br>10064 王雨广 男 航天城第四小学 西安市莲湖区西北一路61号 17734556798 5618.70元 478.44元 182.91元<br>10065 李雨璐 女 航天城第四小学 西安市雁塔区春林四路90号 15866654555 5628.05元 457.87元 182.55元<br>10066 张雨同 男 航天城第四小学 西安市经济技术尚苑路33号 17734266456 3609.35元 489.66元 0.00元<br>10067 柳曈雨 女 航天城第四小学 西安市经济技术尚苑路51号 17712311781 3626.18元 482.18元 0.00元<br>10068 赵健璐 女 航天城第四小学 西安市莲湖区西北一路20号 13512333345 3639.27元 469.09元 0.00元<br>10069 钱乐泉 女 航天城第四小学 西安市经济技术尚苑路30号 17334266456 3635.53元 480.31元 0.00元<br>10070 胡康璐 女 航天城第四小学 西安市高新区高新一路05号 13512366456 3633.66元 459.74元 0.00元<br>10071 王旺曈 男 航天城第四小学 西安市雁塔区春林四路02号 15545333345 4624.31元 480.31元 153.12元<br>10072 赵泉同 女 航天城第四小学 西安市雁塔区春林四路60号 15917637842 3646.75元 459.74元 0.00元<br>10073 常亮广 女 航天城第四小学 西安市雁塔区春林四路53号 13934211781 4628.05元 457.87元 152.55元<br>10074 钱火乐 男 航天城第四小学 西安市经济技术尚苑路05号 15988837842 5613.09元 465.35元 182.34元<br>10075 孙旺雨 男 航天城第四小学 西安市雁塔区春林四路91号 13545308704 4641.14元 461.61元 153.06元<br>10076 黄火康 女 航天城第四小学 西安市经济技术尚苑路50号 13512337842 3644.88元 469.09元 0.00元<br>10077 郑楠火 男 航天城第四小学 西安市高新区高新一路32号 15512434545 4626.18元 482.18元 153.24元<br>10078 侯璐康 女 航天城第四小学 西安市经济技术尚苑路74号 15117677777 4620.57元 478.44元 152.97元<br>10079 张乐楠 男 航天城第四小学 西安市高新区高新一路44号 13645366456 5652.36元 463.48元 183.45元<br>10080 胡亮淼 女 航天城第四小学 西安市莲湖区西北一路92号 15912456798 4639.27元 472.83元 153.36元<br>10081 钱淼健 男 航天城第四小学 西安市碑林区长安北路31号 13634208704 4628.05元 476.57元 153.12元<br>10082 司璐雨 女 航天城第四小学 西安市碑林区长安北路92号 17734233345 4641.14元 461.61元 153.06元<br>10083 侯泉康 女 航天城第四小学 西安市莲湖区西北一路10号 17312333345 3644.88元 478.44元 0.00元<br>10084 郑亮同 男 航天城第四小学 西安市碑林区长安北路53号 13734566456 4605.61元 459.74元 151.95元<br>10085 韩璐火 男 航天城第四小学 西安市雁塔区春林四路02号 13512456798 3607.48元 484.05元 0.00元<br>10086 蔡长楠 女 航天城第四小学 西安市经济技术尚苑路23号 13733333345 5637.40元 472.83元 183.30元<br>10087 路楠乐 男 航天城第四小学 西安市经济技术尚苑路53号 13634537842 3600.00元 457.87元 0.00元<br>10088 侯旺淼 女 航天城第四小学 西安市高新区高新一路72号 17712334545 5646.75元 491.53元 184.14元<br>10089 郑楠淼 女 航天城第四小学 西安市高新区高新一路05号 15112334545 5644.88元 457.87元 183.06元<br>10090 侯璐火 男 航天城第四小学 西安市雁塔区春林四路03号 17712334545 3643.01元 470.96元 0.00元<br>10091 赵富健 女 航天城第四小学 西安市经济技术尚苑路81号 17745366456 4614.96元 485.92元 153.00元<br>10092 李泉淼 女 航天城第四小学 西安市高新区高新一路02号 13534534545 3613.09元 467.22元 0.00元<br>10093 胡长乐 男 航天城第四小学 西安市莲湖区西北一路50号 15917608704 3603.74元 465.35元 0.00元<br>10094 韩广广 男 航天城第四小学 西安市雁塔区春林四路34号 13633377777 3633.66元 472.83元 0.00元<br>10095 钱雨璐 男 航天城第四小学 西安市碑林区长安北路42号 15534266456 5626.18元 478.44元 183.12元<br>10096 柳亮长 男 航天城第四小学 西安市碑林区长安北路52号 15545334545 3637.40元 474.70元 0.00元<br>10097 吴旺曈 女 航天城第四小学 西安市雁塔区春林四路11号 13717666456 3601.87元 472.83元 0.00元<br>10098 周雨广 男 航天城第四小学 西安市莲湖区西北一路12号 17734208704 4626.18元 482.18元 153.24元<br>10099 孙楠曈 女 航天城第四小学 西安市碑林区长安北路71号 13534554555 4626.18元 461.61元 152.61元</p>
 </blockquote>
 <p>可以看到，产生的数据完全符合预期。</p>
 <p><em><strong>全文完，感谢阅读。</strong></em></p>
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">Hexo</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">This piece of writing is an original article, utilizing the<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>Agreement. For complete reproduction, please acknowledge the source as Courtesy of<a href="/">Hexo</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/"><span class="tags-punctuation"></span>c++ 开发语言<span class="tagsPageCount">9</span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/03/07/%E3%80%90day01%E3%80%91%E4%B9%8BN%E6%95%B0%E4%B9%8B%E5%92%8C/"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">【day01】之N数之和</div></div></a></div><div class="next-post pull-right"><a href="/2023/02/28/C%E8%AF%AD%E8%A8%80%E9%93%BE%E8%A1%A8%E7%9A%84%E5%A4%B4%E6%8F%92%E6%B3%95%E4%B8%8E%E5%B0%BE%E6%8F%92%E6%B3%95/"><div class="pagination-info"><div class="label">Next</div><div class="next_info">C语言链表的头插法与尾插法</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="Avatar" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="Mood sticker"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">John Doe</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>New posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客"><img alt="利用 Hexo 搭建个人博客" src="/"></a><div class="content"><a class="title" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客">利用 Hexo 搭建个人博客</a><a class="article-recent_post_categories" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">博客</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记"><img alt="2024.07.05 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记">2024.07.05 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记"><img alt="2024.07.02 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记">2024.07.02 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记"><img alt="2024.06.30 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记">2024.06.30 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记"><img alt="2024.06.29 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记">2024.06.29 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">John Doe</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.3"></script><script src="/js/main.js?v=1.12.3"></script><script src="/js/third_party/waterfall.min.js?v=1.12.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.3"></script><script>dark()
-</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
 
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
 
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/" class="category-chain-item">教师工资管理系统</a>
+  
+  
 
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#c++ 开发语言</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>教师工资管理系统之随机产生教师详细信息</div>
+      <div>http://blog.luliang.online/2023/02/28/教师工资管理系统之随机产生教师详细信息/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/07/%E3%80%90day01%E3%80%91%E4%B9%8BN%E6%95%B0%E4%B9%8B%E5%92%8C/" title="【day01】之N数之和">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【day01】之N数之和</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/28/C%E8%AF%AD%E8%A8%80%E9%93%BE%E8%A1%A8%E7%9A%84%E5%A4%B4%E6%8F%92%E6%B3%95%E4%B8%8E%E5%B0%BE%E6%8F%92%E6%B3%95/" title="C语言链表的头插法与尾插法">
+                        <span class="hidden-mobile">C语言链表的头插法与尾插法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
     })
+  </script>
 
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
-})
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
     }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
     }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/07/06/利用 Hexo 搭建个人博客/","2024/07/05/2024.07.05 刷题日记/","2024/07/02/2024.07.02 刷题日记/","2024/06/30/2024.06.30 刷题日记/","2024/06/29/2024.06.29 刷题日记/","2024/06/28/2024.06.28 刷题日记/","2024/06/26/2024.06.26 刷题日记/","2024/06/25/2024.06.25 刷题日记/","2024/06/24/2024.06.24 刷题日记/","2024/06/23/2024.06.23 刷题日记/","2024/06/23/2024.06.22 刷题日记/","2024/06/21/2024.06.21 刷题日记/","2024/06/20/2024.06.20 刷题日记/","2024/06/19/2024.06.19 刷题日记/","2024/06/18/2024.06.18 刷题日记/","2024/06/18/2024.06.17 刷题日记/","2024/06/16/2024.06.16 刷题日记/","2024/06/12/mmap() 的几种用法/","2024/06/11/debugger（七）：栈帧（backtrace）/","2024/06/11/debugger（六）：source level 断点/","2024/06/11/debugger（五）：source level stepping/","2024/06/10/debugger（四）：源代码/","2024/06/10/debugger（三）：dwarf 文件/","2024/06/10/debugger（二）：读、写内存以及寄存器/","2024/05/25/debugger（一）：打断点的实现以及案例分析/","2024/05/20/C++内存模型/","2024/05/18/C++：再谈智能指针/","2024/05/17/C++调试：函数调用过程和堆栈/","2024/05/16/C++调试：内存管理/","2024/05/15/C++并发：构建线程安全的队列/","2024/05/15/C++并发：等待条件成立/","2024/05/14/C++：并发保护/","2024/05/14/C++并发：锁/","2024/05/12/C++：完美转发（二）（std!forward）/","2024/05/12/C++：完美转发（一）（std!forward）/","2024/05/11/C++：移动语义（std!move）/","2024/05/10/C++：左值（引用）&右值（引用）/","2024/05/10/C++并发：线程函数传参（二）/","2024/05/09/C++并发：线程函数传参（一）/","2024/05/05/macOS DOSBox 汇编环境搭建/","2024/04/28/CM3：lldb 调试 qemu 跑的程序/","2024/04/27/CM3：qemu执行汇编/","2024/04/26/8086：qemu执行汇编/","2024/04/24/C++：函数符（一）/","2024/04/24/C++：适配器/","2024/04/23/C++：迭代器/","2024/04/21/C++：智能指针（二）/","2024/04/21/C++：智能指针（一）/","2024/04/17/C++：返回值优化/","2024/04/17/C++：异常处理/","2024/04/11/C++：弃值表达式/","2024/03/31/关于一篇知乎答案的重现/","2023/12/31/2023 个人总结/","2023/12/24/mit6.s081【目录】/","2023/12/24/MIT 6.S081学习笔记（第十章）/","2023/12/23/MIT 6.S081学习笔记（第九章）/","2023/12/23/Shell Tools of Missing Semester（二）/","2023/12/22/Course Shell of Missing Semester（一）/","2023/12/21/MIT 6.S081学习笔记（第八章）/","2023/12/20/xv6 文件系统面临的问题/","2023/12/19/实现个人日志命令行工具（C语言）/","2023/12/18/xv6 文件系统（下）/","2023/12/18/xv6 文件系统（上）/","2023/12/13/MIT 6.S081学习笔记（第七章）/","2023/12/11/xv6 中的一些系统调用（下）/","2023/12/10/xv6 中的一些系统调用（上）/","2023/12/08/MIT 6.S081学习笔记（第六章）（下）/","2023/12/07/MIT 6.S081学习笔记（第六章）（上）/","2023/12/06/MIT 6.S081学习笔记（第五章）/","2023/12/04/xv6 book Chapter7 中文翻译/","2023/12/04/xv6 book Chapter6 中文翻译/","2023/12/04/xv6 book Chapter5 中文翻译/","2023/12/04/xv6 book Chapter4 中文翻译/","2023/11/24/MIT 6.S081学习笔记（第四章）/","2023/11/22/MIT 6.S081学习笔记（第三章）/","2023/11/18/xv6 book Chapter3 中文翻译/","2023/11/13/《OSTEP》信号量（chap31）/","2023/11/11/《OSTEP》条件变量（chap30）/","2023/10/05/MIT 6.S081学习笔记（第二章）/","2023/09/29/ngrok内网穿透以及原理/","2023/09/24/什么是P问题、NP问题和NPC问题/","2023/09/10/MIT 6.S081学习笔记（第一章）/","2023/09/07/MIT 6.S081学习笔记（第〇章）/","2023/09/02/go Session的实现（一）/","2023/08/01/gin 框架中的 gin.Context/","2023/07/31/Redis （一）消息订阅和发送测试/","2023/07/27/Hackintosh 入门/","2023/07/04/Docker网络模型以及容器网络初探（一）/","2023/06/29/Ubuntu 升级 golang 版本完美步骤/","2023/06/26/阿里云 Ubuntu 网络设置/","2023/06/17/《离散数学》：特殊的图/","2023/06/16/《离散数学》：代数系统和图论导论/","2023/06/15/《离散数学》：集合、关系和函数/","2023/06/14/《离散数学》：逻辑/","2023/06/08/Unix!Linux编程：UDS 数据报/","2023/06/07/Unix!Linux编程：UDS 流（Stream）/","2023/06/06/Golang框架：cobra/","2023/06/04/Go Web下GORM框架使用（二）/","2023/06/01/Go Web下GORM框架使用（一）/","2023/06/01/Go Web下gin框架使用（二）/","2023/06/01/泡利矩阵（一）/","2023/06/01/代数入门（〇）/","2023/05/31/Go Web下gin框架使用（一）/","2023/05/23/Go Web下gin框架的模板渲染/","2023/05/08/【Golang】多线程排序/","2023/05/07/【Golang】多线程下载器的实现/","2023/05/05/【Golang】多线程爬虫的实现/","2023/03/23/【day11】链表高精度加法/","2023/03/22/【day10】链表的合并/","2023/03/21/【day09】链表的旋转与反转/","2023/03/20/【day08】移除与插入链表元素/","2023/03/19/【day07】二维数组及滚动数组/","2023/03/13/【day06】数组的遍历/","2023/03/12/【day05】统计数组中的元素/","2023/03/11/exec()函数家族详细/","2023/03/11/对fork() 函数的理解/","2023/03/11/【day04】数组的旋转/","2023/03/10/【day03】数组的改变与移动/","2023/03/08/【day02】之链表操作/","2023/03/08/简单的 ls命令的实现（四.完结）/","2023/03/07/Java将 List 类型转化为 Array 的方法/","2023/03/07/【day01】之N数之和/","2023/02/28/教师工资管理系统之随机产生教师详细信息/","2023/02/28/C语言链表的头插法与尾插法/","2023/02/24/C语言实现删除匹配的某一行文本/","2023/02/17/简单的 ls 命令的实现（三）/","2023/02/17/简单的 ls 命令的实现（二）/","2023/02/15/简单的 ls 命令的实现（一）/","2023/01/17/C语言指针——从入门到精通/","2023/01/13/（三）抽象类/","2023/01/12/（二）常量池的探索/","2023/01/12/（一）Java 中 final 关键字的用法总结/","2023/01/10/对环境变量的探究/","2023/01/10/macOS下binutils 的安装/","2023/01/10/2022 Personal Summary/","2023/01/10/Analysis of the Location of Initialized!Uninitialized Global!Static!Local Variables!Constants in Mem/","2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/","2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/","2022/12/28/Start to write a simple Linux kernel Module/","2022/11/29/About the problem of struct structure assignment/","2022/11/16/Solutions for Xiyou Linux Group 2020 Interview Questions/","2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/","2022/11/15/Solutions for Xiyou Linux Group 2022 Interview Questions/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

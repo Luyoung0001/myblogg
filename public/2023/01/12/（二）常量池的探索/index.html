@@ -1,181 +1,346 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>（二）常量池的探索 | Hexo</title><noscript>Please enable JavaScript to view the site</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.3"><!-- inject head--><link rel="canonical" href="http://example.com/2023/01/12/%EF%BC%88%E4%BA%8C%EF%BC%89%E5%B8%B8%E9%87%8F%E6%B1%A0%E7%9A%84%E6%8E%A2%E7%B4%A2/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="JVM常量池主要包含四个常量池，分别是：Class文件常量池、运行时常量池、全局字符串常量池、以及基本类型包装类对象常量池。 一、class文件常量池为了更加容易的理解本文所说的，我们先写一个程序来分析： 1234567891011121314class FinalTest01&amp;#123;"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Hexo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '1.12.3' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
-    
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-    
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-    
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-    
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
-        
-                if (name && keyObj[name]) return
-        
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2023-04-20 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: {"limit":50,"author":"Author: John Doe","link":"Link: ","source":"Source: Hexo","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."},
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"Dark","light":"Light"},"copy":{"success":"Copied","error":"Copy failed"},"backtop":"Back to top","time":{"day":" days ago","hour":" hours ago","just":"just","min":" minutes ago","month":" months ago"},"day":" days","f12":"Developer mode is turned on, please follow the GPL.","totalk":"You don't need to delete blank lines, just type in your comments."},
-    aside: {
-        sayhello: {
-            morning: '一日之计在于晨',
-            noon: '吃饱了才有力气干活',
-            afternoon: '集中精力，攻克难关',
-            night: '不要太劳累了，早睡更健康',
-            goodnight: '睡个好觉，保证精力充沛',
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: 'Long time no see,',
-            back: 'Welcome back again,',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: false,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="Day and night switching"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="Sidebar display control"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Archives</div><div class="length-num">143</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">89</div></a></div></div></div><span class="sidebar-menu-item-title">Function</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>Display mode</span></span></div><span class="sidebar-menu-item-title">Tags</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E5%85%B6%E4%BB%96/">其他<sup>1</sup></a><a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">总结 个人总结<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">算法 数据结构 哈希算法<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">算法 数据结构 leetcode<sup>9</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法 leetcode 数据结构<sup>5</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95/">leetcode 算法<sup>2</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">汇编 QEMU 8086<sup>1</sup></a><a href="/tags/c-linux/">c++ linux<sup>1</sup></a><a href="/tags/c/">c++<sup>13</sup></a><a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">c++ 多线程<sup>2</sup></a><a href="/tags/c-lldb/">c++ lldb<sup>2</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c++ 开发语言<sup>9</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">c++ 开发语言 学习 笔记<sup>1</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">汇编 QEMU CM3<sup>1</sup></a><a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">CM3 汇编 QEMU<sup>1</sup></a><a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">Shell 学习 笔记<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 开发语言<sup>2</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">链表 c语言 数据结构<sup>1</sup></a><a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/">docker 网络 容器<sup>1</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/">golang 前端 数据库<sup>2</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/">golang 前端 gin 服务器<sup>1</sup></a><a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/">前端 golang gin<sup>2</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">golang 开发语言 后端<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/">操作系统 Hackintosh<sup>1</sup></a><a href="/tags/java-jvm-servlet/">java jvm servlet<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/">学习 笔记 OS xv6<sup>1</sup></a><a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 操作系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 操作系统<sup>2</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统<sup>3</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 操作系统 OS<sup>1</sup></a><a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/">redis bootstrap 数据库<sup>1</sup></a><a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/">linux 服务器 运维<sup>1</sup></a><a href="/tags/ubuntu-golang-linux/">ubuntu golang linux<sup>1</sup></a><a href="/tags/unix-linux-udp/">unix linux udp<sup>1</sup></a><a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/">linux unix 服务器 网络<sup>1</sup></a><a href="/tags/c-debugger/">c++ debugger<sup>4</sup></a><a href="/tags/c-lldb-debugger/">c++ lldb debugger<sup>2</sup></a><a href="/tags/linux/">linux<sup>2</sup></a><a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/">gin Context golang Web 网络<sup>1</sup></a><a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/">golang 后端 前端 网络<sup>1</sup></a><a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/">macos 汇编 DOSBox 8086<sup>1</sup></a><a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/">macos linux 服务器<sup>1</sup></a><a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/">系统调用 mmap 文件<sup>1</sup></a><a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">Web 内网穿透<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/">操作系统 学习 xv6 翻译<sup>1</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/">xv6 操作系统 OS 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">xv6 OS 学习 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/">操作系统 笔记 学习<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">操作系统 学习 笔记<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/">图论 离散数学 代数系统<sup>1</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/">golang 开发语言 算法 后端<sup>1</sup></a><a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">golang 爬虫 开发语言<sup>1</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">leetcode 算法 数据结构<sup>4</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">链表 数据结构 算法<sup>3</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode/">算法 leetcode<sup>1</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">链表 数据结构 leetcode<sup>2</sup></a><a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数<sup>1</sup></a><a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/">docker 系统编程 tips<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">c语言 开发语言 命令行工具 个人记录<sup>1</sup></a><a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/">矩阵 线性代数 算法<sup>1</sup></a><a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">rust 开发语言 后端<sup>1</sup></a><a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">ubuntu 阿里云 网络 网络工具<sup>1</sup></a><a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java jvm 开发语言<sup>1</sup></a><a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java 开发语言<sup>1</sup></a><a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/">wireshark 网络 服务器<sup>1</sup></a><a href="/tags/linux-vscode-macos-c/">linux vscode macos c++<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 c++ 开发语言<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/">学习 笔记 操作系统 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/">学习 笔记 操作系统 xv6 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/">学习 笔记 xv6 OS<sup>1</sup></a><a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/">MIT 6.S081 学习 笔记 xv6<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统 文件系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/">学习 笔记 bash 脚本<sup>1</sup></a><a href="/tags/linux-c-%E7%AE%97%E6%B3%95/">linux c++ 算法<sup>1</sup></a><a href="/tags/linux-c/">linux c++<sup>2</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/">操作系统 xv6 翻译<sup>2</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/">xv6 操作系统 笔记 翻译<sup>1</sup></a><a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">笔记 学习 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/">图论 离散数学 特殊的图 数学<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/">离散数学 数学 逻辑推理<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/">离散数学 数学 关系 集合<sup>1</sup></a><a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/">golang 服务器 后端<sup>1</sup></a><a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/">NP 数学 信息学<sup>1</sup></a><a href="/tags/vscode-ide-macos-c/">vscode ide macos c++<sup>1</sup></a><a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/">java jvm 算法<sup>1</sup></a><a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">翻译 xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="Back to home"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">（二）常量池的探索</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/" alt="（二）常量池的探索"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="This article is a Original article, pay attention to the copyright.">Original</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java-jvm-%E7%AE%97%E6%B3%95/"><span class="tags-name tags-punctuation">java jvm 算法</span></a></div></div></div></div><h1 class="post-title">（二）常量池的探索</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><span id="more"></span>
 
-<p>JVM常量池主要包含四个常量池，分别是：<strong>Class文件常量池、运行时常量池、全局字符串常量池、以及基本类型包装类对象常量池</strong>。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a41c5bf4ac4e4d79b46fbf67745b5f11_1720253864082.png?token=ANB4BCJ5NFLHPKQMSJU2X33GRD66K" alt="在这里插入图片描述"></p>
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="JVM常量池主要包含四个常量池，分别是：Class文件常量池、运行时常量池、全局字符串常量池、以及基本类型包装类对象常量池。 一、class文件常量池为了更加容易的理解本文所说的，我们先写一个程序来分析： 1234567891011121314class FinalTest01&#123;    private int value &#x3D; 1;    public String s &#x3D; &amp;quot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="（二）常量池的探索">
+<meta property="og:url" content="http://blog.luliang.online/2023/01/12/%EF%BC%88%E4%BA%8C%EF%BC%89%E5%B8%B8%E9%87%8F%E6%B1%A0%E7%9A%84%E6%8E%A2%E7%B4%A2/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="JVM常量池主要包含四个常量池，分别是：Class文件常量池、运行时常量池、全局字符串常量池、以及基本类型包装类对象常量池。 一、class文件常量池为了更加容易的理解本文所说的，我们先写一个程序来分析： 1234567891011121314class FinalTest01&#123;    private int value &#x3D; 1;    public String s &#x3D; &amp;quot">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a41c5bf4ac4e4d79b46fbf67745b5f11_1720253864082.png?token=ANB4BCJ5NFLHPKQMSJU2X33GRD66K">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/701b7ce187d544218c034cc4fcafe432_1720253864082.png?token=ANB4BCI2PZ5BSNQYBPIY5T3GRD66O">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/6b91e5f7b8174bdcb32da61933114a11_1720253864082.png?token=ANB4BCIKF7AOKAXVZ6HCKXDGRD66S">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5f6f7e0b90d14d129d58338adb74f434_1720253864082.png?token=ANB4BCP3WZM4CMNL4MJJZETGRD66U">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/fb02a071cd5e4c2983e311eb0f6b21a6_1720253864082.png?token=ANB4BCMXNB5I7UW7CKQZ62LGRD66Y">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/de437864aa934f8fb52f17a265cccf5f_1720253872913.png?token=ANB4BCMVLKRZLG4OUZIOPGDGRD666">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/6ba8d35e83f5476580cc157033f7a3a8_1720253872913.png?token=ANB4BCJRCCGWRRAZIITIHL3GRD67A">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e2f5b23907bd4de8a8af145364021f01_1720253872913.png?token=ANB4BCJQTTOQURKOO37JTZDGRD67I">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5b8cd21a72d5476ba4c3514ce30c9a96_1720253872913.png?token=ANB4BCM42IOV5JD3HRWMEBDGRD67M">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/20560944b7a648bba0a6e2a2d843b3a1_1720253872913.png?token=ANB4BCOOITG4NRRECAOOF23GRD67Q">
+<meta property="article:published_time" content="2023-01-12T15:04:57.000Z">
+<meta property="article:modified_time" content="2024-07-07T07:26:40.575Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="java jvm 算法">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a41c5bf4ac4e4d79b46fbf67745b5f11_1720253864082.png?token=ANB4BCJ5NFLHPKQMSJU2X33GRD66K">
+  
+  
+  
+  <title>（二）常量池的探索 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="（二）常量池的探索"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-12 23:04" pubdate>
+          2023年1月12日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          33 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">（二）常量池的探索</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<p>JVM常量池主要包含四个常量池，分别是：<strong>Class文件常量池、运行时常量池、全局字符串常量池、以及基本类型包装类对象常量池</strong>。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a41c5bf4ac4e4d79b46fbf67745b5f11_1720253864082.png?token=ANB4BCJ5NFLHPKQMSJU2X33GRD66K" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <h2 id="一、class文件常量池"><a href="#一、class文件常量池" class="headerlink" title="一、class文件常量池"></a>一、class文件常量池</h2><p>为了更加容易的理解本文所说的，我们先写一个程序来分析：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">FinalTest01</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="variable">value</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">10086</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setValue</span><span class="params">(<span class="type">int</span> v)</span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">int</span> <span class="variable">temp</span> <span class="operator">=</span> <span class="number">10010</span>;</span><br><span class="line">        <span class="built_in">this</span>.value = temp + v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getValue</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">FinalTest01</span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abc&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> <span class="hljs-number">10086</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setValue</span><span class="hljs-params">(<span class="hljs-type">int</span> v)</span>&#123;<br>        <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">temp</span> <span class="hljs-operator">=</span> <span class="hljs-number">10010</span>;<br>        <span class="hljs-built_in">this</span>.value = temp + v;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getValue</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> value;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p><code>javac</code>编译之后，用<code>javap -v</code>命令打开，可以看到：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">Classfile /Users/luliang/IdeaProjects/javase/chapter_01/src/FinalTest01.<span class="keyword">class</span></span><br><span class="line">  <span class="title class_">Last</span> modified <span class="number">2023</span>年<span class="number">1</span>月<span class="number">12</span>日; size <span class="number">468</span> bytes</span><br><span class="line">  SHA-<span class="number">256</span> checksum a317ddafd920cd0e2ce70319c5b7a884624e9bdfb9aebf752c3a2379b4aa7594</span><br><span class="line">  Compiled from <span class="string">&quot;FinalTest01.java&quot;</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FinalTest01</span></span><br><span class="line">  minor version: <span class="number">0</span></span><br><span class="line">  major version: <span class="number">60</span></span><br><span class="line">  flags: (<span class="number">0x0020</span>) ACC_SUPER</span><br><span class="line">  this_class: #<span class="number">8</span>                          <span class="comment">// FinalTest01</span></span><br><span class="line">  super_class: #<span class="number">2</span>                         <span class="comment">// java/lang/Object</span></span><br><span class="line">  interfaces: <span class="number">0</span>, fields: <span class="number">3</span>, methods: <span class="number">3</span>, attributes: <span class="number">1</span></span><br><span class="line">Constant pool:</span><br><span class="line">   #<span class="number">1</span> = Methodref          #<span class="number">2.</span>#<span class="number">3</span>          <span class="comment">// java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span></span><br><span class="line">   #<span class="number">2</span> = Class              #<span class="number">4</span>             <span class="comment">// java/lang/Object</span></span><br><span class="line">   #<span class="number">3</span> = NameAndType        #<span class="number">5</span>:#<span class="number">6</span>          <span class="comment">// &quot;&lt;init&gt;&quot;:()V</span></span><br><span class="line">   #<span class="number">4</span> = Utf8               java/lang/Object</span><br><span class="line">   #<span class="number">5</span> = Utf8               &lt;init&gt;</span><br><span class="line">   #<span class="number">6</span> = Utf8               ()V</span><br><span class="line">   #<span class="number">7</span> = Fieldref           #<span class="number">8.</span>#<span class="number">9</span>          <span class="comment">// FinalTest01.value:I</span></span><br><span class="line">   #<span class="number">8</span> = Class              #<span class="number">10</span>            <span class="comment">// FinalTest01</span></span><br><span class="line">   #<span class="number">9</span> = NameAndType        #<span class="number">11</span>:#<span class="number">12</span>        <span class="comment">// value:I</span></span><br><span class="line">  #<span class="number">10</span> = Utf8               FinalTest01</span><br><span class="line">  #<span class="number">11</span> = Utf8               value</span><br><span class="line">  #<span class="number">12</span> = Utf8               I</span><br><span class="line">  #<span class="number">13</span> = String             #<span class="number">14</span>            <span class="comment">// abc</span></span><br><span class="line">  #<span class="number">14</span> = Utf8               abc</span><br><span class="line">  #<span class="number">15</span> = Fieldref           #<span class="number">8.</span>#<span class="number">16</span>         <span class="comment">// FinalTest01.s:Ljava/lang/String;</span></span><br><span class="line">  #<span class="number">16</span> = NameAndType        #<span class="number">17</span>:#<span class="number">18</span>        <span class="comment">// s:Ljava/lang/String;</span></span><br><span class="line">  #<span class="number">17</span> = Utf8               s</span><br><span class="line">  #<span class="number">18</span> = Utf8               Ljava/lang/String;</span><br><span class="line">  #<span class="number">19</span> = Utf8               b</span><br><span class="line">  #<span class="number">20</span> = Utf8               ConstantValue</span><br><span class="line">  #<span class="number">21</span> = Integer            <span class="number">10086</span></span><br><span class="line">  #<span class="number">22</span> = Utf8               Code</span><br><span class="line">  #<span class="number">23</span> = Utf8               LineNumberTable</span><br><span class="line">  #<span class="number">24</span> = Utf8               setValue</span><br><span class="line">  #<span class="number">25</span> = Utf8               (I)V</span><br><span class="line">  #<span class="number">26</span> = Utf8               getValue</span><br><span class="line">  #<span class="number">27</span> = Utf8               ()I</span><br><span class="line">  #<span class="number">28</span> = Utf8               SourceFile</span><br><span class="line">  #<span class="number">29</span> = Utf8               FinalTest01.java</span><br><span class="line">					...(不展示字节码)</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs java">Classfile /Users/luliang/IdeaProjects/javase/chapter_01/src/FinalTest01.<span class="hljs-keyword">class</span><br>  <span class="hljs-title class_">Last</span> modified <span class="hljs-number">2023</span>年<span class="hljs-number">1</span>月<span class="hljs-number">12</span>日; size <span class="hljs-number">468</span> bytes<br>  SHA-<span class="hljs-number">256</span> checksum a317ddafd920cd0e2ce70319c5b7a884624e9bdfb9aebf752c3a2379b4aa7594<br>  Compiled from <span class="hljs-string">&quot;FinalTest01.java&quot;</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FinalTest01</span><br>  minor version: <span class="hljs-number">0</span><br>  major version: <span class="hljs-number">60</span><br>  flags: (<span class="hljs-number">0x0020</span>) ACC_SUPER<br>  this_class: #<span class="hljs-number">8</span>                          <span class="hljs-comment">// FinalTest01</span><br>  super_class: #<span class="hljs-number">2</span>                         <span class="hljs-comment">// java/lang/Object</span><br>  interfaces: <span class="hljs-number">0</span>, fields: <span class="hljs-number">3</span>, methods: <span class="hljs-number">3</span>, attributes: <span class="hljs-number">1</span><br>Constant pool:<br>   #<span class="hljs-number">1</span> = Methodref          #<span class="hljs-number">2.</span>#<span class="hljs-number">3</span>          <span class="hljs-comment">// java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>   #<span class="hljs-number">2</span> = Class              #<span class="hljs-number">4</span>             <span class="hljs-comment">// java/lang/Object</span><br>   #<span class="hljs-number">3</span> = NameAndType        #<span class="hljs-number">5</span>:#<span class="hljs-number">6</span>          <span class="hljs-comment">// &quot;&lt;init&gt;&quot;:()V</span><br>   #<span class="hljs-number">4</span> = Utf8               java/lang/Object<br>   #<span class="hljs-number">5</span> = Utf8               &lt;init&gt;<br>   #<span class="hljs-number">6</span> = Utf8               ()V<br>   #<span class="hljs-number">7</span> = Fieldref           #<span class="hljs-number">8.</span>#<span class="hljs-number">9</span>          <span class="hljs-comment">// FinalTest01.value:I</span><br>   #<span class="hljs-number">8</span> = Class              #<span class="hljs-number">10</span>            <span class="hljs-comment">// FinalTest01</span><br>   #<span class="hljs-number">9</span> = NameAndType        #<span class="hljs-number">11</span>:#<span class="hljs-number">12</span>        <span class="hljs-comment">// value:I</span><br>  #<span class="hljs-number">10</span> = Utf8               FinalTest01<br>  #<span class="hljs-number">11</span> = Utf8               value<br>  #<span class="hljs-number">12</span> = Utf8               I<br>  #<span class="hljs-number">13</span> = String             #<span class="hljs-number">14</span>            <span class="hljs-comment">// abc</span><br>  #<span class="hljs-number">14</span> = Utf8               abc<br>  #<span class="hljs-number">15</span> = Fieldref           #<span class="hljs-number">8.</span>#<span class="hljs-number">16</span>         <span class="hljs-comment">// FinalTest01.s:Ljava/lang/String;</span><br>  #<span class="hljs-number">16</span> = NameAndType        #<span class="hljs-number">17</span>:#<span class="hljs-number">18</span>        <span class="hljs-comment">// s:Ljava/lang/String;</span><br>  #<span class="hljs-number">17</span> = Utf8               s<br>  #<span class="hljs-number">18</span> = Utf8               Ljava/lang/String;<br>  #<span class="hljs-number">19</span> = Utf8               b<br>  #<span class="hljs-number">20</span> = Utf8               ConstantValue<br>  #<span class="hljs-number">21</span> = Integer            <span class="hljs-number">10086</span><br>  #<span class="hljs-number">22</span> = Utf8               Code<br>  #<span class="hljs-number">23</span> = Utf8               LineNumberTable<br>  #<span class="hljs-number">24</span> = Utf8               setValue<br>  #<span class="hljs-number">25</span> = Utf8               (I)V<br>  #<span class="hljs-number">26</span> = Utf8               getValue<br>  #<span class="hljs-number">27</span> = Utf8               ()I<br>  #<span class="hljs-number">28</span> = Utf8               SourceFile<br>  #<span class="hljs-number">29</span> = Utf8               FinalTest01.java<br>					...(不展示字节码)<br></code></pre></td></tr></table></figure>
 
-<h3 id="（一）class-文件组成"><a href="#（一）class-文件组成" class="headerlink" title="（一）class 文件组成"></a>（一）class 文件组成</h3><p>任何一个class文件都对应着唯一一个类或接口的定义信息，但反过来说，类或接口并不一定都得定义在文件里（譬如类或接口也可以通过类加载器直接生成）。将任意一个有效的类或接口所应当满足的格式称为“class文件格式”，实际上它并不一定以磁盘文件的形式存在。“class文件”应当是一串二进制的字节流，无论以何种形式存在。接下来的分析都是基于JDK8环境，包括代码和具体的格式。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/701b7ce187d544218c034cc4fcafe432_1720253864082.png?token=ANB4BCI2PZ5BSNQYBPIY5T3GRD66O" alt="在这里插入图片描述"></p>
-<h4 id="1、魔幻数"><a href="#1、魔幻数" class="headerlink" title="1、魔幻数"></a>1、魔幻数</h4><p>总共4字节，固定为0xCAFEBABE。class文件的第一个u4结构存储的就是魔数，魔数的唯一作用就是供虚拟机辨别是否是可执行的class文件，并不是只有class文件才有魔数。常见的后缀为jpg、jpeg、png、gif、zip、jar等等这些文件都是有魔数的。比如，我们借助 VScode 插件<code>Hex Editor</code>可以打开字节码文件看看：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/6b91e5f7b8174bdcb32da61933114a11_1720253864082.png?token=ANB4BCIKF7AOKAXVZ6HCKXDGRD66S" alt="在这里插入图片描述"><br>它的魔数确实为<code>CA FE BA BE</code>。我们再看看<code>png </code>的魔数：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5f6f7e0b90d14d129d58338adb74f434_1720253864082.png?token=ANB4BCP3WZM4CMNL4MJJZETGRD66U" alt="在这里插入图片描述"><br>它的魔数为<code>89 50 4E 47</code>，确实不一样。关于魔幻数，不再赘述。</p>
-<h4 id="2、版本号"><a href="#2、版本号" class="headerlink" title="2、版本号"></a>2、版本号</h4><p>总共4字节，具体格式为，次版本号（2字节），主版本号（2字节）。本例子中，主版本号为0，次版本号为 60（0x3C）。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/fb02a071cd5e4c2983e311eb0f6b21a6_1720253864082.png?token=ANB4BCMXNB5I7UW7CKQZ62LGRD66Y" alt="在这里插入图片描述"></p>
+<h3 id="（一）class-文件组成"><a href="#（一）class-文件组成" class="headerlink" title="（一）class 文件组成"></a>（一）class 文件组成</h3><p>任何一个class文件都对应着唯一一个类或接口的定义信息，但反过来说，类或接口并不一定都得定义在文件里（譬如类或接口也可以通过类加载器直接生成）。将任意一个有效的类或接口所应当满足的格式称为“class文件格式”，实际上它并不一定以磁盘文件的形式存在。“class文件”应当是一串二进制的字节流，无论以何种形式存在。接下来的分析都是基于JDK8环境，包括代码和具体的格式。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/701b7ce187d544218c034cc4fcafe432_1720253864082.png?token=ANB4BCI2PZ5BSNQYBPIY5T3GRD66O" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<h4 id="1、魔幻数"><a href="#1、魔幻数" class="headerlink" title="1、魔幻数"></a>1、魔幻数</h4><p>总共4字节，固定为0xCAFEBABE。class文件的第一个u4结构存储的就是魔数，魔数的唯一作用就是供虚拟机辨别是否是可执行的class文件，并不是只有class文件才有魔数。常见的后缀为jpg、jpeg、png、gif、zip、jar等等这些文件都是有魔数的。比如，我们借助 VScode 插件<code>Hex Editor</code>可以打开字节码文件看看：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/6b91e5f7b8174bdcb32da61933114a11_1720253864082.png?token=ANB4BCIKF7AOKAXVZ6HCKXDGRD66S" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>它的魔数确实为<code>CA FE BA BE</code>。我们再看看<code>png </code>的魔数：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5f6f7e0b90d14d129d58338adb74f434_1720253864082.png?token=ANB4BCP3WZM4CMNL4MJJZETGRD66U" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>它的魔数为<code>89 50 4E 47</code>，确实不一样。关于魔幻数，不再赘述。</p>
+<h4 id="2、版本号"><a href="#2、版本号" class="headerlink" title="2、版本号"></a>2、版本号</h4><p>总共4字节，具体格式为，次版本号（2字节），主版本号（2字节）。本例子中，主版本号为0，次版本号为 60（0x3C）。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/fb02a071cd5e4c2983e311eb0f6b21a6_1720253864082.png?token=ANB4BCMXNB5I7UW7CKQZ62LGRD66Y" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <h4 id="3、常量池"><a href="#3、常量池" class="headerlink" title="3、常量池"></a>3、常量池</h4><blockquote>
 <p>Java代码在进行Javac编译的时候，并不像C和C++那样有“连接”这一步骤，而是在虚拟机加载Class文件的时候进行动态连接。也就是说，在Class文件中不会保存各个方法、字段的最终内存布局信息，因此这些字段、方法的符号引用不经过运行期转换的话无法得到真正的内存入口地址，也就无法直接被虚拟机使用。当虚拟机运行时，需要从常量池获得对应的符号引用，再在类创建时或运行时解析、翻译到具体的内存地址之中。————《深入理解 Java 虚拟机》</p>
 </blockquote>
 <p>上面揭示了为什么 JVM为什么会需要一个 class 文件以及class常量池的作用。事实上，class 文件是用来保存常量的一个中间媒介场所。在 JVM 运行时，需要把常量池中的常量加载到内存中，即从 class 常量池加载到运行时常量池中，方便在运行期间使用其中的常量和各种信息。<br>class 文件常量池是静态的，而运行时常量池是动态的，它可以不断地变化。</p>
-<h4 id="（1）常量池中存放的内容"><a href="#（1）常量池中存放的内容" class="headerlink" title="（1）常量池中存放的内容"></a>（1）常量池中存放的内容</h4><p>常量池的容量计数器与其它不同，该计数器是从1开始真正计数的代表的是各个常量的索引，0不指向任何表，而是代表“不引用任何一个常量池中项目”的含义，下图看下常量池的数量是0x1E，代表十进制的30，则表示常量池中有30-1&#x3D;29个表结构数据。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/de437864aa934f8fb52f17a265cccf5f_1720253872913.png?token=ANB4BCMVLKRZLG4OUZIOPGDGRD666" alt="在这里插入图片描述"><br>我们看看是不是有 29 个：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">Classfile /Users/luliang/IdeaProjects/javase/chapter_01/src/FinalTest01.<span class="keyword">class</span></span><br><span class="line">  <span class="title class_">Last</span> modified <span class="number">2023</span>年<span class="number">1</span>月<span class="number">12</span>日; size <span class="number">468</span> bytes</span><br><span class="line">  SHA-<span class="number">256</span> checksum a317ddafd920cd0e2ce70319c5b7a884624e9bdfb9aebf752c3a2379b4aa7594</span><br><span class="line">  Compiled from <span class="string">&quot;FinalTest01.java&quot;</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FinalTest01</span></span><br><span class="line">  minor version: <span class="number">0</span></span><br><span class="line">  major version: <span class="number">60</span></span><br><span class="line">  flags: (<span class="number">0x0020</span>) ACC_SUPER</span><br><span class="line">  this_class: #<span class="number">8</span>                          <span class="comment">// FinalTest01</span></span><br><span class="line">  super_class: #<span class="number">2</span>                         <span class="comment">// java/lang/Object</span></span><br><span class="line">  interfaces: <span class="number">0</span>, fields: <span class="number">3</span>, methods: <span class="number">3</span>, attributes: <span class="number">1</span></span><br><span class="line">Constant pool:</span><br><span class="line">   #<span class="number">1</span> = Methodref          #<span class="number">2.</span>#<span class="number">3</span>          <span class="comment">// java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span></span><br><span class="line">   #<span class="number">2</span> = Class              #<span class="number">4</span>             <span class="comment">// java/lang/Object</span></span><br><span class="line">   #<span class="number">3</span> = NameAndType        #<span class="number">5</span>:#<span class="number">6</span>          <span class="comment">// &quot;&lt;init&gt;&quot;:()V</span></span><br><span class="line">   #<span class="number">4</span> = Utf8               java/lang/Object</span><br><span class="line">   #<span class="number">5</span> = Utf8               &lt;init&gt;</span><br><span class="line">   #<span class="number">6</span> = Utf8               ()V</span><br><span class="line">   #<span class="number">7</span> = Fieldref           #<span class="number">8.</span>#<span class="number">9</span>          <span class="comment">// FinalTest01.value:I</span></span><br><span class="line">   #<span class="number">8</span> = Class              #<span class="number">10</span>            <span class="comment">// FinalTest01</span></span><br><span class="line">   #<span class="number">9</span> = NameAndType        #<span class="number">11</span>:#<span class="number">12</span>        <span class="comment">// value:I</span></span><br><span class="line">  #<span class="number">10</span> = Utf8               FinalTest01</span><br><span class="line">  #<span class="number">11</span> = Utf8               value</span><br><span class="line">  #<span class="number">12</span> = Utf8               I</span><br><span class="line">  #<span class="number">13</span> = String             #<span class="number">14</span>            <span class="comment">// abc</span></span><br><span class="line">  #<span class="number">14</span> = Utf8               abc</span><br><span class="line">  #<span class="number">15</span> = Fieldref           #<span class="number">8.</span>#<span class="number">16</span>         <span class="comment">// FinalTest01.s:Ljava/lang/String;</span></span><br><span class="line">  #<span class="number">16</span> = NameAndType        #<span class="number">17</span>:#<span class="number">18</span>        <span class="comment">// s:Ljava/lang/String;</span></span><br><span class="line">  #<span class="number">17</span> = Utf8               s</span><br><span class="line">  #<span class="number">18</span> = Utf8               Ljava/lang/String;</span><br><span class="line">  #<span class="number">19</span> = Utf8               b</span><br><span class="line">  #<span class="number">20</span> = Utf8               ConstantValue</span><br><span class="line">  #<span class="number">21</span> = Integer            <span class="number">10086</span></span><br><span class="line">  #<span class="number">22</span> = Utf8               Code</span><br><span class="line">  #<span class="number">23</span> = Utf8               LineNumberTable</span><br><span class="line">  #<span class="number">24</span> = Utf8               setValue</span><br><span class="line">  #<span class="number">25</span> = Utf8               (I)V</span><br><span class="line">  #<span class="number">26</span> = Utf8               getValue</span><br><span class="line">  #<span class="number">27</span> = Utf8               ()I</span><br><span class="line">  #<span class="number">28</span> = Utf8               SourceFile</span><br><span class="line">  #<span class="number">29</span> = Utf8               FinalTest01.java</span><br></pre></td></tr></table></figure>
+<h4 id="（1）常量池中存放的内容"><a href="#（1）常量池中存放的内容" class="headerlink" title="（1）常量池中存放的内容"></a>（1）常量池中存放的内容</h4><p>常量池的容量计数器与其它不同，该计数器是从1开始真正计数的代表的是各个常量的索引，0不指向任何表，而是代表“不引用任何一个常量池中项目”的含义，下图看下常量池的数量是0x1E，代表十进制的30，则表示常量池中有30-1&#x3D;29个表结构数据。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/de437864aa934f8fb52f17a265cccf5f_1720253872913.png?token=ANB4BCMVLKRZLG4OUZIOPGDGRD666" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>我们看看是不是有 29 个：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java">Classfile /Users/luliang/IdeaProjects/javase/chapter_01/src/FinalTest01.<span class="hljs-keyword">class</span><br>  <span class="hljs-title class_">Last</span> modified <span class="hljs-number">2023</span>年<span class="hljs-number">1</span>月<span class="hljs-number">12</span>日; size <span class="hljs-number">468</span> bytes<br>  SHA-<span class="hljs-number">256</span> checksum a317ddafd920cd0e2ce70319c5b7a884624e9bdfb9aebf752c3a2379b4aa7594<br>  Compiled from <span class="hljs-string">&quot;FinalTest01.java&quot;</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FinalTest01</span><br>  minor version: <span class="hljs-number">0</span><br>  major version: <span class="hljs-number">60</span><br>  flags: (<span class="hljs-number">0x0020</span>) ACC_SUPER<br>  this_class: #<span class="hljs-number">8</span>                          <span class="hljs-comment">// FinalTest01</span><br>  super_class: #<span class="hljs-number">2</span>                         <span class="hljs-comment">// java/lang/Object</span><br>  interfaces: <span class="hljs-number">0</span>, fields: <span class="hljs-number">3</span>, methods: <span class="hljs-number">3</span>, attributes: <span class="hljs-number">1</span><br>Constant pool:<br>   #<span class="hljs-number">1</span> = Methodref          #<span class="hljs-number">2.</span>#<span class="hljs-number">3</span>          <span class="hljs-comment">// java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>   #<span class="hljs-number">2</span> = Class              #<span class="hljs-number">4</span>             <span class="hljs-comment">// java/lang/Object</span><br>   #<span class="hljs-number">3</span> = NameAndType        #<span class="hljs-number">5</span>:#<span class="hljs-number">6</span>          <span class="hljs-comment">// &quot;&lt;init&gt;&quot;:()V</span><br>   #<span class="hljs-number">4</span> = Utf8               java/lang/Object<br>   #<span class="hljs-number">5</span> = Utf8               &lt;init&gt;<br>   #<span class="hljs-number">6</span> = Utf8               ()V<br>   #<span class="hljs-number">7</span> = Fieldref           #<span class="hljs-number">8.</span>#<span class="hljs-number">9</span>          <span class="hljs-comment">// FinalTest01.value:I</span><br>   #<span class="hljs-number">8</span> = Class              #<span class="hljs-number">10</span>            <span class="hljs-comment">// FinalTest01</span><br>   #<span class="hljs-number">9</span> = NameAndType        #<span class="hljs-number">11</span>:#<span class="hljs-number">12</span>        <span class="hljs-comment">// value:I</span><br>  #<span class="hljs-number">10</span> = Utf8               FinalTest01<br>  #<span class="hljs-number">11</span> = Utf8               value<br>  #<span class="hljs-number">12</span> = Utf8               I<br>  #<span class="hljs-number">13</span> = String             #<span class="hljs-number">14</span>            <span class="hljs-comment">// abc</span><br>  #<span class="hljs-number">14</span> = Utf8               abc<br>  #<span class="hljs-number">15</span> = Fieldref           #<span class="hljs-number">8.</span>#<span class="hljs-number">16</span>         <span class="hljs-comment">// FinalTest01.s:Ljava/lang/String;</span><br>  #<span class="hljs-number">16</span> = NameAndType        #<span class="hljs-number">17</span>:#<span class="hljs-number">18</span>        <span class="hljs-comment">// s:Ljava/lang/String;</span><br>  #<span class="hljs-number">17</span> = Utf8               s<br>  #<span class="hljs-number">18</span> = Utf8               Ljava/lang/String;<br>  #<span class="hljs-number">19</span> = Utf8               b<br>  #<span class="hljs-number">20</span> = Utf8               ConstantValue<br>  #<span class="hljs-number">21</span> = Integer            <span class="hljs-number">10086</span><br>  #<span class="hljs-number">22</span> = Utf8               Code<br>  #<span class="hljs-number">23</span> = Utf8               LineNumberTable<br>  #<span class="hljs-number">24</span> = Utf8               setValue<br>  #<span class="hljs-number">25</span> = Utf8               (I)V<br>  #<span class="hljs-number">26</span> = Utf8               getValue<br>  #<span class="hljs-number">27</span> = Utf8               ()I<br>  #<span class="hljs-number">28</span> = Utf8               SourceFile<br>  #<span class="hljs-number">29</span> = Utf8               FinalTest01.java<br></code></pre></td></tr></table></figure>
 <p>果然可以清晰看出总共是有29个常量（表）存储在常量池中。</p>
 <p>先解释下上面常量池表的结构，第一列是索引号，也是存储的序号，第二列Methodref、String、Fieldref存储的则是表的类型，第三列存储的则是当前表存储的信息，第四列双斜杠后表示当前结构存储的具体的值起到说明的作用相当于注释，从上面的图片我们不仅可以看到常量池中有29项常量表。</p>
-<p>常量池中有哪些表结构？<br>常量池中总共有17种表结构（截止JDK13），用以存储类中的字面量与符号引用，这些信息在虚拟机解析时会根据索引号找到具体值被加载进虚拟机中，这17种表结构涵盖了所有的java信息，所有的表如下所示：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/6ba8d35e83f5476580cc157033f7a3a8_1720253872913.png?token=ANB4BCJRCCGWRRAZIITIHL3GRD67A" alt="在这里插入图片描述"><br>因为每一种表结构的存储结构都不相同，因此我们只需要关键性的记住几种即可。<br>下面我们来具体分析。</p>
+<p>常量池中有哪些表结构？<br>常量池中总共有17种表结构（截止JDK13），用以存储类中的字面量与符号引用，这些信息在虚拟机解析时会根据索引号找到具体值被加载进虚拟机中，这17种表结构涵盖了所有的java信息，所有的表如下所示：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/6ba8d35e83f5476580cc157033f7a3a8_1720253872913.png?token=ANB4BCJRCCGWRRAZIITIHL3GRD67A" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>因为每一种表结构的存储结构都不相同，因此我们只需要关键性的记住几种即可。<br>下面我们来具体分析。</p>
 <p>什么是常量？一般的理解就是 : 用final修饰的变量是常量 ，以及在编译时期定义好的字符串。但是这种说法是不严谨的，准确来说 ： 常量是final修饰的成员变量（实例变量）和静态变量（静态变量也只能是用static修饰的成员变量）。而用final修饰的局部变量（方法内）并不是常量，而是不可变量，它存储在栈中。</p>
 <p>我们只来分析它的常量池部分，既然是常量池，那么其中存放的肯定是常量，那么什么是“常量”呢？ class文件常量池主要存放两大常量：字面量和符号引用。</p>
 <ul>
 <li>字面量： 字面量接近java语言层面的常量概念，主要包括：文本字符串，也就是我们经常申明的： public String s &#x3D; “abc”;中的”abc”：</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">11</span> = Utf8               value</span><br><span class="line">#<span class="number">12</span> = Utf8               I</span><br><span class="line">#<span class="number">13</span> = String             #<span class="number">14</span>            <span class="comment">// abc</span></span><br><span class="line">#<span class="number">14</span> = Utf8               abc</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">#<span class="hljs-number">11</span> = Utf8               value<br>#<span class="hljs-number">12</span> = Utf8               I<br>#<span class="hljs-number">13</span> = String             #<span class="hljs-number">14</span>            <span class="hljs-comment">// abc</span><br>#<span class="hljs-number">14</span> = Utf8               abc<br></code></pre></td></tr></table></figure>
 <ul>
 <li>用final修饰的成员变量，包括静态变量、实例变量和局部变量，就是我们声明的：public final static int b &#x3D; 10086：</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">19</span> = Utf8               b</span><br><span class="line">#<span class="number">20</span> = Utf8               ConstantValue</span><br><span class="line">#<span class="number">21</span> = Integer            <span class="number">10086</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">#<span class="hljs-number">19</span> = Utf8               b<br>#<span class="hljs-number">20</span> = Utf8               ConstantValue<br>#<span class="hljs-number">21</span> = Integer            <span class="hljs-number">10086</span><br></code></pre></td></tr></table></figure>
 <p>而对于基本类型数据(甚至是方法中的局部变量)，也就是上面的private int value &#x3D; 1;常量池中只保留了他的的字段描述符I和字段的名称value，他们的字面量不会存在于常量池：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">11</span> = Utf8               value</span><br><span class="line">#<span class="number">12</span> = Utf8               I</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">#<span class="hljs-number">11</span> = Utf8               value<br>#<span class="hljs-number">12</span> = Utf8               I<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>类和接口的全限定名，也就是java&#x2F;lang&#x2F;String;这样，将类名中原来的”.”替换为”&#x2F;“得到的，主要用于在运行时解析得到类的直接引用，像这样：</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">8</span> = Class              #<span class="number">10</span>            <span class="comment">// FinalTest01</span></span><br><span class="line">#<span class="number">10</span> = Utf8               FinalTest01</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">#<span class="hljs-number">8</span> = Class              #<span class="hljs-number">10</span>            <span class="hljs-comment">// FinalTest01</span><br>#<span class="hljs-number">10</span> = Utf8               FinalTest01<br></code></pre></td></tr></table></figure>
 <ul>
 <li>字段的名称和描述符，字段也就是类或者接口中声明的变量，包括类级别变量和实例级的变量：</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">7</span> = Fieldref           #<span class="number">8.</span>#<span class="number">9</span>          <span class="comment">// FinalTest01.value:I</span></span><br><span class="line">  #<span class="number">8</span> = Class              #<span class="number">10</span>            <span class="comment">// FinalTest01</span></span><br><span class="line">  #<span class="number">9</span> = NameAndType        #<span class="number">11</span>:#<span class="number">12</span>        <span class="comment">// value:I</span></span><br><span class="line"> #<span class="number">10</span> = Utf8               FinalTest01</span><br><span class="line"> #<span class="number">11</span> = Utf8               value</span><br><span class="line"> #<span class="number">12</span> = Utf8               I</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">#<span class="hljs-number">7</span> = Fieldref           #<span class="hljs-number">8.</span>#<span class="hljs-number">9</span>          <span class="hljs-comment">// FinalTest01.value:I</span><br>  #<span class="hljs-number">8</span> = Class              #<span class="hljs-number">10</span>            <span class="hljs-comment">// FinalTest01</span><br>  #<span class="hljs-number">9</span> = NameAndType        #<span class="hljs-number">11</span>:#<span class="hljs-number">12</span>        <span class="hljs-comment">// value:I</span><br> #<span class="hljs-number">10</span> = Utf8               FinalTest01<br> #<span class="hljs-number">11</span> = Utf8               value<br> #<span class="hljs-number">12</span> = Utf8               I<br></code></pre></td></tr></table></figure>
 <ul>
 <li>方法中的名称和描述符，也即参数类型+返回值：</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">23</span> = Utf8               LineNumberTable</span><br><span class="line"> #<span class="number">24</span> = Utf8               setValue</span><br><span class="line"> #<span class="number">25</span> = Utf8               (I)V</span><br><span class="line"> #<span class="number">26</span> = Utf8               getValue</span><br><span class="line"> #<span class="number">27</span> = Utf8               ()I</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java">#<span class="hljs-number">23</span> = Utf8               LineNumberTable<br> #<span class="hljs-number">24</span> = Utf8               setValue<br> #<span class="hljs-number">25</span> = Utf8               (I)V<br> #<span class="hljs-number">26</span> = Utf8               getValue<br> #<span class="hljs-number">27</span> = Utf8               ()I<br></code></pre></td></tr></table></figure>
 <p>可以看到，在常量池中，并没有找到<code>final int temp = 10010;</code>。</p>
 <h4 id="4、访问标志"><a href="#4、访问标志" class="headerlink" title="4、访问标志"></a>4、访问标志</h4><p>长度：2字节</p>
 <p>用于识别类或接口的访问信息， 包括是否为类，是否public等：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> java.lang.String s;</span><br><span class="line">    descriptor: Ljava/lang/String;</span><br><span class="line">    flags: (<span class="number">0x0001</span>) ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> b;</span><br><span class="line">    descriptor: I</span><br><span class="line">    flags: (<span class="number">0x0019</span>) ACC_PUBLIC, ACC_STATIC, ACC_FINAL</span><br><span class="line">    ConstantValue: <span class="type">int</span> <span class="number">10086</span></span><br><span class="line"></span><br><span class="line">  FinalTest01();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: (<span class="number">0x0000</span>)</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         <span class="number">1</span>: invokespecial #<span class="number">1</span>                  <span class="comment">// Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span></span><br><span class="line">         <span class="number">4</span>: aload_0</span><br><span class="line">         <span class="number">5</span>: iconst_1</span><br><span class="line">         <span class="number">6</span>: putfield      #<span class="number">7</span>                  <span class="comment">// Field value:I</span></span><br><span class="line">         <span class="number">9</span>: aload_0</span><br><span class="line">        <span class="number">10</span>: ldc           #<span class="number">13</span>                 <span class="comment">// String abc</span></span><br><span class="line">        <span class="number">12</span>: putfield      #<span class="number">15</span>                 <span class="comment">// Field s:Ljava/lang/String;</span></span><br><span class="line">        <span class="number">15</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">1</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">2</span>: <span class="number">4</span></span><br><span class="line">        line <span class="number">3</span>: <span class="number">9</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setValue</span><span class="params">(<span class="type">int</span>)</span>;</span><br><span class="line">    descriptor: (I)V</span><br><span class="line">    flags: (<span class="number">0x0001</span>) ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">3</span>, locals=<span class="number">2</span>, args_size=<span class="number">2</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         <span class="number">1</span>: sipush        <span class="number">10010</span></span><br><span class="line">         <span class="number">4</span>: iload_1</span><br><span class="line">         <span class="number">5</span>: iadd</span><br><span class="line">         <span class="number">6</span>: putfield      #<span class="number">7</span>                  <span class="comment">// Field value:I</span></span><br><span class="line">         <span class="number">9</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">8</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">9</span>: <span class="number">9</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getValue</span><span class="params">()</span>;</span><br><span class="line">    descriptor: ()I</span><br><span class="line">    flags: (<span class="number">0x0001</span>) ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         <span class="number">1</span>: getfield      #<span class="number">7</span>                  <span class="comment">// Field value:I</span></span><br><span class="line">         <span class="number">4</span>: ireturn</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">12</span>: <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line">SourceFile: <span class="string">&quot;FinalTest01.java&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs java">&#123;<br>  <span class="hljs-keyword">public</span> java.lang.String s;<br>    descriptor: Ljava/lang/String;<br>    flags: (<span class="hljs-number">0x0001</span>) ACC_PUBLIC<br><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> b;<br>    descriptor: I<br>    flags: (<span class="hljs-number">0x0019</span>) ACC_PUBLIC, ACC_STATIC, ACC_FINAL<br>    ConstantValue: <span class="hljs-type">int</span> <span class="hljs-number">10086</span><br><br>  FinalTest01();<br>    descriptor: ()V<br>    flags: (<span class="hljs-number">0x0000</span>)<br>    Code:<br>      stack=<span class="hljs-number">2</span>, locals=<span class="hljs-number">1</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: aload_0<br>         <span class="hljs-number">1</span>: invokespecial #<span class="hljs-number">1</span>                  <span class="hljs-comment">// Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>         <span class="hljs-number">4</span>: aload_0<br>         <span class="hljs-number">5</span>: iconst_1<br>         <span class="hljs-number">6</span>: putfield      #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Field value:I</span><br>         <span class="hljs-number">9</span>: aload_0<br>        <span class="hljs-number">10</span>: ldc           #<span class="hljs-number">13</span>                 <span class="hljs-comment">// String abc</span><br>        <span class="hljs-number">12</span>: putfield      #<span class="hljs-number">15</span>                 <span class="hljs-comment">// Field s:Ljava/lang/String;</span><br>        <span class="hljs-number">15</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">1</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">2</span>: <span class="hljs-number">4</span><br>        line <span class="hljs-number">3</span>: <span class="hljs-number">9</span><br><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setValue</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br>    descriptor: (I)V<br>    flags: (<span class="hljs-number">0x0001</span>) ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">3</span>, locals=<span class="hljs-number">2</span>, args_size=<span class="hljs-number">2</span><br>         <span class="hljs-number">0</span>: aload_0<br>         <span class="hljs-number">1</span>: sipush        <span class="hljs-number">10010</span><br>         <span class="hljs-number">4</span>: iload_1<br>         <span class="hljs-number">5</span>: iadd<br>         <span class="hljs-number">6</span>: putfield      #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Field value:I</span><br>         <span class="hljs-number">9</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">8</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">9</span>: <span class="hljs-number">9</span><br><br>  <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getValue</span><span class="hljs-params">()</span>;<br>    descriptor: ()I<br>    flags: (<span class="hljs-number">0x0001</span>) ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">1</span>, locals=<span class="hljs-number">1</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: aload_0<br>         <span class="hljs-number">1</span>: getfield      #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Field value:I</span><br>         <span class="hljs-number">4</span>: ireturn<br>      LineNumberTable:<br>        line <span class="hljs-number">12</span>: <span class="hljs-number">0</span><br>&#125;<br>SourceFile: <span class="hljs-string">&quot;FinalTest01.java&quot;</span><br></code></pre></td></tr></table></figure>
 <p>可以看到各种标志位，比如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">flags: (<span class="number">0x0001</span>) ACC_PUBLIC</span><br><span class="line">flags: (<span class="number">0x0019</span>) ACC_PUBLIC, ACC_STATIC, ACC_FINAL</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">flags: (<span class="hljs-number">0x0001</span>) ACC_PUBLIC<br>flags: (<span class="hljs-number">0x0019</span>) ACC_PUBLIC, ACC_STATIC, ACC_FINAL<br></code></pre></td></tr></table></figure>
 <h4 id="5、类索引、父类索引、接口索引集合"><a href="#5、类索引、父类索引、接口索引集合" class="headerlink" title="5、类索引、父类索引、接口索引集合"></a>5、类索引、父类索引、接口索引集合</h4><p>这一项存储的信息主要就是确定当前类的类全限定名、父类全限定名、实现的接口的全限定名。这里的类全限定名、父类全限定名、接口全限定名引用的都是常量池中的信息。类索引、父类索引都是各使用一个u2类型的数据存储，Java支持多实现所以接口索引集合使用多个u2类型的数据进行存储。</p>
 <h4 id="6、字段表集合"><a href="#6、字段表集合" class="headerlink" title="6、字段表集合"></a>6、字段表集合</h4><p>集合是相同数据结构的无符号数或者表多个汇集在一起，加上前置的容量计数器来构成的。字段表集合结构自然也是这样的是由一个容量计数器加上多个字段表构成的。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> b;</span><br><span class="line">    descriptor: I</span><br><span class="line">    flags: (<span class="number">0x0019</span>) ACC_PUBLIC, ACC_STATIC, ACC_FINAL</span><br><span class="line">    ConstantValue: <span class="type">int</span> <span class="number">10086</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> b;<br>    descriptor: I<br>    flags: (<span class="hljs-number">0x0019</span>) ACC_PUBLIC, ACC_STATIC, ACC_FINAL<br>    ConstantValue: <span class="hljs-type">int</span> <span class="hljs-number">10086</span><br></code></pre></td></tr></table></figure>
 
 <h4 id="7、方法表集合"><a href="#7、方法表集合" class="headerlink" title="7、方法表集合"></a>7、方法表集合</h4><p>方法表集由一个容量计数器和多个方法表以及属性表集合构成。一个方法表也是有三个部分（与字段表相同）<strong>访问标志</strong>、<strong>方法名称索引</strong>、<strong>方法描述符索引</strong>三项。与字段表基本一致，不一致的地方是每个方发表都会有自己的属性表集合，因为方法的代码会存储的code这个属性表中（很少有没有代码的方法）。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setValue</span><span class="params">(<span class="type">int</span>)</span>;</span><br><span class="line">    descriptor: (I)V</span><br><span class="line">    flags: (<span class="number">0x0001</span>) ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">3</span>, locals=<span class="number">2</span>, args_size=<span class="number">2</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         <span class="number">1</span>: sipush        <span class="number">10010</span></span><br><span class="line">         <span class="number">4</span>: iload_1</span><br><span class="line">         <span class="number">5</span>: iadd</span><br><span class="line">         <span class="number">6</span>: putfield      #<span class="number">7</span>                  <span class="comment">// Field value:I</span></span><br><span class="line">         <span class="number">9</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">8</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">9</span>: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setValue</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br>    descriptor: (I)V<br>    flags: (<span class="hljs-number">0x0001</span>) ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">3</span>, locals=<span class="hljs-number">2</span>, args_size=<span class="hljs-number">2</span><br>         <span class="hljs-number">0</span>: aload_0<br>         <span class="hljs-number">1</span>: sipush        <span class="hljs-number">10010</span><br>         <span class="hljs-number">4</span>: iload_1<br>         <span class="hljs-number">5</span>: iadd<br>         <span class="hljs-number">6</span>: putfield      #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Field value:I</span><br>         <span class="hljs-number">9</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">8</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">9</span>: <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
 <h4 id="8、属性表集合"><a href="#8、属性表集合" class="headerlink" title="8、属性表集合"></a>8、属性表集合</h4><p>属性表集合是class文件结构里要介绍的最后一项，属性表集合并不会单独存在，会和字段表、方发表配合使用，作为这些表的补充存在。常见的方法编译后的代码也会存在code属性表中的，方法中定义的异常是存在Exceptions表中的。</p>
 <h2 id="二、运行时常量池"><a href="#二、运行时常量池" class="headerlink" title="二、运行时常量池"></a>二、运行时常量池</h2><p>我们知道，JVM在执行某个类的时候，要经过<strong>加载</strong>、<strong>链接</strong>（<strong>验证、准备、解析</strong>）、<strong>初始化</strong>，在第一步加载的时候需要完成：</p>
 <ul>
@@ -186,61 +351,382 @@
 <p>将class字节流代表的静态存储结构转化为方法区的运行时数据结构，其中就包含了class文件常量池进入运行时常量池的过程。这和数据从辅存进入内存有些相似，但又有不同。不同的类共用一个运行时常量池，同时在进入运行时常量池的过程中，多个class文件中常量池相同的字符串，多个class文件中常量池中相同的字符串只会存在一份在运行时常量池，这本质上是一种优化，主要解决内存过大的问题。</p>
 <p>运行时常量池的作用是存储java class文件常量池中的符号信息，运行时常量池中保存着一些class文件中描述的符号引用，同时在类的解析阶段还会将这些符号引用翻译出直接引用（直接指向实例对象的指针，内存地址），翻译出来的直接引用也是存储在运行时常量池中。</p>
 <p>运行时常量池相对于class文件常量池的另外一个特性是具备动态性，java语言并不要求常量一定只有编译器才产生，也就是并非预置入class文件中常量池的内容才能进入方法区运行时常量池，运行期间也可能将新的常量放入池中。在运行时可以通过代码生成常量并将其放入运行时常量池中，这种特性被用的最多的就是String.intern()。</p>
-<h2 id="三、全局字符串常量池"><a href="#三、全局字符串常量池" class="headerlink" title="三、全局字符串常量池"></a>三、全局字符串常量池</h2><h3 id="（一）Java中创建字符串对象的两种方式"><a href="#（一）Java中创建字符串对象的两种方式" class="headerlink" title="（一）Java中创建字符串对象的两种方式"></a>（一）Java中创建字符串对象的两种方式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s0</span> <span class="operator">=</span> <span class="string">&quot;helloworld!&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;helloworld!&quot;</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="三、全局字符串常量池"><a href="#三、全局字符串常量池" class="headerlink" title="三、全局字符串常量池"></a>三、全局字符串常量池</h2><h3 id="（一）Java中创建字符串对象的两种方式"><a href="#（一）Java中创建字符串对象的两种方式" class="headerlink" title="（一）Java中创建字符串对象的两种方式"></a>（一）Java中创建字符串对象的两种方式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">s0</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;helloworld!&quot;</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">s1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&quot;helloworld!&quot;</span>);<br></code></pre></td></tr></table></figure>
 <p>第一种方式声明的字面量”helloworld”是在编译期就已经确定，它会直接进入class文件常量池中；当运行期间在<strong>全局字符串常量池</strong>中会保存它的一个<strong>引用</strong>.实际上最终还是要在<strong>堆</strong>上创建一个”helloworld”对象。</p>
 <p>第二种方式方式使用了new String()，调用了String类的构造函数。new指令是创建一个类的实例对象并完成加载初始化的，因此这个字符串对象是在<strong>运行期</strong>才能确定的，创建的字符串对象是在<strong>堆</strong>内存上。</p>
 <p>因此，s0 和 s1不是一个东西，运行：<code>System.out.println(s0 == s1)</code>的结果肯定是 <code>false</code>，它们的地址并不一样。</p>
-<h3 id="（二）Java-方法区运行时内存"><a href="#（二）Java-方法区运行时内存" class="headerlink" title="（二）Java 方法区运行时内存"></a>（二）Java 方法区运行时内存</h3><p>对于JDK7，<strong>字符串常量池</strong>和<strong>静态变量</strong>被从方法区拿到了堆中，<strong>运行时常量池以及其它</strong>的信息还在方法区, 也就是hotspot中的永久代。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e2f5b23907bd4de8a8af145364021f01_1720253872913.png?token=ANB4BCJQTTOQURKOO37JTZDGRD67I" alt="在这里插入图片描述"><br>但对于 JDK8，hotspot移除了永久代，用元空间(Metaspace)取而代之, 这时候字符串常量池还在堆，运行时常量池还在方法区，只不过方法区的实现从永久代变成了元空间(Metaspace)，也就是内存中，这大大释放了虚拟机内存的空间，提高了性能。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5b8cd21a72d5476ba4c3514ce30c9a96_1720253872913.png?token=ANB4BCM42IOV5JD3HRWMEBDGRD67M" alt="在这里插入图片描述"></p>
+<h3 id="（二）Java-方法区运行时内存"><a href="#（二）Java-方法区运行时内存" class="headerlink" title="（二）Java 方法区运行时内存"></a>（二）Java 方法区运行时内存</h3><p>对于JDK7，<strong>字符串常量池</strong>和<strong>静态变量</strong>被从方法区拿到了堆中，<strong>运行时常量池以及其它</strong>的信息还在方法区, 也就是hotspot中的永久代。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e2f5b23907bd4de8a8af145364021f01_1720253872913.png?token=ANB4BCJQTTOQURKOO37JTZDGRD67I" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>但对于 JDK8，hotspot移除了永久代，用元空间(Metaspace)取而代之, 这时候字符串常量池还在堆，运行时常量池还在方法区，只不过方法区的实现从永久代变成了元空间(Metaspace)，也就是内存中，这大大释放了虚拟机内存的空间，提高了性能。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5b8cd21a72d5476ba4c3514ce30c9a96_1720253872913.png?token=ANB4BCM42IOV5JD3HRWMEBDGRD67M" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <h2 id="四、JAVA-基本类型的封装类及对应常量池"><a href="#四、JAVA-基本类型的封装类及对应常量池" class="headerlink" title="四、JAVA 基本类型的封装类及对应常量池"></a>四、JAVA 基本类型的封装类及对应常量池</h2><p>Java中基本类型的包装类的大部分都实现了常量池技术，这些类是<strong>Byte,Short,Integer,Long,Character,Boolean</strong>另外两种浮点数类型的包装类则没有实现。另外上面这5种整型的包装类也只是在对应值小于等于127时才可使用对象池，也即对象不负责创建和管理大于127的这些类的对象。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StringConstantPool</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="comment">//5种整形的包装类Byte,Short,Integer,Long,Character的对象，</span></span><br><span class="line">        <span class="comment">//在值小于127时可以使用常量池</span></span><br><span class="line">        Integer i1=<span class="number">127</span>;</span><br><span class="line">        Integer i2=<span class="number">127</span>;</span><br><span class="line">        System.out.println(i1==i2);<span class="comment">//输出true</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//值大于127时，不会从常量池中取对象</span></span><br><span class="line">        Integer i3=<span class="number">128</span>;</span><br><span class="line">        Integer i4=<span class="number">128</span>;</span><br><span class="line">        System.out.println(i3==i4);<span class="comment">//输出false</span></span><br><span class="line">        <span class="comment">//Boolean类也实现了常量池技术</span></span><br><span class="line"></span><br><span class="line">        Boolean bool1=<span class="literal">true</span>;</span><br><span class="line">        Boolean bool2=<span class="literal">true</span>;</span><br><span class="line">        System.out.println(bool1==bool2);<span class="comment">//输出true</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//浮点类型的包装类没有实现常量池技术</span></span><br><span class="line">        Double d1=<span class="number">1.0</span>;</span><br><span class="line">        Double d2=<span class="number">1.0</span>;</span><br><span class="line">        System.out.println(d1==d2); <span class="comment">//输出false</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本文思维导图：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/20560944b7a648bba0a6e2a2d843b3a1_1720253872913.png?token=ANB4BCOOITG4NRRECAOOF23GRD67Q" alt="在这里插入图片描述"><br><em>全文完，感谢你的阅读。</em></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">StringConstantPool</span>&#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span>&#123;<br>        <span class="hljs-comment">//5种整形的包装类Byte,Short,Integer,Long,Character的对象，</span><br>        <span class="hljs-comment">//在值小于127时可以使用常量池</span><br>        Integer i1=<span class="hljs-number">127</span>;<br>        Integer i2=<span class="hljs-number">127</span>;<br>        System.out.println(i1==i2);<span class="hljs-comment">//输出true</span><br><br>        <span class="hljs-comment">//值大于127时，不会从常量池中取对象</span><br>        Integer i3=<span class="hljs-number">128</span>;<br>        Integer i4=<span class="hljs-number">128</span>;<br>        System.out.println(i3==i4);<span class="hljs-comment">//输出false</span><br>        <span class="hljs-comment">//Boolean类也实现了常量池技术</span><br><br>        Boolean bool1=<span class="hljs-literal">true</span>;<br>        Boolean bool2=<span class="hljs-literal">true</span>;<br>        System.out.println(bool1==bool2);<span class="hljs-comment">//输出true</span><br><br>        <span class="hljs-comment">//浮点类型的包装类没有实现常量池技术</span><br>        Double d1=<span class="hljs-number">1.0</span>;<br>        Double d2=<span class="hljs-number">1.0</span>;<br>        System.out.println(d1==d2); <span class="hljs-comment">//输出false</span><br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>本文思维导图：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/20560944b7a648bba0a6e2a2d843b3a1_1720253872913.png?token=ANB4BCOOITG4NRRECAOOF23GRD67Q" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br><em>全文完，感谢你的阅读。</em></p>
 <p><strong>参考：</strong><br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1690589">https://cloud.tencent.com/developer/article/1690589</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903732757397517">https://juejin.cn/post/6844903732757397517</a><br><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/1130700">https://developer.aliyun.com/article/1130700</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d8492e748c57">https://www.jianshu.com/p/d8492e748c57</a><br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1450501">https://cloud.tencent.com/developer/article/1450501</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/AlbenXie/article/details/88542111">https://blog.csdn.net/AlbenXie/article/details/88542111</a></p>
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">Hexo</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">This piece of writing is an original article, utilizing the<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>Agreement. For complete reproduction, please acknowledge the source as Courtesy of<a href="/">Hexo</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java-jvm-%E7%AE%97%E6%B3%95/"><span class="tags-punctuation"></span>java jvm 算法<span class="tagsPageCount">1</span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/01/13/%EF%BC%88%E4%B8%89%EF%BC%89%E6%8A%BD%E8%B1%A1%E7%B1%BB/"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">（三）抽象类</div></div></a></div><div class="next-post pull-right"><a href="/2023/01/12/%EF%BC%88%E4%B8%80%EF%BC%89Java%20%E4%B8%AD%20final%20%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E7%94%A8%E6%B3%95%E6%80%BB%E7%BB%93/"><div class="pagination-info"><div class="label">Next</div><div class="next_info">（一）Java 中 final 关键字的用法总结</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="Avatar" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="Mood sticker"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">John Doe</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>New posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客"><img alt="利用 Hexo 搭建个人博客" src="/"></a><div class="content"><a class="title" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客">利用 Hexo 搭建个人博客</a><a class="article-recent_post_categories" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">博客</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记"><img alt="2024.07.05 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记">2024.07.05 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记"><img alt="2024.07.02 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记">2024.07.02 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记"><img alt="2024.06.30 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记">2024.06.30 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记"><img alt="2024.06.29 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记">2024.06.29 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">John Doe</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.3"></script><script src="/js/main.js?v=1.12.3"></script><script src="/js/third_party/waterfall.min.js?v=1.12.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.3"></script><script>dark()
-</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
 
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
 
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="category-chain-item">Java基础知识</a>
+  
+  
 
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/" class="print-no-link">#java jvm 算法</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>（二）常量池的探索</div>
+      <div>http://blog.luliang.online/2023/01/12/（二）常量池的探索/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01/13/%EF%BC%88%E4%B8%89%EF%BC%89%E6%8A%BD%E8%B1%A1%E7%B1%BB/" title="（三）抽象类">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">（三）抽象类</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/12/%EF%BC%88%E4%B8%80%EF%BC%89Java%20%E4%B8%AD%20final%20%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E7%94%A8%E6%B3%95%E6%80%BB%E7%BB%93/" title="（一）Java 中 final 关键字的用法总结">
+                        <span class="hidden-mobile">（一）Java 中 final 关键字的用法总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
     })
+  </script>
 
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
-})
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
     }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
     }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/07/06/利用 Hexo 搭建个人博客/","2024/07/05/2024.07.05 刷题日记/","2024/07/02/2024.07.02 刷题日记/","2024/06/30/2024.06.30 刷题日记/","2024/06/29/2024.06.29 刷题日记/","2024/06/28/2024.06.28 刷题日记/","2024/06/26/2024.06.26 刷题日记/","2024/06/25/2024.06.25 刷题日记/","2024/06/24/2024.06.24 刷题日记/","2024/06/23/2024.06.23 刷题日记/","2024/06/23/2024.06.22 刷题日记/","2024/06/21/2024.06.21 刷题日记/","2024/06/20/2024.06.20 刷题日记/","2024/06/19/2024.06.19 刷题日记/","2024/06/18/2024.06.18 刷题日记/","2024/06/18/2024.06.17 刷题日记/","2024/06/16/2024.06.16 刷题日记/","2024/06/12/mmap() 的几种用法/","2024/06/11/debugger（七）：栈帧（backtrace）/","2024/06/11/debugger（六）：source level 断点/","2024/06/11/debugger（五）：source level stepping/","2024/06/10/debugger（四）：源代码/","2024/06/10/debugger（三）：dwarf 文件/","2024/06/10/debugger（二）：读、写内存以及寄存器/","2024/05/25/debugger（一）：打断点的实现以及案例分析/","2024/05/20/C++内存模型/","2024/05/18/C++：再谈智能指针/","2024/05/17/C++调试：函数调用过程和堆栈/","2024/05/16/C++调试：内存管理/","2024/05/15/C++并发：构建线程安全的队列/","2024/05/15/C++并发：等待条件成立/","2024/05/14/C++：并发保护/","2024/05/14/C++并发：锁/","2024/05/12/C++：完美转发（二）（std!forward）/","2024/05/12/C++：完美转发（一）（std!forward）/","2024/05/11/C++：移动语义（std!move）/","2024/05/10/C++：左值（引用）&右值（引用）/","2024/05/10/C++并发：线程函数传参（二）/","2024/05/09/C++并发：线程函数传参（一）/","2024/05/05/macOS DOSBox 汇编环境搭建/","2024/04/28/CM3：lldb 调试 qemu 跑的程序/","2024/04/27/CM3：qemu执行汇编/","2024/04/26/8086：qemu执行汇编/","2024/04/24/C++：函数符（一）/","2024/04/24/C++：适配器/","2024/04/23/C++：迭代器/","2024/04/21/C++：智能指针（二）/","2024/04/21/C++：智能指针（一）/","2024/04/17/C++：返回值优化/","2024/04/17/C++：异常处理/","2024/04/11/C++：弃值表达式/","2024/03/31/关于一篇知乎答案的重现/","2023/12/31/2023 个人总结/","2023/12/24/mit6.s081【目录】/","2023/12/24/MIT 6.S081学习笔记（第十章）/","2023/12/23/MIT 6.S081学习笔记（第九章）/","2023/12/23/Shell Tools of Missing Semester（二）/","2023/12/22/Course Shell of Missing Semester（一）/","2023/12/21/MIT 6.S081学习笔记（第八章）/","2023/12/20/xv6 文件系统面临的问题/","2023/12/19/实现个人日志命令行工具（C语言）/","2023/12/18/xv6 文件系统（下）/","2023/12/18/xv6 文件系统（上）/","2023/12/13/MIT 6.S081学习笔记（第七章）/","2023/12/11/xv6 中的一些系统调用（下）/","2023/12/10/xv6 中的一些系统调用（上）/","2023/12/08/MIT 6.S081学习笔记（第六章）（下）/","2023/12/07/MIT 6.S081学习笔记（第六章）（上）/","2023/12/06/MIT 6.S081学习笔记（第五章）/","2023/12/04/xv6 book Chapter7 中文翻译/","2023/12/04/xv6 book Chapter6 中文翻译/","2023/12/04/xv6 book Chapter5 中文翻译/","2023/12/04/xv6 book Chapter4 中文翻译/","2023/11/24/MIT 6.S081学习笔记（第四章）/","2023/11/22/MIT 6.S081学习笔记（第三章）/","2023/11/18/xv6 book Chapter3 中文翻译/","2023/11/13/《OSTEP》信号量（chap31）/","2023/11/11/《OSTEP》条件变量（chap30）/","2023/10/05/MIT 6.S081学习笔记（第二章）/","2023/09/29/ngrok内网穿透以及原理/","2023/09/24/什么是P问题、NP问题和NPC问题/","2023/09/10/MIT 6.S081学习笔记（第一章）/","2023/09/07/MIT 6.S081学习笔记（第〇章）/","2023/09/02/go Session的实现（一）/","2023/08/01/gin 框架中的 gin.Context/","2023/07/31/Redis （一）消息订阅和发送测试/","2023/07/27/Hackintosh 入门/","2023/07/04/Docker网络模型以及容器网络初探（一）/","2023/06/29/Ubuntu 升级 golang 版本完美步骤/","2023/06/26/阿里云 Ubuntu 网络设置/","2023/06/17/《离散数学》：特殊的图/","2023/06/16/《离散数学》：代数系统和图论导论/","2023/06/15/《离散数学》：集合、关系和函数/","2023/06/14/《离散数学》：逻辑/","2023/06/08/Unix!Linux编程：UDS 数据报/","2023/06/07/Unix!Linux编程：UDS 流（Stream）/","2023/06/06/Golang框架：cobra/","2023/06/04/Go Web下GORM框架使用（二）/","2023/06/01/Go Web下GORM框架使用（一）/","2023/06/01/Go Web下gin框架使用（二）/","2023/06/01/泡利矩阵（一）/","2023/06/01/代数入门（〇）/","2023/05/31/Go Web下gin框架使用（一）/","2023/05/23/Go Web下gin框架的模板渲染/","2023/05/08/【Golang】多线程排序/","2023/05/07/【Golang】多线程下载器的实现/","2023/05/05/【Golang】多线程爬虫的实现/","2023/03/23/【day11】链表高精度加法/","2023/03/22/【day10】链表的合并/","2023/03/21/【day09】链表的旋转与反转/","2023/03/20/【day08】移除与插入链表元素/","2023/03/19/【day07】二维数组及滚动数组/","2023/03/13/【day06】数组的遍历/","2023/03/12/【day05】统计数组中的元素/","2023/03/11/exec()函数家族详细/","2023/03/11/对fork() 函数的理解/","2023/03/11/【day04】数组的旋转/","2023/03/10/【day03】数组的改变与移动/","2023/03/08/【day02】之链表操作/","2023/03/08/简单的 ls命令的实现（四.完结）/","2023/03/07/Java将 List 类型转化为 Array 的方法/","2023/03/07/【day01】之N数之和/","2023/02/28/教师工资管理系统之随机产生教师详细信息/","2023/02/28/C语言链表的头插法与尾插法/","2023/02/24/C语言实现删除匹配的某一行文本/","2023/02/17/简单的 ls 命令的实现（三）/","2023/02/17/简单的 ls 命令的实现（二）/","2023/02/15/简单的 ls 命令的实现（一）/","2023/01/17/C语言指针——从入门到精通/","2023/01/13/（三）抽象类/","2023/01/12/（二）常量池的探索/","2023/01/12/（一）Java 中 final 关键字的用法总结/","2023/01/10/对环境变量的探究/","2023/01/10/macOS下binutils 的安装/","2023/01/10/2022 Personal Summary/","2023/01/10/Analysis of the Location of Initialized!Uninitialized Global!Static!Local Variables!Constants in Mem/","2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/","2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/","2022/12/28/Start to write a simple Linux kernel Module/","2022/11/29/About the problem of struct structure assignment/","2022/11/16/Solutions for Xiyou Linux Group 2020 Interview Questions/","2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/","2022/11/15/Solutions for Xiyou Linux Group 2022 Interview Questions/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

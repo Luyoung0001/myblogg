@@ -1,134 +1,288 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Shell Tools of Missing Semester（二） | Hexo</title><noscript>Please enable JavaScript to view the site</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.3"><!-- inject head--><link rel="canonical" href="http://example.com/2023/12/23/Shell%20Tools%20of%20Missing%20Semester%EF%BC%88%E4%BA%8C%EF%BC%89/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="Shell toolsshell 脚本Bash中的字符串通过 &amp;#39; 和 &amp;quot; 分隔符来定义，但是它们的含义并不相同。以 &amp;#39; 定义的字符串为原义字符串，其中的变量不会被转义，而 &amp;quot; 定义的字符串会将变量值进行替换。 12345foo&amp;#x3D;barecho &amp;quot;$f"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Hexo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '1.12.3' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Shell toolsshell 脚本Bash中的字符串通过 &#39; 和 &quot; 分隔符来定义，但是它们的含义并不相同。以 &#39; 定义的字符串为原义字符串，其中的变量不会被转义，而 &quot; 定义的字符串会将变量值进行替换。 12345foo&#x3D;barecho &quot;$foo&quot;# 打印 barecho &#x27;$foo&#x27;# 打印 $foo  ba">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shell Tools of Missing Semester（二）">
+<meta property="og:url" content="http://blog.luliang.online/2023/12/23/Shell%20Tools%20of%20Missing%20Semester%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="Shell toolsshell 脚本Bash中的字符串通过 &#39; 和 &quot; 分隔符来定义，但是它们的含义并不相同。以 &#39; 定义的字符串为原义字符串，其中的变量不会被转义，而 &quot; 定义的字符串会将变量值进行替换。 12345foo&#x3D;barecho &quot;$foo&quot;# 打印 barecho &#x27;$foo&#x27;# 打印 $foo  ba">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-23T06:28:18.000Z">
+<meta property="article:modified_time" content="2024-07-07T07:26:40.567Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="学习 笔记 bash 脚本">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Shell Tools of Missing Semester（二） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
     
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-    
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-    
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-    
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-                if (name && keyObj[name]) return
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
         
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2023-04-20 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: {"limit":50,"author":"Author: John Doe","link":"Link: ","source":"Source: Hexo","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."},
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"Dark","light":"Light"},"copy":{"success":"Copied","error":"Copy failed"},"backtop":"Back to top","time":{"day":" days ago","hour":" hours ago","just":"just","min":" minutes ago","month":" months ago"},"day":" days","f12":"Developer mode is turned on, please follow the GPL.","totalk":"You don't need to delete blank lines, just type in your comments."},
-    aside: {
-        sayhello: {
-            morning: '一日之计在于晨',
-            noon: '吃饱了才有力气干活',
-            afternoon: '集中精力，攻克难关',
-            night: '不要太劳累了，早睡更健康',
-            goodnight: '睡个好觉，保证精力充沛',
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: 'Long time no see,',
-            back: 'Welcome back again,',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: false,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="Day and night switching"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="Sidebar display control"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Archives</div><div class="length-num">143</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">89</div></a></div></div></div><span class="sidebar-menu-item-title">Function</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>Display mode</span></span></div><span class="sidebar-menu-item-title">Tags</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E5%85%B6%E4%BB%96/">其他<sup>1</sup></a><a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">总结 个人总结<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">算法 数据结构 哈希算法<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">算法 数据结构 leetcode<sup>9</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法 leetcode 数据结构<sup>5</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95/">leetcode 算法<sup>2</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">汇编 QEMU 8086<sup>1</sup></a><a href="/tags/c-linux/">c++ linux<sup>1</sup></a><a href="/tags/c/">c++<sup>13</sup></a><a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">c++ 多线程<sup>2</sup></a><a href="/tags/c-lldb/">c++ lldb<sup>2</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c++ 开发语言<sup>9</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">c++ 开发语言 学习 笔记<sup>1</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">汇编 QEMU CM3<sup>1</sup></a><a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">CM3 汇编 QEMU<sup>1</sup></a><a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">Shell 学习 笔记<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 开发语言<sup>2</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">链表 c语言 数据结构<sup>1</sup></a><a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/">docker 网络 容器<sup>1</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/">golang 前端 数据库<sup>2</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/">golang 前端 gin 服务器<sup>1</sup></a><a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/">前端 golang gin<sup>2</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">golang 开发语言 后端<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/">操作系统 Hackintosh<sup>1</sup></a><a href="/tags/java-jvm-servlet/">java jvm servlet<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/">学习 笔记 OS xv6<sup>1</sup></a><a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 操作系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 操作系统<sup>2</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统<sup>3</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 操作系统 OS<sup>1</sup></a><a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/">redis bootstrap 数据库<sup>1</sup></a><a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/">linux 服务器 运维<sup>1</sup></a><a href="/tags/ubuntu-golang-linux/">ubuntu golang linux<sup>1</sup></a><a href="/tags/unix-linux-udp/">unix linux udp<sup>1</sup></a><a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/">linux unix 服务器 网络<sup>1</sup></a><a href="/tags/c-debugger/">c++ debugger<sup>4</sup></a><a href="/tags/c-lldb-debugger/">c++ lldb debugger<sup>2</sup></a><a href="/tags/linux/">linux<sup>2</sup></a><a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/">gin Context golang Web 网络<sup>1</sup></a><a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/">golang 后端 前端 网络<sup>1</sup></a><a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/">macos 汇编 DOSBox 8086<sup>1</sup></a><a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/">macos linux 服务器<sup>1</sup></a><a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/">系统调用 mmap 文件<sup>1</sup></a><a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">Web 内网穿透<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/">操作系统 学习 xv6 翻译<sup>1</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/">xv6 操作系统 OS 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">xv6 OS 学习 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/">操作系统 笔记 学习<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">操作系统 学习 笔记<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/">图论 离散数学 代数系统<sup>1</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/">golang 开发语言 算法 后端<sup>1</sup></a><a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">golang 爬虫 开发语言<sup>1</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">leetcode 算法 数据结构<sup>4</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">链表 数据结构 算法<sup>3</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode/">算法 leetcode<sup>1</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">链表 数据结构 leetcode<sup>2</sup></a><a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数<sup>1</sup></a><a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/">docker 系统编程 tips<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">c语言 开发语言 命令行工具 个人记录<sup>1</sup></a><a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/">矩阵 线性代数 算法<sup>1</sup></a><a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">rust 开发语言 后端<sup>1</sup></a><a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">ubuntu 阿里云 网络 网络工具<sup>1</sup></a><a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java jvm 开发语言<sup>1</sup></a><a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java 开发语言<sup>1</sup></a><a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/">wireshark 网络 服务器<sup>1</sup></a><a href="/tags/linux-vscode-macos-c/">linux vscode macos c++<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 c++ 开发语言<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/">学习 笔记 操作系统 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/">学习 笔记 操作系统 xv6 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/">学习 笔记 xv6 OS<sup>1</sup></a><a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/">MIT 6.S081 学习 笔记 xv6<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统 文件系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/">学习 笔记 bash 脚本<sup>1</sup></a><a href="/tags/linux-c-%E7%AE%97%E6%B3%95/">linux c++ 算法<sup>1</sup></a><a href="/tags/linux-c/">linux c++<sup>2</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/">操作系统 xv6 翻译<sup>2</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/">xv6 操作系统 笔记 翻译<sup>1</sup></a><a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">笔记 学习 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/">图论 离散数学 特殊的图 数学<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/">离散数学 数学 逻辑推理<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/">离散数学 数学 关系 集合<sup>1</sup></a><a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/">golang 服务器 后端<sup>1</sup></a><a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/">NP 数学 信息学<sup>1</sup></a><a href="/tags/vscode-ide-macos-c/">vscode ide macos c++<sup>1</sup></a><a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/">java jvm 算法<sup>1</sup></a><a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">翻译 xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="Back to home"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">Shell Tools of Missing Semester（二）</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/" alt="Shell Tools of Missing Semester（二）"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="This article is a Original article, pay attention to the copyright.">Original</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/Some-Tools-Missing-Semester/">Some_Tools Missing Semester</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/"><span class="tags-name tags-punctuation">学习 笔记 bash 脚本</span></a></div></div></div></div><h1 class="post-title">Shell Tools of Missing Semester（二）</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><span id="more"></span>
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Shell Tools of Missing Semester（二）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-23 14:28" pubdate>
+          2023年12月23日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Shell Tools of Missing Semester（二）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
 
 <h2 id="Shell-tools"><a href="#Shell-tools" class="headerlink" title="Shell tools"></a>Shell tools</h2><h3 id="shell-脚本"><a href="#shell-脚本" class="headerlink" title="shell 脚本"></a>shell 脚本</h3><p>Bash中的字符串通过 <code>&#39;</code> 和 <code>&quot;</code> 分隔符来定义，但是它们的含义并不相同。以 <code>&#39;</code> 定义的字符串为原义字符串，其中的变量不会被转义，而 <code>&quot;</code> 定义的字符串会将变量值进行替换。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">foo=bar</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$foo</span>&quot;</span></span><br><span class="line"><span class="comment"># 打印 bar</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;$foo&#x27;</span></span><br><span class="line"><span class="comment"># 打印 $foo</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">foo=bar<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$foo</span>&quot;</span><br><span class="hljs-comment"># 打印 bar</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;$foo&#x27;</span><br><span class="hljs-comment"># 打印 $foo</span><br></code></pre></td></tr></table></figure>
 
 <p><strong>bash</strong> 同样支持函数：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">mcd</span></span> () &#123;</span><br><span class="line">    <span class="built_in">mkdir</span> -p <span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line">    <span class="built_in">cd</span> <span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-function"><span class="hljs-title">mcd</span></span> () &#123;<br>    <span class="hljs-built_in">mkdir</span> -p <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span><br>    <span class="hljs-built_in">cd</span> <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>输入：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mcd hello</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">mcd hello<br></code></pre></td></tr></table></figure>
 <p>由于 <strong>hello</strong> 是函数的第一个参数，因此 <code>mcd()</code> 会创建一个名为 <strong>hello</strong> 的目录，然后就会进入：<code>~/hello</code>。</p>
 <p>对于 bash 参数，有以下含义：</p>
 <ul>
@@ -143,82 +297,82 @@
 </ul>
 <p>命令通常使用 <strong>STDOUT</strong>来返回输出值，使用<strong>STDERR</strong> 来返回错误及错误码，便于脚本以更加友好的方式报告错误。 返回码或退出状态是脚本&#x2F;命令之间交流执行状态的方式。返回值0表示正常执行，其他所有非0的返回值都表示有错误发生。</p>
 <p>退出码可以搭配 **&amp;&amp;**（与操作符）和 **||**（或操作符）使用，用来进行条件判断，决定是否执行其他程序。它们都属于短路运算符（short-circuiting） 同一行的多个命令可以用 <code>; </code>分隔。程序 true 的返回码永远是0，false 的返回码永远是1。让我们看几个例子：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">false</span> || <span class="built_in">echo</span> <span class="string">&quot;Oops, fail&quot;</span></span><br><span class="line"><span class="comment"># Oops, fail</span></span><br><span class="line"></span><br><span class="line"><span class="literal">true</span> || <span class="built_in">echo</span> <span class="string">&quot;Will not be printed&quot;</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="literal">true</span> &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;Things went well&quot;</span></span><br><span class="line"><span class="comment"># Things went well</span></span><br><span class="line"></span><br><span class="line"><span class="literal">false</span> &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;Will not be printed&quot;</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="literal">false</span> ; <span class="built_in">echo</span> <span class="string">&quot;This will always run&quot;</span></span><br><span class="line"><span class="comment"># This will always run</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-literal">false</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Oops, fail&quot;</span><br><span class="hljs-comment"># Oops, fail</span><br><br><span class="hljs-literal">true</span> || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Will not be printed&quot;</span><br><span class="hljs-comment">#</span><br><br><span class="hljs-literal">true</span> &amp;&amp; <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Things went well&quot;</span><br><span class="hljs-comment"># Things went well</span><br><br><span class="hljs-literal">false</span> &amp;&amp; <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Will not be printed&quot;</span><br><span class="hljs-comment">#</span><br><br><span class="hljs-literal">false</span> ; <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;This will always run&quot;</span><br><span class="hljs-comment"># This will always run</span><br></code></pre></td></tr></table></figure>
 
 
 <p>另一个常见的模式是以变量的形式获取一个命令的输出，这可以通过 <em>命令替换（command substitution）</em> 实现。</p>
 <p>当您通过 <code>$(CMD)</code> 这样的方式来执行 <strong>CMD</strong> 这个命令时，它的输出结果会替换掉 <code>$(CMD) </code>。例如，如果执行 <code>for file in $(ls)</code> ，<strong>shell</strong>首先将调用 <strong>ls</strong> ，然后遍历得到的这些返回值。再比如：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;date is <span class="subst">$(date)</span>&quot;</span></span><br><span class="line"><span class="built_in">date</span> is Sat 23 Dec 2023 11:24:05 CST</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;date is <span class="hljs-subst">$(date)</span>&quot;</span><br><span class="hljs-built_in">date</span> is Sat 23 Dec 2023 11:24:05 CST<br></code></pre></td></tr></table></figure>
 
 <p>还有一个冷门的类似特性是 <strong>进程替换（process substitution）</strong>， <code>&lt;(CMD) </code>会执行 <strong>CMD</strong> 并将结果输出到一个临时文件中，并将 <code>&lt;(CMD)</code> 替换成临时文件名。这在我们希望返回值通过文件而不是STDIN传递时很有用。例如， <code>diff &lt;(ls foo) &lt;(ls bar)</code> 会显示文件夹 <strong>foo</strong> 和 <strong>bar</strong> 中文件的区别。比如：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">diff &lt;(<span class="built_in">ls</span> -a) &lt;(<span class="built_in">ls</span>)</span><br><span class="line">&lt; .</span><br><span class="line">&lt; ..</span><br><span class="line">&lt; .CFUserTextEncoding</span><br><span class="line">&lt; .DS_Store</span><br><span class="line">&lt; .IdentityService</span><br><span class="line">&lt; .ServiceHub</span><br><span class="line">&lt; .Trash</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">diff &lt;(<span class="hljs-built_in">ls</span> -a) &lt;(<span class="hljs-built_in">ls</span>)<br>&lt; .<br>&lt; ..<br>&lt; .CFUserTextEncoding<br>&lt; .DS_Store<br>&lt; .IdentityService<br>&lt; .ServiceHub<br>&lt; .Trash<br></code></pre></td></tr></table></figure>
 <p>分析一下这个脚本：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Starting program at <span class="variable">$</span>(date)&quot;</span> <span class="comment"># date会被替换成日期和时间</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Running program <span class="variable">$0</span> with <span class="variable">$</span># arguments with pid <span class="variable">$</span><span class="variable">$</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> <span class="string">&quot;<span class="variable">$</span>@&quot;</span>; <span class="keyword">do</span></span><br><span class="line">    grep foobar <span class="string">&quot;<span class="variable">$file</span>&quot;</span> &gt; /dev/null <span class="number">2</span>&gt; /dev/null</span><br><span class="line">    <span class="comment"># 如果模式没有找到，则grep退出状态为 1</span></span><br><span class="line">    <span class="comment"># 我们将标准输出流和标准错误流重定向到Null，因为我们并不关心这些信息</span></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="variable">$</span>? -<span class="type">ne</span> <span class="number">0</span> ]]; then</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;File <span class="variable">$file</span> does not have any foobar, adding one&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;# foobar&quot;</span> &gt;&gt; <span class="string">&quot;<span class="variable">$file</span>&quot;</span></span><br><span class="line">    fi</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-comment">#!/bin/bash</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Starting program at <span class="hljs-variable">$</span>(date)&quot;</span> <span class="hljs-comment"># date会被替换成日期和时间</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Running program <span class="hljs-variable">$0</span> with <span class="hljs-variable">$</span># arguments with pid <span class="hljs-variable">$</span><span class="hljs-variable">$</span>&quot;</span><br><br><span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;<span class="hljs-variable">$</span>@&quot;</span>; <span class="hljs-keyword">do</span><br>    grep foobar <span class="hljs-string">&quot;<span class="hljs-variable">$file</span>&quot;</span> &gt; /dev/null <span class="hljs-number">2</span>&gt; /dev/null<br>    <span class="hljs-comment"># 如果模式没有找到，则grep退出状态为 1</span><br>    <span class="hljs-comment"># 我们将标准输出流和标准错误流重定向到Null，因为我们并不关心这些信息</span><br>    <span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$</span>? -<span class="hljs-type">ne</span> <span class="hljs-number">0</span> ]]; then<br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;File <span class="hljs-variable">$file</span> does not have any foobar, adding one&quot;</span><br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;# foobar&quot;</span> &gt;&gt; <span class="hljs-string">&quot;<span class="hljs-variable">$file</span>&quot;</span><br>    fi<br>done<br></code></pre></td></tr></table></figure>
 
 <p>首先会打印出当前的日期时间，然后打印出当前进程的名字、参数个数和进程 ID。接着遍历所有的参数，这些参数就是脚本输入的文件名等，在这些文件中搜索 <strong>foobar</strong>，并将错误结果、结果全部重定向到 <strong>null</strong>。如果上一个命令的返回值 不为 0，这意味着出错，就在那个文件中追加 <code># foobar</code> 。</p>
 <p>接着了解通配符。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> &#123;hello1,hello2&#125;</span><br><span class="line"><span class="built_in">ls</span> hello?</span><br><span class="line">hello1:</span><br><span class="line"></span><br><span class="line">hello2:</span><br><span class="line"></span><br><span class="line"><span class="built_in">ls</span> hello*</span><br><span class="line">hello.txt</span><br><span class="line"></span><br><span class="line">hello1:</span><br><span class="line"></span><br><span class="line">hello2:</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> &#123;hello1,hello2&#125;<br><span class="hljs-built_in">ls</span> hello?<br>hello1:<br><br>hello2:<br><br><span class="hljs-built_in">ls</span> hello*<br>hello.txt<br><br>hello1:<br><br>hello2:<br></code></pre></td></tr></table></figure>
 
 <p>这就是通配符 <code>?</code> 和 <code>*</code> 的区别。</p>
 <p>比如：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> foo bar</span><br><span class="line"><span class="built_in">touch</span> &#123;foo,bar&#125;/&#123;a..h&#125;</span><br><span class="line"><span class="built_in">touch</span> foo/x bar/y</span><br><span class="line"></span><br><span class="line"><span class="built_in">ls</span> bar</span><br><span class="line">a b c d e f g h y</span><br><span class="line"><span class="built_in">ls</span> foo</span><br><span class="line">a b c d e f g h x</span><br><span class="line"></span><br><span class="line">diff &lt;(<span class="built_in">ls</span> foo) &lt;(<span class="built_in">ls</span> bar)</span><br><span class="line">&lt; x</span><br><span class="line">---</span><br><span class="line">&gt; y</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> foo bar<br><span class="hljs-built_in">touch</span> &#123;foo,bar&#125;/&#123;a..h&#125;<br><span class="hljs-built_in">touch</span> foo/x bar/y<br><br><span class="hljs-built_in">ls</span> bar<br>a b c d e f g h y<br><span class="hljs-built_in">ls</span> foo<br>a b c d e f g h x<br><br>diff &lt;(<span class="hljs-built_in">ls</span> foo) &lt;(<span class="hljs-built_in">ls</span> bar)<br>&lt; x<br>---<br>&gt; y<br></code></pre></td></tr></table></figure>
 
 <p><strong>python</strong> 是一个强大的脚本语言，因此用 <strong>python</strong> 写脚本，可以轻松实现很强大的功能，使得自动化变得轻而易举。以下是一个简单的 <strong>python</strong> 脚本：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/local/bin/python</span></span><br><span class="line">import sys</span><br><span class="line"><span class="keyword">for</span> arg <span class="keyword">in</span> reversed(sys.argv[<span class="number">1</span>:]):</span><br><span class="line">    print(arg)</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-comment">#!/usr/local/bin/python</span><br>import sys<br><span class="hljs-keyword">for</span> arg <span class="hljs-keyword">in</span> reversed(sys.argv[<span class="hljs-number">1</span>:]):<br>    print(arg)<br></code></pre></td></tr></table></figure>
 <p>这个脚本能执行的前提是：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> /usr/local/bin | grep python</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> /usr/local/bin | grep python<br></code></pre></td></tr></table></figure>
 <p>这个文件必须存在，不然就会：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./python_script</span><br><span class="line">bash: ./python_script: /usr/local/bin/python: bad interpreter: No such file or directory</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">./python_script<br>bash: ./python_script: /usr/local/bin/python: bad interpreter: No such file or directory<br></code></pre></td></tr></table></figure>
 <p>解决这个问题，要么修改脚本指定一个存在的解释器，要么可以让这个脚本更具通用性：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line">import sys</span><br><span class="line"><span class="keyword">for</span> arg <span class="keyword">in</span> reversed(sys.argv[<span class="number">1</span>:]):</span><br><span class="line">    print(arg)</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-comment">#!/usr/bin/env python</span><br>import sys<br><span class="hljs-keyword">for</span> arg <span class="hljs-keyword">in</span> reversed(sys.argv[<span class="hljs-number">1</span>:]):<br>    print(arg)<br></code></pre></td></tr></table></figure>
 <p>在 <strong>shebang</strong> 行中使用 <strong>env</strong> 命令是一种好的实践，它会利用环境变量中的程序来解析该脚本，这样就提高脚本的可移植性。<strong>env</strong> 会利用我们第一节讲座中介绍过的 PATH 环境变量来进行定位。</p>
 <p>当然前提是 <strong>env</strong> 命令存在：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> /usr/bin | grep <span class="built_in">env</span></span><br><span class="line">dbus-update-activation-environment</span><br><span class="line"><span class="built_in">env</span></span><br><span class="line">envsubst</span><br><span class="line">grub-editenv</span><br><span class="line">openvt</span><br><span class="line"><span class="built_in">printenv</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> /usr/bin | grep <span class="hljs-built_in">env</span><br>dbus-update-activation-environment<br><span class="hljs-built_in">env</span><br>envsubst<br>grub-editenv<br>openvt<br><span class="hljs-built_in">printenv</span><br></code></pre></td></tr></table></figure>
 
 <p>然后就可以运行了：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">./python_script hello hello1 hello2</span><br><span class="line">hello2</span><br><span class="line">hello1</span><br><span class="line">hello</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">./python_script hello hello1 hello2<br>hello2<br>hello1<br>hello<br></code></pre></td></tr></table></figure>
 <h3 id="shell-工具"><a href="#shell-工具" class="headerlink" title="shell 工具"></a>shell 工具</h3><h4 id="find"><a href="#find" class="headerlink" title="find"></a>find</h4><p>当使用<code>find</code>命令时，您可以使用不同的选项和参数来搜索文件或目录，并根据各种标准进行过滤。以下是<code>find</code>命令的一些常见用法和示例：</p>
 <h5 id="基本用法："><a href="#基本用法：" class="headerlink" title="基本用法："></a>基本用法：</h5><ol>
 <li><p><strong>按文件名搜索：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -name <span class="string">&quot;filename.txt&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -name <span class="hljs-string">&quot;filename.txt&quot;</span><br></code></pre></td></tr></table></figure>
 <p>在指定路径 <code>/path/to/search</code> 下按照文件名查找名为 <code>filename.txt</code> 的文件。</p>
 </li>
 <li><p><strong>按文件类型搜索：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -<span class="built_in">type</span> f</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -<span class="hljs-built_in">type</span> f<br></code></pre></td></tr></table></figure>
 <p>在指定路径 <code>/path/to/search</code> 下查找普通文件。</p>
 </li>
 <li><p><strong>按目录名称搜索：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -<span class="built_in">type</span> d -name <span class="string">&quot;dirname&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -<span class="hljs-built_in">type</span> d -name <span class="hljs-string">&quot;dirname&quot;</span><br></code></pre></td></tr></table></figure>
 <p>在指定路径 <code>/path/to/search</code> 下查找名为 <code>dirname</code> 的目录。</p>
 </li>
 </ol>
 <h5 id="根据时间搜索："><a href="#根据时间搜索：" class="headerlink" title="根据时间搜索："></a>根据时间搜索：</h5><ol>
 <li><p><strong>按最后修改时间搜索：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -mtime -7</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -mtime -7<br></code></pre></td></tr></table></figure>
 <p>在指定路径 <code>/path/to/search</code> 下搜索最近7天内修改过的文件。</p>
 </li>
 <li><p><strong>按最后访问时间搜索：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -atime +30</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -atime +30<br></code></pre></td></tr></table></figure>
 <p>在指定路径 <code>/path/to/search</code> 下搜索超过30天未访问过的文件。</p>
 </li>
 </ol>
 <h5 id="结合条件搜索："><a href="#结合条件搜索：" class="headerlink" title="结合条件搜索："></a>结合条件搜索：</h5><ol>
 <li><p><strong>结合AND条件：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -<span class="built_in">type</span> f -name <span class="string">&quot;filename.txt&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -<span class="hljs-built_in">type</span> f -name <span class="hljs-string">&quot;filename.txt&quot;</span><br></code></pre></td></tr></table></figure>
 <p>在指定路径 <code>/path/to/search</code> 下查找名为 <code>filename.txt</code> 的普通文件。</p>
 </li>
 <li><p><strong>结合OR条件：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search \( -name <span class="string">&quot;*.txt&quot;</span> -o -name <span class="string">&quot;*.pdf&quot;</span> \)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search \( -name <span class="hljs-string">&quot;*.txt&quot;</span> -o -name <span class="hljs-string">&quot;*.pdf&quot;</span> \)<br></code></pre></td></tr></table></figure>
 <p>在指定路径 <code>/path/to/search</code> 下查找扩展名为 <code>.txt</code> 或 <code>.pdf</code> 的文件。</p>
 </li>
 </ol>
 <h5 id="进行操作："><a href="#进行操作：" class="headerlink" title="进行操作："></a>进行操作：</h5><ol>
 <li><p><strong>删除匹配的文件：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -<span class="built_in">type</span> f -name <span class="string">&quot;filename.txt&quot;</span> -delete</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -<span class="hljs-built_in">type</span> f -name <span class="hljs-string">&quot;filename.txt&quot;</span> -delete<br></code></pre></td></tr></table></figure>
 <p>删除指定路径 <code>/path/to/search</code> 下名为 <code>filename.txt</code> 的文件。</p>
 </li>
 <li><p><strong>执行命令操作：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/search -<span class="built_in">type</span> f -<span class="built_in">exec</span> <span class="built_in">chmod</span> 644 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/search -<span class="hljs-built_in">type</span> f -<span class="hljs-built_in">exec</span> <span class="hljs-built_in">chmod</span> 644 &#123;&#125; \;<br></code></pre></td></tr></table></figure>
 <p>更改指定路径 <code>/path/to/search</code> 下所有普通文件的权限为 <code>644</code>。</p>
 </li>
 </ol>
@@ -226,49 +380,49 @@
 <h4 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h4><p><code>grep</code>命令是一个强大的文本搜索工具，可以在文件中查找特定模式的文本行。以下是<code>grep</code>命令的一些常见用法和示例：</p>
 <h5 id="基本用法：-1"><a href="#基本用法：-1" class="headerlink" title="基本用法："></a>基本用法：</h5><ol>
 <li><p><strong>查找特定字符串：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;pattern&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep <span class="hljs-string">&quot;pattern&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>在 <code>filename.txt</code> 文件中查找包含指定模式 <code>pattern</code> 的文本行。</p>
 </li>
 <li><p><strong>忽略大小写查找：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -i <span class="string">&quot;pattern&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep -i <span class="hljs-string">&quot;pattern&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>在查找时忽略大小写。</p>
 </li>
 <li><p><strong>显示匹配行数：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -c <span class="string">&quot;pattern&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep -c <span class="hljs-string">&quot;pattern&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>显示匹配 <code>pattern</code> 的行数。</p>
 </li>
 </ol>
 <h5 id="使用正则表达式："><a href="#使用正则表达式：" class="headerlink" title="使用正则表达式："></a>使用正则表达式：</h5><ol>
 <li><p><strong>查找以特定单词开头的行：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;^word&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep <span class="hljs-string">&quot;^word&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>在 <code>filename.txt</code> 文件中查找以 <code>word</code> 开头的文本行。</p>
 </li>
 <li><p><strong>查找以特定单词结尾的行：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;word$&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep <span class="hljs-string">&quot;word$&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>在 <code>filename.txt</code> 文件中查找以 <code>word</code> 结尾的文本行。</p>
 </li>
 <li><p><strong>查找匹配特定模式的行：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;[0-9]\&#123;3\&#125;&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep <span class="hljs-string">&quot;[0-9]\&#123;3\&#125;&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>在 <code>filename.txt</code> 文件中查找包含三个连续数字的文本行。</p>
 </li>
 </ol>
 <h5 id="结合其他命令："><a href="#结合其他命令：" class="headerlink" title="结合其他命令："></a>结合其他命令：</h5><ol>
 <li><p><strong>在某个目录下的所有文件中查找：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -r <span class="string">&quot;pattern&quot;</span> /path/to/directory</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep -r <span class="hljs-string">&quot;pattern&quot;</span> /path/to/directory<br></code></pre></td></tr></table></figure>
 <p>在指定目录 <code>/path/to/directory</code> 及其所有子目录中查找包含 <code>pattern</code> 的文本行。</p>
 </li>
 <li><p><strong>通过管道结合其他命令：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> filename.txt | grep <span class="string">&quot;pattern&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> filename.txt | grep <span class="hljs-string">&quot;pattern&quot;</span><br></code></pre></td></tr></table></figure>
 <p>使用 <code>cat</code> 命令读取文件内容，然后使用 <code>grep</code> 过滤包含 <code>pattern</code> 的行。</p>
 </li>
 </ol>
 <h5 id="显示上下文信息："><a href="#显示上下文信息：" class="headerlink" title="显示上下文信息："></a>显示上下文信息：</h5><ol>
 <li><p><strong>显示匹配行上下文：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -C 2 <span class="string">&quot;pattern&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep -C 2 <span class="hljs-string">&quot;pattern&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>在匹配的行上下各显示2行文本。</p>
 </li>
 <li><p><strong>仅显示匹配行号：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -n <span class="string">&quot;pattern&quot;</span> filename.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep -n <span class="hljs-string">&quot;pattern&quot;</span> filename.txt<br></code></pre></td></tr></table></figure>
 <p>在每行输出匹配行的行号。</p>
 </li>
 </ol>
@@ -276,23 +430,23 @@
 <h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="1、阅读-man-ls-，然后使用ls-命令进行如下操作："><a href="#1、阅读-man-ls-，然后使用ls-命令进行如下操作：" class="headerlink" title="1、阅读 man ls ，然后使用ls 命令进行如下操作："></a>1、阅读 man ls ，然后使用ls 命令进行如下操作：</h3><ul>
 <li>所有文件（包括隐藏文件）：</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -a</span><br><span class="line">.</span><br><span class="line">..</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> -a<br>.<br>..<br>...<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>文件打印以人类可以理解的格式输出 (例如，使用454M 而不是 454279954)：</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l --block-size=human-readable</span><br><span class="line">total 119M</span><br><span class="line">drwxr-xr-x 24 root root 4.0K Sep  8 21:52 gdb-13.2</span><br><span class="line">-rw-r--r--  1 root root  23M May 27  2023 gdb-13.2.tar.xz</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> -l --block-size=human-readable<br>total 119M<br>drwxr-xr-x 24 root root 4.0K Sep  8 21:52 gdb-13.2<br>-rw-r--r--  1 root root  23M May 27  2023 gdb-13.2.tar.xz<br>...<br></code></pre></td></tr></table></figure>
 <ul>
 <li>文件以最近访问顺序排序：</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -lth</span><br><span class="line">total 119M</span><br><span class="line">-rwxr-xr-x  1 root root   83 Dec 23 11:51 python_script</span><br><span class="line">-rwxr-xr-x  1 root root   32 Dec 22 20:36 lab</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> -lth<br>total 119M<br>-rwxr-xr-x  1 root root   83 Dec 23 11:51 python_script<br>-rwxr-xr-x  1 root root   32 Dec 22 20:36 lab<br>...<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>以彩色文本显示输出结果：</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -lG</span><br><span class="line">total 120980</span><br><span class="line">drwxr-xr-x 24 root      4096 Sep  8 21:52 gdb-13.2</span><br><span class="line">-rw-r--r--  1 root  23664644 May 27  2023 gdb-13.2.tar.xz</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> -lG<br>total 120980<br>drwxr-xr-x 24 root      4096 Sep  8 21:52 gdb-13.2<br>-rw-r--r--  1 root  23664644 May 27  2023 gdb-13.2.tar.xz<br>...<br></code></pre></td></tr></table></figure>
 <h3 id="2、编写两个bash函数-marco-和-polo-执行下面的操作。-每当你执行-marco-时，当前的工作目录应当以某种形式保存，当执行-polo-时，无论现在处在什么目录下，都应当-cd-回到当时执行-marco-的目录。-为了方便debug，你可以把代码写在单独的文件-marco-sh-中，并通过-source-marco-sh命令，（重新）加载函数"><a href="#2、编写两个bash函数-marco-和-polo-执行下面的操作。-每当你执行-marco-时，当前的工作目录应当以某种形式保存，当执行-polo-时，无论现在处在什么目录下，都应当-cd-回到当时执行-marco-的目录。-为了方便debug，你可以把代码写在单独的文件-marco-sh-中，并通过-source-marco-sh命令，（重新）加载函数" class="headerlink" title="2、编写两个bash函数 marco 和 polo 执行下面的操作。 每当你执行 marco 时，当前的工作目录应当以某种形式保存，当执行 polo 时，无论现在处在什么目录下，都应当 cd 回到当时执行 marco 的目录。 为了方便debug，你可以把代码写在单独的文件 marco.sh 中，并通过 source marco.sh命令，（重新）加载函数"></a>2、编写两个bash函数 marco 和 polo 执行下面的操作。 每当你执行 marco 时，当前的工作目录应当以某种形式保存，当执行 polo 时，无论现在处在什么目录下，都应当 cd 回到当时执行 marco 的目录。 为了方便debug，你可以把代码写在单独的文件 marco.sh 中，并通过 source marco.sh命令，（重新）加载函数</h3><p>将以下代码保存在名为 <code>marco.sh</code> 的文件中：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">marco</span></span>() &#123;</span><br><span class="line">    <span class="built_in">export</span> MARCO_DIR=$(<span class="built_in">pwd</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">polo</span></span>() &#123;</span><br><span class="line">    <span class="built_in">cd</span> <span class="string">&quot;<span class="variable">$MARCO_DIR</span>&quot;</span> || <span class="built_in">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-function"><span class="hljs-title">marco</span></span>() &#123;<br>    <span class="hljs-built_in">export</span> MARCO_DIR=$(<span class="hljs-built_in">pwd</span>)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">polo</span></span>() &#123;<br>    <span class="hljs-built_in">cd</span> <span class="hljs-string">&quot;<span class="hljs-variable">$MARCO_DIR</span>&quot;</span> || <span class="hljs-built_in">return</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>这个脚本定义了两个函数：<code>marco</code> 和 <code>polo</code>。</p>
 <ul>
@@ -301,16 +455,16 @@
 </ul>
 <p>要使用这些函数，必须通过运行 <code>source marco.sh</code> 来加载它们。这将使得函数在当前的 <strong>shell</strong> 环境中可用。<strong>也就是说，这里不能通过 子 shell 去运行这个脚本，因为运行完了 子 shell 就结束了，当前 shell 不会存在这两个函数。</strong></p>
 <p>然后，可以在任何目录中执行 <code>marco</code> 命令来保存当前目录，并在任何位置执行 <code>polo</code> 命令来返回到之前保存的目录。需要注意的是，<code>marco</code> 和 <code>polo</code> 函数的效果只在同一个 <strong>shell</strong> 会话中有效。如果打开了一个新的终端窗口或启动了一个新的 <strong>shell</strong>，需要再次运行 <code>source marco.sh</code> 来加载函数。</p>
-<h3 id="3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。-编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。-加分项：报告脚本在失败前共运行了多少次"><a href="#3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。-编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。-加分项：报告脚本在失败前共运行了多少次" class="headerlink" title="3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。 编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。 加分项：报告脚本在失败前共运行了多少次"></a>3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。 编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。 加分项：报告脚本在失败前共运行了多少次</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line"></span><br><span class="line">n=$(( RANDOM % <span class="number">100</span> ))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ n -eq 42 ]]; <span class="keyword">then</span></span><br><span class="line">   <span class="built_in">echo</span> <span class="string">&quot;Something went wrong&quot;</span></span><br><span class="line">   &gt;&amp;2 <span class="built_in">echo</span> <span class="string">&quot;The error was using magic numbers&quot;</span></span><br><span class="line">   <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Everything went according to plan&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。-编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。-加分项：报告脚本在失败前共运行了多少次"><a href="#3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。-编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。-加分项：报告脚本在失败前共运行了多少次" class="headerlink" title="3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。 编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。 加分项：报告脚本在失败前共运行了多少次"></a>3、假设您有一个命令，它很少出错。因此为了在出错时能够对其进行调试，需要花费大量的时间重现错误并捕获输出。 编写一段bash脚本，运行如下的脚本直到它出错，将它的标准输出和标准错误流记录到文件，并在最后输出所有内容。 加分项：报告脚本在失败前共运行了多少次</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br>n=$(( RANDOM % <span class="hljs-number">100</span> ))<br><br><span class="hljs-keyword">if</span> [[ n -eq 42 ]]; <span class="hljs-keyword">then</span><br>   <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Something went wrong&quot;</span><br>   &gt;&amp;2 <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;The error was using magic numbers&quot;</span><br>   <span class="hljs-built_in">exit</span> 1<br><span class="hljs-keyword">fi</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Everything went according to plan&quot;</span><br></code></pre></td></tr></table></figure>
 
 <p>这个脚本可以实现要求：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line"></span><br><span class="line">count=0</span><br><span class="line"><span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span></span><br><span class="line">    output=$(./hardly_wrong.sh)</span><br><span class="line">    exit_code=$?</span><br><span class="line"></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$output</span>&quot;</span> &gt;&gt; output.log</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="variable">$exit_code</span> -ne 0 ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;Script failed after <span class="variable">$count</span> runs wright.&quot;</span> &gt;&gt; output.log</span><br><span class="line">        <span class="built_in">break</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    count=$((count+<span class="number">1</span>))</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cat</span> output.log</span><br><span class="line">~</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br>count=0<br><span class="hljs-keyword">while</span> <span class="hljs-literal">true</span>; <span class="hljs-keyword">do</span><br>    output=$(./hardly_wrong.sh)<br>    exit_code=$?<br><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$output</span>&quot;</span> &gt;&gt; output.log<br><br>    <span class="hljs-keyword">if</span> [[ <span class="hljs-variable">$exit_code</span> -ne 0 ]]; <span class="hljs-keyword">then</span><br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Script failed after <span class="hljs-variable">$count</span> runs wright.&quot;</span> &gt;&gt; output.log<br>        <span class="hljs-built_in">break</span><br>    <span class="hljs-keyword">fi</span><br>    count=$((count+<span class="hljs-number">1</span>))<br><span class="hljs-keyword">done</span><br><br><span class="hljs-built_in">cat</span> output.log<br>~<br></code></pre></td></tr></table></figure>
 <p>运行结果如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">./test</span><br><span class="line">The error was using magic numbers</span><br><span class="line">Everything went according to plan</span><br><span class="line">...</span><br><span class="line">Something went wrong</span><br><span class="line">Script failed after 11 runs wright.</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">./test<br>The error was using magic numbers<br>Everything went according to plan<br>...<br>Something went wrong<br>Script failed after 11 runs wright.<br></code></pre></td></tr></table></figure>
 
 <p>这里为什么会打印 <code>The error was using magic numbers</code>？这实际上是 <code>./hardly_wrong.sh</code> 打印出来的，它出错的时候，我们并没有将它重定向到标准输出，而 <strong>output</strong> 接收的是标准输出。</p>
 <p>总这里可以看出，<code>output=$(./hardly_wrong.sh)</code>只会将输出赋值给 <strong>output</strong>，至于标准错误 <code>&amp;2</code>，它会直接打印到控制台上，尽管它会打印，这这不意味着它会赋值给 <strong>output</strong>，这点需要格外注意：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> output.log</span><br><span class="line">Everything went according to plan</span><br><span class="line">...</span><br><span class="line">Something went wrong</span><br><span class="line">Script failed after 11 runs wright.</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> output.log<br>Everything went according to plan<br>...<br>Something went wrong<br>Script failed after 11 runs wright.<br></code></pre></td></tr></table></figure>
 
 <h3 id="4、本节课我们讲解的-find-命令中的-exec-参数非常强大，它可以对我们查找的文件进行操作"><a href="#4、本节课我们讲解的-find-命令中的-exec-参数非常强大，它可以对我们查找的文件进行操作" class="headerlink" title="4、本节课我们讲解的 find 命令中的 -exec 参数非常强大，它可以对我们查找的文件进行操作"></a>4、本节课我们讲解的 find 命令中的 -exec 参数非常强大，它可以对我们查找的文件进行操作</h3><blockquote>
 <p>但是，如果我们要对所有文件进行操作呢？例如创建一个zip压缩文件？我们已经知道，命令行可以从参数或标准输入接受输入。在用管道连接命令时，我们将标准输出和标准输入连接起来，但是有些命令，例如tar 则需要从参数接受输入。这里我们可以使用xargs 命令，它可以使用标准输入中的内容作为参数。 例如 ls | xargs rm 会删除当前目录中的所有文件。</p>
@@ -318,7 +472,7 @@
 <p>如果您使用的是 MacOS，请注意默认的 BSD find 与 GNU coreutils中的是不一样的。你可以为find添加-print0选项，并为xargs添加-0选项。作为 Mac 用户，您需要注意 mac系统自带的命令行工具和 GNU 中对应的工具是有区别的；如果你想使用 GNU 版本的工具，也可以使用 brew 来安装。</p>
 </blockquote>
 <p>当需要递归地查找文件夹中的HTML文件并将它们压缩成zip文件时，可以使用以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -<span class="built_in">type</span> f -name <span class="string">&quot;*.html&quot;</span> -<span class="built_in">exec</span> zip -j output.zip &#123;&#125; +</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find . -<span class="hljs-built_in">type</span> f -name <span class="hljs-string">&quot;*.html&quot;</span> -<span class="hljs-built_in">exec</span> zip -j output.zip &#123;&#125; +<br></code></pre></td></tr></table></figure>
 
 <p>这条命令中：</p>
 <ul>
@@ -329,7 +483,7 @@
 </ul>
 <p>这个命令会在指定的目标文件夹中递归地查找所有的<strong>HTML</strong>文件，并将它们压缩成一个名为 <code>output.zip</code> 的<strong>zip</strong>文件。</p>
 <h3 id="5、（进阶）编写一个命令或脚本递归的查找文件夹中最近使用的文件。更通用的做法，你可以按照最近的使用时间列出文件吗？"><a href="#5、（进阶）编写一个命令或脚本递归的查找文件夹中最近使用的文件。更通用的做法，你可以按照最近的使用时间列出文件吗？" class="headerlink" title="5、（进阶）编写一个命令或脚本递归的查找文件夹中最近使用的文件。更通用的做法，你可以按照最近的使用时间列出文件吗？"></a>5、（进阶）编写一个命令或脚本递归的查找文件夹中最近使用的文件。更通用的做法，你可以按照最近的使用时间列出文件吗？</h3><p>可以使用 <code>find</code> 命令结合 <code>-printf</code> 来列出最近使用的文件。下面是一个示例：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /path/to/directory -<span class="built_in">type</span> f -<span class="built_in">printf</span> <span class="string">&#x27;%T@ %p\n&#x27;</span> | <span class="built_in">sort</span> -n | <span class="built_in">tail</span> -n 1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find /path/to/directory -<span class="hljs-built_in">type</span> f -<span class="hljs-built_in">printf</span> <span class="hljs-string">&#x27;%T@ %p\n&#x27;</span> | <span class="hljs-built_in">sort</span> -n | <span class="hljs-built_in">tail</span> -n 1<br></code></pre></td></tr></table></figure>
 
 <p>这个命令的步骤是：</p>
 <ul>
@@ -338,59 +492,380 @@
 <li><code>tail -n 1</code>：获取排序后的结果中的最后一行，即最近使用的文件。</li>
 </ul>
 <p>这个命令将列出目标文件夹中最近使用的文件。如果要列出最近修改的文件，可以将 <code>%T@</code> 替换为 <code>%C@</code>。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">find ~ -<span class="built_in">type</span> f -<span class="built_in">printf</span> <span class="string">&#x27;%T@ %p\n&#x27;</span> | <span class="built_in">sort</span> -n | <span class="built_in">tail</span> -n 1</span><br><span class="line">1703312042.6682969990 /root/pacman/nohup.out</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">find ~ -<span class="hljs-built_in">type</span> f -<span class="hljs-built_in">printf</span> <span class="hljs-string">&#x27;%T@ %p\n&#x27;</span> | <span class="hljs-built_in">sort</span> -n | <span class="hljs-built_in">tail</span> -n 1<br>1703312042.6682969990 /root/pacman/nohup.out<br></code></pre></td></tr></table></figure>
 
 
 <h2 id="总结（大模型）"><a href="#总结（大模型）" class="headerlink" title="总结（大模型）"></a>总结（大模型）</h2><p><code>bash</code>中的字符串使用<code>&#39;</code>和<code>&quot;</code>定义，每种方式有不同的含义。<code>&#39;</code>定义的字符串为原义字符串，不进行变量替换，而<code>&quot;</code>定义的字符串会替换变量值。此外，<code>bash</code>中支持函数，例如<code>mcd()</code>函数可以创建目录并进入其中。命令行参数包括<code>$0</code>到<code>$9</code>，<code>$@</code>表示所有参数，<code>$#</code>表示参数个数，<code>$$</code>表示当前脚本的进程识别码，<code>$?</code>表示前一个命令的返回值等。退出状态码是脚本和命令间交流执行状态的方式，非零值表示有错误发生。<code>&amp;&amp;</code>和<code>||</code>是短路运算符，<code>true</code>返回0，<code>false</code>返回1。命令替换使用<code>$(CMD)</code>，进程替换使用<code>&lt;(CMD)</code>。</p>
 <p>在课后练习中，<code>find</code>命令和<code>grep</code>命令展示了各种用法。针对问题，<code>find</code>可以用于文件搜索和操作，而<code>grep</code>用于文本搜索。此外，提到了<code>ls</code>命令和<code>xargs</code>命令的使用。</p>
 <p>示例脚本涉及不同场景，包括错误处理和记录日志，以及利用<code>marco</code>和<code>polo</code>函数保存和返回目录。同时，针对最近使用的文件和文件操作，给出了<code>find</code>和<code>sort</code>命令的使用方法。</p>
 <p>这些内容覆盖了<code>bash</code>中的常见命令和技术，可以帮助进行文件操作、搜索和脚本编写。</p>
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">Hexo</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">This piece of writing is an original article, utilizing the<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>Agreement. For complete reproduction, please acknowledge the source as Courtesy of<a href="/">Hexo</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/"><span class="tags-punctuation"></span>学习 笔记 bash 脚本<span class="tagsPageCount">1</span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/12/23/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B9%9D%E7%AB%A0%EF%BC%89/"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">MIT 6.S081学习笔记（第九章）</div></div></a></div><div class="next-post pull-right"><a href="/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/"><div class="pagination-info"><div class="label">Next</div><div class="next_info">Course Shell of Missing Semester（一）</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="Avatar" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="Mood sticker"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">John Doe</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>New posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客"><img alt="利用 Hexo 搭建个人博客" src="/"></a><div class="content"><a class="title" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客">利用 Hexo 搭建个人博客</a><a class="article-recent_post_categories" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">博客</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记"><img alt="2024.07.05 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记">2024.07.05 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记"><img alt="2024.07.02 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记">2024.07.02 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记"><img alt="2024.06.30 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记">2024.06.30 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记"><img alt="2024.06.29 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记">2024.06.29 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">John Doe</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.3"></script><script src="/js/main.js?v=1.12.3"></script><script src="/js/third_party/waterfall.min.js?v=1.12.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.3"></script><script>dark()
-</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
 
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
 
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Some-Tools-Missing-Semester/" class="category-chain-item">Some_Tools Missing Semester</a>
+  
+  
 
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/" class="print-no-link">#学习 笔记 bash 脚本</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Shell Tools of Missing Semester（二）</div>
+      <div>http://blog.luliang.online/2023/12/23/Shell Tools of Missing Semester（二）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/23/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B9%9D%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第九章）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第九章）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/" title="Course Shell of Missing Semester（一）">
+                        <span class="hidden-mobile">Course Shell of Missing Semester（一）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
     })
+  </script>
 
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
-})
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
     }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
     }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/07/06/利用 Hexo 搭建个人博客/","2024/07/05/2024.07.05 刷题日记/","2024/07/02/2024.07.02 刷题日记/","2024/06/30/2024.06.30 刷题日记/","2024/06/29/2024.06.29 刷题日记/","2024/06/28/2024.06.28 刷题日记/","2024/06/26/2024.06.26 刷题日记/","2024/06/25/2024.06.25 刷题日记/","2024/06/24/2024.06.24 刷题日记/","2024/06/23/2024.06.23 刷题日记/","2024/06/23/2024.06.22 刷题日记/","2024/06/21/2024.06.21 刷题日记/","2024/06/20/2024.06.20 刷题日记/","2024/06/19/2024.06.19 刷题日记/","2024/06/18/2024.06.18 刷题日记/","2024/06/18/2024.06.17 刷题日记/","2024/06/16/2024.06.16 刷题日记/","2024/06/12/mmap() 的几种用法/","2024/06/11/debugger（七）：栈帧（backtrace）/","2024/06/11/debugger（六）：source level 断点/","2024/06/11/debugger（五）：source level stepping/","2024/06/10/debugger（四）：源代码/","2024/06/10/debugger（三）：dwarf 文件/","2024/06/10/debugger（二）：读、写内存以及寄存器/","2024/05/25/debugger（一）：打断点的实现以及案例分析/","2024/05/20/C++内存模型/","2024/05/18/C++：再谈智能指针/","2024/05/17/C++调试：函数调用过程和堆栈/","2024/05/16/C++调试：内存管理/","2024/05/15/C++并发：构建线程安全的队列/","2024/05/15/C++并发：等待条件成立/","2024/05/14/C++：并发保护/","2024/05/14/C++并发：锁/","2024/05/12/C++：完美转发（二）（std!forward）/","2024/05/12/C++：完美转发（一）（std!forward）/","2024/05/11/C++：移动语义（std!move）/","2024/05/10/C++：左值（引用）&右值（引用）/","2024/05/10/C++并发：线程函数传参（二）/","2024/05/09/C++并发：线程函数传参（一）/","2024/05/05/macOS DOSBox 汇编环境搭建/","2024/04/28/CM3：lldb 调试 qemu 跑的程序/","2024/04/27/CM3：qemu执行汇编/","2024/04/26/8086：qemu执行汇编/","2024/04/24/C++：函数符（一）/","2024/04/24/C++：适配器/","2024/04/23/C++：迭代器/","2024/04/21/C++：智能指针（二）/","2024/04/21/C++：智能指针（一）/","2024/04/17/C++：返回值优化/","2024/04/17/C++：异常处理/","2024/04/11/C++：弃值表达式/","2024/03/31/关于一篇知乎答案的重现/","2023/12/31/2023 个人总结/","2023/12/24/mit6.s081【目录】/","2023/12/24/MIT 6.S081学习笔记（第十章）/","2023/12/23/MIT 6.S081学习笔记（第九章）/","2023/12/23/Shell Tools of Missing Semester（二）/","2023/12/22/Course Shell of Missing Semester（一）/","2023/12/21/MIT 6.S081学习笔记（第八章）/","2023/12/20/xv6 文件系统面临的问题/","2023/12/19/实现个人日志命令行工具（C语言）/","2023/12/18/xv6 文件系统（下）/","2023/12/18/xv6 文件系统（上）/","2023/12/13/MIT 6.S081学习笔记（第七章）/","2023/12/11/xv6 中的一些系统调用（下）/","2023/12/10/xv6 中的一些系统调用（上）/","2023/12/08/MIT 6.S081学习笔记（第六章）（下）/","2023/12/07/MIT 6.S081学习笔记（第六章）（上）/","2023/12/06/MIT 6.S081学习笔记（第五章）/","2023/12/04/xv6 book Chapter7 中文翻译/","2023/12/04/xv6 book Chapter6 中文翻译/","2023/12/04/xv6 book Chapter5 中文翻译/","2023/12/04/xv6 book Chapter4 中文翻译/","2023/11/24/MIT 6.S081学习笔记（第四章）/","2023/11/22/MIT 6.S081学习笔记（第三章）/","2023/11/18/xv6 book Chapter3 中文翻译/","2023/11/13/《OSTEP》信号量（chap31）/","2023/11/11/《OSTEP》条件变量（chap30）/","2023/10/05/MIT 6.S081学习笔记（第二章）/","2023/09/29/ngrok内网穿透以及原理/","2023/09/24/什么是P问题、NP问题和NPC问题/","2023/09/10/MIT 6.S081学习笔记（第一章）/","2023/09/07/MIT 6.S081学习笔记（第〇章）/","2023/09/02/go Session的实现（一）/","2023/08/01/gin 框架中的 gin.Context/","2023/07/31/Redis （一）消息订阅和发送测试/","2023/07/27/Hackintosh 入门/","2023/07/04/Docker网络模型以及容器网络初探（一）/","2023/06/29/Ubuntu 升级 golang 版本完美步骤/","2023/06/26/阿里云 Ubuntu 网络设置/","2023/06/17/《离散数学》：特殊的图/","2023/06/16/《离散数学》：代数系统和图论导论/","2023/06/15/《离散数学》：集合、关系和函数/","2023/06/14/《离散数学》：逻辑/","2023/06/08/Unix!Linux编程：UDS 数据报/","2023/06/07/Unix!Linux编程：UDS 流（Stream）/","2023/06/06/Golang框架：cobra/","2023/06/04/Go Web下GORM框架使用（二）/","2023/06/01/Go Web下GORM框架使用（一）/","2023/06/01/Go Web下gin框架使用（二）/","2023/06/01/泡利矩阵（一）/","2023/06/01/代数入门（〇）/","2023/05/31/Go Web下gin框架使用（一）/","2023/05/23/Go Web下gin框架的模板渲染/","2023/05/08/【Golang】多线程排序/","2023/05/07/【Golang】多线程下载器的实现/","2023/05/05/【Golang】多线程爬虫的实现/","2023/03/23/【day11】链表高精度加法/","2023/03/22/【day10】链表的合并/","2023/03/21/【day09】链表的旋转与反转/","2023/03/20/【day08】移除与插入链表元素/","2023/03/19/【day07】二维数组及滚动数组/","2023/03/13/【day06】数组的遍历/","2023/03/12/【day05】统计数组中的元素/","2023/03/11/exec()函数家族详细/","2023/03/11/对fork() 函数的理解/","2023/03/11/【day04】数组的旋转/","2023/03/10/【day03】数组的改变与移动/","2023/03/08/【day02】之链表操作/","2023/03/08/简单的 ls命令的实现（四.完结）/","2023/03/07/Java将 List 类型转化为 Array 的方法/","2023/03/07/【day01】之N数之和/","2023/02/28/教师工资管理系统之随机产生教师详细信息/","2023/02/28/C语言链表的头插法与尾插法/","2023/02/24/C语言实现删除匹配的某一行文本/","2023/02/17/简单的 ls 命令的实现（三）/","2023/02/17/简单的 ls 命令的实现（二）/","2023/02/15/简单的 ls 命令的实现（一）/","2023/01/17/C语言指针——从入门到精通/","2023/01/13/（三）抽象类/","2023/01/12/（二）常量池的探索/","2023/01/12/（一）Java 中 final 关键字的用法总结/","2023/01/10/对环境变量的探究/","2023/01/10/macOS下binutils 的安装/","2023/01/10/2022 Personal Summary/","2023/01/10/Analysis of the Location of Initialized!Uninitialized Global!Static!Local Variables!Constants in Mem/","2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/","2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/","2022/12/28/Start to write a simple Linux kernel Module/","2022/11/29/About the problem of struct structure assignment/","2022/11/16/Solutions for Xiyou Linux Group 2020 Interview Questions/","2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/","2022/11/15/Solutions for Xiyou Linux Group 2022 Interview Questions/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

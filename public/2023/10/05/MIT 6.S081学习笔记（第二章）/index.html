@@ -1,132 +1,290 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MIT 6.S081学习笔记（第二章） | Hexo</title><noscript>Please enable JavaScript to view the site</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.3"><!-- inject head--><link rel="canonical" href="http://example.com/2023/10/05/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%89/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="〇、前言本文主要完成MIT 6.S081 实验二：system call 一、Using gdb (easy)Question requirements In many cases, print statements will be sufficient to debug your kernel"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Hexo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '1.12.3' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文主要完成MIT 6.S081 实验二：system call 一、Using gdb (easy)Question requirements In many cases, print statements will be sufficient to debug your kernel, but sometimes being able to single step through">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081学习笔记（第二章）">
+<meta property="og:url" content="http://blog.luliang.online/2023/10/05/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文主要完成MIT 6.S081 实验二：system call 一、Using gdb (easy)Question requirements In many cases, print statements will be sufficient to debug your kernel, but sometimes being able to single step through">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/104b36357c924eabae99270867718742_1720253717123.png?token=ANB4BCMQHJZII2VLOSTQ57DGRD6VG">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/283e26634917427aa565b98ce0c8e53b_1720253717123.png?token=ANB4BCOCWA7JXVH7HUVEXVDGRD6VK">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c609481c6e734628a56f965d54b77195_1720253717123.png?token=ANB4BCO4TIP4R64NKWBBEQ3GRD6VM">
+<meta property="article:published_time" content="2023-10-04T16:15:19.000Z">
+<meta property="article:modified_time" content="2024-07-07T07:26:40.563Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="MIT 6.S081 学习 笔记 xv6">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/104b36357c924eabae99270867718742_1720253717123.png?token=ANB4BCMQHJZII2VLOSTQ57DGRD6VG">
+  
+  
+  
+  <title>MIT 6.S081学习笔记（第二章） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
     
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-    
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-    
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-    
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-                if (name && keyObj[name]) return
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
         
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2023-04-20 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: {"limit":50,"author":"Author: John Doe","link":"Link: ","source":"Source: Hexo","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."},
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"Dark","light":"Light"},"copy":{"success":"Copied","error":"Copy failed"},"backtop":"Back to top","time":{"day":" days ago","hour":" hours ago","just":"just","min":" minutes ago","month":" months ago"},"day":" days","f12":"Developer mode is turned on, please follow the GPL.","totalk":"You don't need to delete blank lines, just type in your comments."},
-    aside: {
-        sayhello: {
-            morning: '一日之计在于晨',
-            noon: '吃饱了才有力气干活',
-            afternoon: '集中精力，攻克难关',
-            night: '不要太劳累了，早睡更健康',
-            goodnight: '睡个好觉，保证精力充沛',
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: 'Long time no see,',
-            back: 'Welcome back again,',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: false,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="Day and night switching"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="Sidebar display control"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Archives</div><div class="length-num">143</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">89</div></a></div></div></div><span class="sidebar-menu-item-title">Function</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>Display mode</span></span></div><span class="sidebar-menu-item-title">Tags</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E5%85%B6%E4%BB%96/">其他<sup>1</sup></a><a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">总结 个人总结<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">算法 数据结构 哈希算法<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">算法 数据结构 leetcode<sup>9</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法 leetcode 数据结构<sup>5</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95/">leetcode 算法<sup>2</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">汇编 QEMU 8086<sup>1</sup></a><a href="/tags/c-linux/">c++ linux<sup>1</sup></a><a href="/tags/c/">c++<sup>13</sup></a><a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">c++ 多线程<sup>2</sup></a><a href="/tags/c-lldb/">c++ lldb<sup>2</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c++ 开发语言<sup>9</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">c++ 开发语言 学习 笔记<sup>1</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">汇编 QEMU CM3<sup>1</sup></a><a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">CM3 汇编 QEMU<sup>1</sup></a><a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">Shell 学习 笔记<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 开发语言<sup>2</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">链表 c语言 数据结构<sup>1</sup></a><a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/">docker 网络 容器<sup>1</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/">golang 前端 数据库<sup>2</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/">golang 前端 gin 服务器<sup>1</sup></a><a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/">前端 golang gin<sup>2</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">golang 开发语言 后端<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/">操作系统 Hackintosh<sup>1</sup></a><a href="/tags/java-jvm-servlet/">java jvm servlet<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/">学习 笔记 OS xv6<sup>1</sup></a><a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 操作系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 操作系统<sup>2</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统<sup>3</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 操作系统 OS<sup>1</sup></a><a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/">redis bootstrap 数据库<sup>1</sup></a><a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/">linux 服务器 运维<sup>1</sup></a><a href="/tags/ubuntu-golang-linux/">ubuntu golang linux<sup>1</sup></a><a href="/tags/unix-linux-udp/">unix linux udp<sup>1</sup></a><a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/">linux unix 服务器 网络<sup>1</sup></a><a href="/tags/c-debugger/">c++ debugger<sup>4</sup></a><a href="/tags/c-lldb-debugger/">c++ lldb debugger<sup>2</sup></a><a href="/tags/linux/">linux<sup>2</sup></a><a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/">gin Context golang Web 网络<sup>1</sup></a><a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/">golang 后端 前端 网络<sup>1</sup></a><a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/">macos 汇编 DOSBox 8086<sup>1</sup></a><a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/">macos linux 服务器<sup>1</sup></a><a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/">系统调用 mmap 文件<sup>1</sup></a><a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">Web 内网穿透<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/">操作系统 学习 xv6 翻译<sup>1</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/">xv6 操作系统 OS 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">xv6 OS 学习 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/">操作系统 笔记 学习<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">操作系统 学习 笔记<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/">图论 离散数学 代数系统<sup>1</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/">golang 开发语言 算法 后端<sup>1</sup></a><a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">golang 爬虫 开发语言<sup>1</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">leetcode 算法 数据结构<sup>4</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">链表 数据结构 算法<sup>3</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode/">算法 leetcode<sup>1</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">链表 数据结构 leetcode<sup>2</sup></a><a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数<sup>1</sup></a><a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/">docker 系统编程 tips<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">c语言 开发语言 命令行工具 个人记录<sup>1</sup></a><a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/">矩阵 线性代数 算法<sup>1</sup></a><a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">rust 开发语言 后端<sup>1</sup></a><a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">ubuntu 阿里云 网络 网络工具<sup>1</sup></a><a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java jvm 开发语言<sup>1</sup></a><a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java 开发语言<sup>1</sup></a><a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/">wireshark 网络 服务器<sup>1</sup></a><a href="/tags/linux-vscode-macos-c/">linux vscode macos c++<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 c++ 开发语言<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/">学习 笔记 操作系统 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/">学习 笔记 操作系统 xv6 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/">学习 笔记 xv6 OS<sup>1</sup></a><a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/">MIT 6.S081 学习 笔记 xv6<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统 文件系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/">学习 笔记 bash 脚本<sup>1</sup></a><a href="/tags/linux-c-%E7%AE%97%E6%B3%95/">linux c++ 算法<sup>1</sup></a><a href="/tags/linux-c/">linux c++<sup>2</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/">操作系统 xv6 翻译<sup>2</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/">xv6 操作系统 笔记 翻译<sup>1</sup></a><a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">笔记 学习 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/">图论 离散数学 特殊的图 数学<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/">离散数学 数学 逻辑推理<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/">离散数学 数学 关系 集合<sup>1</sup></a><a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/">golang 服务器 后端<sup>1</sup></a><a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/">NP 数学 信息学<sup>1</sup></a><a href="/tags/vscode-ide-macos-c/">vscode ide macos c++<sup>1</sup></a><a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/">java jvm 算法<sup>1</sup></a><a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">翻译 xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="Back to home"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">MIT 6.S081学习笔记（第二章）</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/" alt="MIT 6.S081学习笔记（第二章）"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="This article is a Original article, pay attention to the copyright.">Original</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/"><span class="tags-name tags-punctuation">MIT 6.S081 学习 笔记 xv6</span></a></div></div></div></div><h1 class="post-title">MIT 6.S081学习笔记（第二章）</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><span id="more"></span>
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MIT 6.S081学习笔记（第二章）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-05 00:15" pubdate>
+          2023年10月5日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          37 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">MIT 6.S081学习笔记（第二章）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
 
 <h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文主要完成MIT 6.S081 实验二：system call</p>
 <h2 id="一、Using-gdb-easy"><a href="#一、Using-gdb-easy" class="headerlink" title="一、Using gdb (easy)"></a>一、Using gdb (easy)</h2><h3 id="Question-requirements"><a href="#Question-requirements" class="headerlink" title="Question requirements"></a>Question requirements</h3><blockquote>
 <p>In many cases, print statements will be sufficient to debug your kernel, but sometimes being able to single step through some assembly code or inspecting the variables on the stack is helpful.<br>To learn more about how to run GDB and the common issues that can arise when using GDB, check out this page.<br>To help you become familiar with gdb, run make qemu-gdb and then fire up gdb in another window (see the gdb bullet on the guidance page). Once you have two windows open, type in the gdb window:</p>
 </blockquote>
 <p>我们启动 gdb：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ make qemu-gdb</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make qemu-gdb<br></code></pre></td></tr></table></figure>
 <p><code>make qemu-gdb</code> 命令通常是用于启动QEMU虚拟机并与GDB（GNU Debugger）连接以进行调试的命令。以下是它的主要作用：</p>
 <ul>
 <li>启动QEMU虚拟机：make qemu-gdb 命令启动了一个QEMU虚拟机实例。QEMU是一个开源的虚拟化工具，它可以模拟多种处理器体系结构，并在模拟环境中运行操作系统和应用程序。</li>
@@ -135,7 +293,7 @@
 <li>调试目标程序：通常，<code>make qemu-gdb</code> 命令会与要调试的目标程序相关联。</li>
 </ul>
 <p>这时候，在另一个相同目录下的终端中，输入：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gdb-multiarch -x .gdbinit</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ gdb-multiarch -x .gdbinit<br></code></pre></td></tr></table></figure>
 <p><code>gdb-multiarch -x .gdbinit</code> 这个命令的作用是使用多体系结构（multi-architecture）版本的GDB，同时执行一个包含GDB命令的脚本文件 .gdbinit。各个部分的含义如下：</p>
 <ul>
 <li><p>gdb-multiarch：这是GDB的一个命令，表示启动多体系结构版本的GDB。多体系结构版本的GDB支持在不同的CPU架构上进行调试。</p>
@@ -144,7 +302,7 @@
 </li>
 </ul>
 <p>我的<code>.gdbinit</code>文件内容如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> confirm off</span><br><span class="line"><span class="built_in">set</span> architecture riscv:rv64</span><br><span class="line">target remote 127.0.0.1:25000</span><br><span class="line">symbol-file kernel/kernel</span><br><span class="line"><span class="built_in">set</span> disassemble-next-line auto</span><br><span class="line"><span class="built_in">set</span> riscv use-compressed-breakpoints <span class="built_in">yes</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">set</span> confirm off<br><span class="hljs-built_in">set</span> architecture riscv:rv64<br>target remote 127.0.0.1:25000<br>symbol-file kernel/kernel<br><span class="hljs-built_in">set</span> disassemble-next-line auto<br><span class="hljs-built_in">set</span> riscv use-compressed-breakpoints <span class="hljs-built_in">yes</span><br></code></pre></td></tr></table></figure>
 
 <p>这一系列命令是用于配置GDB（GNU Debugger）以进行RISC-V 64位架构（rv64）的目标程序调试的设置。以下是这些命令的含义：</p>
 <ul>
@@ -156,52 +314,52 @@
 <li>set riscv use-compressed-breakpoints yes：这个命令启用了对RISC-V压缩指令集（Compressed Instructions）的断点支持。压缩指令集是RISC-V的一种特性，允许使用更紧凑的指令编码。启用这个选项后，GDB会使用压缩指令集来设置断点，以便与压缩指令集编译的程序一起工作。</li>
 </ul>
 <p>在 gdb 窗口：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b syscall</span><br><span class="line">Breakpoint 1 at 0x8000203c: file kernel/syscall.c, line 133.</span><br><span class="line">(gdb) c</span><br><span class="line">Continuing.</span><br><span class="line"></span><br><span class="line">Thread 1 hit Breakpoint 1, syscall ()</span><br><span class="line">    at kernel/syscall.c:133</span><br><span class="line">133     &#123;</span><br><span class="line">(gdb) layout src</span><br><span class="line">(gdb) backtrace</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) b syscall<br>Breakpoint 1 at 0x8000203c: file kernel/syscall.c, line 133.<br>(gdb) c<br>Continuing.<br><br>Thread 1 hit Breakpoint 1, syscall ()<br>    at kernel/syscall.c:133<br>133     &#123;<br>(gdb) layout src<br>(gdb) backtrace<br></code></pre></td></tr></table></figure>
 <p>上面的步骤产生的结果：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">#0  syscall () at kernel/syscall.c:133</span></span><br><span class="line"><span class="comment">#1  0x0000000080001d70 in usertrap ()</span></span><br><span class="line">    at kernel/trap.c:67</span><br><span class="line"><span class="comment">#2  0x0505050505050505 in ?? ()</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><br><span class="hljs-comment">#0  syscall () at kernel/syscall.c:133</span><br><span class="hljs-comment">#1  0x0000000080001d70 in usertrap ()</span><br>    at kernel/trap.c:67<br><span class="hljs-comment">#2  0x0505050505050505 in ?? ()</span><br></code></pre></td></tr></table></figure>
 <p>接着单步运行到这一行代码：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(gdb) n</span><br><span class="line">(gdb) n</span><br><span class="line">(gdb) p/x *p</span><br><span class="line"><span class="variable">$2</span> = &#123;lock = &#123;locked = 0x0, name = 0x800081b8,</span><br><span class="line">    cpu = 0x0&#125;, state = 0x4, chan = 0x0, killed = 0x0,</span><br><span class="line">  xstate = 0x0, pid = 0x1, parent = 0x0,</span><br><span class="line">  kstack = 0x3fffffd000, sz = 0x1000,</span><br><span class="line">  pagetable = 0x87f73000, trapframe = 0x87f74000,</span><br><span class="line">  context = &#123;ra = 0x800014c2, sp = 0x3fffffde80,</span><br><span class="line">    s0 = 0x3fffffdeb0, s1 = 0x80008d70, s2 = 0x80008940,</span><br><span class="line">    s3 = 0x1, s4 = 0x0, s5 = 0x3, s6 = 0x80019a10,</span><br><span class="line">    s7 = 0x8, s8 = 0x80019b38, s9 = 0x4, s10 = 0x1,</span><br><span class="line">    s11 = 0x0&#125;, ofile = &#123;0x0 &lt;repeats 16 <span class="built_in">times</span>&gt;&#125;,</span><br><span class="line">  cwd = 0x80016e80, name = &#123;0x69, 0x6e, 0x69, 0x74,</span><br><span class="line">    0x63, 0x6f, 0x64, 0x65, 0x0, 0x0, 0x0, 0x0, 0x0,</span><br><span class="line">    0x0, 0x0, 0x0&#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) n<br>(gdb) n<br>(gdb) p/x *p<br><span class="hljs-variable">$2</span> = &#123;lock = &#123;locked = 0x0, name = 0x800081b8,<br>    cpu = 0x0&#125;, state = 0x4, chan = 0x0, killed = 0x0,<br>  xstate = 0x0, pid = 0x1, parent = 0x0,<br>  kstack = 0x3fffffd000, sz = 0x1000,<br>  pagetable = 0x87f73000, trapframe = 0x87f74000,<br>  context = &#123;ra = 0x800014c2, sp = 0x3fffffde80,<br>    s0 = 0x3fffffdeb0, s1 = 0x80008d70, s2 = 0x80008940,<br>    s3 = 0x1, s4 = 0x0, s5 = 0x3, s6 = 0x80019a10,<br>    s7 = 0x8, s8 = 0x80019b38, s9 = 0x4, s10 = 0x1,<br>    s11 = 0x0&#125;, ofile = &#123;0x0 &lt;repeats 16 <span class="hljs-built_in">times</span>&gt;&#125;,<br>  cwd = 0x80016e80, name = &#123;0x69, 0x6e, 0x69, 0x74,<br>    0x63, 0x6f, 0x64, 0x65, 0x0, 0x0, 0x0, 0x0, 0x0,<br>    0x0, 0x0, 0x0&#125;&#125;<br></code></pre></td></tr></table></figure>
 <p>现在检查这个值：<code>p-&gt;trapframe-&gt;a7</code></p>
 <blockquote>
 <p>What is the value of p-&gt;trapframe-&gt;a7 and what does that value represent? (Hint: look user&#x2F;initcode.S, the first user program xv6 starts.)</p>
 </blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p p-&gt;trapframe-&gt;a7</span><br><span class="line"><span class="variable">$3</span> = 7</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) p p-&gt;trapframe-&gt;a7<br><span class="hljs-variable">$3</span> = 7<br></code></pre></td></tr></table></figure>
 <p>可以看到，a7 的值为 7。</p>
 <p>研究一下 kernel&#x2F;proc.h中的trapframe 结构体中的字段：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">trapframe</span> &#123;</span></span><br><span class="line">  <span class="comment">/*   0 */</span> uint64 kernel_satp;   <span class="comment">// kernel page table</span></span><br><span class="line">  <span class="comment">/*   8 */</span> uint64 kernel_sp;     <span class="comment">// top of process&#x27;s kernel stack</span></span><br><span class="line">  <span class="comment">/*  16 */</span> uint64 kernel_trap;   <span class="comment">// usertrap()</span></span><br><span class="line">  <span class="comment">/*  24 */</span> uint64 epc;           <span class="comment">// saved user program counter</span></span><br><span class="line">  <span class="comment">/*  32 */</span> uint64 kernel_hartid; <span class="comment">// saved kernel tp</span></span><br><span class="line">  <span class="comment">/*  40 */</span> uint64 ra;</span><br><span class="line">  <span class="comment">/*  48 */</span> uint64 sp;</span><br><span class="line">  <span class="comment">/*  56 */</span> uint64 gp;</span><br><span class="line">  <span class="comment">/*  64 */</span> uint64 tp;</span><br><span class="line">  <span class="comment">/*  72 */</span> uint64 t0;</span><br><span class="line">  <span class="comment">/*  80 */</span> uint64 t1;</span><br><span class="line">  <span class="comment">/*  88 */</span> uint64 t2;</span><br><span class="line">  <span class="comment">/*  96 */</span> uint64 s0;</span><br><span class="line">  <span class="comment">/* 104 */</span> uint64 s1;</span><br><span class="line">  <span class="comment">/* 112 */</span> uint64 a0;</span><br><span class="line">  <span class="comment">/* 120 */</span> uint64 a1;</span><br><span class="line">  <span class="comment">/* 128 */</span> uint64 a2;</span><br><span class="line">  <span class="comment">/* 136 */</span> uint64 a3;</span><br><span class="line">  <span class="comment">/* 144 */</span> uint64 a4;</span><br><span class="line">  <span class="comment">/* 152 */</span> uint64 a5;</span><br><span class="line">  <span class="comment">/* 160 */</span> uint64 a6;</span><br><span class="line">  <span class="comment">/* 168 */</span> uint64 a7; <span class="comment">// a7普普通通</span></span><br><span class="line">  <span class="comment">/* 176 */</span> uint64 s2;</span><br><span class="line">  <span class="comment">/* 184 */</span> uint64 s3;</span><br><span class="line">  <span class="comment">/* 192 */</span> uint64 s4;</span><br><span class="line">  <span class="comment">/* 200 */</span> uint64 s5;</span><br><span class="line">  <span class="comment">/* 208 */</span> uint64 s6;</span><br><span class="line">  <span class="comment">/* 216 */</span> uint64 s7;</span><br><span class="line">  <span class="comment">/* 224 */</span> uint64 s8;</span><br><span class="line">  <span class="comment">/* 232 */</span> uint64 s9;</span><br><span class="line">  <span class="comment">/* 240 */</span> uint64 s10;</span><br><span class="line">  <span class="comment">/* 248 */</span> uint64 s11;</span><br><span class="line">  <span class="comment">/* 256 */</span> uint64 t3;</span><br><span class="line">  <span class="comment">/* 264 */</span> uint64 t4;</span><br><span class="line">  <span class="comment">/* 272 */</span> uint64 t5;</span><br><span class="line">  <span class="comment">/* 280 */</span> uint64 t6;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">trapframe</span> &#123;</span><br>  <span class="hljs-comment">/*   0 */</span> uint64 kernel_satp;   <span class="hljs-comment">// kernel page table</span><br>  <span class="hljs-comment">/*   8 */</span> uint64 kernel_sp;     <span class="hljs-comment">// top of process&#x27;s kernel stack</span><br>  <span class="hljs-comment">/*  16 */</span> uint64 kernel_trap;   <span class="hljs-comment">// usertrap()</span><br>  <span class="hljs-comment">/*  24 */</span> uint64 epc;           <span class="hljs-comment">// saved user program counter</span><br>  <span class="hljs-comment">/*  32 */</span> uint64 kernel_hartid; <span class="hljs-comment">// saved kernel tp</span><br>  <span class="hljs-comment">/*  40 */</span> uint64 ra;<br>  <span class="hljs-comment">/*  48 */</span> uint64 sp;<br>  <span class="hljs-comment">/*  56 */</span> uint64 gp;<br>  <span class="hljs-comment">/*  64 */</span> uint64 tp;<br>  <span class="hljs-comment">/*  72 */</span> uint64 t0;<br>  <span class="hljs-comment">/*  80 */</span> uint64 t1;<br>  <span class="hljs-comment">/*  88 */</span> uint64 t2;<br>  <span class="hljs-comment">/*  96 */</span> uint64 s0;<br>  <span class="hljs-comment">/* 104 */</span> uint64 s1;<br>  <span class="hljs-comment">/* 112 */</span> uint64 a0;<br>  <span class="hljs-comment">/* 120 */</span> uint64 a1;<br>  <span class="hljs-comment">/* 128 */</span> uint64 a2;<br>  <span class="hljs-comment">/* 136 */</span> uint64 a3;<br>  <span class="hljs-comment">/* 144 */</span> uint64 a4;<br>  <span class="hljs-comment">/* 152 */</span> uint64 a5;<br>  <span class="hljs-comment">/* 160 */</span> uint64 a6;<br>  <span class="hljs-comment">/* 168 */</span> uint64 a7; <span class="hljs-comment">// a7普普通通</span><br>  <span class="hljs-comment">/* 176 */</span> uint64 s2;<br>  <span class="hljs-comment">/* 184 */</span> uint64 s3;<br>  <span class="hljs-comment">/* 192 */</span> uint64 s4;<br>  <span class="hljs-comment">/* 200 */</span> uint64 s5;<br>  <span class="hljs-comment">/* 208 */</span> uint64 s6;<br>  <span class="hljs-comment">/* 216 */</span> uint64 s7;<br>  <span class="hljs-comment">/* 224 */</span> uint64 s8;<br>  <span class="hljs-comment">/* 232 */</span> uint64 s9;<br>  <span class="hljs-comment">/* 240 */</span> uint64 s10;<br>  <span class="hljs-comment">/* 248 */</span> uint64 s11;<br>  <span class="hljs-comment">/* 256 */</span> uint64 t3;<br>  <span class="hljs-comment">/* 264 */</span> uint64 t4;<br>  <span class="hljs-comment">/* 272 */</span> uint64 t5;<br>  <span class="hljs-comment">/* 280 */</span> uint64 t6;<br>&#125;;<br></code></pre></td></tr></table></figure>
 <p>再来看下 syscall.h：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// System call numbers</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_fork    1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_exit    2</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_wait    3</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_pipe    4</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_read    5</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_kill    6</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_exec    7</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_fstat   8</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_chdir   9</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_dup    10</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_getpid 11</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_sbrk   12</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_sleep  13</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_uptime 14</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_open   15</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_write  16</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_mknod  17</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_unlink 18</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_link   19</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_mkdir  20</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_close  21</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// System call numbers</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_fork    1</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_exit    2</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_wait    3</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_pipe    4</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_read    5</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_kill    6</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_exec    7</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_fstat   8</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_chdir   9</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_dup    10</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_getpid 11</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_sbrk   12</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_sleep  13</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_uptime 14</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_open   15</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_write  16</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_mknod  17</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_unlink 18</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_link   19</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_mkdir  20</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_close  21</span><br><br></code></pre></td></tr></table></figure>
 <p>恍然大悟，原来 7 指的是 <code>SYS_exec</code>，这意味着它加下来运行系统调用了：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">syscall</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> num;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">  num = p-&gt;trapframe-&gt;a7;</span><br><span class="line">  <span class="comment">// num = *(int*) 0;</span></span><br><span class="line">  <span class="keyword">if</span>(num &gt; <span class="number">0</span> &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) &#123;</span><br><span class="line">    <span class="comment">// Use num to lookup the system call function for num, call it,</span></span><br><span class="line">    <span class="comment">// and store its return value in p-&gt;trapframe-&gt;a0</span></span><br><span class="line">    p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d %s: unknown sys call %d\n&quot;</span>,</span><br><span class="line">            p-&gt;pid, p-&gt;name, num);</span><br><span class="line">    p-&gt;trapframe-&gt;a0 = <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span><br><span class="hljs-title function_">syscall</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">int</span> num;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">p</span> =</span> myproc();<br><br>  num = p-&gt;trapframe-&gt;a7;<br>  <span class="hljs-comment">// num = *(int*) 0;</span><br>  <span class="hljs-keyword">if</span>(num &gt; <span class="hljs-number">0</span> &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) &#123;<br>    <span class="hljs-comment">// Use num to lookup the system call function for num, call it,</span><br>    <span class="hljs-comment">// and store its return value in p-&gt;trapframe-&gt;a0</span><br>    p-&gt;trapframe-&gt;a0 = syscalls[num]();<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d %s: unknown sys call %d\n&quot;</span>,<br>            p-&gt;pid, p-&gt;name, num);<br>    p-&gt;trapframe-&gt;a0 = <span class="hljs-number">-1</span>;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <blockquote>
 <p>What was the previous mode that the CPU was in?</p>
 </blockquote>
 <p>查一下它运行前 CPU 的模式是什么：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p/t <span class="variable">$sstatus</span></span><br><span class="line"><span class="variable">$4</span> = 100010</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) p/t <span class="hljs-variable">$sstatus</span><br><span class="hljs-variable">$4</span> = 100010<br></code></pre></td></tr></table></figure>
 <p><strong>根据RISC-V特权指令，SPP位指示在进入监控模式之前执行的HART的权限级别。</strong>创建陷阱时，如果陷阱源自用户模式，则 SPP 设置为 0，否则设置为 1。当执行 SRET 指令（请参阅第 3.3.2 节）以从陷阱处理程序返回时，如果 SPP 位为 0，则权限级别设置为用户模式，如果 SPP 位为 1，则设置为主管模式;然后将 SPP 设置为 0。</p>
-<p>SPP 位的值为 0，表示进入内核进行系统调用之前的权限级别是用户模式。<br>根据RISC-V特权指令，SPP位指示在进入监控器模式之前执行的HART的权限级别。创建陷阱时，如果陷阱源自用户模式，则 SPP 设置为 0，否则设置为 1。当执行 SRET 指令从陷阱处理程序返回时，如果 SPP 位为 0，则权限级别设置为用户模式，如果 SPP 位为 1，则设置为主管模式；然后将 SPP 设置为 0。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/104b36357c924eabae99270867718742_1720253717123.png?token=ANB4BCMQHJZII2VLOSTQ57DGRD6VG" alt="在这里插入图片描述"></p>
+<p>SPP 位的值为 0，表示进入内核进行系统调用之前的权限级别是用户模式。<br>根据RISC-V特权指令，SPP位指示在进入监控器模式之前执行的HART的权限级别。创建陷阱时，如果陷阱源自用户模式，则 SPP 设置为 0，否则设置为 1。当执行 SRET 指令从陷阱处理程序返回时，如果 SPP 位为 0，则权限级别设置为用户模式，如果 SPP 位为 1，则设置为主管模式；然后将 SPP 设置为 0。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/104b36357c924eabae99270867718742_1720253717123.png?token=ANB4BCMQHJZII2VLOSTQ57DGRD6VG" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <p>如我们所见，SPP 位的值（从右向左数，第8位）为 0，表示进入内核进行系统调用之前的权限级别是<strong>用户模式</strong>。也就是说，该陷入是由用户造成的。</p>
 <p>然后，将 <code>kernel/syscall.c</code> 中的语句<code>num = p-&gt;trapframe-&gt;a7</code> 换成<code> num = * (int *) 0</code>执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ make qemu</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make qemu<br></code></pre></td></tr></table></figure>
 <blockquote>
 <p>Write down the assembly instruction the kernel is panicing at. Which<br>register corresponds to the variable num?</p>
 </blockquote>
 <p>直接出错：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">xv6 kernel is booting</span><br><span class="line"></span><br><span class="line">hart 2 starting</span><br><span class="line">hart 1 starting</span><br><span class="line">scause 0x000000000000000d</span><br><span class="line">sepc=0x0000000080002050 stval=0x0000000000000000</span><br><span class="line">panic: kerneltrap</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">xv6 kernel is booting<br><br>hart 2 starting<br>hart 1 starting<br>scause 0x000000000000000d<br>sepc=0x0000000080002050 stval=0x0000000000000000<br>panic: kerneltrap<br></code></pre></td></tr></table></figure>
 <p>我们在汇编代码中直接搜：<code>80002050</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">num = *(int*) 0;</span><br><span class="line">   80002050:	00002683          	lw	a3,0(zero) <span class="comment"># 0 &lt;_entry-0x80000000&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">num = *(int*) 0;<br>   80002050:	00002683          	lw	a3,0(zero) <span class="hljs-comment"># 0 &lt;_entry-0x80000000&gt;</span><br></code></pre></td></tr></table></figure>
 <p>可以看到，正是<code>num = * (int *) 0</code>语句导致了错误。它给了 num 一个错误的值。</p>
 <blockquote>
 <p>Why does the kernel crash? Hint: look at figure 3-3 in the text; is address 0 mapped in the kernel address space? Is that confirmed by the value in scause above?</p>
 </blockquote>
 <p>重新启动，在发生错误的位置设置断点：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Thread 1 received signal SIGINT, Interrupt.</span><br><span class="line">panic (s=s@entry=0x800083c0 <span class="string">&quot;kerneltrap&quot;</span>)</span><br><span class="line">    at kernel/printf.c:127</span><br><span class="line">(gdb) p <span class="variable">$scause</span></span><br><span class="line"><span class="variable">$1</span> = 13</span><br></pre></td></tr></table></figure>
-<p>根据 RISC-V privileged instructions，13 代表着页面加载错误。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/283e26634917427aa565b98ce0c8e53b_1720253717123.png?token=ANB4BCOCWA7JXVH7HUVEXVDGRD6VK" alt="在这里插入图片描述"><br>重新启动，直接打印出内核 panic时地用户进程名字： </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b *0x0000000080002050</span><br><span class="line">Breakpoint 1 at 0x80002050: file kernel/syscall.c, line 138.</span><br><span class="line">(gdb) c</span><br><span class="line">Continuing.</span><br><span class="line">[Switching to Thread 1.3]</span><br><span class="line"></span><br><span class="line">Thread 3 hit Breakpoint 1, syscall ()</span><br><span class="line">    at kernel/syscall.c:138</span><br><span class="line">138       num = *(int*) 0;</span><br><span class="line">(gdb) p p-&gt;name</span><br><span class="line"><span class="variable">$1</span> = <span class="string">&quot;initcode\000\000\000\000\000\000\000&quot;</span></span><br><span class="line">(gdb) </span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">Thread 1 received signal SIGINT, Interrupt.<br>panic (s=s@entry=0x800083c0 <span class="hljs-string">&quot;kerneltrap&quot;</span>)<br>    at kernel/printf.c:127<br>(gdb) p <span class="hljs-variable">$scause</span><br><span class="hljs-variable">$1</span> = 13<br></code></pre></td></tr></table></figure>
+<p>根据 RISC-V privileged instructions，13 代表着页面加载错误。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/283e26634917427aa565b98ce0c8e53b_1720253717123.png?token=ANB4BCOCWA7JXVH7HUVEXVDGRD6VK" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>重新启动，直接打印出内核 panic时地用户进程名字： </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) b *0x0000000080002050<br>Breakpoint 1 at 0x80002050: file kernel/syscall.c, line 138.<br>(gdb) c<br>Continuing.<br>[Switching to Thread 1.3]<br><br>Thread 3 hit Breakpoint 1, syscall ()<br>    at kernel/syscall.c:138<br>138       num = *(int*) 0;<br>(gdb) p p-&gt;name<br><span class="hljs-variable">$1</span> = <span class="hljs-string">&quot;initcode\000\000\000\000\000\000\000&quot;</span><br>(gdb) <br></code></pre></td></tr></table></figure>
 <p>可以看出这个用户进程的名字是<code>initcode</code>，这是 xv6 中第一个运行的进程。</p>
 <p>我们还可以看看这个进程的 proc structure 长什么样：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p *p</span><br><span class="line"><span class="variable">$2</span> = &#123;lock = &#123;locked = 0, </span><br><span class="line">    name = 0x800081b8 <span class="string">&quot;proc&quot;</span>, cpu = 0x0&#125;, </span><br><span class="line">  state = RUNNING, chan = 0x0, killed = 0, </span><br><span class="line">  xstate = 0, pid = 1, parent = 0x0, </span><br><span class="line">  kstack = 274877894656, sz = 4096, </span><br><span class="line">  pagetable = 0x87f73000, </span><br><span class="line">  trapframe = 0x87f74000, context = &#123;</span><br><span class="line">    ra = 2147488962, sp = 274877898368, </span><br><span class="line">    s0 = 274877898416, s1 = 2147519856, </span><br><span class="line">    s2 = 2147518784, s3 = 1, s4 = 0, s5 = 3, </span><br><span class="line">    s6 = 2147588624, s7 = 8, s8 = 2147588920, </span><br><span class="line">    s9 = 4, s10 = 1, s11 = 0&#125;, ofile = &#123;</span><br><span class="line">    0x0 &lt;repeats 16 <span class="built_in">times</span>&gt;&#125;, </span><br><span class="line">  cwd = 0x80016e80 &lt;itable+24&gt;, </span><br><span class="line">  name = <span class="string">&quot;initcode\000\000\000\000\000\000\000&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) p *p<br><span class="hljs-variable">$2</span> = &#123;lock = &#123;locked = 0, <br>    name = 0x800081b8 <span class="hljs-string">&quot;proc&quot;</span>, cpu = 0x0&#125;, <br>  state = RUNNING, chan = 0x0, killed = 0, <br>  xstate = 0, pid = 1, parent = 0x0, <br>  kstack = 274877894656, sz = 4096, <br>  pagetable = 0x87f73000, <br>  trapframe = 0x87f74000, context = &#123;<br>    ra = 2147488962, sp = 274877898368, <br>    s0 = 274877898416, s1 = 2147519856, <br>    s2 = 2147518784, s3 = 1, s4 = 0, s5 = 3, <br>    s6 = 2147588624, s7 = 8, s8 = 2147588920, <br>    s9 = 4, s10 = 1, s11 = 0&#125;, ofile = &#123;<br>    0x0 &lt;repeats 16 <span class="hljs-built_in">times</span>&gt;&#125;, <br>  cwd = 0x80016e80 &lt;itable+24&gt;, <br>  name = <span class="hljs-string">&quot;initcode\000\000\000\000\000\000\000&quot;</span>&#125;<br></code></pre></td></tr></table></figure>
 <p>从这个<code>proc结构</code>的信息中可以得出：</p>
 <ul>
 <li><p>进程状态：<strong>state字段的值为RUNNING，表示这个进程的状态为运行中</strong>，即它当前正在执行。</p>
@@ -237,39 +395,39 @@
 </ul>
 </blockquote>
 <p>只需要沿着步骤就可以完成这个实验：</p>
-<h3 id="1-Add-U-trace-to-UPROGS-in-Makefile"><a href="#1-Add-U-trace-to-UPROGS-in-Makefile" class="headerlink" title="1. Add $U/_trace\ to UPROGS in Makefile"></a>1. Add <code>$U/_trace\</code> to <code>UPROGS</code> in <code>Makefile</code></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UPROGS=\</span><br><span class="line">	...</span><br><span class="line">	$U/_zombie\</span><br><span class="line">	$U/_trace\</span><br></pre></td></tr></table></figure>
-<h3 id="2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h"><a href="#2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h" class="headerlink" title="2. Add a prototype for the system call to user/user.h, a stub to user/usys.pl, and a syscall number to kernel/syscall.h."></a>2. Add a prototype for the system call to <code>user/user.h</code>, a stub to <code>user/usys.pl</code>, and a syscall number to <code>kernel/syscall.h</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/user.h</span></span><br><span class="line"><span class="comment">// system calls</span></span><br><span class="line">...</span><br><span class="line"><span class="type">int</span> <span class="title function_">uptime</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">trace</span><span class="params">(<span class="type">int</span>)</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="1-Add-U-trace-to-UPROGS-in-Makefile"><a href="#1-Add-U-trace-to-UPROGS-in-Makefile" class="headerlink" title="1. Add $U/_trace\ to UPROGS in Makefile"></a>1. Add <code>$U/_trace\</code> to <code>UPROGS</code> in <code>Makefile</code></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">UPROGS=\<br>	...<br>	$U/_zombie\<br>	$U/_trace\<br></code></pre></td></tr></table></figure>
+<h3 id="2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h"><a href="#2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h" class="headerlink" title="2. Add a prototype for the system call to user/user.h, a stub to user/usys.pl, and a syscall number to kernel/syscall.h."></a>2. Add a prototype for the system call to <code>user/user.h</code>, a stub to <code>user/usys.pl</code>, and a syscall number to <code>kernel/syscall.h</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// user/user.h</span><br><span class="hljs-comment">// system calls</span><br>...<br><span class="hljs-type">int</span> <span class="hljs-title function_">uptime</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">trace</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// user/usys.pl</span><br><span class="line">...</span><br><span class="line">entry(<span class="string">&quot;uptime&quot;</span>);</span><br><span class="line">entry(<span class="string">&quot;trace&quot;</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs perl">// user/usys.pl<br>...<br>entry(<span class="hljs-string">&quot;uptime&quot;</span>);<br>entry(<span class="hljs-string">&quot;trace&quot;</span>);<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/syscall.h</span></span><br><span class="line"><span class="comment">// System call numbers</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_close  21</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_trace  22</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// kernel/syscall.h</span><br><span class="hljs-comment">// System call numbers</span><br>...<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_close  21</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_trace  22</span><br></code></pre></td></tr></table></figure>
 
-<h3 id="3-Add-a-sys-trace-function-in-kernel-sysproc-c-that-implements-the-new-system-call-by-remembering-its-argument-in-a-new-variable-in-the-proc-structure-see-kernel-proc-h-The-functions-to-retrieve-system-call-arguments-from-user-space-are-in-kernel-syscall-c-and-you-can-see-examples-of-their-use-in-kernel-sysproc-c"><a href="#3-Add-a-sys-trace-function-in-kernel-sysproc-c-that-implements-the-new-system-call-by-remembering-its-argument-in-a-new-variable-in-the-proc-structure-see-kernel-proc-h-The-functions-to-retrieve-system-call-arguments-from-user-space-are-in-kernel-syscall-c-and-you-can-see-examples-of-their-use-in-kernel-sysproc-c" class="headerlink" title="3. Add a sys_trace() function in kernel/sysproc.c that implements the new system call by remembering its argument in a new variable in the proc structure (see kernel/proc.h). The functions to retrieve system call arguments from user space are in kernel/syscall.c, and you can see examples of their use in kernel/sysproc.c."></a>3. Add a <code>sys_trace()</code> function in <code>kernel/sysproc.c</code> that implements the new system call by remembering its argument in a new variable in the <code>proc structure</code> (see <code>kernel/proc.h</code>). The functions to retrieve system call arguments from user space are in <code>kernel/syscall.c</code>, and you can see examples of their use in <code>kernel/sysproc.c</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/proc.h</span></span><br><span class="line"><span class="comment">// Per-process state</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">proc</span> &#123;</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="type">char</span> name[<span class="number">16</span>];               <span class="comment">// Process name (debugging)</span></span><br><span class="line">  uint64 syscall_trace;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="3-Add-a-sys-trace-function-in-kernel-sysproc-c-that-implements-the-new-system-call-by-remembering-its-argument-in-a-new-variable-in-the-proc-structure-see-kernel-proc-h-The-functions-to-retrieve-system-call-arguments-from-user-space-are-in-kernel-syscall-c-and-you-can-see-examples-of-their-use-in-kernel-sysproc-c"><a href="#3-Add-a-sys-trace-function-in-kernel-sysproc-c-that-implements-the-new-system-call-by-remembering-its-argument-in-a-new-variable-in-the-proc-structure-see-kernel-proc-h-The-functions-to-retrieve-system-call-arguments-from-user-space-are-in-kernel-syscall-c-and-you-can-see-examples-of-their-use-in-kernel-sysproc-c" class="headerlink" title="3. Add a sys_trace() function in kernel/sysproc.c that implements the new system call by remembering its argument in a new variable in the proc structure (see kernel/proc.h). The functions to retrieve system call arguments from user space are in kernel/syscall.c, and you can see examples of their use in kernel/sysproc.c."></a>3. Add a <code>sys_trace()</code> function in <code>kernel/sysproc.c</code> that implements the new system call by remembering its argument in a new variable in the <code>proc structure</code> (see <code>kernel/proc.h</code>). The functions to retrieve system call arguments from user space are in <code>kernel/syscall.c</code>, and you can see examples of their use in <code>kernel/sysproc.c</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// kernel/proc.h</span><br><span class="hljs-comment">// Per-process state</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> &#123;</span><br>  ...<br>  <span class="hljs-type">char</span> name[<span class="hljs-number">16</span>];               <span class="hljs-comment">// Process name (debugging)</span><br>  uint64 syscall_trace;<br>&#125;;<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/sysproc.c</span></span><br><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_trace</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> mask;</span><br><span class="line">  argint(<span class="number">0</span>, &amp;mask);</span><br><span class="line">  myproc()-&gt;syscall_trace = mask;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-Modify-fork-in-kernel-proc-c-to-copy-the-trace-mask-from-the-parent-to-the-child-process"><a href="#4-Modify-fork-in-kernel-proc-c-to-copy-the-trace-mask-from-the-parent-to-the-child-process" class="headerlink" title="4. Modify fork in kernel/proc.c to copy the trace mask from the parent to the child process."></a>4. Modify fork in <code>kernel/proc.c</code> to copy the trace mask from the parent to the child process.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">fork</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  safestrcpy(np-&gt;name, p-&gt;name, <span class="keyword">sizeof</span>(p-&gt;name));</span><br><span class="line">  np-&gt;syscall_trace = p-&gt;syscall_trace;</span><br><span class="line">  pid = np-&gt;pid;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="5-Modify-the-syscall-function-in-kernel-syscall-c-to-print-the-trace-output"><a href="#5-Modify-the-syscall-function-in-kernel-syscall-c-to-print-the-trace-output" class="headerlink" title="5. Modify the syscall function in kernel/syscall.c to print the trace output."></a>5. Modify the <code>syscall</code> function in <code>kernel/syscall.c</code> to print the trace output.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Prototypes for the functions that handle system calls.</span></span><br><span class="line">...</span><br><span class="line"><span class="keyword">extern</span> uint64 <span class="title function_">sys_close</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"><span class="keyword">extern</span> uint64 <span class="title function_">sys_trace</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// An array mapping syscall numbers from syscall.h</span></span><br><span class="line"><span class="comment">// to the function that handles the system call.</span></span><br><span class="line"><span class="type">static</span> <span class="title function_">uint64</span> <span class="params">(*syscalls[])</span><span class="params">(<span class="type">void</span>)</span> = &#123;</span><br><span class="line">...</span><br><span class="line">[SYS_close]   sys_close,</span><br><span class="line">[SYS_trace]   sys_trace,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 添加识别名</span></span><br><span class="line"><span class="type">char</span>* syscalls_name[<span class="number">23</span>] = &#123;<span class="string">&quot;&quot;</span>, <span class="string">&quot;fork&quot;</span>, <span class="string">&quot;exit&quot;</span>, <span class="string">&quot;wait&quot;</span>, <span class="string">&quot;pipe&quot;</span>, <span class="string">&quot;read&quot;</span>, <span class="string">&quot;kill&quot;</span>, <span class="string">&quot;exec&quot;</span>,</span><br><span class="line">                      <span class="string">&quot;fstat&quot;</span>, <span class="string">&quot;chdir&quot;</span>, <span class="string">&quot;dup&quot;</span>, <span class="string">&quot;getpid&quot;</span>, <span class="string">&quot;sbrk&quot;</span>, <span class="string">&quot;sleep&quot;</span>, <span class="string">&quot;uptime&quot;</span>,</span><br><span class="line">                      <span class="string">&quot;open&quot;</span>, <span class="string">&quot;write&quot;</span>, <span class="string">&quot;mknod&quot;</span>, <span class="string">&quot;unlink&quot;</span>, <span class="string">&quot;link&quot;</span>, <span class="string">&quot;mkdir&quot;</span>, <span class="string">&quot;close&quot;</span>, <span class="string">&quot;trace&quot;</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">syscall</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  num = p-&gt;trapframe-&gt;a7;</span><br><span class="line">  <span class="keyword">if</span>(num &gt; <span class="number">0</span> &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) &#123;</span><br><span class="line">    <span class="comment">// Use num to lookup the system call function for num, call it,</span></span><br><span class="line">    <span class="comment">// and store its return value in p-&gt;trapframe-&gt;a0</span></span><br><span class="line">    p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br><span class="line">    <span class="keyword">if</span> (p-&gt;syscall_trace &amp; (<span class="number">1</span> &lt;&lt; num)) &#123;</span><br><span class="line">    <span class="comment">// print trace info</span></span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d: syscall %s -&gt; %d\n&quot;</span>,p-&gt;pid, syscalls_name[num], p-&gt;trapframe-&gt;a0);</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// kernel/sysproc.c</span><br>uint64<br><span class="hljs-title function_">sys_trace</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">int</span> mask;<br>  argint(<span class="hljs-number">0</span>, &amp;mask);<br>  myproc()-&gt;syscall_trace = mask;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="4-Modify-fork-in-kernel-proc-c-to-copy-the-trace-mask-from-the-parent-to-the-child-process"><a href="#4-Modify-fork-in-kernel-proc-c-to-copy-the-trace-mask-from-the-parent-to-the-child-process" class="headerlink" title="4. Modify fork in kernel/proc.c to copy the trace mask from the parent to the child process."></a>4. Modify fork in <code>kernel/proc.c</code> to copy the trace mask from the parent to the child process.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">fork</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  ...<br>  safestrcpy(np-&gt;name, p-&gt;name, <span class="hljs-keyword">sizeof</span>(p-&gt;name));<br>  np-&gt;syscall_trace = p-&gt;syscall_trace;<br>  pid = np-&gt;pid;<br>  ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="5-Modify-the-syscall-function-in-kernel-syscall-c-to-print-the-trace-output"><a href="#5-Modify-the-syscall-function-in-kernel-syscall-c-to-print-the-trace-output" class="headerlink" title="5. Modify the syscall function in kernel/syscall.c to print the trace output."></a>5. Modify the <code>syscall</code> function in <code>kernel/syscall.c</code> to print the trace output.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Prototypes for the functions that handle system calls.</span><br>...<br><span class="hljs-keyword">extern</span> uint64 <span class="hljs-title function_">sys_close</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br><span class="hljs-keyword">extern</span> uint64 <span class="hljs-title function_">sys_trace</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br><br><span class="hljs-comment">// An array mapping syscall numbers from syscall.h</span><br><span class="hljs-comment">// to the function that handles the system call.</span><br><span class="hljs-type">static</span> <span class="hljs-title function_">uint64</span> <span class="hljs-params">(*syscalls[])</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> = &#123;<br>...<br>[SYS_close]   sys_close,<br>[SYS_trace]   sys_trace,<br>&#125;;<br><br><span class="hljs-comment">// 添加识别名</span><br><span class="hljs-type">char</span>* syscalls_name[<span class="hljs-number">23</span>] = &#123;<span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;fork&quot;</span>, <span class="hljs-string">&quot;exit&quot;</span>, <span class="hljs-string">&quot;wait&quot;</span>, <span class="hljs-string">&quot;pipe&quot;</span>, <span class="hljs-string">&quot;read&quot;</span>, <span class="hljs-string">&quot;kill&quot;</span>, <span class="hljs-string">&quot;exec&quot;</span>,<br>                      <span class="hljs-string">&quot;fstat&quot;</span>, <span class="hljs-string">&quot;chdir&quot;</span>, <span class="hljs-string">&quot;dup&quot;</span>, <span class="hljs-string">&quot;getpid&quot;</span>, <span class="hljs-string">&quot;sbrk&quot;</span>, <span class="hljs-string">&quot;sleep&quot;</span>, <span class="hljs-string">&quot;uptime&quot;</span>,<br>                      <span class="hljs-string">&quot;open&quot;</span>, <span class="hljs-string">&quot;write&quot;</span>, <span class="hljs-string">&quot;mknod&quot;</span>, <span class="hljs-string">&quot;unlink&quot;</span>, <span class="hljs-string">&quot;link&quot;</span>, <span class="hljs-string">&quot;mkdir&quot;</span>, <span class="hljs-string">&quot;close&quot;</span>, <span class="hljs-string">&quot;trace&quot;</span>&#125;;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">syscall</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  ...<br>  num = p-&gt;trapframe-&gt;a7;<br>  <span class="hljs-keyword">if</span>(num &gt; <span class="hljs-number">0</span> &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) &#123;<br>    <span class="hljs-comment">// Use num to lookup the system call function for num, call it,</span><br>    <span class="hljs-comment">// and store its return value in p-&gt;trapframe-&gt;a0</span><br>    p-&gt;trapframe-&gt;a0 = syscalls[num]();<br>    <span class="hljs-keyword">if</span> (p-&gt;syscall_trace &amp; (<span class="hljs-number">1</span> &lt;&lt; num)) &#123;<br>    <span class="hljs-comment">// print trace info</span><br>      <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d: syscall %s -&gt; %d\n&quot;</span>,p-&gt;pid, syscalls_name[num], p-&gt;trapframe-&gt;a0);<br>    &#125;    <br>&#125;<br><br></code></pre></td></tr></table></figure>
 <p>做到这里，就可以测试了：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@*******:~/xv6-labs-2023<span class="comment"># ./grade-lab-syscall trace</span></span><br><span class="line">make: <span class="string">&#x27;kernel/kernel&#x27;</span> is up to <span class="built_in">date</span>.</span><br><span class="line">== Test trace 32 grep == trace 32 grep: OK (3.2s) </span><br><span class="line">== Test trace all grep == trace all grep: OK (0.8s) </span><br><span class="line">== Test trace nothing == trace nothing: OK (1.0s) </span><br><span class="line">== Test trace children == trace children: OK (27.2s) </span><br><span class="line">root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023<span class="comment"># </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@*******:~/xv6-labs-2023<span class="hljs-comment"># ./grade-lab-syscall trace</span><br>make: <span class="hljs-string">&#x27;kernel/kernel&#x27;</span> is up to <span class="hljs-built_in">date</span>.<br>== Test trace 32 grep == trace 32 grep: OK (3.2s) <br>== Test trace all grep == trace all grep: OK (0.8s) <br>== Test trace nothing == trace nothing: OK (1.0s) <br>== Test trace children == trace children: OK (27.2s) <br>root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023<span class="hljs-comment"># </span><br></code></pre></td></tr></table></figure>
 <p>可以看到全部通过了测试。</p>
 <p>但是依然需要回答一些问题：</p>
 <h3 id="Q1-usys-pl是什么文件？"><a href="#Q1-usys-pl是什么文件？" class="headerlink" title="Q1: usys.pl是什么文件？"></a>Q1: <code>usys.pl</code>是什么文件？</h3><p><code>usys.pl</code> 是一个Perl脚本文件，用于生成名为 usys.S 的汇编语言源代码文件。这个脚本的目的是生成系统调用的存根（stubs），以便操作系统内核能够处理用户空间程序的系统调用请求。</p>
 <p>具体来说，这个Perl脚本执行以下操作：<br>定义一个名为 entry 的Perl子例程，该子例程接受系统调用的<strong>名称</strong>作为参数，并<strong>生成与该系统调用相关的汇编代码</strong>。<br>使用 print 命令输出汇编代码，包括 .global 声明和汇编指令，以将<strong>系统调用名称</strong>与<strong>系统调用号码进行映射</strong>，并触发 <strong>ecall 指令以执行系统调用</strong>。<br>为一系列系统调用（如 fork、exit、read 等等）调用 entry 子例程，以生成相应的汇编代码。<br>输出注释，指出<strong>该文件是由 usys.pl 自动生成</strong>的，不应手动编辑。<br><strong>生成的 usys.S 文件通常将作为操作系统内核的一部分</strong>，用于处理用户空间程序发起的系统调用请求。这种自动生成的方式可以<strong>确保系统调用存根的正确性</strong>，并简化了内核的开发和维护过程。</p>
 <p>再来看看这个<code>usys.S</code>:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.global trace</span><br><span class="line">trace:</span><br><span class="line"> li a7, SYS_trace</span><br><span class="line"> ecall</span><br><span class="line"> ret</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c">.global trace<br>trace:<br> li a7, SYS_trace<br> ecall<br> ret<br><br></code></pre></td></tr></table></figure>
 
 <p><code>li a7, SYS_trace</code>：这行代码将立即数 SYS_trace 加载到寄存器 a7 中。<strong>a7 寄存器通常用于存储系统调用号码</strong>，而 SYS_trace 是一个代表系统调用的符号常量，通常在C代码中定义，用于标识系统调用的类型。</p>
 <p>ecall：这是一个特权指令，用于触发系统调用。当执行 ecall 指令时，处理器将进入特权模式（通常是监管模式），并跳转到操作系统内核中的相应系统调用处理程序。<strong>系统调用号码 a7 指示了要执行的系统调用类型</strong>。</p>
 <p>ret：这是一个返回指令，用于返回到调用者的代码。在系统调用完成后，处理器会执行 ret 指令，将控制权返回给调用 SYS_trace 系统调用的代码。</p>
 <h3 id="Q2-从用户态到内核态运行一个系统调用的过程大致是怎么样的？"><a href="#Q2-从用户态到内核态运行一个系统调用的过程大致是怎么样的？" class="headerlink" title="Q2: 从用户态到内核态运行一个系统调用的过程大致是怎么样的？"></a>Q2: 从用户态到内核态运行一个系统调用的过程大致是怎么样的？</h3><p>用户态调用：在用户态运行的程序需要执行一个系统调用时，它会调用一个包含系统调用号码和参数的库函数，例如C库中的syscall函数。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">syscall</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="type">int</span> num;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line">  num = p-&gt;trapframe-&gt;a7;</span><br><span class="line">  <span class="keyword">if</span>(num &gt; <span class="number">0</span> &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) &#123;</span><br><span class="line">    <span class="comment">// 用 num 来查阅指向系统调用的函数入口</span></span><br><span class="line">    <span class="comment">// p-&gt;trapframe-&gt;a0 来保存系统调用的返回值</span></span><br><span class="line">    p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br><span class="line">    <span class="keyword">if</span>(p-&gt;syscall_trace &amp; (<span class="number">1</span> &lt;&lt; num))&#123;</span><br><span class="line">    <span class="comment">// 将 1 左移 num 位，然后与p-&gt;syscall_trace 进行与运算，判断是否满足某个条件</span></span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;%d: syscall %s -&gt; %d\n&quot;</span>,p-&gt;pid, syscalls_name[num], p-&gt;trapframe-&gt;a0);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d %s: unknown sys call %d\n&quot;</span>,</span><br><span class="line">            p-&gt;pid, p-&gt;name, num);</span><br><span class="line">    p-&gt;trapframe-&gt;a0 = <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">syscall</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">int</span> num;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">p</span> =</span> myproc();<br>  num = p-&gt;trapframe-&gt;a7;<br>  <span class="hljs-keyword">if</span>(num &gt; <span class="hljs-number">0</span> &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) &#123;<br>    <span class="hljs-comment">// 用 num 来查阅指向系统调用的函数入口</span><br>    <span class="hljs-comment">// p-&gt;trapframe-&gt;a0 来保存系统调用的返回值</span><br>    p-&gt;trapframe-&gt;a0 = syscalls[num]();<br>    <span class="hljs-keyword">if</span>(p-&gt;syscall_trace &amp; (<span class="hljs-number">1</span> &lt;&lt; num))&#123;<br>    <span class="hljs-comment">// 将 1 左移 num 位，然后与p-&gt;syscall_trace 进行与运算，判断是否满足某个条件</span><br>      <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d: syscall %s -&gt; %d\n&quot;</span>,p-&gt;pid, syscalls_name[num], p-&gt;trapframe-&gt;a0);<br>    &#125;<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d %s: unknown sys call %d\n&quot;</span>,<br>            p-&gt;pid, p-&gt;name, num);<br>    p-&gt;trapframe-&gt;a0 = <span class="hljs-number">-1</span>;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>系统调用号码：库函数会将系统调用号码和参数加载到寄存器中，<strong>通常使用a7寄存器</strong>（或者其他体系结构中的类似寄存器），其中a7用于存储系统调用号码。</p>
 <p>触发系统调用：用户态程序执行特殊的指令，例如ecall（在RISC-V架构中）或int 0x80（在x86架构中）。<strong>这些指令触发了从用户态到内核态的切换，将控制权传递给操作系统内核</strong>。</p>
 <p>切换到内核态：当发生系统调用指令时，处理器将当前的用户态上下文保存到特定的寄存器或内存区域中，包括程序计数器（PC）和用户态栈指针（SP）。<strong>然后，处理器切换到内核态，切换到操作系统内核的地址空间</strong>。</p>
 <p>系统调用处理：<strong>操作系统内核根据系统调用号码确定要执行的系统调用，并使用传递的参数执行相应的操作</strong>。这可能涉及到访问硬件资源、文件系统、网络等等。内核执行完成后，将结果存储在适当的寄存器或内存位置。</p>
 <p>返回用户态：内核执行完系统调用后，将保存的用户态上下文恢复回处理器，包括将用户态栈指针（SP）和程序计数器（PC）还原到之前保存的值。<strong>然后，处理器切换回用户态，并继续执行用户程序，返回到调用系统调用的下一条指令</strong>。</p>
-<p>xv6 的系统调用过程大致如下所示：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c609481c6e734628a56f965d54b77195_1720253717123.png?token=ANB4BCO4TIP4R64NKWBBEQ3GRD6VM" alt="在这里插入图片描述"></p>
+<p>xv6 的系统调用过程大致如下所示：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c609481c6e734628a56f965d54b77195_1720253717123.png?token=ANB4BCO4TIP4R64NKWBBEQ3GRD6VM" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <h2 id="三、Sysinfo-moderate"><a href="#三、Sysinfo-moderate" class="headerlink" title="三、Sysinfo (moderate)"></a>三、Sysinfo (moderate)</h2><h3 id="Question-requirements-2"><a href="#Question-requirements-2" class="headerlink" title="Question requirements"></a>Question requirements</h3><blockquote>
 <p>In this assignment you will add a system call, sysinfo, that collects information about the running system. The system call takes one argument: a pointer to a struct sysinfo (see kernel&#x2F;sysinfo.h). The kernel should fill out the fields of this struct: the freemem field should be set to the number of bytes of free memory, and the nproc field should be set to the number of processes whose state is not UNUSED. We provide a test program sysinfotest; you pass this assignment if it prints “sysinfotest: OK”.</p>
 </blockquote>
@@ -282,69 +440,390 @@
 <li>To collect the number of processes, add a function to kernel&#x2F;proc.c</li>
 </ul>
 </blockquote>
-<h3 id="1-Add-U-sysinfotest-to-UPROGS-in-Makefile"><a href="#1-Add-U-sysinfotest-to-UPROGS-in-Makefile" class="headerlink" title="1. Add $U/_sysinfotest\ to UPROGS in Makefile."></a>1. Add <code>$U/_sysinfotest\</code> to <code>UPROGS</code> in <code>Makefile</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UPROGS=\</span><br><span class="line">	...</span><br><span class="line">	$U/_trace\</span><br><span class="line">	$U/_sysinfotest\</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h-1"><a href="#2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h-1" class="headerlink" title="2. Add a prototype for the system call to user/user.h, a stub to user/usys.pl, and a syscall number to kernel/syscall.h."></a>2. Add a prototype for the system call to <code>user/user.h</code>, a stub to <code>user/usys.pl</code>, and a syscall number to <code>kernel/syscall.h</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/user.h</span></span><br><span class="line"><span class="comment">// system calls</span></span><br><span class="line">...</span><br><span class="line"><span class="type">int</span> <span class="title function_">trace</span><span class="params">(<span class="type">int</span>)</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sysinfo</span>;</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">sysinfo</span><span class="params">(<span class="keyword">struct</span> sysinfo *)</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="1-Add-U-sysinfotest-to-UPROGS-in-Makefile"><a href="#1-Add-U-sysinfotest-to-UPROGS-in-Makefile" class="headerlink" title="1. Add $U/_sysinfotest\ to UPROGS in Makefile."></a>1. Add <code>$U/_sysinfotest\</code> to <code>UPROGS</code> in <code>Makefile</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">UPROGS=\<br>	...<br>	$U/_trace\<br>	$U/_sysinfotest\<br><br></code></pre></td></tr></table></figure>
+<h3 id="2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h-1"><a href="#2-Add-a-prototype-for-the-system-call-to-user-user-h-a-stub-to-user-usys-pl-and-a-syscall-number-to-kernel-syscall-h-1" class="headerlink" title="2. Add a prototype for the system call to user/user.h, a stub to user/usys.pl, and a syscall number to kernel/syscall.h."></a>2. Add a prototype for the system call to <code>user/user.h</code>, a stub to <code>user/usys.pl</code>, and a syscall number to <code>kernel/syscall.h</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// user/user.h</span><br><span class="hljs-comment">// system calls</span><br>...<br><span class="hljs-type">int</span> <span class="hljs-title function_">trace</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysinfo</span>;</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">sysinfo</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> sysinfo *)</span>;<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// user/usys.pl</span></span><br><span class="line">...</span><br><span class="line">entry(<span class="string">&quot;trace&quot;</span>);</span><br><span class="line">entry(<span class="string">&quot;sysinfo&quot;</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// user/usys.pl</span><br>...<br>entry(<span class="hljs-string">&quot;trace&quot;</span>);<br>entry(<span class="hljs-string">&quot;sysinfo&quot;</span>);<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/syscall.h</span></span><br><span class="line"><span class="comment">// System call numbers</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_trace   22</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SYS_sysinfo 23</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// kernel/syscall.h</span><br><span class="hljs-comment">// System call numbers</span><br>...<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_trace   22</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SYS_sysinfo 23</span><br></code></pre></td></tr></table></figure>
 
-<h3 id="3-Add-a-sys-sysinfo-function-in-kernel-sysproc-c-that-copies-a-struct-sysinfo-back-to-user-space"><a href="#3-Add-a-sys-sysinfo-function-in-kernel-sysproc-c-that-copies-a-struct-sysinfo-back-to-user-space" class="headerlink" title="3. Add a sys_sysinfo function in kernel/sysproc.c that copies a struct sysinfo back to user space."></a>3. Add a <code>sys_sysinfo</code> function in <code>kernel/sysproc.c</code> that copies a <code>struct sysinfo</code> back to user space.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kernel/sysproc.c</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;proc.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sysinfo.h&quot;</span></span></span><br><span class="line">...</span><br><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_info</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 addr;</span><br><span class="line">  argaddr(<span class="number">0</span>, &amp;addr);</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sysinfo</span> <span class="title">sinfo</span>;</span></span><br><span class="line">  sinfo.freemem = freemem_size();</span><br><span class="line">  sinfo.nproc = count_proc();</span><br><span class="line">  <span class="keyword">if</span> (copyout(myproc()-&gt;pagetable, addr, (<span class="type">char</span> *)&amp;sinfo, <span class="keyword">sizeof</span>(sinfo)) &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-Update-the-array-of-syscall-names-to-index-into-in-kernel-syscall-c"><a href="#4-Update-the-array-of-syscall-names-to-index-into-in-kernel-syscall-c" class="headerlink" title="4. Update the array of syscall names to index into in kernel/syscall.c."></a>4. Update the array of syscall names to index into in <code>kernel/syscall.c</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Prototypes for the functions that handle system calls.</span></span><br><span class="line">...</span><br><span class="line"><span class="keyword">extern</span> uint64 <span class="title function_">sys_trace</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"><span class="keyword">extern</span> uint64 <span class="title function_">sys_info</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// An array mapping syscall numbers from syscall.h</span></span><br><span class="line"><span class="comment">// to the function that handles the system call.</span></span><br><span class="line"><span class="type">static</span> <span class="title function_">uint64</span> <span class="params">(*syscalls[])</span><span class="params">(<span class="type">void</span>)</span> = &#123;</span><br><span class="line">...</span><br><span class="line">[SYS_trace]   sys_trace,</span><br><span class="line">[SYS_sysinfo] sys_info,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">char</span> *syscall_names[] = &#123;</span><br><span class="line">...</span><br><span class="line">[SYS_trace]   <span class="string">&quot;trace&quot;</span>,</span><br><span class="line">[SYS_sysinfo] <span class="string">&quot;sysinfo&quot;</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="5-Add-a-function-to-kernel-kalloc-c-to-collect-the-amount-of-free-memory"><a href="#5-Add-a-function-to-kernel-kalloc-c-to-collect-the-amount-of-free-memory" class="headerlink" title="5. Add a function to kernel/kalloc.c to collect the amount of free memory."></a>5. Add a function to <code>kernel/kalloc.c</code> to collect the amount of free memory.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">freemem_size</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  acquire(&amp;kmem.lock); <span class="comment">// prevent race condition</span></span><br><span class="line"></span><br><span class="line">  uint64 size = <span class="number">0</span>;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span> =</span> kmem.freelist;</span><br><span class="line">  <span class="keyword">while</span> (r) &#123;</span><br><span class="line">    size++;</span><br><span class="line">    r = r-&gt;next;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  release(&amp;kmem.lock);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> size * PGSIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="6-Add-a-function-to-kernel-proc-c-to-collect-the-number-of-processes"><a href="#6-Add-a-function-to-kernel-proc-c-to-collect-the-number-of-processes" class="headerlink" title="6. Add a function to kernel/proc.c to collect the number of processes."></a>6. Add a function to <code>kernel/proc.c</code> to collect the number of processes.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">count_proc</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 cnt = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; NPROC; ++i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (proc[i].state != UNUSED) &#123;</span><br><span class="line">      cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> cnt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-Add-a-sys-sysinfo-function-in-kernel-sysproc-c-that-copies-a-struct-sysinfo-back-to-user-space"><a href="#3-Add-a-sys-sysinfo-function-in-kernel-sysproc-c-that-copies-a-struct-sysinfo-back-to-user-space" class="headerlink" title="3. Add a sys_sysinfo function in kernel/sysproc.c that copies a struct sysinfo back to user space."></a>3. Add a <code>sys_sysinfo</code> function in <code>kernel/sysproc.c</code> that copies a <code>struct sysinfo</code> back to user space.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// kernel/sysproc.c</span><br>...<br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;proc.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;sysinfo.h&quot;</span></span><br>...<br>uint64<br><span class="hljs-title function_">sys_info</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  uint64 addr;<br>  argaddr(<span class="hljs-number">0</span>, &amp;addr);<br><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysinfo</span> <span class="hljs-title">sinfo</span>;</span><br>  sinfo.freemem = freemem_size();<br>  sinfo.nproc = count_proc();<br>  <span class="hljs-keyword">if</span> (copyout(myproc()-&gt;pagetable, addr, (<span class="hljs-type">char</span> *)&amp;sinfo, <span class="hljs-keyword">sizeof</span>(sinfo)) &lt; <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="4-Update-the-array-of-syscall-names-to-index-into-in-kernel-syscall-c"><a href="#4-Update-the-array-of-syscall-names-to-index-into-in-kernel-syscall-c" class="headerlink" title="4. Update the array of syscall names to index into in kernel/syscall.c."></a>4. Update the array of syscall names to index into in <code>kernel/syscall.c</code>.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Prototypes for the functions that handle system calls.</span><br>...<br><span class="hljs-keyword">extern</span> uint64 <span class="hljs-title function_">sys_trace</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br><span class="hljs-keyword">extern</span> uint64 <span class="hljs-title function_">sys_info</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br><br><span class="hljs-comment">// An array mapping syscall numbers from syscall.h</span><br><span class="hljs-comment">// to the function that handles the system call.</span><br><span class="hljs-type">static</span> <span class="hljs-title function_">uint64</span> <span class="hljs-params">(*syscalls[])</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> = &#123;<br>...<br>[SYS_trace]   sys_trace,<br>[SYS_sysinfo] sys_info,<br>&#125;;<br><br><span class="hljs-type">const</span> <span class="hljs-type">char</span> *syscall_names[] = &#123;<br>...<br>[SYS_trace]   <span class="hljs-string">&quot;trace&quot;</span>,<br>[SYS_sysinfo] <span class="hljs-string">&quot;sysinfo&quot;</span>,<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="5-Add-a-function-to-kernel-kalloc-c-to-collect-the-amount-of-free-memory"><a href="#5-Add-a-function-to-kernel-kalloc-c-to-collect-the-amount-of-free-memory" class="headerlink" title="5. Add a function to kernel/kalloc.c to collect the amount of free memory."></a>5. Add a function to <code>kernel/kalloc.c</code> to collect the amount of free memory.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c">uint64<br><span class="hljs-title function_">freemem_size</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  acquire(&amp;kmem.lock); <span class="hljs-comment">// prevent race condition</span><br><br>  uint64 size = <span class="hljs-number">0</span>;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">run</span> *<span class="hljs-title">r</span> =</span> kmem.freelist;<br>  <span class="hljs-keyword">while</span> (r) &#123;<br>    size++;<br>    r = r-&gt;next;<br>  &#125;<br>  <br>  release(&amp;kmem.lock);<br><br>  <span class="hljs-keyword">return</span> size * PGSIZE;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="6-Add-a-function-to-kernel-proc-c-to-collect-the-number-of-processes"><a href="#6-Add-a-function-to-kernel-proc-c-to-collect-the-number-of-processes" class="headerlink" title="6. Add a function to kernel/proc.c to collect the number of processes."></a>6. Add a function to <code>kernel/proc.c</code> to collect the number of processes.</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c">uint64<br><span class="hljs-title function_">count_proc</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  uint64 cnt = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; NPROC; ++i) &#123;<br>    <span class="hljs-keyword">if</span> (proc[i].state != UNUSED) &#123;<br>      cnt++;<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> cnt;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>把系统调用的 helper 函数放进去：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// kalloc.c</span></span><br><span class="line">...</span><br><span class="line"><span class="type">void</span>            <span class="title function_">kinit</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line">uint64          <span class="title function_">freemem_size</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line">...</span><br><span class="line"><span class="comment">// proc.c</span></span><br><span class="line">...</span><br><span class="line">uint64          <span class="title function_">count_proc</span><span class="params">(<span class="type">void</span>)</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="四、测试"><a href="#四、测试" class="headerlink" title="四、测试"></a>四、测试</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@********:~/xv6-labs-2023<span class="comment"># ./grade-lab-syscall</span></span><br><span class="line">make: <span class="string">&#x27;kernel/kernel&#x27;</span> is up to <span class="built_in">date</span>.</span><br><span class="line">== Test answers-syscall.txt == </span><br><span class="line">answers-syscall.txt: OK </span><br><span class="line">== Test trace 32 grep == trace 32 grep: OK (1.8s) </span><br><span class="line">== Test trace all grep == trace all grep: OK (1.0s) </span><br><span class="line">== Test trace nothing == trace nothing: OK (1.0s) </span><br><span class="line">== Test trace children == trace children: OK (25.3s) </span><br><span class="line">== Test sysinfotest == sysinfotest: OK (3.9s) </span><br><span class="line">== Test time == </span><br><span class="line">time: OK </span><br><span class="line">Score: 40/40</span><br><span class="line">root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023<span class="comment"># </span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// kalloc.c</span><br>...<br><span class="hljs-type">void</span>            <span class="hljs-title function_">kinit</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br>uint64          <span class="hljs-title function_">freemem_size</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br>...<br><span class="hljs-comment">// proc.c</span><br>...<br>uint64          <span class="hljs-title function_">count_proc</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br></code></pre></td></tr></table></figure>
+<h2 id="四、测试"><a href="#四、测试" class="headerlink" title="四、测试"></a>四、测试</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@********:~/xv6-labs-2023<span class="hljs-comment"># ./grade-lab-syscall</span><br>make: <span class="hljs-string">&#x27;kernel/kernel&#x27;</span> is up to <span class="hljs-built_in">date</span>.<br>== Test answers-syscall.txt == <br>answers-syscall.txt: OK <br>== Test trace 32 grep == trace 32 grep: OK (1.8s) <br>== Test trace all grep == trace all grep: OK (1.0s) <br>== Test trace nothing == trace nothing: OK (1.0s) <br>== Test trace children == trace children: OK (25.3s) <br>== Test sysinfotest == sysinfotest: OK (3.9s) <br>== Test time == <br>time: OK <br>Score: 40/40<br>root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023<span class="hljs-comment"># </span><br></code></pre></td></tr></table></figure>
 
 
 
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">Hexo</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">This piece of writing is an original article, utilizing the<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>Agreement. For complete reproduction, please acknowledge the source as Courtesy of<a href="/">Hexo</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/"><span class="tags-punctuation"></span>MIT 6.S081 学习 笔记 xv6<span class="tagsPageCount">1</span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/11/11/%E3%80%8AOSTEP%E3%80%8B%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%EF%BC%88chap30%EF%BC%89/"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">《OSTEP》条件变量（chap30）</div></div></a></div><div class="next-post pull-right"><a href="/2023/09/29/ngrok%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86/"><div class="pagination-info"><div class="label">Next</div><div class="next_info">ngrok内网穿透以及原理</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="Avatar" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="Mood sticker"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">John Doe</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>New posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客"><img alt="利用 Hexo 搭建个人博客" src="/"></a><div class="content"><a class="title" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客">利用 Hexo 搭建个人博客</a><a class="article-recent_post_categories" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">博客</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记"><img alt="2024.07.05 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记">2024.07.05 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记"><img alt="2024.07.02 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记">2024.07.02 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记"><img alt="2024.06.30 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记">2024.06.30 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记"><img alt="2024.06.29 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记">2024.06.29 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">John Doe</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.3"></script><script src="/js/main.js?v=1.12.3"></script><script src="/js/third_party/waterfall.min.js?v=1.12.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.3"></script><script>dark()
-</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
 
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
 
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/" class="category-chain-item">OS 系统编程 Unix/Linux</a>
+  
+  
 
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/" class="print-no-link">#MIT 6.S081 学习 笔记 xv6</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MIT 6.S081学习笔记（第二章）</div>
+      <div>http://blog.luliang.online/2023/10/05/MIT 6.S081学习笔记（第二章）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/11/11/%E3%80%8AOSTEP%E3%80%8B%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%EF%BC%88chap30%EF%BC%89/" title="《OSTEP》条件变量（chap30）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《OSTEP》条件变量（chap30）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/29/ngrok%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86/" title="ngrok内网穿透以及原理">
+                        <span class="hidden-mobile">ngrok内网穿透以及原理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
     })
+  </script>
 
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
-})
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
     }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
     }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/07/06/利用 Hexo 搭建个人博客/","2024/07/05/2024.07.05 刷题日记/","2024/07/02/2024.07.02 刷题日记/","2024/06/30/2024.06.30 刷题日记/","2024/06/29/2024.06.29 刷题日记/","2024/06/28/2024.06.28 刷题日记/","2024/06/26/2024.06.26 刷题日记/","2024/06/25/2024.06.25 刷题日记/","2024/06/24/2024.06.24 刷题日记/","2024/06/23/2024.06.23 刷题日记/","2024/06/23/2024.06.22 刷题日记/","2024/06/21/2024.06.21 刷题日记/","2024/06/20/2024.06.20 刷题日记/","2024/06/19/2024.06.19 刷题日记/","2024/06/18/2024.06.18 刷题日记/","2024/06/18/2024.06.17 刷题日记/","2024/06/16/2024.06.16 刷题日记/","2024/06/12/mmap() 的几种用法/","2024/06/11/debugger（七）：栈帧（backtrace）/","2024/06/11/debugger（六）：source level 断点/","2024/06/11/debugger（五）：source level stepping/","2024/06/10/debugger（四）：源代码/","2024/06/10/debugger（三）：dwarf 文件/","2024/06/10/debugger（二）：读、写内存以及寄存器/","2024/05/25/debugger（一）：打断点的实现以及案例分析/","2024/05/20/C++内存模型/","2024/05/18/C++：再谈智能指针/","2024/05/17/C++调试：函数调用过程和堆栈/","2024/05/16/C++调试：内存管理/","2024/05/15/C++并发：构建线程安全的队列/","2024/05/15/C++并发：等待条件成立/","2024/05/14/C++：并发保护/","2024/05/14/C++并发：锁/","2024/05/12/C++：完美转发（二）（std!forward）/","2024/05/12/C++：完美转发（一）（std!forward）/","2024/05/11/C++：移动语义（std!move）/","2024/05/10/C++：左值（引用）&右值（引用）/","2024/05/10/C++并发：线程函数传参（二）/","2024/05/09/C++并发：线程函数传参（一）/","2024/05/05/macOS DOSBox 汇编环境搭建/","2024/04/28/CM3：lldb 调试 qemu 跑的程序/","2024/04/27/CM3：qemu执行汇编/","2024/04/26/8086：qemu执行汇编/","2024/04/24/C++：函数符（一）/","2024/04/24/C++：适配器/","2024/04/23/C++：迭代器/","2024/04/21/C++：智能指针（二）/","2024/04/21/C++：智能指针（一）/","2024/04/17/C++：返回值优化/","2024/04/17/C++：异常处理/","2024/04/11/C++：弃值表达式/","2024/03/31/关于一篇知乎答案的重现/","2023/12/31/2023 个人总结/","2023/12/24/mit6.s081【目录】/","2023/12/24/MIT 6.S081学习笔记（第十章）/","2023/12/23/MIT 6.S081学习笔记（第九章）/","2023/12/23/Shell Tools of Missing Semester（二）/","2023/12/22/Course Shell of Missing Semester（一）/","2023/12/21/MIT 6.S081学习笔记（第八章）/","2023/12/20/xv6 文件系统面临的问题/","2023/12/19/实现个人日志命令行工具（C语言）/","2023/12/18/xv6 文件系统（下）/","2023/12/18/xv6 文件系统（上）/","2023/12/13/MIT 6.S081学习笔记（第七章）/","2023/12/11/xv6 中的一些系统调用（下）/","2023/12/10/xv6 中的一些系统调用（上）/","2023/12/08/MIT 6.S081学习笔记（第六章）（下）/","2023/12/07/MIT 6.S081学习笔记（第六章）（上）/","2023/12/06/MIT 6.S081学习笔记（第五章）/","2023/12/04/xv6 book Chapter7 中文翻译/","2023/12/04/xv6 book Chapter6 中文翻译/","2023/12/04/xv6 book Chapter5 中文翻译/","2023/12/04/xv6 book Chapter4 中文翻译/","2023/11/24/MIT 6.S081学习笔记（第四章）/","2023/11/22/MIT 6.S081学习笔记（第三章）/","2023/11/18/xv6 book Chapter3 中文翻译/","2023/11/13/《OSTEP》信号量（chap31）/","2023/11/11/《OSTEP》条件变量（chap30）/","2023/10/05/MIT 6.S081学习笔记（第二章）/","2023/09/29/ngrok内网穿透以及原理/","2023/09/24/什么是P问题、NP问题和NPC问题/","2023/09/10/MIT 6.S081学习笔记（第一章）/","2023/09/07/MIT 6.S081学习笔记（第〇章）/","2023/09/02/go Session的实现（一）/","2023/08/01/gin 框架中的 gin.Context/","2023/07/31/Redis （一）消息订阅和发送测试/","2023/07/27/Hackintosh 入门/","2023/07/04/Docker网络模型以及容器网络初探（一）/","2023/06/29/Ubuntu 升级 golang 版本完美步骤/","2023/06/26/阿里云 Ubuntu 网络设置/","2023/06/17/《离散数学》：特殊的图/","2023/06/16/《离散数学》：代数系统和图论导论/","2023/06/15/《离散数学》：集合、关系和函数/","2023/06/14/《离散数学》：逻辑/","2023/06/08/Unix!Linux编程：UDS 数据报/","2023/06/07/Unix!Linux编程：UDS 流（Stream）/","2023/06/06/Golang框架：cobra/","2023/06/04/Go Web下GORM框架使用（二）/","2023/06/01/Go Web下GORM框架使用（一）/","2023/06/01/Go Web下gin框架使用（二）/","2023/06/01/泡利矩阵（一）/","2023/06/01/代数入门（〇）/","2023/05/31/Go Web下gin框架使用（一）/","2023/05/23/Go Web下gin框架的模板渲染/","2023/05/08/【Golang】多线程排序/","2023/05/07/【Golang】多线程下载器的实现/","2023/05/05/【Golang】多线程爬虫的实现/","2023/03/23/【day11】链表高精度加法/","2023/03/22/【day10】链表的合并/","2023/03/21/【day09】链表的旋转与反转/","2023/03/20/【day08】移除与插入链表元素/","2023/03/19/【day07】二维数组及滚动数组/","2023/03/13/【day06】数组的遍历/","2023/03/12/【day05】统计数组中的元素/","2023/03/11/exec()函数家族详细/","2023/03/11/对fork() 函数的理解/","2023/03/11/【day04】数组的旋转/","2023/03/10/【day03】数组的改变与移动/","2023/03/08/【day02】之链表操作/","2023/03/08/简单的 ls命令的实现（四.完结）/","2023/03/07/Java将 List 类型转化为 Array 的方法/","2023/03/07/【day01】之N数之和/","2023/02/28/教师工资管理系统之随机产生教师详细信息/","2023/02/28/C语言链表的头插法与尾插法/","2023/02/24/C语言实现删除匹配的某一行文本/","2023/02/17/简单的 ls 命令的实现（三）/","2023/02/17/简单的 ls 命令的实现（二）/","2023/02/15/简单的 ls 命令的实现（一）/","2023/01/17/C语言指针——从入门到精通/","2023/01/13/（三）抽象类/","2023/01/12/（二）常量池的探索/","2023/01/12/（一）Java 中 final 关键字的用法总结/","2023/01/10/对环境变量的探究/","2023/01/10/macOS下binutils 的安装/","2023/01/10/2022 Personal Summary/","2023/01/10/Analysis of the Location of Initialized!Uninitialized Global!Static!Local Variables!Constants in Mem/","2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/","2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/","2022/12/28/Start to write a simple Linux kernel Module/","2022/11/29/About the problem of struct structure assignment/","2022/11/16/Solutions for Xiyou Linux Group 2020 Interview Questions/","2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/","2022/11/15/Solutions for Xiyou Linux Group 2022 Interview Questions/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

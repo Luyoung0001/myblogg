@@ -1,137 +1,296 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>xv6 book Chapter3 中文翻译 | Hexo</title><noscript>Please enable JavaScript to view the site</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.3"><!-- inject head--><link rel="canonical" href="http://example.com/2023/11/18/xv6%20book%20Chapter3%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="〇、前言本文是 xv6 book 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。 一、（译文）第三章 页表页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Hexo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '1.12.3' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文是 xv6 book 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。 一、（译文）第三章 页表页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地址空间和内存。页面表确定了内存地址的含义，以及可以访问物理内存的哪些部分。它们使得 xv6 能够隔离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 book Chapter3 中文翻译">
+<meta property="og:url" content="http://blog.luliang.online/2023/11/18/xv6%20book%20Chapter3%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文是 xv6 book 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。 一、（译文）第三章 页表页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地址空间和内存。页面表确定了内存地址的含义，以及可以访问物理内存的哪些部分。它们使得 xv6 能够隔离">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/98bdf961821f424cb5488a45ccc8e488_1720253710031.png?token=ANB4BCIE76HHXRGWKZF2WC3GRD6U2">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ddb97e10a58f4f3f8c9f0990ca7a3283_1720253710031.png?token=ANB4BCIEYKXXQQWRLWC64ADGRD6U4">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/18fbcc6c690644a09cd524751798fb7e_1720253710031.png?token=ANB4BCK2OIIHCECW6TL7YT3GRD6U6">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7701116fd83b409494c78fe85df4abdc_1720253710031.png?token=ANB4BCJWKV2QQTR4XWE76GTGRD6VA">
+<meta property="article:published_time" content="2023-11-18T03:27:51.000Z">
+<meta property="article:modified_time" content="2024-07-07T07:26:40.567Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="操作系统 xv6 翻译">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/98bdf961821f424cb5488a45ccc8e488_1720253710031.png?token=ANB4BCIE76HHXRGWKZF2WC3GRD6U2">
+  
+  
+  
+  <title>xv6 book Chapter3 中文翻译 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
     
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-    
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-    
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-    
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-                if (name && keyObj[name]) return
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
         
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2023-04-20 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: {"limit":50,"author":"Author: John Doe","link":"Link: ","source":"Source: Hexo","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."},
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"Dark","light":"Light"},"copy":{"success":"Copied","error":"Copy failed"},"backtop":"Back to top","time":{"day":" days ago","hour":" hours ago","just":"just","min":" minutes ago","month":" months ago"},"day":" days","f12":"Developer mode is turned on, please follow the GPL.","totalk":"You don't need to delete blank lines, just type in your comments."},
-    aside: {
-        sayhello: {
-            morning: '一日之计在于晨',
-            noon: '吃饱了才有力气干活',
-            afternoon: '集中精力，攻克难关',
-            night: '不要太劳累了，早睡更健康',
-            goodnight: '睡个好觉，保证精力充沛',
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: 'Long time no see,',
-            back: 'Welcome back again,',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: false,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="Day and night switching"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="Sidebar display control"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Archives</div><div class="length-num">143</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">89</div></a></div></div></div><span class="sidebar-menu-item-title">Function</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>Display mode</span></span></div><span class="sidebar-menu-item-title">Tags</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E5%85%B6%E4%BB%96/">其他<sup>1</sup></a><a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">总结 个人总结<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">算法 数据结构 哈希算法<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">算法 数据结构 leetcode<sup>9</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法 leetcode 数据结构<sup>5</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95/">leetcode 算法<sup>2</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">汇编 QEMU 8086<sup>1</sup></a><a href="/tags/c-linux/">c++ linux<sup>1</sup></a><a href="/tags/c/">c++<sup>13</sup></a><a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">c++ 多线程<sup>2</sup></a><a href="/tags/c-lldb/">c++ lldb<sup>2</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c++ 开发语言<sup>9</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">c++ 开发语言 学习 笔记<sup>1</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">汇编 QEMU CM3<sup>1</sup></a><a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">CM3 汇编 QEMU<sup>1</sup></a><a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">Shell 学习 笔记<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 开发语言<sup>2</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">链表 c语言 数据结构<sup>1</sup></a><a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/">docker 网络 容器<sup>1</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/">golang 前端 数据库<sup>2</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/">golang 前端 gin 服务器<sup>1</sup></a><a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/">前端 golang gin<sup>2</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">golang 开发语言 后端<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/">操作系统 Hackintosh<sup>1</sup></a><a href="/tags/java-jvm-servlet/">java jvm servlet<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/">学习 笔记 OS xv6<sup>1</sup></a><a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 操作系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 操作系统<sup>2</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统<sup>3</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 操作系统 OS<sup>1</sup></a><a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/">redis bootstrap 数据库<sup>1</sup></a><a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/">linux 服务器 运维<sup>1</sup></a><a href="/tags/ubuntu-golang-linux/">ubuntu golang linux<sup>1</sup></a><a href="/tags/unix-linux-udp/">unix linux udp<sup>1</sup></a><a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/">linux unix 服务器 网络<sup>1</sup></a><a href="/tags/c-debugger/">c++ debugger<sup>4</sup></a><a href="/tags/c-lldb-debugger/">c++ lldb debugger<sup>2</sup></a><a href="/tags/linux/">linux<sup>2</sup></a><a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/">gin Context golang Web 网络<sup>1</sup></a><a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/">golang 后端 前端 网络<sup>1</sup></a><a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/">macos 汇编 DOSBox 8086<sup>1</sup></a><a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/">macos linux 服务器<sup>1</sup></a><a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/">系统调用 mmap 文件<sup>1</sup></a><a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">Web 内网穿透<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/">操作系统 学习 xv6 翻译<sup>1</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/">xv6 操作系统 OS 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">xv6 OS 学习 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/">操作系统 笔记 学习<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">操作系统 学习 笔记<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/">图论 离散数学 代数系统<sup>1</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/">golang 开发语言 算法 后端<sup>1</sup></a><a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">golang 爬虫 开发语言<sup>1</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">leetcode 算法 数据结构<sup>4</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">链表 数据结构 算法<sup>3</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode/">算法 leetcode<sup>1</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">链表 数据结构 leetcode<sup>2</sup></a><a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数<sup>1</sup></a><a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/">docker 系统编程 tips<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">c语言 开发语言 命令行工具 个人记录<sup>1</sup></a><a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/">矩阵 线性代数 算法<sup>1</sup></a><a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">rust 开发语言 后端<sup>1</sup></a><a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">ubuntu 阿里云 网络 网络工具<sup>1</sup></a><a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java jvm 开发语言<sup>1</sup></a><a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java 开发语言<sup>1</sup></a><a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/">wireshark 网络 服务器<sup>1</sup></a><a href="/tags/linux-vscode-macos-c/">linux vscode macos c++<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 c++ 开发语言<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/">学习 笔记 操作系统 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/">学习 笔记 操作系统 xv6 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/">学习 笔记 xv6 OS<sup>1</sup></a><a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/">MIT 6.S081 学习 笔记 xv6<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统 文件系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/">学习 笔记 bash 脚本<sup>1</sup></a><a href="/tags/linux-c-%E7%AE%97%E6%B3%95/">linux c++ 算法<sup>1</sup></a><a href="/tags/linux-c/">linux c++<sup>2</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/">操作系统 xv6 翻译<sup>2</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/">xv6 操作系统 笔记 翻译<sup>1</sup></a><a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">笔记 学习 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/">图论 离散数学 特殊的图 数学<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/">离散数学 数学 逻辑推理<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/">离散数学 数学 关系 集合<sup>1</sup></a><a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/">golang 服务器 后端<sup>1</sup></a><a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/">NP 数学 信息学<sup>1</sup></a><a href="/tags/vscode-ide-macos-c/">vscode ide macos c++<sup>1</sup></a><a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/">java jvm 算法<sup>1</sup></a><a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">翻译 xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="Back to home"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">xv6 book Chapter3 中文翻译</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/" alt="xv6 book Chapter3 中文翻译"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="This article is a Original article, pay attention to the copyright.">Original</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/OS/">OS</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/"><span class="tags-name tags-punctuation">操作系统 xv6 翻译</span></a></div></div></div></div><h1 class="post-title">xv6 book Chapter3 中文翻译</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><span id="more"></span>
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="xv6 book Chapter3 中文翻译"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-18 11:27" pubdate>
+          2023年11月18日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">xv6 book Chapter3 中文翻译</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
 
 <h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文是 <strong>xv6 book</strong> 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。</p>
 <h2 id="一、（译文）第三章-页表"><a href="#一、（译文）第三章-页表" class="headerlink" title="一、（译文）第三章 页表"></a>一、（译文）第三章 页表</h2><p>页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地址空间和内存。页面表确定了内存地址的含义，以及可以访问物理内存的哪些部分。它们使得 <strong>xv6</strong> 能够隔离不同进程的地址空间，并将它们多路复用到单个物理内存中。页面表是一种流行的设计，因为它们提供了一种间接级别，使操作系统能够执行许多技巧。<strong>xv6</strong> 使用了一些技巧：在多个地址空间中映射相同的内存（一个跳板页面），并用未映射的页面保护内核和用户堆栈。本章的其余部分解释了 <strong>RISC-V</strong> 硬件提供的页面表以及 <strong>xv6</strong> 如何使用它们。</p>
 <h3 id="3-1-分页硬件"><a href="#3-1-分页硬件" class="headerlink" title="3.1 分页硬件"></a>3.1 分页硬件</h3><p>值得提醒的是，<strong>RISC-V</strong> 指令（包括用户指令和内核内核指令）操作虚拟地址。机器的 <strong>RAM</strong>，或者物理内存，都使用物理地址进行索引。<strong>RISC-V</strong> 的页面硬件连接了这两种地址，通过将每个虚拟地址映射到一个物理地址。</p>
 <p><strong>xv6</strong> 在 <strong>Sv39 RISC-V</strong> 上运行，这意味着仅使用了 64 位虚拟地址的底部 39 位；前 25 位未被使用。在这种 <strong>Sv39</strong> 配置下，一个 <strong>RISC-V</strong> 页面表在逻辑上是一个由 2^27^（134,217,728）个页面表项（<strong>PTEs</strong>）组成的数组。每个 <strong>PTE</strong> 包含一个 44 位的物理页号（<strong>PPN</strong>）和一些标志位。分页硬件通过使用 39 位中的前 27 位来索引页面表以找到一个 PTE，并且构造一个 56 位的物理地址，其中前 44 位来自 <strong>PTE</strong> 中的 <strong>PPN</strong>，后 12 位来自原始虚拟地址的底部。</p>
-<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/98bdf961821f424cb5488a45ccc8e488_1720253710031.png?token=ANB4BCIE76HHXRGWKZF2WC3GRD6U2" alt="图 3.1：RISC-V 虚拟和物理地址，以及简化的逻辑页表"></p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/98bdf961821f424cb5488a45ccc8e488_1720253710031.png?token=ANB4BCIE76HHXRGWKZF2WC3GRD6U2" srcset="/img/loading.gif" lazyload alt="图 3.1：RISC-V 虚拟和物理地址，以及简化的逻辑页表"></p>
 <center><b><font size ='3'>图 3.1：RISC-V 虚拟和物理地址，以及简化的逻辑页表</font></b></center></font>
 
 
 
 <p>图 3.1 展示了这个过程，使用一个 <strong>PTE</strong> 简单数组的逻辑视图（详细内容见图 3.2）。页面表让操作系统能够以 4096（2^12^）字节对齐的块的粒度控制虚拟地址到物理地址的转换。这样的一个块被称为一页。</p>
-<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ddb97e10a58f4f3f8c9f0990ca7a3283_1720253710031.png?token=ANB4BCIEYKXXQQWRLWC64ADGRD6U4" alt="在这里插入图片描述"></p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ddb97e10a58f4f3f8c9f0990ca7a3283_1720253710031.png?token=ANB4BCIEYKXXQQWRLWC64ADGRD6U4" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <center><b><font size ='3'>图 3.2：RISC-V 地址转换细节</font></b></center></font>
 
 <p>尽管 <strong>CPU</strong> 在执行加载或存储指令时会在硬件中遍历三级结构，但三级结构的一个潜在缺点是 <strong>CPU</strong> 必须从内存中加载三个页面表项（<strong>PTEs</strong>）来执行虚拟地址到物理地址的转换。为了避免从物理内存加载 <strong>PTEs</strong> 的开销，<strong>RISC-V CPU</strong> 将页面表项缓存到一个称为<em>Translation Look-aside Buffer</em>（<strong>TLB</strong>）的缓冲区中。</p>
@@ -139,7 +298,7 @@
 <p>为了告诉硬件使用页面表，内核必须将根页面的物理地址写入 <strong>satp</strong> 寄存器。每个 <strong>CPU</strong> 都有自己的 <strong>satp</strong>。<strong>CPU</strong> 将使用由自己的 <strong>satp</strong> 指向的页面表来转换后续指令生成的所有地址。每个 <strong>CPU</strong> 都有自己的 <strong>satp</strong>，这样不同的 <strong>CPU</strong> 可以运行不同的进程，每个进程都有一个由自己的页面表描述的私有地址空间。</p>
 <p>典型情况下，内核将所有物理内存映射到其页面表中，这样它就可以使用加载&#x2F;存储指令读写物理内存中的任何位置。由于页目录位于物理内存中，内核可以通过使用标准的存储指令向 <strong>PTE</strong> 的虚拟地址写入，来编程页目录中 <strong>PTE</strong> 的内容。</p>
 <p>关于术语的一些说明。物理内存指的是 <strong>DRAM</strong> 中的存储单元。物理内存的每个字节都有一个地址，称为物理地址。指令仅使用虚拟地址，分页硬件将虚拟地址翻译为物理地址，然后发送给 <strong>DRAM</strong> 硬件进行读取或写入。与物理内存和虚拟地址不同，虚拟内存并不是一个物理对象，而是指内核提供的一系列抽象和机制，用于管理物理内存和虚拟地址。</p>
-<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/18fbcc6c690644a09cd524751798fb7e_1720253710031.png?token=ANB4BCK2OIIHCECW6TL7YT3GRD6U6" alt="在这里插入图片描述"></p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/18fbcc6c690644a09cd524751798fb7e_1720253710031.png?token=ANB4BCK2OIIHCECW6TL7YT3GRD6U6" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <center><b><font size ='3'>图 3.3：左侧，xv6 的内核地址空间。 RWX指 PTE 读、写、执行
 权限。 右侧是 xv6 期望看到的 RISC-V 物理地址空间</font></b></center></font>
 
@@ -166,7 +325,7 @@
 <h3 id="3-5-代码：物理内存分配器"><a href="#3-5-代码：物理内存分配器" class="headerlink" title="3.5 代码：物理内存分配器"></a>3.5 代码：物理内存分配器</h3><p>分配器位于 <code>kalloc.c</code>（<code>kernel/kalloc.c</code>:1）中。分配器的数据结构是一系列可用于分配的物理内存页面的空闲列表。每个空闲页面的列表元素都是一个名为 <code>struct run</code> 的结构体（<code>kernel/kalloc.c</code>:17）。那么分配器从哪里获取内存来保存该数据结构呢？它将每个空闲页面的 <code>run</code> 结构体存储在空闲页面本身中，因为那里没有其他存储。空闲列表由一个自旋锁保护（<code>kernel/kalloc.c</code>:21-24）。该列表和锁被包装在一个结构体中，以明确锁保护该结构中的字段。暂时忽略锁和获取&#x2F;释放的调用；第6章将详细讨论锁定问题。</p>
 <p>函数 <code>main</code> 调用 <code>kinit</code> 来初始化分配器（<code>kernel/kalloc.c</code>:27）。<code>kinit</code> 将空闲列表初始化为内核结束后的第一个存储单元和 <strong>PHYSTOP</strong> 之间的每一页。<strong>xv6</strong>应该通过解析硬件提供的配置信息确定可用的物理内存有多少。然而，<strong>xv6</strong> 假设机器有 <strong>128 兆</strong>字节的 <strong>RAM</strong>。<code>kinit</code> 调用 <code>freerange</code> 来通过对 <code>kfree</code> 的每页调用向空闲列表添加内存。<strong>PTE</strong> 只能引用按 <strong>4096 字节</strong>边界对齐的物理地址（即 4096 的倍数），因此 <code>freerange</code> 使用 <strong>PGROUNDUP</strong> 来确保它只释放对齐的物理地址。分配器初始时没有内存；这些对 <code>kfree</code> 的调用给了它一些要管理的内存。</p>
 <p>分配器有时将地址视为整数进行运算（例如，在 <code>freerange</code> 中遍历所有页面），有时将地址用作指针读写内存（例如，操作存储在每个页面中的 <code>run</code> 结构体）；这种地址的双重用途是导致分配器代码充斥着 C 类型转换的主要原因。另一个原因是释放和分配在本质上会改变内存的类型。</p>
-<p>函数 <code>kfree</code>（<code>kernel/kalloc.c</code>:47）首先将要释放的内存中的每个字节设置为值 <strong>1</strong>。这将导致在释放后继续使用内存（使用“悬空引用”）的代码读取垃圾而不是旧的有效内容；希望这样可以更快地使此类代码出现故障。然后 <code>kfree</code> 将页面添加到空闲列表中：它将 <code>pa</code> 转换为指向 <code>struct run</code> 的指针，记录了空闲列表的旧开头在<code> r-&gt;next</code> 中，并将空闲列表设置为 <code>r</code>。<code>kalloc</code> 从空闲列表中移除并返回第一个元素。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7701116fd83b409494c78fe85df4abdc_1720253710031.png?token=ANB4BCJWKV2QQTR4XWE76GTGRD6VA" alt="在这里插入图片描述"></p>
+<p>函数 <code>kfree</code>（<code>kernel/kalloc.c</code>:47）首先将要释放的内存中的每个字节设置为值 <strong>1</strong>。这将导致在释放后继续使用内存（使用“悬空引用”）的代码读取垃圾而不是旧的有效内容；希望这样可以更快地使此类代码出现故障。然后 <code>kfree</code> 将页面添加到空闲列表中：它将 <code>pa</code> 转换为指向 <code>struct run</code> 的指针，记录了空闲列表的旧开头在<code> r-&gt;next</code> 中，并将空闲列表设置为 <code>r</code>。<code>kalloc</code> 从空闲列表中移除并返回第一个元素。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7701116fd83b409494c78fe85df4abdc_1720253710031.png?token=ANB4BCJWKV2QQTR4XWE76GTGRD6VA" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <center><b><font size ='3'>图 3.4：进程的用户地址空间及其初始堆栈</font></b></center></font>
 
 <h3 id="3-6-进程地址空间"><a href="#3-6-进程地址空间" class="headerlink" title="3.6 进程地址空间"></a>3.6 进程地址空间</h3><p>在 <strong>xv6</strong> 中，每个进程都有一个单独的页面表，并且当 <strong>xv6</strong> 在进程之间切换时，它也会更改页面表。正如图 2.3 所示，一个进程的用户内存从虚拟地址零开始，最多可以增长到 <code>MAXVA</code>（<code>kernel/riscv.h</code>:360），原则上允许一个进程寻址 <strong>256 GB</strong> 的内存。</p>
@@ -180,7 +339,7 @@
 <p>首先是对文件是否可能包含 <strong>ELF</strong> 二进制的快速检查。<strong>ELF</strong> 二进制以四字节的“魔数”<strong>0x7F</strong>，‘<strong>E</strong>’，‘<strong>L</strong>’，‘<strong>F</strong>’，或 <strong>ELF_MAGIC</strong>（<code>kernel/elf.h</code>:3）开头。如果 <strong>ELF</strong> 头具有正确的魔数，<code>exec</code> 假设二进制文件格式正确。</p>
 <p><code>exec</code> 使用 <code>proc_pagetable</code>（<code>kernel/exec.c</code>:38）分配一个没有用户映射的新页表，使用 <code>uvmalloc</code>（<code>kernel/exec.c</code>:52）为每个 <strong>ELF</strong> 段分配内存，并使用 <code>loadseg</code>（<code>kernel/exec.c</code>:10）将每个段加载到内存中。<code>loadseg</code> 使用 <code>walkaddr</code> 查找已分配内存的物理地址，以便将每个 <strong>ELF</strong> 段的每页写入，并使用 <code>readi</code> 从文件读取数据。</p>
 <p>用 <code>exec</code> 创建的第一个用户程序 <code>/init</code> 的程序段头如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># objdump -p _init</span></span><br><span class="line">user/_init: file format elf64-littleriscv</span><br><span class="line">Program Header:</span><br><span class="line">LOAD off 0x00000000000000b0 vaddr 0x0000000000000000</span><br><span class="line">		paddr 0x0000000000000000 align 2**3</span><br><span class="line">		filesz 0x0000000000000840 memsz 0x0000000000000858 flags rwx</span><br><span class="line">STACK off 0x0000000000000000 vaddr 0x0000000000000000</span><br><span class="line">		paddr 0x0000000000000000 align 2**4</span><br><span class="line">		filesz 0x0000000000000000 memsz 0x0000000000000000 flags rw</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># objdump -p _init</span><br>user/_init: file format elf64-littleriscv<br>Program Header:<br>LOAD off 0x00000000000000b0 vaddr 0x0000000000000000<br>		paddr 0x0000000000000000 align 2**3<br>		filesz 0x0000000000000840 memsz 0x0000000000000858 flags rwx<br>STACK off 0x0000000000000000 vaddr 0x0000000000000000<br>		paddr 0x0000000000000000 align 2**4<br>		filesz 0x0000000000000000 memsz 0x0000000000000000 flags rw<br></code></pre></td></tr></table></figure>
 
 <p>程序段头的 <code>filesz</code> 可能小于 <code>memsz</code>，这表明它们之间的间隙应该用零填充（用于 <strong>C</strong> 全局变量），而不是从文件中读取。对于 <code>/init</code>，<code>filesz</code> 为 <strong>2112</strong> 字节，而 <code>memsz</code> 为 <strong>2136</strong> 字节，因此 <code>uvmalloc</code> 分配足够的物理内存来容纳 <strong>2136</strong> 字节，但仅从文件 <strong>&#x2F;init</strong> 中读取了 <strong>2112</strong> 字节。<br>接下来，<code>exec</code> 分配并初始化用户栈。它仅分配了一页栈空间。<code>exec</code> 逐个将参数字符串复制到栈顶，同时在 <code>ustack</code> 中记录它们的指针。它在即将传递给 <code>main</code> 的 <code>argv</code> 列表末尾放置一个空指针。<code>ustack</code> 中的前三个条目是假的返回<code>程序计数器</code>、<code>argc</code> 和 <code>argv 指针</code>。<br><code>exec</code> 在栈页的正下方放置了一个不可访问的页面，以便那些试图使用多于一页的程序会发生故障。这个不可访问的页面还允许 <code>exec</code> 处理过大的参数；在这种情况下，<code>exec</code> 用于将参数复制到栈中的 <code>copyout</code>（<code>kernel/vm.c</code>:347）函数会注意到目标页面是不可访问的，并返回 <strong>-1</strong>。<br>在准备新内存镜像期间，如果 <code>exec</code> 检测到类似无效程序段的错误，它会跳转到标签 <code>bad</code>，释放新镜像，并返回 <strong>-1</strong>。<code>exec</code> 必须等待释放旧镜像，直到确信系统调用将成功：如果旧镜像消失了，系统调用就无法返回 <strong>-1</strong>。<code>exec</code> 中唯一的错误情况发生在镜像的创建过程中。一旦镜像完成，<code>exec</code> 可以确认新的页表（<code>kernel/exec.c</code>:113），并释放旧的页表（<code>kernel/exec.c</code>:117）。</p>
 <p><code>exec</code>从<strong>ELF</strong>文件加载字节到由ELF文件指定的内存地址。用户或进程可以将它们想要的任何地址放入<strong>ELF</strong>文件中。因此，<code>exec</code>存在风险，因为<strong>ELF</strong>文件中的地址可能无意或故意地引用内核。对于一个不谨慎的内核，后果可能从崩溃到对内核隔离机制的恶意破坏（即安全漏洞）不等。<strong>xv6</strong>执行了许多检查以避免这些风险。例如，<code>if(ph.vaddr + ph.memsz &lt; ph.vaddr)</code> 检查求和是否溢出了<strong>64</strong>位整数。危险在于用户可以构造一个<strong>ELF</strong>二进制文件，其中<code>ph.vaddr</code>指向用户选择的地址，而<code>ph.memsz</code>足够大，导致求和溢出到<strong>0x1000</strong>，看起来像是一个有效值。在旧版的<strong>xv6</strong>中，用户地址空间也包含了内核（但在用户模式下不可读&#x2F;写），用户可以选择一个对应于内核内存的地址，因此将数据从<strong>ELF</strong>二进制文件复制到内核中。在<strong>RISC-V</strong>版本的<strong>xv6</strong>中，这种情况不会发生，因为内核有自己独立的页表；<code>loadseg</code>加载到进程的页表中，而不是内核的页表中。</p>
@@ -203,52 +362,373 @@
 </blockquote>
 <h3 id="两者的差异"><a href="#两者的差异" class="headerlink" title="两者的差异"></a>两者的差异</h3><p>看了这两者的翻译，谷歌翻译可以说是完败，而 <code>ChapGPT</code>几乎是完美翻译。因此，以后的翻译可能都要交给大模型了。</p>
 <p><em>全文完，感谢阅读。</em></p>
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">Hexo</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">This piece of writing is an original article, utilizing the<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>Agreement. For complete reproduction, please acknowledge the source as Courtesy of<a href="/">Hexo</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/"><span class="tags-punctuation"></span>操作系统 xv6 翻译<span class="tagsPageCount">2</span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/11/22/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%89/"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">MIT 6.S081学习笔记（第三章）</div></div></a></div><div class="next-post pull-right"><a href="/2023/11/13/%E3%80%8AOSTEP%E3%80%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88chap31%EF%BC%89/"><div class="pagination-info"><div class="label">Next</div><div class="next_info">《OSTEP》信号量（chap31）</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="Avatar" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="Mood sticker"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">John Doe</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>New posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客"><img alt="利用 Hexo 搭建个人博客" src="/"></a><div class="content"><a class="title" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客">利用 Hexo 搭建个人博客</a><a class="article-recent_post_categories" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">博客</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记"><img alt="2024.07.05 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记">2024.07.05 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记"><img alt="2024.07.02 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记">2024.07.02 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记"><img alt="2024.06.30 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记">2024.06.30 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记"><img alt="2024.06.29 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记">2024.06.29 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">John Doe</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.3"></script><script src="/js/main.js?v=1.12.3"></script><script src="/js/third_party/waterfall.min.js?v=1.12.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.3"></script><script>dark()
-</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
 
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
 
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
 
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/" class="print-no-link">#操作系统 xv6 翻译</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>xv6 book Chapter3 中文翻译</div>
+      <div>http://blog.luliang.online/2023/11/18/xv6 book Chapter3 中文翻译/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月18日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/11/22/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第三章）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第三章）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/11/13/%E3%80%8AOSTEP%E3%80%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88chap31%EF%BC%89/" title="《OSTEP》信号量（chap31）">
+                        <span class="hidden-mobile">《OSTEP》信号量（chap31）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
     })
+  </script>
 
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
-})
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
     }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
     }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/07/06/利用 Hexo 搭建个人博客/","2024/07/05/2024.07.05 刷题日记/","2024/07/02/2024.07.02 刷题日记/","2024/06/30/2024.06.30 刷题日记/","2024/06/29/2024.06.29 刷题日记/","2024/06/28/2024.06.28 刷题日记/","2024/06/26/2024.06.26 刷题日记/","2024/06/25/2024.06.25 刷题日记/","2024/06/24/2024.06.24 刷题日记/","2024/06/23/2024.06.23 刷题日记/","2024/06/23/2024.06.22 刷题日记/","2024/06/21/2024.06.21 刷题日记/","2024/06/20/2024.06.20 刷题日记/","2024/06/19/2024.06.19 刷题日记/","2024/06/18/2024.06.18 刷题日记/","2024/06/18/2024.06.17 刷题日记/","2024/06/16/2024.06.16 刷题日记/","2024/06/12/mmap() 的几种用法/","2024/06/11/debugger（七）：栈帧（backtrace）/","2024/06/11/debugger（六）：source level 断点/","2024/06/11/debugger（五）：source level stepping/","2024/06/10/debugger（四）：源代码/","2024/06/10/debugger（三）：dwarf 文件/","2024/06/10/debugger（二）：读、写内存以及寄存器/","2024/05/25/debugger（一）：打断点的实现以及案例分析/","2024/05/20/C++内存模型/","2024/05/18/C++：再谈智能指针/","2024/05/17/C++调试：函数调用过程和堆栈/","2024/05/16/C++调试：内存管理/","2024/05/15/C++并发：构建线程安全的队列/","2024/05/15/C++并发：等待条件成立/","2024/05/14/C++：并发保护/","2024/05/14/C++并发：锁/","2024/05/12/C++：完美转发（二）（std!forward）/","2024/05/12/C++：完美转发（一）（std!forward）/","2024/05/11/C++：移动语义（std!move）/","2024/05/10/C++：左值（引用）&右值（引用）/","2024/05/10/C++并发：线程函数传参（二）/","2024/05/09/C++并发：线程函数传参（一）/","2024/05/05/macOS DOSBox 汇编环境搭建/","2024/04/28/CM3：lldb 调试 qemu 跑的程序/","2024/04/27/CM3：qemu执行汇编/","2024/04/26/8086：qemu执行汇编/","2024/04/24/C++：函数符（一）/","2024/04/24/C++：适配器/","2024/04/23/C++：迭代器/","2024/04/21/C++：智能指针（二）/","2024/04/21/C++：智能指针（一）/","2024/04/17/C++：返回值优化/","2024/04/17/C++：异常处理/","2024/04/11/C++：弃值表达式/","2024/03/31/关于一篇知乎答案的重现/","2023/12/31/2023 个人总结/","2023/12/24/mit6.s081【目录】/","2023/12/24/MIT 6.S081学习笔记（第十章）/","2023/12/23/MIT 6.S081学习笔记（第九章）/","2023/12/23/Shell Tools of Missing Semester（二）/","2023/12/22/Course Shell of Missing Semester（一）/","2023/12/21/MIT 6.S081学习笔记（第八章）/","2023/12/20/xv6 文件系统面临的问题/","2023/12/19/实现个人日志命令行工具（C语言）/","2023/12/18/xv6 文件系统（下）/","2023/12/18/xv6 文件系统（上）/","2023/12/13/MIT 6.S081学习笔记（第七章）/","2023/12/11/xv6 中的一些系统调用（下）/","2023/12/10/xv6 中的一些系统调用（上）/","2023/12/08/MIT 6.S081学习笔记（第六章）（下）/","2023/12/07/MIT 6.S081学习笔记（第六章）（上）/","2023/12/06/MIT 6.S081学习笔记（第五章）/","2023/12/04/xv6 book Chapter7 中文翻译/","2023/12/04/xv6 book Chapter6 中文翻译/","2023/12/04/xv6 book Chapter5 中文翻译/","2023/12/04/xv6 book Chapter4 中文翻译/","2023/11/24/MIT 6.S081学习笔记（第四章）/","2023/11/22/MIT 6.S081学习笔记（第三章）/","2023/11/18/xv6 book Chapter3 中文翻译/","2023/11/13/《OSTEP》信号量（chap31）/","2023/11/11/《OSTEP》条件变量（chap30）/","2023/10/05/MIT 6.S081学习笔记（第二章）/","2023/09/29/ngrok内网穿透以及原理/","2023/09/24/什么是P问题、NP问题和NPC问题/","2023/09/10/MIT 6.S081学习笔记（第一章）/","2023/09/07/MIT 6.S081学习笔记（第〇章）/","2023/09/02/go Session的实现（一）/","2023/08/01/gin 框架中的 gin.Context/","2023/07/31/Redis （一）消息订阅和发送测试/","2023/07/27/Hackintosh 入门/","2023/07/04/Docker网络模型以及容器网络初探（一）/","2023/06/29/Ubuntu 升级 golang 版本完美步骤/","2023/06/26/阿里云 Ubuntu 网络设置/","2023/06/17/《离散数学》：特殊的图/","2023/06/16/《离散数学》：代数系统和图论导论/","2023/06/15/《离散数学》：集合、关系和函数/","2023/06/14/《离散数学》：逻辑/","2023/06/08/Unix!Linux编程：UDS 数据报/","2023/06/07/Unix!Linux编程：UDS 流（Stream）/","2023/06/06/Golang框架：cobra/","2023/06/04/Go Web下GORM框架使用（二）/","2023/06/01/Go Web下GORM框架使用（一）/","2023/06/01/Go Web下gin框架使用（二）/","2023/06/01/泡利矩阵（一）/","2023/06/01/代数入门（〇）/","2023/05/31/Go Web下gin框架使用（一）/","2023/05/23/Go Web下gin框架的模板渲染/","2023/05/08/【Golang】多线程排序/","2023/05/07/【Golang】多线程下载器的实现/","2023/05/05/【Golang】多线程爬虫的实现/","2023/03/23/【day11】链表高精度加法/","2023/03/22/【day10】链表的合并/","2023/03/21/【day09】链表的旋转与反转/","2023/03/20/【day08】移除与插入链表元素/","2023/03/19/【day07】二维数组及滚动数组/","2023/03/13/【day06】数组的遍历/","2023/03/12/【day05】统计数组中的元素/","2023/03/11/exec()函数家族详细/","2023/03/11/对fork() 函数的理解/","2023/03/11/【day04】数组的旋转/","2023/03/10/【day03】数组的改变与移动/","2023/03/08/【day02】之链表操作/","2023/03/08/简单的 ls命令的实现（四.完结）/","2023/03/07/Java将 List 类型转化为 Array 的方法/","2023/03/07/【day01】之N数之和/","2023/02/28/教师工资管理系统之随机产生教师详细信息/","2023/02/28/C语言链表的头插法与尾插法/","2023/02/24/C语言实现删除匹配的某一行文本/","2023/02/17/简单的 ls 命令的实现（三）/","2023/02/17/简单的 ls 命令的实现（二）/","2023/02/15/简单的 ls 命令的实现（一）/","2023/01/17/C语言指针——从入门到精通/","2023/01/13/（三）抽象类/","2023/01/12/（二）常量池的探索/","2023/01/12/（一）Java 中 final 关键字的用法总结/","2023/01/10/对环境变量的探究/","2023/01/10/macOS下binutils 的安装/","2023/01/10/2022 Personal Summary/","2023/01/10/Analysis of the Location of Initialized!Uninitialized Global!Static!Local Variables!Constants in Mem/","2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/","2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/","2022/12/28/Start to write a simple Linux kernel Module/","2022/11/29/About the problem of struct structure assignment/","2022/11/16/Solutions for Xiyou Linux Group 2020 Interview Questions/","2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/","2022/11/15/Solutions for Xiyou Linux Group 2022 Interview Questions/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

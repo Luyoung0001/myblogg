@@ -1,125 +1,281 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MIT 6.S081学习笔记（第〇章） | Hexo</title><noscript>Please enable JavaScript to view the site</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.12.3"><!-- inject head--><link rel="canonical" href="http://example.com/2023/09/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E3%80%87%E7%AB%A0%EF%BC%89/"><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="〇、前言 本文涉及 xv6 《第零章 操作系统接口》相关，主要对涉及的进程、I&amp;#x2F;O、文件描述符、管道、文件等内容产生个人理解，不具有官方权威解释； 文章的目录与书中的目录没有严格的相关性； 文中会有问题 (Question) 字段，这来源于对 xv6 book 的扩展； 文中涉及的代码"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Hexo"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(' %c Solitude %c ' + '1.12.3' + ' %c https://github.com/everfu/hexo-theme-solitude',
-    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
-</script><script>(()=>{
-        const saveToLocal = {
-            set: function setWithExpiry(key, value, ttl) {
-                if (ttl === 0)
-                    return
-                const now = new Date()
-                const expiryDay = ttl * 86400000
-                const item = {
-                    value: value,
-                    expiry: now.getTime() + expiryDay
-                }
-                localStorage.setItem(key, JSON.stringify(item))
-            },
-            get: function getWithExpiry(key) {
-                const itemStr = localStorage.getItem(key)
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言 本文涉及 xv6 《第零章 操作系统接口》相关，主要对涉及的进程、I&#x2F;O、文件描述符、管道、文件等内容产生个人理解，不具有官方权威解释； 文章的目录与书中的目录没有严格的相关性； 文中会有问题 (Question) 字段，这来源于对 xv6 book 的扩展； 文中涉及的代码均能在macOS 12.5 M1 Apple Silicon 运行，文中涉及的所有代码的运行也在该环">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081学习笔记（第〇章）">
+<meta property="og:url" content="http://blog.luliang.online/2023/09/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E3%80%87%E7%AB%A0%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言 本文涉及 xv6 《第零章 操作系统接口》相关，主要对涉及的进程、I&#x2F;O、文件描述符、管道、文件等内容产生个人理解，不具有官方权威解释； 文章的目录与书中的目录没有严格的相关性； 文中会有问题 (Question) 字段，这来源于对 xv6 book 的扩展； 文中涉及的代码均能在macOS 12.5 M1 Apple Silicon 运行，文中涉及的所有代码的运行也在该环">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/33901d1345134a7791b4c470b9de4491_1720253724529.png?token=ANB4BCJCA3VQHPIBA5GCCTLGRD6V2">
+<meta property="article:published_time" content="2023-09-07T15:04:29.000Z">
+<meta property="article:modified_time" content="2024-07-07T07:26:40.563Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="学习 笔记 操作系统 MIT 6.S081">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/33901d1345134a7791b4c470b9de4491_1720253724529.png?token=ANB4BCJCA3VQHPIBA5GCCTLGRD6V2">
+  
+  
+  
+  <title>MIT 6.S081学习笔记（第〇章） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
     
-                if (!itemStr) {
-                    return undefined
-                }
-                const item = JSON.parse(itemStr)
-                const now = new Date()
-    
-                if (now.getTime() > item.expiry) {
-                    localStorage.removeItem(key)
-                    return undefined
-                }
-                return item.value
-            }
-        };
-        window.utils = {
-            saveToLocal: saveToLocal,
-            getCSS: (url, id = false) => new Promise((resolve, reject) => {
-              const link = document.createElement('link')
-              link.rel = 'stylesheet'
-              link.href = url
-              if (id) link.id = id
-              link.onerror = reject
-              link.onload = link.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                link.onload = link.onreadystatechange = null
-                resolve()
-              }
-              document.head.appendChild(link)
-            }),
-            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-              const script = document.createElement('script')
-              script.src = url
-              script.async = true
-              script.onerror = reject
-              script.onload = script.onreadystatechange = function() {
-                const loadState = this.readyState
-                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-                script.onload = script.onreadystatechange = null
-                resolve()
-              }
-    
-              Object.keys(attr).forEach(key => {
-                script.setAttribute(key, attr[key])
-              })
-    
-              document.head.appendChild(script)
-            }),
-            addGlobalFn: (key, fn, name = false, parent = window) => {
-                const globalFn = parent.globalFn || {}
-                const keyObj = globalFn[key] || {}
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-                if (name && keyObj[name]) return
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
         
-                name = name || Object.keys(keyObj).length
-                keyObj[name] = fn
-                globalFn[key] = keyObj
-                parent.globalFn = globalFn
-            },
-        }
-    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
-    root: '/',
-    algolia: undefined,
-    localsearch: undefined,
-    runtime: '2023-04-20 00:00:00',
-    lazyload: {
-        enable: false,
-        error: '/img/error_load.avif'
-    },
-    copyright: {"limit":50,"author":"Author: John Doe","link":"Link: ","source":"Source: Hexo","info":"Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source."},
-    highlight: {"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},
-    randomlink: false,
-    lang: {"theme":{"dark":"Dark","light":"Light"},"copy":{"success":"Copied","error":"Copy failed"},"backtop":"Back to top","time":{"day":" days ago","hour":" hours ago","just":"just","min":" minutes ago","month":" months ago"},"day":" days","f12":"Developer mode is turned on, please follow the GPL.","totalk":"You don't need to delete blank lines, just type in your comments."},
-    aside: {
-        sayhello: {
-            morning: '一日之计在于晨',
-            noon: '吃饱了才有力气干活',
-            afternoon: '集中精力，攻克难关',
-            night: '不要太劳累了，早睡更健康',
-            goodnight: '睡个好觉，保证精力充沛',
-        },
-        sayhello2: [],
-        sayhello3: {
-            prefix: 'Long time no see,',
-            back: 'Welcome back again,',
-        },
-    },
-    covercolor: {
-        enable: false
-    },
-    comment: false,
-    lightbox: 'null',
-    post_ai: false,
-    right_menu: false,
-};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
-    is_post: true,
-    is_page: false,
-    is_home: false,
-    page: '',
-    toc: false,
-    comment: false,
-    ai_text: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="Day and night switching"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="Sidebar display control"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Archives</div><div class="length-num">143</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">38</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">89</div></a></div></div></div><span class="sidebar-menu-item-title">Function</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>Display mode</span></span></div><span class="sidebar-menu-item-title">Tags</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E5%85%B6%E4%BB%96/">其他<sup>1</sup></a><a href="/tags/%E6%80%BB%E7%BB%93-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">总结 个人总结<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">算法 数据结构 哈希算法<sup>1</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">算法 数据结构 leetcode<sup>9</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法 leetcode 数据结构<sup>5</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95/">leetcode 算法<sup>2</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-8086/">汇编 QEMU 8086<sup>1</sup></a><a href="/tags/c-linux/">c++ linux<sup>1</sup></a><a href="/tags/c/">c++<sup>13</sup></a><a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">c++ 多线程<sup>2</sup></a><a href="/tags/c-lldb/">c++ lldb<sup>2</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c++ 开发语言<sup>9</sup></a><a href="/tags/c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">c++ 开发语言 学习 笔记<sup>1</sup></a><a href="/tags/%E6%B1%87%E7%BC%96-QEMU-CM3/">汇编 QEMU CM3<sup>1</sup></a><a href="/tags/CM3-%E6%B1%87%E7%BC%96-QEMU/">CM3 汇编 QEMU<sup>1</sup></a><a href="/tags/Shell-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">Shell 学习 笔记<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 开发语言<sup>2</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-c%E8%AF%AD%E8%A8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">链表 c语言 数据结构<sup>1</sup></a><a href="/tags/docker-%E7%BD%91%E7%BB%9C-%E5%AE%B9%E5%99%A8/">docker 网络 容器<sup>1</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-%E6%95%B0%E6%8D%AE%E5%BA%93/">golang 前端 数据库<sup>2</sup></a><a href="/tags/golang-%E5%89%8D%E7%AB%AF-gin-%E6%9C%8D%E5%8A%A1%E5%99%A8/">golang 前端 gin 服务器<sup>1</sup></a><a href="/tags/%E5%89%8D%E7%AB%AF-golang-gin/">前端 golang gin<sup>2</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">golang 开发语言 后端<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Hackintosh/">操作系统 Hackintosh<sup>1</sup></a><a href="/tags/java-jvm-servlet/">java jvm servlet<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-OS-xv6/">学习 笔记 OS xv6<sup>1</sup></a><a href="/tags/xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 操作系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 操作系统<sup>2</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统<sup>3</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 操作系统 OS<sup>1</sup></a><a href="/tags/redis-bootstrap-%E6%95%B0%E6%8D%AE%E5%BA%93/">redis bootstrap 数据库<sup>1</sup></a><a href="/tags/linux-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E8%BF%90%E7%BB%B4/">linux 服务器 运维<sup>1</sup></a><a href="/tags/ubuntu-golang-linux/">ubuntu golang linux<sup>1</sup></a><a href="/tags/unix-linux-udp/">unix linux udp<sup>1</sup></a><a href="/tags/linux-unix-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%BD%91%E7%BB%9C/">linux unix 服务器 网络<sup>1</sup></a><a href="/tags/c-debugger/">c++ debugger<sup>4</sup></a><a href="/tags/c-lldb-debugger/">c++ lldb debugger<sup>2</sup></a><a href="/tags/linux/">linux<sup>2</sup></a><a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/">gin Context golang Web 网络<sup>1</sup></a><a href="/tags/golang-%E5%90%8E%E7%AB%AF-%E5%89%8D%E7%AB%AF-%E7%BD%91%E7%BB%9C/">golang 后端 前端 网络<sup>1</sup></a><a href="/tags/macos-%E6%B1%87%E7%BC%96-DOSBox-8086/">macos 汇编 DOSBox 8086<sup>1</sup></a><a href="/tags/macos-linux-%E6%9C%8D%E5%8A%A1%E5%99%A8/">macos linux 服务器<sup>1</sup></a><a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/">系统调用 mmap 文件<sup>1</sup></a><a href="/tags/Web-%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">Web 内网穿透<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-xv6-%E7%BF%BB%E8%AF%91/">操作系统 学习 xv6 翻译<sup>1</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS-%E7%AC%94%E8%AE%B0/">xv6 操作系统 OS 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">xv6 OS 学习 笔记<sup>1</sup></a><a href="/tags/xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0/">操作系统 笔记 学习<sup>1</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0/">操作系统 学习 笔记<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/">图论 离散数学 代数系统<sup>1</sup></a><a href="/tags/golang-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E7%AE%97%E6%B3%95-%E5%90%8E%E7%AB%AF/">golang 开发语言 算法 后端<sup>1</sup></a><a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">golang 爬虫 开发语言<sup>1</sup></a><a href="/tags/leetcode-%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">leetcode 算法 数据结构<sup>4</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">链表 数据结构 算法<sup>3</sup></a><a href="/tags/%E7%AE%97%E6%B3%95-leetcode/">算法 leetcode<sup>1</sup></a><a href="/tags/%E9%93%BE%E8%A1%A8-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/">链表 数据结构 leetcode<sup>2</sup></a><a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/">抽象代数<sup>1</sup></a><a href="/tags/docker-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-tips/">docker 系统编程 tips<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7-%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">c语言 开发语言 命令行工具 个人记录<sup>1</sup></a><a href="/tags/%E7%9F%A9%E9%98%B5-%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0-%E7%AE%97%E6%B3%95/">矩阵 线性代数 算法<sup>1</sup></a><a href="/tags/rust-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80-%E5%90%8E%E7%AB%AF/">rust 开发语言 后端<sup>1</sup></a><a href="/tags/ubuntu-%E9%98%BF%E9%87%8C%E4%BA%91-%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">ubuntu 阿里云 网络 网络工具<sup>1</sup></a><a href="/tags/java-jvm-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java jvm 开发语言<sup>1</sup></a><a href="/tags/java-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">java 开发语言<sup>1</sup></a><a href="/tags/wireshark-%E7%BD%91%E7%BB%9C-%E6%9C%8D%E5%8A%A1%E5%99%A8/">wireshark 网络 服务器<sup>1</sup></a><a href="/tags/linux-vscode-macos-c/">linux vscode macos c++<sup>1</sup></a><a href="/tags/c%E8%AF%AD%E8%A8%80-c-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">c语言 c++ 开发语言<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/">学习 笔记 操作系统 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-MIT-6-S081/">学习 笔记 操作系统 xv6 MIT 6.S081<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS/">学习 笔记 xv6 OS<sup>1</sup></a><a href="/tags/MIT-6-S081-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6/">MIT 6.S081 学习 笔记 xv6<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">学习 笔记 xv6 OS 操作系统 文件系统<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-bash-%E8%84%9A%E6%9C%AC/">学习 笔记 bash 脚本<sup>1</sup></a><a href="/tags/linux-c-%E7%AE%97%E6%B3%95/">linux c++ 算法<sup>1</sup></a><a href="/tags/linux-c/">linux c++<sup>2</sup></a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-xv6-%E7%BF%BB%E8%AF%91/">操作系统 xv6 翻译<sup>2</sup></a><a href="/tags/xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E7%AC%94%E8%AE%B0-%E7%BF%BB%E8%AF%91/">xv6 操作系统 笔记 翻译<sup>1</sup></a><a href="/tags/%E7%AC%94%E8%AE%B0-%E5%AD%A6%E4%B9%A0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">笔记 学习 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-OS/">学习 笔记 xv6 操作系统 OS<sup>1</sup></a><a href="/tags/%E5%9B%BE%E8%AE%BA-%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE-%E6%95%B0%E5%AD%A6/">图论 离散数学 特殊的图 数学<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E9%80%BB%E8%BE%91%E6%8E%A8%E7%90%86/">离散数学 数学 逻辑推理<sup>1</sup></a><a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6-%E6%95%B0%E5%AD%A6-%E5%85%B3%E7%B3%BB-%E9%9B%86%E5%90%88/">离散数学 数学 关系 集合<sup>1</sup></a><a href="/tags/golang-%E6%9C%8D%E5%8A%A1%E5%99%A8-%E5%90%8E%E7%AB%AF/">golang 服务器 后端<sup>1</sup></a><a href="/tags/NP-%E6%95%B0%E5%AD%A6-%E4%BF%A1%E6%81%AF%E5%AD%A6/">NP 数学 信息学<sup>1</sup></a><a href="/tags/vscode-ide-macos-c/">vscode ide macos c++<sup>1</sup></a><a href="/tags/java-jvm-%E7%AE%97%E6%B3%95/">java jvm 算法<sup>1</sup></a><a href="/tags/%E7%BF%BB%E8%AF%91-xv6-OS-%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">翻译 xv6 OS 学习 笔记 操作系统<sup>1</sup></a><a href="/tags/Hexo/">Hexo<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="Back to home"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">MIT 6.S081学习笔记（第〇章）</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/" alt="MIT 6.S081学习笔记（第〇章）"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="This article is a Original article, pay attention to the copyright.">Original</a><span class="post-meta-categories"><a class="post-meta-categories" href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/">OS 系统编程 Unix/Linux</a></span><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/"><span class="tags-name tags-punctuation">学习 笔记 操作系统 MIT 6.S081</span></a></div></div></div></div><h1 class="post-title">MIT 6.S081学习笔记（第〇章）</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><span id="more"></span>
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MIT 6.S081学习笔记（第〇章）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-07 23:04" pubdate>
+          2023年9月7日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          58 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">MIT 6.S081学习笔记（第〇章）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
 
 <h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><ul>
 <li>本文涉及 xv6 《第零章 操作系统接口》相关，主要对涉及的进程、I&#x2F;O、文件描述符、管道、文件等内容产生个人理解，不具有官方权威解释；</li>
@@ -129,7 +285,7 @@
 <li>xv6的很多代码都可以运行在其它类 Unix 上。</li>
 </ul>
 <h2 id="一、进程与内存"><a href="#一、进程与内存" class="headerlink" title="一、进程与内存"></a>一、进程与内存</h2><p>一个进程可以通过系统调用 fork()来创建一个新的进程——子进程。fork()函数会有两个返回值，一个被子进程获取，另一个被父进程获取。对于父进程它返回子进程的 pid，对于子进程它返回 0。考虑下面这段代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> pid;</span><br><span class="line">    pid = fork();</span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 父进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;这是父进程:子进程的 id 为:%d\n&quot;</span>, pid);</span><br><span class="line">        <span class="type">int</span> status; </span><br><span class="line">        pid = wait(&amp;status);</span><br><span class="line">        <span class="keyword">if</span> (WIFEXITED(status)) &#123;</span><br><span class="line">            <span class="type">int</span> exit_status = WEXITSTATUS(</span><br><span class="line">                status); </span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;子进程 %d 已经退出，退出的状态码为:%d\n&quot;</span>, pid, exit_status);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 子进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子进程正在运行!\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">4</span>); <span class="comment">// 设置一个状态码,注意不要溢出~</span></span><br><span class="line">        <span class="comment">// 自定义退出状态码，退出状态码最高是255，一般自定义的代码值为0~255，如果超出255，则返回该数值被256除了之后的余数</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fork()出错了~\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 可能以任意顺序被打印，这种顺序由父进程或子进程谁先结束 printf</span></span><br><span class="line"><span class="comment">// 决定。当子进程退出时，父进程的 wait 也就返回了.</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> pid;<br>    pid = fork();<br>    <span class="hljs-keyword">if</span> (pid &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 父进程</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;这是父进程:子进程的 id 为:%d\n&quot;</span>, pid);<br>        <span class="hljs-type">int</span> status; <br>        pid = wait(&amp;status);<br>        <span class="hljs-keyword">if</span> (WIFEXITED(status)) &#123;<br>            <span class="hljs-type">int</span> exit_status = WEXITSTATUS(<br>                status); <br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;子进程 %d 已经退出，退出的状态码为:%d\n&quot;</span>, pid, exit_status);<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 子进程</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;子进程正在运行!\n&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">4</span>); <span class="hljs-comment">// 设置一个状态码,注意不要溢出~</span><br>        <span class="hljs-comment">// 自定义退出状态码，退出状态码最高是255，一般自定义的代码值为0~255，如果超出255，则返回该数值被256除了之后的余数</span><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;fork()出错了~\n&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 可能以任意顺序被打印，这种顺序由父进程或子进程谁先结束 printf</span><br><span class="hljs-comment">// 决定。当子进程退出时，父进程的 wait 也就返回了.</span><br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
 <p>这是父进程:子进程的 id 为:43670<br>子进程正在运行!<br>子进程 43670 已经退出，退出的状态码为:4</p>
@@ -137,19 +293,19 @@
 <h3 id="问题-1：僵尸进程如何产生？"><a href="#问题-1：僵尸进程如何产生？" class="headerlink" title="问题 1：僵尸进程如何产生？"></a>问题 1：僵尸进程如何产生？</h3><p>在 UNIX 系统中，一个进程结束了，但是他的父进程没有等待(调用wait()、waitpid())它, 那么它将变成一个僵尸进程。<br>在 fork()、execve() 过程中，假设子进程结束时父进程仍存在，而父进程 fork() 之前既没安装SIGCHLD信号处理函数调用 waitpid() 等待子进程结束，又没有显式忽略该信号，则子进程成为僵尸进程。</p>
 <p>使用 top 命令查看时有一栏为 S ,如果状态为 Z 说明它就是僵尸进程。<br>在 macOS 上可以使用 <code>ps -A -ostat,ppid,pid | grep -e &#39;^[Zz]&#39;</code>来打印僵尸进程。</p>
 <p>以下是一个创造僵尸进程的程序：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> pid;</span><br><span class="line">    pid = fork();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;父进程正在运行,pid:%d\n&quot;</span>, getpid());</span><br><span class="line">        <span class="keyword">while</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子进程正在运行,pid:%d\n&quot;</span>, getpid());</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">4</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fork()出错了~\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> pid;<br>    pid = fork();<br><br>    <span class="hljs-keyword">if</span> (pid &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;父进程正在运行,pid:%d\n&quot;</span>, getpid());<br>        <span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>);<br><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;子进程正在运行,pid:%d\n&quot;</span>, getpid());<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">4</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;fork()出错了~\n&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
 <p>父进程正在运行,pid:45316<br>子进程正在运行,pid:45317</p>
 </blockquote>
 <p>我们在终端输入：<code>ps -A -ostat,ppid,pid | grep -e &#39;^[Zz]&#39;</code>：打印僵尸进程的父进程、僵尸进程，结果为：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="string">&#x27;^[Zz]&#x27;</span></span><br><span class="line">Z+   45316 45317</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="hljs-string">&#x27;^[Zz]&#x27;</span><br>Z+   45316 45317<br></code></pre></td></tr></table></figure>
 <p>可以看到，确实产生了僵尸进程。</p>
 <h3 id="问题-2：如何-Kill-僵尸进程？"><a href="#问题-2：如何-Kill-僵尸进程？" class="headerlink" title="问题 2：如何 Kill 僵尸进程？"></a>问题 2：如何 Kill 僵尸进程？</h3><p>首先使用 kill 命令试试：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">****** ~ % <span class="built_in">kill</span> 45317</span><br><span class="line">****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="string">&#x27;^[Zz]&#x27;</span></span><br><span class="line">Z+   45316 45317</span><br><span class="line">****** ~ % <span class="built_in">kill</span> -9 45317                          </span><br><span class="line">****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="string">&#x27;^[Zz]&#x27;</span></span><br><span class="line">Z+   45316 45317</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** ~ % <span class="hljs-built_in">kill</span> 45317<br>****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="hljs-string">&#x27;^[Zz]&#x27;</span><br>Z+   45316 45317<br>****** ~ % <span class="hljs-built_in">kill</span> -9 45317                          <br>****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="hljs-string">&#x27;^[Zz]&#x27;</span><br>Z+   45316 45317<br></code></pre></td></tr></table></figure>
 <p>可见，根本杀不死这个僵尸进程。</p>
 <p>一般僵尸进程很难直接 kill 掉，不过您可以kill僵尸进程的父进程。父进程死后，僵尸进程成为”孤儿进程<strong>”，过继给1号进程init，init 始终会负责清理僵尸进程</strong>。它产生的所有僵尸进程也跟着消失。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">****** ~ % <span class="built_in">kill</span> 45316                             </span><br><span class="line">****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="string">&#x27;^[Zz]&#x27;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** ~ % <span class="hljs-built_in">kill</span> 45316                             <br>****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="hljs-string">&#x27;^[Zz]&#x27;</span><br><br></code></pre></td></tr></table></figure>
 <p>成功地间接杀死了僵尸进程！</p>
 <h3 id="问题-3：如何避免僵尸进程？"><a href="#问题-3：如何避免僵尸进程？" class="headerlink" title="问题 3：如何避免僵尸进程？"></a>问题 3：如何避免僵尸进程？</h3><p>这是一个比较臃肿的问题。主要有两种方法来避免僵尸进程：</p>
 <h4 id="1、两次-fork-来避免僵尸进程"><a href="#1、两次-fork-来避免僵尸进程" class="headerlink" title="1、两次 fork() 来避免僵尸进程"></a>1、两次 fork() 来避免僵尸进程</h4><p>很显然，当 fork() 一次时，存在父进程和子进程，这时候，有两种选择来避免僵尸进程：</p>
@@ -161,20 +317,20 @@
 <p>那么如何应该创建子进程，才能保证子进程不会变成僵尸进程呢？<strong>两次 fork() 就可以做到</strong>。</p>
 <p>父进程P fork() 之后产生的一个子进程S，S 立即调用 wait() 函数，接着 fork()，产生孙子进程GS，然后S进程立即执行 exit(0)。这样，进程 S 就会顺利结束。这时，<strong>由于孙子进程没有了父进程（S），就会变成孤儿进程，被 init 托管</strong>。于是父进程 P 和孙子进程GS没有任何继承关系了，它们的父进程都变成了 init 进程。</p>
 <p>以下程序就是一个简单的实验：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> pid;</span><br><span class="line">    pid = fork();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 父进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;父进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(), getppid());</span><br><span class="line">        <span class="type">int</span> status;</span><br><span class="line">        wait(&amp;status);</span><br><span class="line">        <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;父进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(), getppid());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">int</span> pid1 = fork();</span><br><span class="line">        <span class="keyword">if</span> (pid1 &gt; <span class="number">0</span>) &#123;</span><br><span class="line">          <span class="comment">// 子进程直接结束</span></span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid1 == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 孙子进程</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;孙子进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(), getppid());</span><br><span class="line">            <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">                sleep(<span class="number">1</span>);</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;孙子进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(),</span><br><span class="line">                       getppid());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;进程S fork()出错了~\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;进程P fork()出错了~\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> pid;<br>    pid = fork();<br><br>    <span class="hljs-keyword">if</span> (pid &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 父进程</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;父进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(), getppid());<br>        <span class="hljs-type">int</span> status;<br>        wait(&amp;status);<br>        <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>            sleep(<span class="hljs-number">1</span>);<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;父进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(), getppid());<br>        &#125;<br><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-type">int</span> pid1 = fork();<br>        <span class="hljs-keyword">if</span> (pid1 &gt; <span class="hljs-number">0</span>) &#123;<br>          <span class="hljs-comment">// 子进程直接结束</span><br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid1 == <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-comment">// 孙子进程</span><br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;孙子进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(), getppid());<br>            <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>                sleep(<span class="hljs-number">1</span>);<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;孙子进程正在运行,pid:%d ppid:%d\n&quot;</span>, getpid(),<br>                       getppid());<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;进程S fork()出错了~\n&quot;</span>);<br>        &#125;<br><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;进程P fork()出错了~\n&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
 <p>****** chap0 % .&#x2F;main<br>父进程正在运行,pid:47198 ppid:18751<br>孙子进程正在运行,pid:47203 ppid:1<br>孙子进程正在运行,pid:47203 ppid:1<br>父进程正在运行,pid:47198 ppid:18751<br>父进程正在运行,pid:47198 ppid:18751<br>孙子进程正在运行,pid:47203 ppid:1<br>…</p>
 </blockquote>
 <p>可以看到，<strong>孙子进程成功地被 init 进程托管</strong>。而且也没有产生僵尸进程：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="string">&#x27;^[Zz]&#x27;</span></span><br><span class="line">****** ~ %</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** ~ % ps -A -ostat,ppid,pid | grep -e <span class="hljs-string">&#x27;^[Zz]&#x27;</span><br>****** ~ %<br></code></pre></td></tr></table></figure>
 
 <h4 id="2、通过信号机制来避免僵尸进程"><a href="#2、通过信号机制来避免僵尸进程" class="headerlink" title="2、通过信号机制来避免僵尸进程"></a>2、通过信号机制来避免僵尸进程</h4><p>1）在父进程 fork() 之前安装<code>SIGCHLD</code>信号处理函数，并在此handler函数中调用waitpid()等待子进程结束，这样，内核才能获得子进程退出信息从而释放那个进程描述符；</p>
 <p>2）设置<code>SIGCHLD</code>信号为<code>SIG_IGN</code>（即，忽略SIGHLD信号），系统将不产生僵尸进程。通过signal(<code>SIGCHLD</code>, <code>SIG_IGN</code>)通知内核对子进程的结束不关心，由内核回收。该信号是子进程退出的时候向父进程发送的。常用于并发服务器的性能的一个技巧因为并发服务器常常fork很多子进程，子进程终结之后需要服务器进程去 wait() 清理资源。如果将此信号的处理方式设为忽略，可让内核把僵尸子进程转交给init进程去处理，省去了大量僵尸进程占用系统资源。</p>
 <p>比如：对于服务器进程，如果父进程不等待子进程就结束，子进程将成为僵尸进程；若父进程等待子进程结束，就会影响服务器进程的并发性能。所以此时一般就将<code>SIGCHLD</code>信号设置为　<code>SIG_IGN</code>。</p>
 <p>将 <code>SIGCHLD</code> 信号设置为 <code>SIG_IGN</code> 后，内核会自动处理子进程的退出，包括回收子进程的资源。内核会在子进程退出时，将子进程的退出状态丢弃，不再保存它的信息，<strong>因此不会创建僵尸进程</strong>。</p>
 <p>但是大多情况下，我们<strong>仍然希望能收到子进程的退出信</strong>息，这时候可以设置一个信号处理函数 <code>handler_func()</code>，里面可以专门为子进程收尸，以下是一个例子：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 信号处理函数</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">sigchld_handler</span><span class="params">(<span class="type">int</span> signo)</span> &#123;</span><br><span class="line">    <span class="type">int</span> status; <span class="comment">// 接收子进程的退出状态</span></span><br><span class="line">    <span class="type">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待所有子进程退出，避免成为僵尸进程</span></span><br><span class="line">    <span class="keyword">while</span> ((pid = waitpid(<span class="number">-1</span>, &amp;status, WNOHANG)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (WIFEXITED(status)) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;子进程 %d 已经退出，退出的状态码为:%d\n&quot;</span>, pid,</span><br><span class="line">                   WEXITSTATUS(status));</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (WIFSIGNALED(status)) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;子进程 %d 被信号终止，信号编号为:%d\n&quot;</span>, pid,</span><br><span class="line">                   WTERMSIG(status));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 注册信号处理函数</span></span><br><span class="line">    signal(SIGCHLD, sigchld_handler);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建子进程</span></span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 子进程</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子进程正在运行pid:%d!\n&quot;</span>,getpid());</span><br><span class="line">        sleep(<span class="number">10</span>); <span class="comment">// 模拟子进程工作</span></span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">42</span>); <span class="comment">// 子进程退出</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;fork&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 父进程</span></span><br><span class="line">        <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">            <span class="comment">// 做其他工作</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;父进程在运行!\n&quot;</span>);</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-comment">// 信号处理函数</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">sigchld_handler</span><span class="hljs-params">(<span class="hljs-type">int</span> signo)</span> &#123;<br>    <span class="hljs-type">int</span> status; <span class="hljs-comment">// 接收子进程的退出状态</span><br>    <span class="hljs-type">pid_t</span> pid;<br><br>    <span class="hljs-comment">// 等待所有子进程退出，避免成为僵尸进程</span><br>    <span class="hljs-keyword">while</span> ((pid = waitpid(<span class="hljs-number">-1</span>, &amp;status, WNOHANG)) &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">if</span> (WIFEXITED(status)) &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;子进程 %d 已经退出，退出的状态码为:%d\n&quot;</span>, pid,<br>                   WEXITSTATUS(status));<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (WIFSIGNALED(status)) &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;子进程 %d 被信号终止，信号编号为:%d\n&quot;</span>, pid,<br>                   WTERMSIG(status));<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 注册信号处理函数</span><br>    signal(SIGCHLD, sigchld_handler);<br><br>    <span class="hljs-comment">// 创建子进程</span><br>    <span class="hljs-type">int</span> pid = fork();<br><br>    <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 子进程</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;子进程正在运行pid:%d!\n&quot;</span>,getpid());<br>        sleep(<span class="hljs-number">10</span>); <span class="hljs-comment">// 模拟子进程工作</span><br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">42</span>); <span class="hljs-comment">// 子进程退出</span><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid &lt; <span class="hljs-number">0</span>) &#123;<br>        perror(<span class="hljs-string">&quot;fork&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// 父进程</span><br>        <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>            <span class="hljs-comment">// 做其他工作</span><br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;父进程在运行!\n&quot;</span>);<br>            sleep(<span class="hljs-number">1</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 <p>运行之后，通过 kill 命令杀死子进程，运行结果：</p>
 <blockquote>
 <p>****** chap0 % .&#x2F;main<br>父进程在运行!<br>子进程正在运行pid:48472!<br>父进程在运行!<br>父进程在运行!<br>子进程 48472 被信号终止，信号编号为:15<br>父进程在运行!<br>父进程在运行!<br>…</p>
@@ -186,27 +342,27 @@
 <li>2、该进程处于”kernel mode”（核心态）且在等待不可获得的资源。处于核心态的进程忽略所有信号处理，因此对于这些一直处于核心态的进程只能通过重启系统实现。进程会处于两种状态，即用户态和核心态。只有处于用户态的进程才可以用“kill”命令将其终止。</li>
 </ul>
 <p>系统调用 exec 将从某个文件（通常是可执行文件）里读取内存镜像，并将其替换到调用它的进程的内存空间,这份文件必须符合特定的格式。xv6 使用 ELF 文件格式，当exec执行成功后，它并不返回到原来的调用进程，而是从ELF头中声明的入口开始，执行从文件中加载的指令。exec 接受两个参数：可执行文件名和一个字符串参数数组。以下是一个案例：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span> *argv[<span class="number">3</span>];</span><br><span class="line">    argv[<span class="number">0</span>] = <span class="string">&quot;/bin/echo&quot;</span>; <span class="comment">// 第一个参数是可执行文件的路径</span></span><br><span class="line">    argv[<span class="number">1</span>] = <span class="string">&quot;hello&quot;</span>;     <span class="comment">// 第二个参数是命令的参数</span></span><br><span class="line">    argv[<span class="number">2</span>] = <span class="literal">NULL</span>;        <span class="comment">// 参数数组的最后一个元素必须是 NULL</span></span><br><span class="line"></span><br><span class="line">    execv(argv[<span class="number">0</span>], argv); <span class="comment">// 执行 /bin/echo 命令并传递参数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果execv失败，才会执行下面的代码</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;exec error\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> *argv[<span class="hljs-number">3</span>];<br>    argv[<span class="hljs-number">0</span>] = <span class="hljs-string">&quot;/bin/echo&quot;</span>; <span class="hljs-comment">// 第一个参数是可执行文件的路径</span><br>    argv[<span class="hljs-number">1</span>] = <span class="hljs-string">&quot;hello&quot;</span>;     <span class="hljs-comment">// 第二个参数是命令的参数</span><br>    argv[<span class="hljs-number">2</span>] = <span class="hljs-literal">NULL</span>;        <span class="hljs-comment">// 参数数组的最后一个元素必须是 NULL</span><br><br>    execv(argv[<span class="hljs-number">0</span>], argv); <span class="hljs-comment">// 执行 /bin/echo 命令并传递参数</span><br><br>    <span class="hljs-comment">// 如果execv失败，才会执行下面的代码</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exec error\n&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
 <p>****** chap0 % .&#x2F;main<br>hello</p>
 </blockquote>
 <p>这段代码将调用程序替换为“&#x2F;bin&#x2F;echo”这个程序，这个程序的参数列表为“hello”。</p>
 <p>xv6 shell 用以上调用为用户执行程序。shell 的主要结构很简单，主循环通过 getcmd 读取命令行的输入，然后它调用 fork 生成一个 shell 进程的副本。父 shell 调用 wait，而子进程执行用户命令。<br>举例来说，用户在命令行输入“echo hello”，getcmd 会以 echo hello 为参数调用 runcmd(), 由 runcmd 执行实际的命令。对于 “echo hello“， runcmd 将调用 exec 。如果 exec 成功被调用，子进程就会转而去执行 echo 程序里的指令。在某个时刻 echo 会调用 exit，这会使得其父进程从 wait 返回。源代码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">char</span> buf[<span class="number">100</span>];</span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="comment">// Ensure that three file descriptors are open.</span></span><br><span class="line">    <span class="keyword">while</span> ((fd = open(<span class="string">&quot;console&quot;</span>, O_RDWR)) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (fd &gt;= <span class="number">3</span>) &#123;</span><br><span class="line">            close(fd);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read and run input commands.</span></span><br><span class="line">    <span class="keyword">while</span> (getcmd(buf, <span class="keyword">sizeof</span>(buf)) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (buf[<span class="number">0</span>] == <span class="string">&#x27;c&#x27;</span> &amp;&amp; buf[<span class="number">1</span>] == <span class="string">&#x27;d&#x27;</span> &amp;&amp; buf[<span class="number">2</span>] == <span class="string">&#x27; &#x27;</span>) &#123;</span><br><span class="line">            <span class="comment">// Chdir must be called by the parent, not the child.</span></span><br><span class="line">            buf[<span class="built_in">strlen</span>(buf) - <span class="number">1</span>] = <span class="number">0</span>; <span class="comment">// chop \n</span></span><br><span class="line">            <span class="keyword">if</span> (chdir(buf + <span class="number">3</span>) &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;cannot cd %s\n&quot;</span>, buf + <span class="number">3</span>);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (fork1() == <span class="number">0</span>)</span><br><span class="line">            runcmd(parsecmd(buf));</span><br><span class="line">        wait(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/33901d1345134a7791b4c470b9de4491_1720253724529.png?token=ANB4BCJCA3VQHPIBA5GCCTLGRD6V2" alt="在这里插入图片描述"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>    <span class="hljs-type">static</span> <span class="hljs-type">char</span> buf[<span class="hljs-number">100</span>];<br>    <span class="hljs-type">int</span> fd;<br>    <span class="hljs-comment">// Ensure that three file descriptors are open.</span><br>    <span class="hljs-keyword">while</span> ((fd = open(<span class="hljs-string">&quot;console&quot;</span>, O_RDWR)) &gt;= <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">if</span> (fd &gt;= <span class="hljs-number">3</span>) &#123;<br>            close(fd);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// Read and run input commands.</span><br>    <span class="hljs-keyword">while</span> (getcmd(buf, <span class="hljs-keyword">sizeof</span>(buf)) &gt;= <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">if</span> (buf[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;c&#x27;</span> &amp;&amp; buf[<span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;d&#x27;</span> &amp;&amp; buf[<span class="hljs-number">2</span>] == <span class="hljs-string">&#x27; &#x27;</span>) &#123;<br>            <span class="hljs-comment">// Chdir must be called by the parent, not the child.</span><br>            buf[<span class="hljs-built_in">strlen</span>(buf) - <span class="hljs-number">1</span>] = <span class="hljs-number">0</span>; <span class="hljs-comment">// chop \n</span><br>            <span class="hljs-keyword">if</span> (chdir(buf + <span class="hljs-number">3</span>) &lt; <span class="hljs-number">0</span>)<br>                <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;cannot cd %s\n&quot;</span>, buf + <span class="hljs-number">3</span>);<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (fork1() == <span class="hljs-number">0</span>)<br>            runcmd(parsecmd(buf));<br>        wait(<span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/33901d1345134a7791b4c470b9de4491_1720253724529.png?token=ANB4BCJCA3VQHPIBA5GCCTLGRD6V2" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <p>xv6 通常隐式地分配用户的内存空间。<strong>fork 在子进程需要装入父进程的内存拷贝时分配空间</strong>，<strong>exec 在需要装入可执行文件时分配空间</strong>。</p>
 <p>xv6 没有用户这个概念当然更没有不同用户间的保护隔离措施。按照 Unix 的术语来说，所有的 xv6 进程都以 <strong>root 用户</strong>执行</p>
 <h2 id="二、I-O-和文件描述符"><a href="#二、I-O-和文件描述符" class="headerlink" title="二、I&#x2F;O 和文件描述符"></a>二、I&#x2F;O 和文件描述符</h2><p>文件描述符是一个高级抽象，它代表了一个进程可以读写的被内核管理的对象，被设计成一个<strong>整数</strong>。<br>进程可以通过<strong>多种方式</strong>获得一个文件描述符。打开文件、目录、设备，或者创建一个管道（pipe），或者复制已经存在的文件描述符，都可以得到一个文件描述符。简单起见，我们常常把文件描述符指向的对象称为“文件”。文件描述符的接口是对文件、管道、设备等的抽象，这种抽象使得它们看上去<strong>都是同一个东西</strong>。</p>
 <p>每个进程都一张表，而 xv6 内核就以文件描述符作为这张表的索引，所以每个进程都有一个<strong>从0开始的文件描述符空间</strong>。进程从文件描述符0读入（<strong>标准输入</strong>），从文件描述符1输出（<strong>标准输出</strong>），从文件描述符2输出错误（<strong>标准错误输出</strong>）。</p>
 <p>xv6 的 shell 利用了这个习惯来实现 I&#x2F;O 重定向，shell 保证任何时候都有 3 个打开的文件描述符：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Ensure that three file descriptors are open.</span></span><br><span class="line">  <span class="keyword">while</span>((fd = open(<span class="string">&quot;console&quot;</span>, O_RDWR)) &gt;= <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="keyword">if</span>(fd &gt;= <span class="number">3</span>)&#123;</span><br><span class="line">      close(fd);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Ensure that three file descriptors are open.</span><br>  <span class="hljs-keyword">while</span>((fd = open(<span class="hljs-string">&quot;console&quot;</span>, O_RDWR)) &gt;= <span class="hljs-number">0</span>)&#123;<br>    <span class="hljs-keyword">if</span>(fd &gt;= <span class="hljs-number">3</span>)&#123;<br>      close(fd);<br>      <span class="hljs-keyword">break</span>;<br>    &#125;<br>  &#125;<br></code></pre></td></tr></table></figure>
 
 <p>系统调用 read() 和 write()  从文件描述符所指的文件中读或者写 n 个字节。read(fd, buf, n) 从 fd 读最多 n 个字节（fd 可能没有 n 个字节），将它们拷贝到 buf 中，然后返回读出的字节数。</p>
 <p><strong>每一个指向文件的文件描述符都和一个偏移关联</strong>。read() 从当前文件偏移处读取数据，然后把<strong>偏移</strong>增加读出字节数。紧随其后的 read() 会从新的起点开始读数据。当没有数据可读时，read ()就会返回0，这就表示文件结束了。</p>
 <p>write(fd, buf, n) 写 buf 中的 n 个字节到 fd 并且返回实际写出的字节数。如果返回值小于 n 那么只可能是发生了错误。就像 read() 一样，write() 也从当前文件的<strong>偏移</strong>处开始写，在写的过程中增加这个偏移。</p>
 <p>以下是一个案例：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span> buf[<span class="number">512</span>];</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        n = read(<span class="number">0</span>, buf, <span class="keyword">sizeof</span> buf);</span><br><span class="line">        <span class="keyword">if</span> (n == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (n &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;read error\n&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (write(<span class="number">1</span>, buf, n) != n) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;write error\n&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">512</span>];<br>    <span class="hljs-type">int</span> n;<br>    <span class="hljs-keyword">for</span> (;;) &#123;<br>        n = read(<span class="hljs-number">0</span>, buf, <span class="hljs-keyword">sizeof</span> buf);<br>        <span class="hljs-keyword">if</span> (n == <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">break</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;read error\n&quot;</span>);<br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (write(<span class="hljs-number">1</span>, buf, n) != n) &#123;<br>            <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;write error\n&quot;</span>);<br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
 <p>****** chap0 % .&#x2F;main<br>xsaxas<br>xsaxas<br>dvf<br>dvf<br>dewdwed<br>dewdwed<br>…</p>
@@ -214,7 +370,7 @@
 <p>系统调用 close()  会释放一个文件描述符，它未来可以被 open, pipe, dup 等调用重用。一个新分配的文件描述符<strong>永远都是当前进程的最小的未被使用的文件描述符</strong>。</p>
 <p>fork() 会复制父进程的文件描述符（复制了文件描述符表）和内存内容，所以子进程和父进程的文件描述符一模一样。换句话说，它们在一定意义上共享了<strong>文件和内存代码</strong>。</p>
 <p>exec() 会替换调用它的进程的内存内容，但是<strong>依然会保留它的文件描述符表</strong>。这种行为使得 shell 可以这样实现重定向：fork 一个进程，重新打开指定文件的文件描述符，然后执行新的程序。以下是一个简单示例：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span> *argv[<span class="number">3</span>];</span><br><span class="line">    argv[<span class="number">0</span>] = <span class="string">&quot;/bin/cat&quot;</span>;</span><br><span class="line">    argv[<span class="number">1</span>] = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 子进程</span></span><br><span class="line">        close(<span class="number">0</span>); <span class="comment">// 关闭标准输入</span></span><br><span class="line">        <span class="type">int</span> fd = open(<span class="string">&quot;input.txt&quot;</span>,</span><br><span class="line">                      O_RDONLY); <span class="comment">// 文件 0 此时标准输入指向了 &quot;input.txt&quot;</span></span><br><span class="line">        <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            perror(<span class="string">&quot;open&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        execv(argv[<span class="number">0</span>], argv); <span class="comment">// 只会修改内存内容,但不会修改文件描述符表,cat</span></span><br><span class="line">                              <span class="comment">// 将会从文件 0 获取数据流</span></span><br><span class="line">        perror(<span class="string">&quot;exec&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 父进程</span></span><br><span class="line">        execv(argv[<span class="number">0</span>], argv); <span class="comment">// 子进程对 0 进程重定向不会影响父进程的文件描述符表,因此不会影响父进程从终端标准输入获取输入流</span></span><br><span class="line">        perror(<span class="string">&quot;exec&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> *argv[<span class="hljs-number">3</span>];<br>    argv[<span class="hljs-number">0</span>] = <span class="hljs-string">&quot;/bin/cat&quot;</span>;<br>    argv[<span class="hljs-number">1</span>] = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">int</span> pid = fork();<br><br>    <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 子进程</span><br>        close(<span class="hljs-number">0</span>); <span class="hljs-comment">// 关闭标准输入</span><br>        <span class="hljs-type">int</span> fd = open(<span class="hljs-string">&quot;input.txt&quot;</span>,<br>                      O_RDONLY); <span class="hljs-comment">// 文件 0 此时标准输入指向了 &quot;input.txt&quot;</span><br>        <span class="hljs-keyword">if</span> (fd &lt; <span class="hljs-number">0</span>) &#123;<br>            perror(<span class="hljs-string">&quot;open&quot;</span>);<br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>        &#125;<br>        execv(argv[<span class="hljs-number">0</span>], argv); <span class="hljs-comment">// 只会修改内存内容,但不会修改文件描述符表,cat</span><br>                              <span class="hljs-comment">// 将会从文件 0 获取数据流</span><br>        perror(<span class="hljs-string">&quot;exec&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 父进程</span><br>        execv(argv[<span class="hljs-number">0</span>], argv); <span class="hljs-comment">// 子进程对 0 进程重定向不会影响父进程的文件描述符表,因此不会影响父进程从终端标准输入获取输入流</span><br>        perror(<span class="hljs-string">&quot;exec&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
 <p>****** chap0 % .&#x2F;main<br>hello world1<br>hello world2<br>hello world3<br>this is fproc<br>this is fproc</p>
@@ -222,13 +378,13 @@
 <p>丛运行结果可以看出，子进程对 0 进程重定向不会影响父进程的文件描述符表,因此不会影响父进程从终端标准输入获取输入流。</p>
 <p>子进程关闭文件描述符0后，我们可以保证open() 会使用0作为新打开的文件 input.txt的文件描述符（因为0是 open() 执行时的最小可用文件描述符）。之后 cat 就会在标准输入指向 input.txt 的情况下运行。对于 cat 而言，它根本无法分辨输入流来源于终端还是某个文件。</p>
 <p><strong>xv6 的 shell 正是这样实现 I&#x2F;O 重定向的</strong>。虽然 fork 复制了文件描述符，<strong>但每一个文件当前的偏移仍然是在父子进程之间共享的</strong>。这一点很重要，考虑下面这个例子：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        write(<span class="number">1</span>, <span class="string">&quot;hello &quot;</span>, <span class="number">6</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="type">int</span> status;</span><br><span class="line">        wait(&amp;status);</span><br><span class="line">        write(<span class="number">1</span>, <span class="string">&quot;world\n&quot;</span>, <span class="number">6</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> pid = fork();<br>    <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        write(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;hello &quot;</span>, <span class="hljs-number">6</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-type">int</span> status;<br>        wait(&amp;status);<br>        write(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;world\n&quot;</span>, <span class="hljs-number">6</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
 <p>hello world</p>
 </blockquote>
 <p>在这段代码的结尾，绑定在文件描述符1上的文件有数据”hello world”，父进程的 write 会从子进程 write 结束的地方继续写 (因为 wait ,父进程只在子进程结束之后才运行 write)。这种行为有利于顺序执行的 shell 命令的顺序输出。再考虑这个例子：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span> *argv[<span class="number">3</span>];</span><br><span class="line">    argv[<span class="number">0</span>] = <span class="string">&quot;/bin/cat&quot;</span>;</span><br><span class="line">    argv[<span class="number">1</span>] = <span class="literal">NULL</span>;</span><br><span class="line">    close(<span class="number">0</span>);</span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;input.txt&quot;</span>, O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;open&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;子进程运行!\n&quot;</span>);</span><br><span class="line">        execv(argv[<span class="number">0</span>], argv);</span><br><span class="line">        perror(<span class="string">&quot;exec&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;父进程运行!\n&quot;</span>);</span><br><span class="line">        execv(argv[<span class="number">0</span>], argv);</span><br><span class="line">        perror(<span class="string">&quot;exec&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        perror(<span class="string">&quot;fork()&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> *argv[<span class="hljs-number">3</span>];<br>    argv[<span class="hljs-number">0</span>] = <span class="hljs-string">&quot;/bin/cat&quot;</span>;<br>    argv[<span class="hljs-number">1</span>] = <span class="hljs-literal">NULL</span>;<br>    close(<span class="hljs-number">0</span>);<br>    <span class="hljs-type">int</span> fd = open(<span class="hljs-string">&quot;input.txt&quot;</span>, O_RDONLY);<br>    <span class="hljs-keyword">if</span> (fd &lt; <span class="hljs-number">0</span>) &#123;<br>        perror(<span class="hljs-string">&quot;open&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-type">int</span> pid = fork();<br><br>    <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;子进程运行!\n&quot;</span>);<br>        execv(argv[<span class="hljs-number">0</span>], argv);<br>        perror(<span class="hljs-string">&quot;exec&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;父进程运行!\n&quot;</span>);<br>        execv(argv[<span class="hljs-number">0</span>], argv);<br>        perror(<span class="hljs-string">&quot;exec&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        perror(<span class="hljs-string">&quot;fork()&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 
 <p>运行结果：</p>
 <blockquote>
@@ -236,87 +392,408 @@
 </blockquote>
 <p>父子进程通过共享文件描述符偏移共同完成了对文件的读写，并发执行。</p>
 <p>dup 复制一个已有的文件描述符，返回一个指向同一个输入&#x2F;输出对象的新描述符。<strong>这两个描述符共享一个文件偏移</strong>，<strong>正如被 fork 复制的文件描述符一样</strong>。这里有另一种打印 “hello world” 的办法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> fd = dup(<span class="number">1</span>);</span><br><span class="line">    write(<span class="number">1</span>, <span class="string">&quot;hello &quot;</span>, <span class="number">6</span>);</span><br><span class="line">    write(fd, <span class="string">&quot;world\n&quot;</span>, <span class="number">6</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> fd = dup(<span class="hljs-number">1</span>);<br>    write(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;hello &quot;</span>, <span class="hljs-number">6</span>);<br>    write(fd, <span class="hljs-string">&quot;world\n&quot;</span>, <span class="hljs-number">6</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>从同一个原初文件描述符通过一系列 <strong>fork 和 dup 调用产生的文件描述符都共享同一个文件偏移，而其他情况下产生的文件描述符就不是这样</strong>，即使它们打开的都是同一份文件。</p>
 <p>文件描述符是一个<strong>强大的抽象</strong>，因为它们将它们所连接的细节隐藏起来了：一个进程向描述符1写出，它有可能是写到一份文件，一个设备（如控制台），或一个管道。<strong>文件描述符连接的细节对读取文件描述符的进程是透明的</strong>。</p>
 <h2 id="三、管道"><a href="#三、管道" class="headerlink" title="三、管道"></a>三、管道</h2><p>管道是一个小的<strong>内核缓冲区</strong>，它以<strong>文件描述符对</strong>的形式提供给进程，一个用于<strong>写操作</strong>，一个用于<strong>读操作</strong>。从管道的一端写的数据可以从管道的另一端读取。<strong>管道提供了一种进程间交互的方式</strong>。<br>下面的示例代码运行了程序 wc，它的标准输出绑定到了一个管道的读端口：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> p[<span class="number">2</span>];</span><br><span class="line">    <span class="type">char</span> *argv[<span class="number">2</span>];</span><br><span class="line">    argv[<span class="number">0</span>] = <span class="string">&quot;wc&quot;</span>;</span><br><span class="line">    argv[<span class="number">1</span>] = <span class="literal">NULL</span>; <span class="comment">// 注意修改为 NULL</span></span><br><span class="line">    pipe(p);</span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">        close(<span class="number">0</span>);</span><br><span class="line">        dup(p[<span class="number">0</span>]); <span class="comment">// 重定向到 0</span></span><br><span class="line">        close(p[<span class="number">0</span>]);</span><br><span class="line">        <span class="comment">// 如果没有关闭,程序会一直等,不会出现 eof</span></span><br><span class="line">        <span class="comment">// 对管道执行的read会一直等待，直到有数据了或者其他绑定在这个管道写端口的描述符都已经关闭了</span></span><br><span class="line">        close(p[<span class="number">1</span>]); <span class="comment">// 不需要写，因此关闭</span></span><br><span class="line">        execl(<span class="string">&quot;/usr/bin/wc&quot;</span>, <span class="string">&quot;wc&quot;</span>, (<span class="type">char</span> *)<span class="number">0</span>); <span class="comment">// 使用完整路径和命令名称</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        write(p[<span class="number">1</span>], <span class="string">&quot;hello world\n&quot;</span>, <span class="number">12</span>);</span><br><span class="line">        close(p[<span class="number">0</span>]); <span class="comment">// 不需要读</span></span><br><span class="line">        close(p[<span class="number">1</span>]); <span class="comment">// 不需要继续写</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> p[<span class="hljs-number">2</span>];<br>    <span class="hljs-type">char</span> *argv[<span class="hljs-number">2</span>];<br>    argv[<span class="hljs-number">0</span>] = <span class="hljs-string">&quot;wc&quot;</span>;<br>    argv[<span class="hljs-number">1</span>] = <span class="hljs-literal">NULL</span>; <span class="hljs-comment">// 注意修改为 NULL</span><br>    pipe(p);<br>    <span class="hljs-keyword">if</span> (fork() == <span class="hljs-number">0</span>) &#123;<br>        close(<span class="hljs-number">0</span>);<br>        dup(p[<span class="hljs-number">0</span>]); <span class="hljs-comment">// 重定向到 0</span><br>        close(p[<span class="hljs-number">0</span>]);<br>        <span class="hljs-comment">// 如果没有关闭,程序会一直等,不会出现 eof</span><br>        <span class="hljs-comment">// 对管道执行的read会一直等待，直到有数据了或者其他绑定在这个管道写端口的描述符都已经关闭了</span><br>        close(p[<span class="hljs-number">1</span>]); <span class="hljs-comment">// 不需要写，因此关闭</span><br>        execl(<span class="hljs-string">&quot;/usr/bin/wc&quot;</span>, <span class="hljs-string">&quot;wc&quot;</span>, (<span class="hljs-type">char</span> *)<span class="hljs-number">0</span>); <span class="hljs-comment">// 使用完整路径和命令名称</span><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        write(p[<span class="hljs-number">1</span>], <span class="hljs-string">&quot;hello world\n&quot;</span>, <span class="hljs-number">12</span>);<br>        close(p[<span class="hljs-number">0</span>]); <span class="hljs-comment">// 不需要读</span><br>        close(p[<span class="hljs-number">1</span>]); <span class="hljs-comment">// 不需要继续写</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 <p>这段程序调用 pipe，创建一个管道并且将读写描述符记录在数组 p 中。在 fork 之后，父进程和子进程<strong>都有了指向管道的文件描述符</strong>。子进程将管道的读端口拷贝在描述符0上，关闭 p 中的描述符，然后执行 wc。当 wc 从标准输入读取时，它实际上是从管道读取的。父进程向管道的写端口写入然后关闭它的两个文件描述符。</p>
 <p>如果数据没有准备好，那么对管道执行的read会一直等待，直到有数据了或者其他绑定在这个管道写端口的描述符都已经关闭了。读操作会一直阻塞直到不可能再有新数据到来了，这就是为什么我们在执行 wc 之前要关闭子进程管道的写端口。如果 wc 指向了一个管道的写端口，那么 wc 就永远看不到 eof 了。<strong>这意味我们必须把读的标准输入一定要重定向到管道上，而不是直接操作管道符</strong>。以下是一个案例：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> p[<span class="number">2</span>];</span><br><span class="line">    <span class="type">char</span> *argv[<span class="number">2</span>];</span><br><span class="line">    argv[<span class="number">0</span>] = <span class="string">&quot;/usr/bin/wc&quot;</span>;</span><br><span class="line">    argv[<span class="number">1</span>] = <span class="literal">NULL</span>;</span><br><span class="line">    pipe(p);</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        close(<span class="number">0</span>);</span><br><span class="line">        dup(p[<span class="number">0</span>]); <span class="comment">// 重定向到标准输入</span></span><br><span class="line">        close(p[<span class="number">1</span>]); <span class="comment">// 关闭这个输入</span></span><br><span class="line">        execv(argv[<span class="number">0</span>], argv);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        write(p[<span class="number">1</span>], <span class="string">&quot;hello world\n&quot;</span>, <span class="number">12</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        perror(<span class="string">&quot;fork()&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> p[<span class="hljs-number">2</span>];<br>    <span class="hljs-type">char</span> *argv[<span class="hljs-number">2</span>];<br>    argv[<span class="hljs-number">0</span>] = <span class="hljs-string">&quot;/usr/bin/wc&quot;</span>;<br>    argv[<span class="hljs-number">1</span>] = <span class="hljs-literal">NULL</span>;<br>    pipe(p);<br>    <span class="hljs-type">int</span> pid = fork();<br>    <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        close(<span class="hljs-number">0</span>);<br>        dup(p[<span class="hljs-number">0</span>]); <span class="hljs-comment">// 重定向到标准输入</span><br>        close(p[<span class="hljs-number">1</span>]); <span class="hljs-comment">// 关闭这个输入</span><br>        execv(argv[<span class="hljs-number">0</span>], argv);<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid &gt; <span class="hljs-number">0</span>) &#123;<br>        write(p[<span class="hljs-number">1</span>], <span class="hljs-string">&quot;hello world\n&quot;</span>, <span class="hljs-number">12</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        perror(<span class="hljs-string">&quot;fork()&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 <p>如果不执行<code>close(p[1]);</code>子进程将会一直会等待管道的输入或者接收到了空字符串。</p>
 <p>xv6 shell 对管道的实现（比如 fork sh.c | wc -l）和上面的描述是类似的。子进程创建一个管道连接管道的左右两端。然后它为管道左右两端都调用 runcmd，然后通过两次 wait 等待左右两端结束。因此，shell 可能创建出一颗进程树。树的叶子节点是命令，中间节点是进程，它们会等待左子和右子执行结束。</p>
 <p>pipe 可能看上去和临时文件没有什么两样：命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> hello world | <span class="built_in">wc</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> hello world | <span class="hljs-built_in">wc</span><br></code></pre></td></tr></table></figure>
 
 <p>可以用无管道的方式实现：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> hello world &gt; /tmp/xyz; <span class="built_in">wc</span> &lt; /tmp/xyz</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> hello world &gt; /tmp/xyz; <span class="hljs-built_in">wc</span> &lt; /tmp/xyz<br></code></pre></td></tr></table></figure>
 
 <p>但管道和临时文件起码有三个关键的不同点。首先，<strong>管道会进行自我清扫</strong>，如果是 shell 重定向的话，我们必须要在任务完成后删除 &#x2F;tmp&#x2F;xyz。第二，管道可以传输任意长度的数据。第三，<strong>管道允许同步：两个进程可以使用一对管道来进行二者之间的信息传递</strong>，<strong>每一个读操作都阻塞调用进程</strong>，直到另一个进程用 write 完成数据的发送。</p>
 <h2 id="四、文件系统"><a href="#四、文件系统" class="headerlink" title="四、文件系统"></a>四、文件系统</h2><p>xv6 文件系统提供文件和目录，文件就是一个简单的字节数组，而目录包含指向文件和其他目录的引用。xv6 把目录实现为一种特殊的文件。目录是一棵树，它的根节点是一个特殊的目录 root。不从 &#x2F; 开始的目录表示的是相对调用进程当前目录的目录，调用进程的当前目录可以通过 chdir 这个系统调用进行改变。下面的这些代码都打开同一个文件（假设所有涉及到的目录都是存在的）：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">chdir(<span class="string">&quot;/a&quot;</span>);</span><br><span class="line">chdir(<span class="string">&quot;b&quot;</span>);</span><br><span class="line">open(<span class="string">&quot;c&quot;</span>, O_RDONLY);</span><br><span class="line"></span><br><span class="line">open(<span class="string">&quot;/a/b/c&quot;</span>, O_RDONLY);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">chdir(<span class="hljs-string">&quot;/a&quot;</span>);<br>chdir(<span class="hljs-string">&quot;b&quot;</span>);<br>open(<span class="hljs-string">&quot;c&quot;</span>, O_RDONLY);<br><br>open(<span class="hljs-string">&quot;/a/b/c&quot;</span>, O_RDONLY);<br></code></pre></td></tr></table></figure>
 <p>fstat 可以获取一个文件描述符指向的文件的信息。它填充一个名为 stat 的结构体，它在 stat.h 中定义为：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> T_DIR  1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> T_FILE 2</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> T_DEV  3</span></span><br><span class="line"><span class="comment">// Directory</span></span><br><span class="line"><span class="comment">// File</span></span><br><span class="line"><span class="comment">// Device</span></span><br><span class="line">     <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> &#123;</span></span><br><span class="line">       <span class="type">short</span> type;  <span class="comment">// Type of file</span></span><br><span class="line">       <span class="type">int</span> dev;     <span class="comment">// File system’s disk device</span></span><br><span class="line">       uint ino;    <span class="comment">// Inode number</span></span><br><span class="line">       <span class="type">short</span> nlink; <span class="comment">// Number of links to file</span></span><br><span class="line">       uint size;   <span class="comment">// Size of file in bytes</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> T_DIR  1</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> T_FILE 2</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> T_DEV  3</span><br><span class="hljs-comment">// Directory</span><br><span class="hljs-comment">// File</span><br><span class="hljs-comment">// Device</span><br>     <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> &#123;</span><br>       <span class="hljs-type">short</span> type;  <span class="hljs-comment">// Type of file</span><br>       <span class="hljs-type">int</span> dev;     <span class="hljs-comment">// File system’s disk device</span><br>       uint ino;    <span class="hljs-comment">// Inode number</span><br>       <span class="hljs-type">short</span> nlink; <span class="hljs-comment">// Number of links to file</span><br>       uint size;   <span class="hljs-comment">// Size of file in bytes</span><br>&#125;;<br></code></pre></td></tr></table></figure>
 
 <p>文件名和这个文件本身是有很大的区别。同一个文件（称为 inode）可能有多个名字，称为**连接 (links)**。系统调用 link 创建另一个文件系统的名称，它指向同一个 inode。下面的代码创建了一个既叫做 a 又叫做 b 的新文件：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">open(<span class="string">&quot;a&quot;</span>, O_CREATE|O_WRONGLY);</span><br><span class="line">link(<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">open(<span class="hljs-string">&quot;a&quot;</span>, O_CREATE|O_WRONGLY);<br>link(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>);<br></code></pre></td></tr></table></figure>
 <p>读写 a 就相当于读写 b。每一个 inode 都由一个唯一的 inode 号 直接确定。在上面这段代码中，<strong>我们可以通过 fstat 知道 a 和 b 都指向同样的内容</strong>：a 和 b 都会返回同样的 inode 号（ino），并且 nlink 数会设置为2。</p>
 <p>系统调用 unlink 从文件系统移除一个文件名。<strong>一个文件的 inode 和磁盘空间只有当它的链接数变为 0 的时候才会被清空</strong>，也就是没有一个文件再指向它。</p>
 <p>我们同样可以通过 b 访问到它。另外，</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fd = open(<span class="string">&quot;/tmp/xyz&quot;</span>, O_CREATE|O_RDWR);</span><br><span class="line">unlink(<span class="string">&quot;/tmp/xyz&quot;</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">fd = open(<span class="hljs-string">&quot;/tmp/xyz&quot;</span>, O_CREATE|O_RDWR);<br>unlink(<span class="hljs-string">&quot;/tmp/xyz&quot;</span>);<br></code></pre></td></tr></table></figure>
 
 <p>以上是创建一个临时 inode 的最佳方式，这个 inode 会在进程关闭 fd 或者退出的时候被清空。</p>
 <p>xv6 关于文件系统的操作都被实现为<strong>用户程序</strong>，诸如 mkdir，ln，rm 等等。这种设计允许任何人都可以通过用户命令拓展 shell 。</p>
 <p>有一个例外，那就是 cd，它是在 shell 中实现的。<strong>cd 必须改变 shell 自身的当前工作目录。</strong>如果 cd 作为一个普通命令执行，那么 shell 就会 fork 一个子进程，而子进程会运行 cd，cd 只会改变子进程的当前工作目录。<strong>父进程的工作目录保持原样，这意味着这个命令没有起到预期的作用</strong>。以下是 sv6 中 cd 处理的源代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Read and run input commands.</span></span><br><span class="line"><span class="keyword">while</span> (getcmd(buf, <span class="keyword">sizeof</span>(buf)) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (buf[<span class="number">0</span>] == <span class="string">&#x27;c&#x27;</span> &amp;&amp; buf[<span class="number">1</span>] == <span class="string">&#x27;d&#x27;</span> &amp;&amp; buf[<span class="number">2</span>] == <span class="string">&#x27; &#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// Chdir must be called by the parent, not the child.</span></span><br><span class="line">        buf[<span class="built_in">strlen</span>(buf) - <span class="number">1</span>] = <span class="number">0</span>; <span class="comment">// chop \n</span></span><br><span class="line">        <span class="keyword">if</span> (chdir(buf + <span class="number">3</span>) &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;cannot cd %s\n&quot;</span>, buf + <span class="number">3</span>);</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (fork1() == <span class="number">0</span>)</span><br><span class="line">        runcmd(parsecmd(buf));</span><br><span class="line">    wait(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Read and run input commands.</span><br><span class="hljs-keyword">while</span> (getcmd(buf, <span class="hljs-keyword">sizeof</span>(buf)) &gt;= <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-keyword">if</span> (buf[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;c&#x27;</span> &amp;&amp; buf[<span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;d&#x27;</span> &amp;&amp; buf[<span class="hljs-number">2</span>] == <span class="hljs-string">&#x27; &#x27;</span>) &#123;<br>        <span class="hljs-comment">// Chdir must be called by the parent, not the child.</span><br>        buf[<span class="hljs-built_in">strlen</span>(buf) - <span class="hljs-number">1</span>] = <span class="hljs-number">0</span>; <span class="hljs-comment">// chop \n</span><br>        <span class="hljs-keyword">if</span> (chdir(buf + <span class="hljs-number">3</span>) &lt; <span class="hljs-number">0</span>)<br>            <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;cannot cd %s\n&quot;</span>, buf + <span class="hljs-number">3</span>);<br>        <span class="hljs-keyword">continue</span>;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (fork1() == <span class="hljs-number">0</span>)<br>        runcmd(parsecmd(buf));<br>    wait(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>可以看到，<strong>它把 cd 命令作为 shell 的一个特例对待</strong>，它并不会为 cd fork()一个新的进程，它会只会改变shell 的工作目录。</p>
 <p><em>全文完，感谢阅读。</em></p>
-</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">Hexo</div><div class="post-copyright__author_desc"></div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">This piece of writing is an original article, utilizing the<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>Agreement. For complete reproduction, please acknowledge the source as Courtesy of<a href="/">Hexo</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/"><span class="tags-punctuation"></span>学习 笔记 操作系统 MIT 6.S081<span class="tagsPageCount">1</span></a></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/09/10/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%89/"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">MIT 6.S081学习笔记（第一章）</div></div></a></div><div class="next-post pull-right"><a href="/2023/09/02/go%20Session%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%B8%80%EF%BC%89/"><div class="pagination-info"><div class="label">Next</div><div class="next_info">go Session的实现（一）</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="Avatar" src="/img/avatar.avif"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="Mood sticker"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">John Doe</div><div class="author-info__desc"></div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>New posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客"><img alt="利用 Hexo 搭建个人博客" src="/"></a><div class="content"><a class="title" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客">利用 Hexo 搭建个人博客</a><a class="article-recent_post_categories" href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">博客</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记"><img alt="2024.07.05 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.05 刷题日记">2024.07.05 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/05/2024.07.05%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记"><img alt="2024.07.02 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.07.02 刷题日记">2024.07.02 刷题日记</a><a class="article-recent_post_categories" href="/2024/07/02/2024.07.02%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记"><img alt="2024.06.30 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.30 刷题日记">2024.06.30 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/30/2024.06.30%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记"><img alt="2024.06.29 刷题日记" src="/"></a><div class="content"><a class="title" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.29 刷题日记">2024.06.29 刷题日记</a><a class="article-recent_post_categories" href="/2024/06/29/2024.06.29%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/">LeetCode</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">John Doe</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.12.3"></script><script src="/js/main.js?v=1.12.3"></script><script src="/js/third_party/waterfall.min.js?v=1.12.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.12.3"></script><script>dark()
-</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- pjax--><script>const pjax = new Pjax({
-    elements: 'a:not([target="_blank"])',
-    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
-    cacheBust: false,
-    analytics: false,
-    scrollRestoration: false
-})
 
-document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
-})
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
 
-document.addEventListener('pjax:complete', () => {
-    window.refreshFn()
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS-%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B-Unix-Linux/" class="category-chain-item">OS 系统编程 Unix/Linux</a>
+  
+  
 
-    document.querySelectorAll('script[data-pjax]').forEach(item => {
-        const newScript = document.createElement('script')
-        const content = item.text || item.textContent || item.innerHTML || ""
-        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-        newScript.appendChild(document.createTextNode(content))
-        item.parentNode.replaceChild(newScript, item)
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-MIT-6-S081/" class="print-no-link">#学习 笔记 操作系统 MIT 6.S081</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MIT 6.S081学习笔记（第〇章）</div>
+      <div>http://blog.luliang.online/2023/09/07/MIT 6.S081学习笔记（第〇章）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/10/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第一章）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第一章）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/02/go%20Session%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="go Session的实现（一）">
+                        <span class="hidden-mobile">go Session的实现（一）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
     })
+  </script>
 
-    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
-})
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
-document.addEventListener('pjax:error', (e) => {
-    if (e.request.status === 404) {
-        pjax.loadUrl('/404.html')
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
     }
-})</script><!-- theme--><script>initTheme = () => {
-    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const cachedMode = utils.saveToLocal.get('theme');
-    if (cachedMode === undefined) {
-        const nowMode =
-            isDarkMode ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', nowMode);
-    } else {
-        document.documentElement.setAttribute('data-theme', cachedMode);
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
     }
-    typeof rm === 'object' && rm.mode(cachedMode === 'dark' && isDarkMode)
-}
-initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/07/06/利用 Hexo 搭建个人博客/","2024/07/05/2024.07.05 刷题日记/","2024/07/02/2024.07.02 刷题日记/","2024/06/30/2024.06.30 刷题日记/","2024/06/29/2024.06.29 刷题日记/","2024/06/28/2024.06.28 刷题日记/","2024/06/26/2024.06.26 刷题日记/","2024/06/25/2024.06.25 刷题日记/","2024/06/24/2024.06.24 刷题日记/","2024/06/23/2024.06.23 刷题日记/","2024/06/23/2024.06.22 刷题日记/","2024/06/21/2024.06.21 刷题日记/","2024/06/20/2024.06.20 刷题日记/","2024/06/19/2024.06.19 刷题日记/","2024/06/18/2024.06.18 刷题日记/","2024/06/18/2024.06.17 刷题日记/","2024/06/16/2024.06.16 刷题日记/","2024/06/12/mmap() 的几种用法/","2024/06/11/debugger（七）：栈帧（backtrace）/","2024/06/11/debugger（六）：source level 断点/","2024/06/11/debugger（五）：source level stepping/","2024/06/10/debugger（四）：源代码/","2024/06/10/debugger（三）：dwarf 文件/","2024/06/10/debugger（二）：读、写内存以及寄存器/","2024/05/25/debugger（一）：打断点的实现以及案例分析/","2024/05/20/C++内存模型/","2024/05/18/C++：再谈智能指针/","2024/05/17/C++调试：函数调用过程和堆栈/","2024/05/16/C++调试：内存管理/","2024/05/15/C++并发：构建线程安全的队列/","2024/05/15/C++并发：等待条件成立/","2024/05/14/C++：并发保护/","2024/05/14/C++并发：锁/","2024/05/12/C++：完美转发（二）（std!forward）/","2024/05/12/C++：完美转发（一）（std!forward）/","2024/05/11/C++：移动语义（std!move）/","2024/05/10/C++：左值（引用）&右值（引用）/","2024/05/10/C++并发：线程函数传参（二）/","2024/05/09/C++并发：线程函数传参（一）/","2024/05/05/macOS DOSBox 汇编环境搭建/","2024/04/28/CM3：lldb 调试 qemu 跑的程序/","2024/04/27/CM3：qemu执行汇编/","2024/04/26/8086：qemu执行汇编/","2024/04/24/C++：函数符（一）/","2024/04/24/C++：适配器/","2024/04/23/C++：迭代器/","2024/04/21/C++：智能指针（二）/","2024/04/21/C++：智能指针（一）/","2024/04/17/C++：返回值优化/","2024/04/17/C++：异常处理/","2024/04/11/C++：弃值表达式/","2024/03/31/关于一篇知乎答案的重现/","2023/12/31/2023 个人总结/","2023/12/24/mit6.s081【目录】/","2023/12/24/MIT 6.S081学习笔记（第十章）/","2023/12/23/MIT 6.S081学习笔记（第九章）/","2023/12/23/Shell Tools of Missing Semester（二）/","2023/12/22/Course Shell of Missing Semester（一）/","2023/12/21/MIT 6.S081学习笔记（第八章）/","2023/12/20/xv6 文件系统面临的问题/","2023/12/19/实现个人日志命令行工具（C语言）/","2023/12/18/xv6 文件系统（下）/","2023/12/18/xv6 文件系统（上）/","2023/12/13/MIT 6.S081学习笔记（第七章）/","2023/12/11/xv6 中的一些系统调用（下）/","2023/12/10/xv6 中的一些系统调用（上）/","2023/12/08/MIT 6.S081学习笔记（第六章）（下）/","2023/12/07/MIT 6.S081学习笔记（第六章）（上）/","2023/12/06/MIT 6.S081学习笔记（第五章）/","2023/12/04/xv6 book Chapter7 中文翻译/","2023/12/04/xv6 book Chapter6 中文翻译/","2023/12/04/xv6 book Chapter5 中文翻译/","2023/12/04/xv6 book Chapter4 中文翻译/","2023/11/24/MIT 6.S081学习笔记（第四章）/","2023/11/22/MIT 6.S081学习笔记（第三章）/","2023/11/18/xv6 book Chapter3 中文翻译/","2023/11/13/《OSTEP》信号量（chap31）/","2023/11/11/《OSTEP》条件变量（chap30）/","2023/10/05/MIT 6.S081学习笔记（第二章）/","2023/09/29/ngrok内网穿透以及原理/","2023/09/24/什么是P问题、NP问题和NPC问题/","2023/09/10/MIT 6.S081学习笔记（第一章）/","2023/09/07/MIT 6.S081学习笔记（第〇章）/","2023/09/02/go Session的实现（一）/","2023/08/01/gin 框架中的 gin.Context/","2023/07/31/Redis （一）消息订阅和发送测试/","2023/07/27/Hackintosh 入门/","2023/07/04/Docker网络模型以及容器网络初探（一）/","2023/06/29/Ubuntu 升级 golang 版本完美步骤/","2023/06/26/阿里云 Ubuntu 网络设置/","2023/06/17/《离散数学》：特殊的图/","2023/06/16/《离散数学》：代数系统和图论导论/","2023/06/15/《离散数学》：集合、关系和函数/","2023/06/14/《离散数学》：逻辑/","2023/06/08/Unix!Linux编程：UDS 数据报/","2023/06/07/Unix!Linux编程：UDS 流（Stream）/","2023/06/06/Golang框架：cobra/","2023/06/04/Go Web下GORM框架使用（二）/","2023/06/01/Go Web下GORM框架使用（一）/","2023/06/01/Go Web下gin框架使用（二）/","2023/06/01/泡利矩阵（一）/","2023/06/01/代数入门（〇）/","2023/05/31/Go Web下gin框架使用（一）/","2023/05/23/Go Web下gin框架的模板渲染/","2023/05/08/【Golang】多线程排序/","2023/05/07/【Golang】多线程下载器的实现/","2023/05/05/【Golang】多线程爬虫的实现/","2023/03/23/【day11】链表高精度加法/","2023/03/22/【day10】链表的合并/","2023/03/21/【day09】链表的旋转与反转/","2023/03/20/【day08】移除与插入链表元素/","2023/03/19/【day07】二维数组及滚动数组/","2023/03/13/【day06】数组的遍历/","2023/03/12/【day05】统计数组中的元素/","2023/03/11/exec()函数家族详细/","2023/03/11/对fork() 函数的理解/","2023/03/11/【day04】数组的旋转/","2023/03/10/【day03】数组的改变与移动/","2023/03/08/【day02】之链表操作/","2023/03/08/简单的 ls命令的实现（四.完结）/","2023/03/07/Java将 List 类型转化为 Array 的方法/","2023/03/07/【day01】之N数之和/","2023/02/28/教师工资管理系统之随机产生教师详细信息/","2023/02/28/C语言链表的头插法与尾插法/","2023/02/24/C语言实现删除匹配的某一行文本/","2023/02/17/简单的 ls 命令的实现（三）/","2023/02/17/简单的 ls 命令的实现（二）/","2023/02/15/简单的 ls 命令的实现（一）/","2023/01/17/C语言指针——从入门到精通/","2023/01/13/（三）抽象类/","2023/01/12/（二）常量池的探索/","2023/01/12/（一）Java 中 final 关键字的用法总结/","2023/01/10/对环境变量的探究/","2023/01/10/macOS下binutils 的安装/","2023/01/10/2022 Personal Summary/","2023/01/10/Analysis of the Location of Initialized!Uninitialized Global!Static!Local Variables!Constants in Mem/","2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/","2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/","2022/12/28/Start to write a simple Linux kernel Module/","2022/11/29/About the problem of struct structure assignment/","2022/11/16/Solutions for Xiyou Linux Group 2020 Interview Questions/","2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/","2022/11/15/Solutions for Xiyou Linux Group 2022 Interview Questions/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
