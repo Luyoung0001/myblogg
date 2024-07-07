@@ -3,17 +3,16 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: Luyoung
 subtitle: ''
-description: ''
-keywords:
-author: John Doe
-language: en
-timezone: ''
+description: '我自飞扬临天下。————《遮天》孔雀王'
+author: Luyoung
+language: zh-CN
+timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://example.com
+url: http://blog.luliang.online
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -96,7 +95,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: solitude
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment

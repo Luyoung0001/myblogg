@@ -1,5 +1,5 @@
 ---
-title: [Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language
+title: Design a Dynamic Expansion Buffer (strbuf) with C Language
 date: 2023-01-01 19:23:31
 tags: c语言 开发语言
 categories: Tests for Basic Knowledge of C
