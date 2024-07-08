@@ -1,7 +1,9 @@
 ---
 title: C++：智能指针（二）
 date: 2024-04-21 23:52:29
-tags: c++ 开发语言
+tags:
+    - c++
+    - 开发语言
 categories: C++
 ---
 
@@ -35,7 +37,7 @@ int memoryLeak2() {
 
 int main(void) {
     memoryLeak1();
-    
+
     try {
         memoryLeak2();
     } catch (...) {
@@ -98,8 +100,8 @@ public:
         delete ptr; // 释放动态分配的内存
     }
 
-    unique_ptr(const unique_ptr&) = delete; 
-    unique_ptr& operator=(const unique_ptr&) = delete; 
+    unique_ptr(const unique_ptr&) = delete;
+    unique_ptr& operator=(const unique_ptr&) = delete;
 
     unique_ptr(unique_ptr&& other) noexcept // 移动构造函数
         : ptr(other.ptr) {
@@ -154,7 +156,7 @@ int main() {
 运行结果：
 
 ```bash
-g++ unique_ptr2.cxx -o unique_ptr2 -std=c++11  
+g++ unique_ptr2.cxx -o unique_ptr2 -std=c++11
 ./unique_ptr2
 42
 42

@@ -1,8 +1,12 @@
 ---
 title: debugger（二）：读、写内存以及寄存器
 date: 2024-06-10 20:40:27
-tags: c++ debugger
-categories: C++ debugger
+tags:
+    - c++
+    - debugger
+categories:
+    - C++
+    - debugger
 ---
 
 <!--more-->
@@ -22,7 +26,7 @@ Set breakpoint at address 0x5555555551d5
 minidbg> continue
 minidbg> memory read 0x5555555551d5
 4800000e60058dcc
-minidbg> 
+minidbg>
 ```
 
 一下为进程的maps 部分信息：
@@ -78,8 +82,8 @@ Hit breakpoint at adsress 0x5555555551d5
     std::cerr << "hello,world4.\n";
     for (int i = 0; i < 5; i++) {
       std::cerr << "hello,world." << i << std::endl;
-  
-minidbg> 
+
+minidbg>
 ```
 
 可以看到非常成功，利用 `memory write` 成功打了一个“断点”。事实上，这个断点只是暂时的，它并没有被记录在 `debug` 信息系统中，不过这不重要，这只是在验证 `memory write` 的功能。
@@ -249,7 +253,7 @@ rax 0x0000000000000001
 rcx 0x0000000000000000
 rdx 0x0000000000000000
 ...
-minidbg> 
+minidbg>
 ```
 上述，首先打印出了所有的寄存器，然后给 `rax` 中写了 `0x1`，接着 `dump`，可以看到 `rax` 成功地被修改为了 `1`。
 

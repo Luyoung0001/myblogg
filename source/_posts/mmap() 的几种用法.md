@@ -1,8 +1,14 @@
 ---
 title: mmap() 的几种用法
 date: 2024-06-12 17:50:07
-tags: 系统调用 mmap 文件
-categories: OS Unix/Linux
+tags:
+    - 系统调用
+    - mmap
+    - 文件
+categories:
+    - OS
+    - 系统编程
+    - Unix/Linux
 ---
 
 <!--more-->
@@ -114,7 +120,7 @@ dddddd
 ❯ ./main data.txt
 
 ~/tests/test2                                                                       16:58:25
-❯ 
+❯
 ```
 data.txt直接被修改为了：
 
@@ -255,7 +261,7 @@ int main() {
         munmap(p_map, BUF_SIZE);  // 实际上，进程终止时，会自动解除映射。
         exit(0);
     }
-    
+
     sprintf(p_map, "%s", "hi, this is father");
     sleep(2);
     printf("parent got a message: %s\n", p_map);

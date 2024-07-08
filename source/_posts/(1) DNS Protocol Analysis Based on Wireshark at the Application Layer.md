@@ -1,7 +1,10 @@
 ---
 title: (1) DNS Protocol Analysis Based on Wireshark at the Application Layer
 date: 2022-12-31 17:57:38
-tags: wireshark 网络 服务器
+tags:
+	- wireshark
+	- 网络
+	- 服务器
 categories: NetWork
 ---
 

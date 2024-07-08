@@ -1,7 +1,9 @@
 ---
 title: C++：迭代器
 date: 2024-04-23 21:45:57
-tags: c++ 开发语言
+tags:
+    - c++
+    - 开发语言
 categories: C++
 ---
 
@@ -58,7 +60,7 @@ int main() {
 运行结果：
 
 ```bash
-./main 
+./main
 63.9171 140.985 420.269 484.506 572.606 612.998 765.69 826.382 834.355 937.741
 ```
 
@@ -136,10 +138,10 @@ int main() {
     // 声明迭代器
     std::ostream_iterator<int, char> out_iter(cout, " ");
     *out_iter++ = 15; // 对 out_iter 进行操作，类似于 cout << 15 << " ";
-    
+
  	// 这意味着将dice容器的整个区间复制到输出流中，即显示容器的内容
     std::copy(dice.begin(), dice.end(), out_iter);
-   
+
     cout << std::endl;
 
     return 0;
@@ -151,8 +153,8 @@ int main() {
 
 ```bash
 ./main
-Copied array to vector: 6 7 2 9 4 11 8 7 10 5 
-15 6 7 2 9 4 11 8 7 10 5 
+Copied array to vector: 6 7 2 9 4 11 8 7 10 5
+15 6 7 2 9 4 11 8 7 10 5
 ```
 
 ## 二、其它迭代器
@@ -197,9 +199,9 @@ int main() {
 
 ```bash
 ./main
-Copied array to vector: 6 7 2 9 4 11 8 7 10 5 
-15 6 7 2 9 4 11 8 7 10 5 
-5 10 7 8 11 4 9 2 7 6 
+Copied array to vector: 6 7 2 9 4 11 8 7 10 5
+15 6 7 2 9 4 11 8 7 10 5
+5 10 7 8 11 4 9 2 7 6
 ```
 `rbegin()`和`end()`返回相同的值（超尾），但类型不同（`reverse_iterator`和`iterator`）。同样，`rend()`和`begin()`也返回相同的值（指向第一个元素的迭代器），但类型不同。
 
@@ -252,11 +254,11 @@ int main() {
 ```bash
 ./main
 Let the dice be cast!
-6 7 2 9 4 11 8 7 10 5 
+6 7 2 9 4 11 8 7 10 5
 Implicit use of reverse iterator.
-5 10 7 8 11 4 9 2 7 6 
+5 10 7 8 11 4 9 2 7 6
 Explicit use of reverse iterator.
-5 10 7 8 11 4 9 2 7 6 
+5 10 7 8 11 4 9 2 7 6
 ```
 
 另外三种迭代器（`back_insert_iterator`、`front_insert_iterator` 和 `insert_iterator`）也将提高 STL 算法的通用性。很多STL函数都与 `copy()` 相似，将结果发送到输出迭代器指示的位置：
@@ -315,10 +317,10 @@ int main() {
 运行结果：
 
 ```bash
-./main 
-fine fish fashion fate 
-fine fish fashion fate busy bats 
-silly singers fine fish fashion fate busy bats 
+./main
+fine fish fashion fate
+fine fish fashion fate busy bats
+silly singers fine fish fashion fate busy bats
 ```
 
 如果程序试图使用`words.end( )`（尾插）和 `words.begin( )`（头插）作为迭代器，将 s2 和 s3 复制到**words** 中，**words** 将没有空间来存储新数据，程序可能会由于内存违规而异常终止。

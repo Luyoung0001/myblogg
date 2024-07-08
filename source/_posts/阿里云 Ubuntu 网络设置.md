@@ -1,7 +1,10 @@
 ---
 title: 阿里云 Ubuntu 网络设置
 date: 2023-06-26 22:03:58
-tags: ubuntu 阿里云 网络 网络工具
+tags:
+    - ubuntu
+    - 阿里云
+    - 网络工具
 categories: Web
 ---
 
@@ -105,7 +108,7 @@ Downloading V2Ray archive: https://github.com/v2fly/v2ray-core/releases/download
 100 11.4M  100 11.4M    0     0  18422      0  0:10:49  0:10:49 --:--:-- 11091
 Downloading verification file for V2Ray archive: https://github.com/v2fly/v2ray-core/releases/download/v5.7.0/v2ray-linux-64.zip.dgst
 Reading package lists... Done
-Building dependency tree       
+Building dependency tree
 Reading state information... Done
 ......
 
@@ -161,5 +164,5 @@ ssh username@remote_address -L 127.0.0.1:8888:127.0.0.1:2017
 
 *注：本文章仅仅供个人参考*
 
- 
+
 

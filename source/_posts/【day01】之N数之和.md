@@ -1,7 +1,10 @@
 ---
 title: 【day01】之N数之和
 date: 2023-03-07 21:57:40
-tags: leetcode 算法 数据结构
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 
@@ -11,9 +14,9 @@ categories: LeetCode
 
 > 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个
 > 整数，并返回它们的数组下标。
-> 
+>
 > 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
-> 
+>
 > 你可以按任意顺序返回答案。
 >
 示例 1：
@@ -234,12 +237,12 @@ class Solution {
             if (i > 0 && nums[i] == nums[i - 1]) continue;
             if ((long) nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target) break;
             if ((long) nums[i] + nums[length - 3] + nums[length - 2] + nums[length - 1] < target) continue;
-            
+
             for (int j = i + 1; j < length - 2; j++) {
                 if (j > i + 1 && nums[j] == nums[j - 1]) continue;
-                
+
                 if ((long) nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target) break;
-                
+
                 if ((long) nums[i] + nums[j] + nums[length - 2] + nums[length - 1] < target) continue;
                 int left = j + 1, right = length - 1;
                 while (left < right) {

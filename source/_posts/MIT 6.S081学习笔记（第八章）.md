@@ -1,7 +1,12 @@
 ---
 title: MIT 6.S081学习笔记（第八章）
 date: 2023-12-21 19:22:05
-tags: 学习 笔记 xv6 OS 操作系统 文件系统
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+    - 文件系统
 categories: OS
 ---
 
@@ -25,7 +30,7 @@ categories: OS
 
 ### Question requirements
 
-> Modify `bmap()` so that it implements a doubly-indirect block, in addition to direct blocks and a singly-indirect block. You'll have to have only 11 direct blocks, rather than 12, to make room for your new doubly-indirect block; you're not allowed to change the size of an on-disk inode. The first 11 elements of `ip->addrs[]` should be direct blocks; the 12th should be a singly-indirect block (just like the current one); **the 13th should be your new doubly-indirect block.** 
+> Modify `bmap()` so that it implements a doubly-indirect block, in addition to direct blocks and a singly-indirect block. You'll have to have only 11 direct blocks, rather than 12, to make room for your new doubly-indirect block; you're not allowed to change the size of an on-disk inode. The first 11 elements of `ip->addrs[]` should be direct blocks; the 12th should be a singly-indirect block (just like the current one); **the 13th should be your new doubly-indirect block.**
 
 ### Some hints
 
@@ -276,7 +281,7 @@ bigfile done; ok
 > In this exercise you will add symbolic links to xv6. Symbolic links (or soft links) refer to a linked file by pathname; when a symbolic link is opened, the kernel follows the link to the referred file. Symbolic links resembles hard links, but hard links are restricted to pointing to file on the same disk, while symbolic links can cross disk devices. Although xv6 doesn't support multiple devices, implementing this system call is a good exercise to understand how pathname lookup works.
 ### Question requirements
 
-> You will implement the `symlink(char *target, char *path)` system call, which creates a new symbolic link at path that refers to file named by **target**. For further information, see the man page symlink. To test, add **symlinktest** to the **Makefile** and run it. 
+> You will implement the `symlink(char *target, char *path)` system call, which creates a new symbolic link at path that refers to file named by **target**. For further information, see the man page symlink. To test, add **symlinktest** to the **Makefile** and run it.
 
 ### Some hints
 > - First, create a new system call number for symlink, add an entry to `user/usys.pl`, `user/user.h`, and implement an empty **sys_symlink** in `kernel/sysfile.c`.
@@ -391,7 +396,7 @@ create(char *path, short type, short major, short minor)
 8. **成功创建文件或目录：**
    - 如果创建成功且是目录类型，则更新父目录 `dp` 的链接计数。
    - 解锁并释放父目录 `dp`。
-   
+
 9. **失败处理：**
    - 如果出现失败，对于已分配但创建失败的 inode `ip`，将其链接计数设为 `0`，并更新其信息到磁盘。
    - 解锁并释放新节点 `ip` 和父目录 `dp`。
@@ -654,16 +659,16 @@ sys_open(void)
 这样，我们就完成了整个实验：
 
 ```bash
-== Test running bigfile == 
+== Test running bigfile ==
 $ make qemu-gdb
-running bigfile: OK (171.3s) 
-== Test running symlinktest == 
+running bigfile: OK (171.3s)
+== Test running symlinktest ==
 $ make qemu-gdb
-(1.0s) 
-== Test   symlinktest: symlinks == 
-  symlinktest: symlinks: OK 
-== Test   symlinktest: concurrent symlinks == 
-  symlinktest: concurrent symlinks: OK 
+(1.0s)
+== Test   symlinktest: symlinks ==
+  symlinktest: symlinks: OK
+== Test   symlinktest: concurrent symlinks ==
+  symlinktest: concurrent symlinks: OK
 ```
 
 

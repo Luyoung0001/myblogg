@@ -1,7 +1,11 @@
 ---
 title: xv6 中的一些系统调用（下）
 date: 2023-12-11 14:47:30
-tags: xv6 OS 学习 笔记
+tags:
+    - xv6
+    - 操作系统
+    - OS
+    - 笔记
 categories: OS
 ---
 
@@ -19,7 +23,7 @@ void
 sleep(void *chan, struct spinlock *lk)
 {
   struct proc *p = myproc();
-  
+
   // Must acquire p->lock in order to
   // change p->state and then call sched.
   // Once we hold p->lock, we can be

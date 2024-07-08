@@ -1,8 +1,16 @@
 ---
 title: gin 框架中的 gin.Context
 date: 2023-08-01 11:40:21
-tags: gin Context golang Web 网络
-categories: Golang Golang_框架 Web
+tags:
+	- gin
+	- Context
+	- golang
+	- Web
+	- 网络
+categories:
+	- Golang
+	- Golang_框架
+	- Web
 ---
 
 <!--more-->
@@ -45,7 +53,7 @@ type Context struct {
 	// queryCache 缓存 c.Request.URL.Query() 的查询结果。
 	queryCache url.Values
 
-	// formCache 缓存 c.Request.PostForm，其中包含从 POST、PATCH 或 PUT 正文参数解析的表单数据。	
+	// formCache 缓存 c.Request.PostForm，其中包含从 POST、PATCH 或 PUT 正文参数解析的表单数据。
 	formCache url.Values
 
 	// SameSite 允许服务器定义 cookie 属性，从而使浏览器无法随跨站点请求发送此 cookie。

@@ -1,8 +1,13 @@
 ---
 title: debugger（七）：栈帧（backtrace）
 date: 2024-06-11 20:37:04
-tags: c++ debugger
-categories: C++ debugger
+tags:
+    - c++
+    - debugger
+categories:
+    - 系统编程
+    - C++
+    - debugger
 ---
 
 <!--more-->
@@ -51,12 +56,12 @@ Hit breakpoint at adsress 0x555555555131
       int foo2 = 1;
       int foo3 = 1;
   }
-  
+
   void b() {
       int foo = 1;
       int foo1 = 1;
       a();
-  
+
 minidbg> backtrace
 frame #0: 0x1129 a
 frame #1: 0x1150 b

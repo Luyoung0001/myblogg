@@ -1,7 +1,10 @@
 ---
 title: 【Golang】多线程爬虫的实现
 date: 2023-05-05 19:23:51
-tags: golang 爬虫 开发语言
+tags:
+	- golang
+	- 爬虫
+	- 开发语言
 categories: Golang
 ---
 
@@ -212,11 +215,11 @@ func fun2() {
 >         fun2.j, 4
 >         fun2.j, 5
 >         fun1.i: 2
->         fun1.i: 3 
->         fun1.i: 4 
->         ... 
+>         fun1.i: 3
+>         fun1.i: 4
+>         ...
 >         main解除阻塞
->         
+>
 可以看到起到了很好的控制效果。
 如果用第一个例子来说明，效果更好：
 

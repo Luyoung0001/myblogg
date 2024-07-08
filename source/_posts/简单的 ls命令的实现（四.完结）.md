@@ -1,7 +1,9 @@
 ---
 title: 简单的 ls命令的实现（四.完结）
 date: 2023-03-08 22:08:59
-tags: c++ 开发语言
+tags:
+    - c++
+    - 开发语言
 categories: 系统编程
 ---
 
@@ -524,15 +526,15 @@ void do_t(char** filenames) {
 }
 void do_r(char** arr, int file_cnt) {
 	// 只需要修改指针
-    char left = 0;              
-    char right = file_cnt - 1;  
+    char left = 0;
+    char right = file_cnt - 1;
     char temp;
     while (left < right) {
         char* temp = arr[left];
         arr[left] = arr[right];
         arr[right] = temp;
-        left++;   
-        right--; 
+        left++;
+        right--;
     }
 }
 ```

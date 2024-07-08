@@ -1,7 +1,11 @@
 ---
 title: MIT 6.S081学习笔记（第三章）
 date: 2023-11-22 17:19:13
-tags: 学习 笔记 OS xv6
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
 categories: OS
 ---
 
@@ -54,7 +58,7 @@ struct usyscall {
 ```c
 struct proc{
     ...
-    struct usyscall *usyscall;  
+    struct usyscall *usyscall;
     ...
 }
 ```
@@ -160,9 +164,9 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 ```bash
 ******:~/xv6-labs-2023# ./grade-lab-pgtbl ugetpid
 make: 'kernel/kernel' is up to date.
-== Test pgtbltest == (2.4s) 
-== Test   pgtbltest: ugetpid == 
-  pgtbltest: ugetpid: OK 
+== Test pgtbltest == (2.4s)
+== Test   pgtbltest: ugetpid ==
+  pgtbltest: ugetpid: OK
 ```
 ### Which other xv6 system call(s) could be made faster using this shared page? Explain how.
 
@@ -189,7 +193,7 @@ int exec(char *path, char **argv){
   ...
   proc_freepagetable(oldpagetable, oldsz);
   // 增加的代码
-  if(p->pid==1) 
+  if(p->pid==1)
     vmprint(p->pagetable);
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
@@ -311,7 +315,7 @@ sys_pgaccess(void)
   uint64 bitmask = 0;
   // 取反
   uint64 complement = ~PTE_A;
-  
+
   struct proc *p = myproc();
   for (int i = 0; i < npage; ++i) {
     pte_t *pte = walk(p->pagetable, startaddr+i*PGSIZE, 0);
@@ -328,25 +332,25 @@ sys_pgaccess(void)
 ```
 运行测试：
 
-> == Test pgtbltest == 
+> == Test pgtbltest ==
 $ make qemu-gdb
-(3.6s) 
-== Test   pgtbltest: ugetpid == 
-  pgtbltest: ugetpid: OK 
-== Test   pgtbltest: pgaccess == 
-  pgtbltest: pgaccess: OK 
-== Test pte printout == 
+(3.6s)
+== Test   pgtbltest: ugetpid ==
+  pgtbltest: ugetpid: OK
+== Test   pgtbltest: pgaccess ==
+  pgtbltest: pgaccess: OK
+== Test pte printout ==
 $ make qemu-gdb
-pte printout: OK (0.8s) 
-== Test answers-pgtbl.txt == 
-answers-pgtbl.txt: OK 
-== Test usertests == 
+pte printout: OK (0.8s)
+== Test answers-pgtbl.txt ==
+answers-pgtbl.txt: OK
+== Test usertests ==
 $ make qemu-gdb
-(8.2s) 
-== Test   usertests: all tests == 
-  usertests: all tests: OK 
-== Test time == 
-time: OK 
+(8.2s)
+== Test   usertests: all tests ==
+  usertests: all tests: OK
+== Test time ==
+time: OK
 Score: 46/46
 
 *全文完，感谢阅读。*

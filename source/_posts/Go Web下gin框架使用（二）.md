@@ -1,7 +1,11 @@
 ---
 title: Go Web下gin框架使用（二）
 date: 2023-06-01 20:00:00
-tags: 前端 golang gin
+tags:
+	- golang
+	- 后端
+	- 前端
+	- 网络
 categories: Golang 前端
 ---
 

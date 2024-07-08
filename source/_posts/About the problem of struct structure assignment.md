@@ -1,7 +1,9 @@
 ---
 title: About the problem of struct structure assignment
 date: 2022-11-29 21:26:49
-tags: c++ linux
+tags:
+    - linux
+    - c
 categories: Things about C
 ---
 
@@ -183,11 +185,11 @@ int main(){
                strcpy(temp.name, list[i].name);
                 temp.birth = list[i].birth;
                 strcpy(temp.tel, list[i].tel);
-                
+
                 strcpy(list[i].name, list[j].name);
                 list[i].birth = list[j].birth;
                 strcpy(list[i].tel , list[j].tel);
-                
+
                 strcpy(list[j].name, temp.name);
                 list[j].birth = temp.birth;
                 strcpy(list[j].tel, temp.tel);
@@ -197,7 +199,7 @@ int main(){
     for(int i = 0; i < n; i++){
         printf("%s %d %s\n", list[i].name, list[i].birth, list[i].tel);
     }
-    
+
     return 0;
 }
 ```
@@ -224,7 +226,7 @@ int main() {
             if (list[i].birth > list[j].birth) {
                 Info temp = list[i];
                 list[i] = list[j];
-                list[j] = temp;   
+                list[j] = temp;
             }
         }
     }

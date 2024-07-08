@@ -24,9 +24,10 @@
 <meta property="og:description" content="正文传参中的陷阱　　1. 向std::thread 构造函数传参：所有参数（含第1个参数可调用对象）均按值并以副本的形式保存在 std::thread 对象中的tuple里。这一点的实现类似于std::bind。如果要达到按引用传参的效果，可使用std::ref来传递。 　　2. 向线程函数的传参：由于std::thread 对象里保存的是参数的副本，为了效率同时兼顾一些只移动类型的对象，所有">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-05-09T16:10:13.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.559Z">
+<meta property="article:modified_time" content="2024-07-08T06:30:20.648Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="c++ 多线程">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -327,7 +328,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/c-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="print-no-link">#c++ 多线程</a>
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="print-no-link">#多线程</a>
       
     </div>
   

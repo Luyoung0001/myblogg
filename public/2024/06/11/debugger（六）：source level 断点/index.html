@@ -16,17 +16,19 @@
   <meta name="author" content="Luyoung">
   <meta name="keywords" content="">
   
-    <meta name="description" content="〇、前言前面一直使用 break 0xADDR 来打断点，这种打断点的方式及其不方便，需要手动获取某一行的断点，这一节的目标是采用以下方式打断点： 123456&#x2F;&#x2F; 函数名break main &#x2F;&#x2F; 源代码break main.cpp:10&#x2F;&#x2F; 地址break 0xADDR  一、break 函数名这个可以在所有的编译单元中搜索。对于每一个 cu，只需要判断：(die.has(dwarf::D">
+    <meta name="description" content="〇、前言前面一直使用 break 0xADDR 来打断点，这种打断点的方式及其不方便，需要手动获取某一行的断点，这一节的目标是采用以下方式打断点： 123456&#x2F;&#x2F; 函数名break main&#x2F;&#x2F; 源代码break main.cpp:10&#x2F;&#x2F; 地址break 0xADDR  一、break 函数名这个可以在所有的编译单元中搜索。对于每一个 cu，只需要判断：(die.has(dwarf::DW">
 <meta property="og:type" content="article">
 <meta property="og:title" content="debugger（六）：source level 断点">
 <meta property="og:url" content="http://blog.luliang.online/2024/06/11/debugger%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9Asource%20level%20%E6%96%AD%E7%82%B9/index.html">
 <meta property="og:site_name" content="Luyoung">
-<meta property="og:description" content="〇、前言前面一直使用 break 0xADDR 来打断点，这种打断点的方式及其不方便，需要手动获取某一行的断点，这一节的目标是采用以下方式打断点： 123456&#x2F;&#x2F; 函数名break main &#x2F;&#x2F; 源代码break main.cpp:10&#x2F;&#x2F; 地址break 0xADDR  一、break 函数名这个可以在所有的编译单元中搜索。对于每一个 cu，只需要判断：(die.has(dwarf::D">
+<meta property="og:description" content="〇、前言前面一直使用 break 0xADDR 来打断点，这种打断点的方式及其不方便，需要手动获取某一行的断点，这一节的目标是采用以下方式打断点： 123456&#x2F;&#x2F; 函数名break main&#x2F;&#x2F; 源代码break main.cpp:10&#x2F;&#x2F; 地址break 0xADDR  一、break 函数名这个可以在所有的编译单元中搜索。对于每一个 cu，只需要判断：(die.has(dwarf::DW">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-06-11T10:37:27.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.567Z">
+<meta property="article:modified_time" content="2024-07-08T06:34:35.268Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="c++ lldb debugger">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="lldb">
+<meta property="article:tag" content="debugger">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -276,7 +278,7 @@
                 <span id="more"></span>
 
 <h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>前面一直使用 break 0xADDR 来打断点，这种打断点的方式及其不方便，需要手动获取某一行的断点，这一节的目标是采用以下方式打断点：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">// 函数名<br><span class="hljs-built_in">break</span> main <br>// 源代码<br><span class="hljs-built_in">break</span> main.cpp:10<br>// 地址<br><span class="hljs-built_in">break</span> 0xADDR<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">// 函数名<br><span class="hljs-built_in">break</span> main<br>// 源代码<br><span class="hljs-built_in">break</span> main.cpp:10<br>// 地址<br><span class="hljs-built_in">break</span> 0xADDR<br></code></pre></td></tr></table></figure>
 
 <h2 id="一、break-函数名"><a href="#一、break-函数名" class="headerlink" title="一、break 函数名"></a>一、break 函数名</h2><p>这个可以在所有的编译单元中搜索。对于每一个 <strong>cu</strong>，只需要判断：<code>(die.has(dwarf::DW_AT::name) &amp;&amp; at_name(die) == name)</code>，如果条件成立，那么就可以获取 <strong>line entry</strong> 了，但是这个 <strong>entry</strong> 并不好用，这一行可能是函数名，我们需要跳过这个 <strong>prologue</strong> 或者没用的行。之后就可以在这一行对应的地址打断点了：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::set_breakpoint_at_function</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string&amp; name)</span> </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; cu : m_dwarf.<span class="hljs-built_in">compilation_units</span>()) &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span>&amp; die : cu.<span class="hljs-built_in">root</span>()) &#123;<br>            <span class="hljs-keyword">if</span> (die.<span class="hljs-built_in">has</span>(dwarf::DW_AT::name) &amp;&amp; <span class="hljs-built_in">at_name</span>(die) == name) &#123;<br>                <span class="hljs-keyword">auto</span> low_pc = <span class="hljs-built_in">at_low_pc</span>(die);<br>                <span class="hljs-keyword">auto</span> entry = <span class="hljs-built_in">get_line_entry_from_pc</span>(low_pc);<br>                ++entry; <span class="hljs-comment">//skip useless line</span><br>                <span class="hljs-built_in">set_breakPoint</span>(<span class="hljs-built_in">offset_dwarf_address</span>(entry-&gt;address));<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -325,7 +327,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/c-lldb-debugger/" class="print-no-link">#c++ lldb debugger</a>
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/lldb/" class="print-no-link">#lldb</a>
+      
+        <a href="/tags/debugger/" class="print-no-link">#debugger</a>
       
     </div>
   

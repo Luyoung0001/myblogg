@@ -1,7 +1,11 @@
 ---
 title: go Session的实现（一）
 date: 2023-09-02 16:57:25
-tags: golang 后端 前端 网络
+tags:
+	- golang
+	- 后端
+	- 前端
+	- 网络
 categories: Golang 前端 Web
 ---
 

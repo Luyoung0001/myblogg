@@ -1,7 +1,10 @@
 ---
 title: Redis （一）消息订阅和发送测试
 date: 2023-07-31 21:47:22
-tags: redis bootstrap 数据库
+tags:
+	- redis
+	- bootstrap
+	- 数据库
 categories: Golang Web
 ---
 
@@ -11,7 +14,7 @@ categories: Golang Web
 
 ### 1、概况
 本文基于 Ubuntu20.04 云服务器配置Redis，且在本地进行 Redis 测试。
-### 2、目录概况 
+### 2、目录概况
 
 ![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/b00269f787ab457b87dbff470e451601_1720253746882.png?token=ANB4BCNQZTBEHAWGDAD4JN3GRD6W6)
 

@@ -1,7 +1,9 @@
 ---
 title: 简单的 ls 命令的实现（二）
 date: 2023-02-17 17:08:47
-tags: rust 开发语言 后端
+tags:
+    - 开发语言
+    - C
 categories: 系统编程
 ---
 
@@ -16,7 +18,7 @@ categories: 系统编程
  - -i：结合-l参数，列出每个文件的inode
  - -s, –size 以块大小为单位列出所有文件的大小
  - -R, –recursive 同时列出所有子目录层
- 
+
 ### （一）显示所有的文件，包括隐藏文件
 ```c
 luliang@shenjian linux-6.1.1 % ls -a
@@ -93,7 +95,7 @@ luliang@shenjian linux-6.1.1 % ls -i
 ### （六）以块大小为单位列出所有文件的大小
 
 ```c
-luliang@shenjian linux-6.1.1 % ls -s 
+luliang@shenjian linux-6.1.1 % ls -s
 total 1728
    8 COPYING            1352 MAINTAINERS           0 crypto                0 ipc                   0 samples               0 virt
  200 CREDITS             144 Makefile              0 drivers               0 kernel                0 scripts
@@ -174,7 +176,7 @@ int main(int argc, char* argv[]) {
 
 ```bash
 luliang@shenjian Test % gcc plan4.c -o ls
-luliang@shenjian Test % ./ls plan3.c     
+luliang@shenjian Test % ./ls plan3.c
     mode : 100644
     links: 1
     user : 501

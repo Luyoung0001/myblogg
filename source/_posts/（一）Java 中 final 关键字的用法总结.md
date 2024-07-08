@@ -1,7 +1,10 @@
 ---
 title: （一）Java 中 final 关键字的用法总结
 date: 2023-01-12 00:07:59
-tags: java jvm 开发语言
+tags:
+    - java
+    - jvm
+    - 开发语言
 categories: Java基础知识
 ---
 

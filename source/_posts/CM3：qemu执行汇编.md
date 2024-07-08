@@ -1,7 +1,10 @@
 ---
 title: CM3：qemu执行汇编
 date: 2024-04-27 13:14:57
-tags: CM3 汇编 QEMU
+tags:
+    - CM3
+    - 汇编
+    - QEMU
 categories: CM3
 ---
 

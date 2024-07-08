@@ -1,7 +1,11 @@
 ---
 title: Unix/Linux编程：UDS 流（Stream）
 date: 2023-06-07 21:49:01
-tags: linux unix 服务器 网络
+tags:
+    - linux
+    - unix
+    - 服务器
+    - 网络
 categories: socket Web Unix/Linux
 ---
 
@@ -112,19 +116,19 @@ int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 int main() {
 	// ipv4
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    
+
     struct sockaddr_in addr;
     // 初始化
     addr.sin_family = AF_INET;
     addr.sin_port = htons(8080);
     addr.sin_addr.s_addr = INADDR_ANY;
-    
+
     if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
         printf("Socket绑定成功\n");
     } else {
         perror("Socket绑定失败\n");
     }
-   
+
     return 0;
 }
 
@@ -174,18 +178,18 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 
 int main() {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    
+
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(8080);
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    
+
     if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == 0) {
         printf("成功与服务器建立连接\n");
     } else {
         perror("连接失败");
     }
-    
+
     return 0;
 }
 
@@ -286,7 +290,7 @@ int main(int argc, char *argv[]) {
     }
 
     // 执行一个无限循环来处理进入的客户端请求。每次循环迭代执行下列任务
-    for (;;) { 
+    for (;;) {
         // 接受一个连接，为该连接获取一个新 socket cfd
         cfd = accept(sfd, NULL, NULL);
         if (cfd == -1) {
@@ -392,7 +396,7 @@ hello
 结果在服务端成功地接收到了客户端发来的消息`hello`:
 
 ```bash
-(base) ***@shenjian Test % ./server         
+(base) ***@shenjian Test % ./server
 hello
 ```
 *这就是一个简单的UDS 例子了，全文完，感谢阅读。*

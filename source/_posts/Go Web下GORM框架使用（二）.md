@@ -1,7 +1,11 @@
 ---
 title: Go Web下GORM框架使用（二）
 date: 2023-06-04 22:49:01
-tags: golang 前端 数据库
+tags:
+	- golang
+	- 后端
+	- 前端
+	- 网络
 categories: Golang 前端
 ---
 
@@ -79,12 +83,12 @@ v1Group := r.Group("v1")
 	{
 		// 待办事项
 		v1Group.POST("/todo", func(c *gin.Context) {
-			
+
 
 		})
 		// 查看所有的待办事项
 		v1Group.GET("/todo", func(c *gin.Context) {
-			
+
 		})
 		// 查看某一个待办事项
 		v1Group.GET("/todo/:id", func(c *gin.Context) {
@@ -92,11 +96,11 @@ v1Group := r.Group("v1")
 		})
 		// 修改(更新) 某一个事项
 		v1Group.PUT("/todo/:id", func(c *gin.Context) {
-			
+
 		})
 		// 删除
 		v1Group.DELETE("/todo/:id", func(c *gin.Context) {
-			
+
 		})
 
 	}
@@ -221,7 +225,7 @@ v1Group := r.Group("v1")
 
 ![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/93069fc0eb4349689a5596f16a11f1b6_1720253782424.png?token=ANB4BCNY7OQZUBVF2XC7BFDGRD6ZK)
  再看看数据库：
- 
+
  ![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/ec89186c11d04d7cbd98de8051cc9a43_1720253782424.png?token=ANB4BCKJIS7EDQY4ZFGCB3DGRD6ZM)
 可以看到成功地将 status 标记成了 1。撤销看看：
 

@@ -1,8 +1,14 @@
 ---
 title: 实现个人日志命令行工具（C语言）
 date: 2023-12-19 16:43:26
-tags: c语言 开发语言 命令行工具 个人记录
-categories: 系统编程 C语言
+tags:
+    - c语言
+    - 开发语言
+    - 命令行工具
+    - 个人记录
+categories:
+    - 系统编程
+    - C语言
 ---
 
 <!--more-->
@@ -98,14 +104,14 @@ int main(int argc, char *argv[]) {
     char git_add[100] = {0};
     snprintf(git_add, sizeof(git_add), "%s%s", "git add ", real_file_name);
     system(git_add);
-    
-    // 合成 git commit 
+
+    // 合成 git commit
     char *command0 = "git commit -m \"";
     char *tag1 = "\"";
     char command1[100] = {0};
     snprintf(command1, sizeof(command1), "%s%s%s", command0, real_file_name, tag1);
     system(command1);
-    
+
     system("git push");
     return 0;
 }

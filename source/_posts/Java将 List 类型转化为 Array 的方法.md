@@ -1,7 +1,10 @@
 ---
 title: Java将 List 类型转化为 Array 的方法
 date: 2023-03-07 21:58:53
-tags: java jvm servlet
+tags:
+    - java
+    - jvm
+    - servlet
 categories: Java基础知识
 ---
 
@@ -15,7 +18,7 @@ List 提供了toArray的方法，可以使得ArrayList 转化为一个数组。
 
 ```java
  String[] y = x.toArray(new String[0]);
- 
+
 ```
 ## 方法二：
 List 还提供了类似的方法，也可以达到这个目的，但是这个方法比较繁琐：

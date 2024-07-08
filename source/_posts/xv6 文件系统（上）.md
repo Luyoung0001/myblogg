@@ -1,7 +1,11 @@
 ---
 title: xv6 文件系统（上）
 date: 2023-12-18 17:00:59
-tags: 笔记 学习 xv6 操作系统 OS
+tags:
+    - xv6
+    - 操作系统
+    - OS
+    - 笔记
 categories: OS
 ---
 
@@ -318,7 +322,7 @@ sys_open(void)
       end_op();
       return -1;
     }
-  } 
+  }
   ...
 }
 ```

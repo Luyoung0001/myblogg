@@ -1,8 +1,12 @@
 ---
 title: debugger（三）：dwarf 文件
 date: 2024-06-10 21:46:30
-tags: c++ debugger
-categories: C++ debugger
+tags:
+    - c++
+    - debugger
+categories:
+    - C++
+    - debugger
 ---
 
 <!--more-->
@@ -235,7 +239,7 @@ arange end
 
 ```bash
 0000000000001189 <main>:
-    1189:       f3 0f 1e fa             endbr64 
+    1189:       f3 0f 1e fa             endbr64
     118d:       55                      push   %rbp
     118e:       48 89 e5                mov    %rsp,%rbp
     1191:       48 8d 05 6c 0e 00 00    lea    0xe6c(%rip),%rax        # 2004 <_IO_stdin_used+0x4>
@@ -245,7 +249,7 @@ arange end
     11a5:       e8 d6 fe ff ff          call   1080 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
     11aa:       b8 00 00 00 00          mov    $0x0,%eax
     11af:       5d                      pop    %rbp
-    11b0:       c3               
+    11b0:       c3
 ```
 
 另外还可以看到，编译单元中的：

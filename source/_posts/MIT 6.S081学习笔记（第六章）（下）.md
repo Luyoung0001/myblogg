@@ -1,8 +1,16 @@
 ---
 title: MIT 6.S081学习笔记（第六章）（下）
 date: 2023-12-08 09:04:37
-tags: 学习 笔记 xv6 操作系统
-categories: OS
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+    - 文件系统
+categories:
+    - OS
+    - 系统编程
+    - Unix/Linux
 ---
 
 <!--more-->
@@ -258,7 +266,7 @@ thread_switch:
     ld s9, 88(a1)
     ld s10, 96(a1)
     ld s11, 104(a1)
-	
+
 	ret    /* return to ra */
 
 ```

@@ -1,7 +1,9 @@
 ---
 title: ngrok内网穿透以及原理
 date: 2023-09-29 18:48:28
-tags: Web 内网穿透
+tags:
+    - Web
+    - 内网穿透
 categories: NetWork Web
 ---
 
@@ -36,19 +38,19 @@ categories: NetWork Web
 
 ```bash
 ./ngrok http 8080                                                                                                                                         (Ctrl+C to quit)
-                                                                                                                                                              
-Introducing Always-On Global Server Load Balancer: https://ngrok.com/r/gslb                                                                                   
-                                                                                                                                                              
-Session Status                online                                                                                                                          
-Account                       ************* (Plan: Free)                                                                                              
-Version                       3.3.5                                                                                                                           
-Region                        Asia Pacific (ap)                                                                                                               
-Latency                       -                                                                                                                               
-Web Interface                 http://127.0.0.1:4040                                                                                                           
-Forwarding                    https://72b5-124-89-2-78.ngrok-free.app -> http://localhost:8080                                                                
-                                                                                                                                                              
-Connections                   ttl     opn     rt1     rt5     p50     p90                                                                                     
-                              0       0       0.00    0.00    0.00    0.00  
+
+Introducing Always-On Global Server Load Balancer: https://ngrok.com/r/gslb
+
+Session Status                online
+Account                       ************* (Plan: Free)
+Version                       3.3.5
+Region                        Asia Pacific (ap)
+Latency                       -
+Web Interface                 http://127.0.0.1:4040
+Forwarding                    https://72b5-124-89-2-78.ngrok-free.app -> http://localhost:8080
+
+Connections                   ttl     opn     rt1     rt5     p50     p90
+                              0       0       0.00    0.00    0.00    0.00
 ```
 这样就完成了本地服务的公网域名映射，在网页上打开`https://72b5-124-89-2-78.ngrok-free.app`，我们可以看到：
 ![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/287fd8bed61d4139adf183784d6cd514_1720253724529.png?token=ANB4BCNYSPQSZP4JJBMIS6LGRD6VU)

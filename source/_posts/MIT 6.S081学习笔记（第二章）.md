@@ -1,8 +1,15 @@
 ---
 title: MIT 6.S081学习笔记（第二章）
 date: 2023-10-05 00:15:19
-tags: MIT 6.S081 学习 笔记 xv6
-categories: OS 系统编程 Unix/Linux
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+categories:
+    - OS
+    - 系统编程
+    - Unix/Linux
 ---
 
 <!--more-->
@@ -221,7 +228,7 @@ $ make qemu
 ```
 > Write down the assembly instruction the kernel is panicing at. Which
 > register corresponds to the variable num?
-> 
+>
 直接出错：
 
 ```bash
@@ -254,7 +261,7 @@ $1 = 13
 ```
 根据 RISC-V privileged instructions，13 代表着页面加载错误。
 ![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/283e26634917427aa565b98ce0c8e53b_1720253717123.png?token=ANB4BCOCWA7JXVH7HUVEXVDGRD6VK)
-重新启动，直接打印出内核 panic时地用户进程名字： 
+重新启动，直接打印出内核 panic时地用户进程名字：
 ```bash
 (gdb) b *0x0000000080002050
 Breakpoint 1 at 0x80002050: file kernel/syscall.c, line 138.
@@ -267,7 +274,7 @@ Thread 3 hit Breakpoint 1, syscall ()
 138       num = *(int*) 0;
 (gdb) p p->name
 $1 = "initcode\000\000\000\000\000\000\000"
-(gdb) 
+(gdb)
 ```
 可以看出这个用户进程的名字是`initcode`，这是 xv6 中第一个运行的进程。
 
@@ -275,20 +282,20 @@ $1 = "initcode\000\000\000\000\000\000\000"
 
 ```bash
 (gdb) p *p
-$2 = {lock = {locked = 0, 
-    name = 0x800081b8 "proc", cpu = 0x0}, 
-  state = RUNNING, chan = 0x0, killed = 0, 
-  xstate = 0, pid = 1, parent = 0x0, 
-  kstack = 274877894656, sz = 4096, 
-  pagetable = 0x87f73000, 
+$2 = {lock = {locked = 0,
+    name = 0x800081b8 "proc", cpu = 0x0},
+  state = RUNNING, chan = 0x0, killed = 0,
+  xstate = 0, pid = 1, parent = 0x0,
+  kstack = 274877894656, sz = 4096,
+  pagetable = 0x87f73000,
   trapframe = 0x87f74000, context = {
-    ra = 2147488962, sp = 274877898368, 
-    s0 = 274877898416, s1 = 2147519856, 
-    s2 = 2147518784, s3 = 1, s4 = 0, s5 = 3, 
-    s6 = 2147588624, s7 = 8, s8 = 2147588920, 
+    ra = 2147488962, sp = 274877898368,
+    s0 = 274877898416, s1 = 2147519856,
+    s2 = 2147518784, s3 = 1, s4 = 0, s5 = 3,
+    s6 = 2147588624, s7 = 8, s8 = 2147588920,
     s9 = 4, s10 = 1, s11 = 0}, ofile = {
-    0x0 <repeats 16 times>}, 
-  cwd = 0x80016e80 <itable+24>, 
+    0x0 <repeats 16 times>},
+  cwd = 0x80016e80 <itable+24>,
   name = "initcode\000\000\000\000\000\000\000"}
 ```
 从这个`proc结构`的信息中可以得出：
@@ -429,7 +436,7 @@ syscall(void)
     if (p->syscall_trace & (1 << num)) {
     // print trace info
       printf("%d: syscall %s -> %d\n",p->pid, syscalls_name[num], p->trapframe->a0);
-    }    
+    }
 }
 
 ```
@@ -438,11 +445,11 @@ syscall(void)
 ```bash
 root@*******:~/xv6-labs-2023# ./grade-lab-syscall trace
 make: 'kernel/kernel' is up to date.
-== Test trace 32 grep == trace 32 grep: OK (3.2s) 
-== Test trace all grep == trace all grep: OK (0.8s) 
-== Test trace nothing == trace nothing: OK (1.0s) 
-== Test trace children == trace children: OK (27.2s) 
-root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023# 
+== Test trace 32 grep == trace 32 grep: OK (3.2s)
+== Test trace all grep == trace all grep: OK (0.8s)
+== Test trace nothing == trace nothing: OK (1.0s)
+== Test trace children == trace children: OK (27.2s)
+root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023#
 ```
 可以看到全部通过了测试。
 
@@ -619,7 +626,7 @@ freemem_size(void)
     size++;
     r = r->next;
   }
-  
+
   release(&kmem.lock);
 
   return size * PGSIZE;
@@ -657,17 +664,17 @@ uint64          count_proc(void);
 ```bash
 root@********:~/xv6-labs-2023# ./grade-lab-syscall
 make: 'kernel/kernel' is up to date.
-== Test answers-syscall.txt == 
-answers-syscall.txt: OK 
-== Test trace 32 grep == trace 32 grep: OK (1.8s) 
-== Test trace all grep == trace all grep: OK (1.0s) 
-== Test trace nothing == trace nothing: OK (1.0s) 
-== Test trace children == trace children: OK (25.3s) 
-== Test sysinfotest == sysinfotest: OK (3.9s) 
-== Test time == 
-time: OK 
+== Test answers-syscall.txt ==
+answers-syscall.txt: OK
+== Test trace 32 grep == trace 32 grep: OK (1.8s)
+== Test trace all grep == trace all grep: OK (1.0s)
+== Test trace nothing == trace nothing: OK (1.0s)
+== Test trace children == trace children: OK (25.3s)
+== Test sysinfotest == sysinfotest: OK (3.9s)
+== Test time ==
+time: OK
 Score: 40/40
-root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023# 
+root@iZhp37m9qv6vg0r4zidw3oZ:~/xv6-labs-2023#
 ```
 
 

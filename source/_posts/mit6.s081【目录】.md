@@ -1,8 +1,15 @@
 ---
 title: mit6.s081【目录】
 date: 2023-12-24 19:08:07
-tags: 学习 笔记 xv6 OS 操作系统
-categories: OS
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+categories:
+    - OS
+    - 系统编程
+    - Unix/Linux
 ---
 
 <!--more-->

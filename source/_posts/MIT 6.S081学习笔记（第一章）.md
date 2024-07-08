@@ -1,8 +1,15 @@
 ---
 title: MIT 6.S081学习笔记（第一章）
 date: 2023-09-10 19:30:08
-tags: 学习 笔记 操作系统 xv6 MIT 6.S081
-categories: OS 系统编程 Unix/Linux
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+categories:
+    - OS
+    - 系统编程
+    - Unix/Linux
 ---
 
 <!--more-->
@@ -13,25 +20,25 @@ categories: OS 系统编程 Unix/Linux
 
 ## 一、环境搭建
 
-### 1、QEMU 
+### 1、QEMU
 
 > QEMU（quick emulator）是一款由法布里斯·贝拉（Fabrice
 > Bellard）等人编写的通用且免费的可执行**硬件虚拟化的（hardware
 > virtualization）开源仿真器（Emulator）**。
-> 
+>
 > 其与Bochs，PearPC类似，但拥有高速（配合KVM），跨平台的特性。
-> 
+>
 > QEMU是一个托管的虚拟机，它通过动态的二进制转换，**模拟CPU，并且提供一组设备模型**，使它能够运行多种未修改的客户机OS，可以通过与KVM一起使用进而接近本地速度运行虚拟机（接近真实电脑的速度）。
-> 
+>
 > QEMU还可以为user-level的进程执行CPU仿真，进而允许了为一种架构编译的程序在另外一种架构上面运行（借由VMM的形式）。——wikipedia
 
 **实验中QEMU用来模拟 RISC-V 处理器以及一组必要硬件（内存、硬盘等）。**
 ### 2、RISC-V
 
 > RISC-V（发音为“risk-five”）是一个基于精简指令集（RISC）原则的开源指令集架构（ISA），简易解释为与开源软体运动相对应的一种“开源硬体”。
-> 
+>
 > 与大多数指令集相比，RISC-V指令集可以自由地用于任何目的，允许任何人设计、制造和销售RISC-V芯片和软件而不必支付给任何公司专利费。虽然这不是第一个开源指令集，但它具有重要意义，因为其设计使其适用于现代计算设备（如仓库规模云计算机、高端移动电话和微小嵌入式系统）。设计者考虑到了这些用途中的性能与功率效率。该指令集还具有众多支持的软件，这解决了新指令集通常的弱点。
-> 
+>
 > RISC-V指令集的设计考虑了小型、快速、低功耗的现实情况来实做，但并没有对特定的微架构做过度的设计。——wikipedia
 
 ### 3、xv6
@@ -65,7 +72,7 @@ xv6 kernel is booting
 hart 1 starting
 hart 2 starting
 init: starting sh
-$ 
+$
 ```
 玩玩命令啥的：
 
@@ -97,7 +104,7 @@ $ cat README
 xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 Version 6 (v6).  xv6 loosely follows the structure and style of v6,
 ...
-$ 
+$
 ```
 
 退出：
@@ -156,9 +163,9 @@ int main(int argc,char *argv[]){
 ```c
 ******:~/xv6-labs-2023# ./grade-lab-util sleep
 make: 'kernel/kernel' is up to date.
-== Test sleep, no arguments == sleep, no arguments: OK (1.1s) 
-== Test sleep, returns == sleep, returns: OK (0.8s) 
-== Test sleep, makes syscall == sleep, makes syscall: OK (1.0s) 
+== Test sleep, no arguments == sleep, no arguments: OK (1.1s)
+== Test sleep, returns == sleep, returns: OK (0.8s)
+== Test sleep, makes syscall == sleep, makes syscall: OK (1.0s)
 ```
 
 测试都通过了。
@@ -179,7 +186,7 @@ make: 'kernel/kernel' is up to date.
 > - Use read to read from the pipe, and write to write to the pipe.
 > - Use getpid to find the process ID of the calling process.
 > - Add the program to UPROGS in Makefile.
-> - User programs on xv6 have a limited set of library functions available to them. You can see - the list in user/user.h; 
+> - User programs on xv6 have a limited set of library functions available to them. You can see - the list in user/user.h;
 > - the source  (other than for system calls) is in user/ulib.c, user/printf.c, and
 > - user/umalloc.c.
 
@@ -236,7 +243,7 @@ int main() {
 
         close(p1[0]);
         close(p2[1]);
-        
+
         // 发送
         write(p1[1], message, 2);
         // 发送完就关闭
@@ -248,7 +255,7 @@ int main() {
         int status;
         wait(&status);// 防止抢占1
         fprintf(1,"%d: received pong\n", getpid());
-        
+
     } else {
         fprintf(1,"err for fork()\n");
         exit(1);
@@ -262,7 +269,7 @@ int main() {
 ```bash
 ******:~/xv6-labs-2023# ./grade-lab-util pingpong
 make: 'kernel/kernel' is up to date.
-== Test pingpong == pingpong: OK (1.6s) 
+== Test pingpong == pingpong: OK (1.6s)
 ```
 
 #### Notes
@@ -341,7 +348,7 @@ void prime(int p[]){
   // 子进程
   // 从 p[0] 接收
   close(p[1]);
-  
+
   if(read(p[0],&x,sizeof(int))){
     // 打印素数
     fprintf(1,"prime %d\n",x);
@@ -379,7 +386,7 @@ int main(){
   if(pid == 0){
     // 递归实现
     prime(p);
-    
+
   }else if(pid > 0){
     close(p[0]);
     // 父进程将数据传给子进程
@@ -393,7 +400,7 @@ int main(){
     fprintf(1, "err for fork()\n");
     exit(1);
   }
-  
+
   exit(0);
 }
 
@@ -449,7 +456,7 @@ $
     $ find . b
     ./b
     ./a/b
-    $ 
+    $
 ```
 
 #### Solution
@@ -491,7 +498,7 @@ int fstat(int fd, struct stat*);
 > - path：一个字符串，表示要打开的文件的路径和名称。
 > - flags：一个整数，用于指定打开文件的方式和权限等。这个参数通常包括了标志位，例如 O_RDONLY（只读）、O_WRONLY（只写）、O_RDWR（读写）、O_CREAT（如果文件不存在则创建）等等。
 > - 返回值：如果成功打开文件，open 函数返回一个非负整数，表示文件- 描述符。如果失败，它返回-1，并可以通过检查 errno 变量来获取失败的具体原因。
-> 
+>
 > *int fstat(int fd, struct stat *buf);**
 > - 作用：fstat 函数用于获取已打开文件的元数据信息，并将这些信息填充到提供的 struct stat 结构体中。 参数：
 > - fd：一个整数，表示已打开文件的文件描述符。
@@ -644,11 +651,11 @@ int find(char *path,char *fileName){
       if(de.inum == 0) {
         continue;
       }
-      if (strcmp(de.name, ".") == 0 || strcmp(de.name, "..") == 0) { 
+      if (strcmp(de.name, ".") == 0 || strcmp(de.name, "..") == 0) {
         continue;
       }
-      // 把文件名复制到 buf 
-      memmove(p, de.name, DIRSIZ); 
+      // 把文件名复制到 buf
+      memmove(p, de.name, DIRSIZ);
       p[DIRSIZ] = 0;
       // 打不开就下一个
       if(stat(buf, &st) < 0){
@@ -676,8 +683,8 @@ int main(int argc,char *argv[]){
 ```bash
 ******:~/xv6-labs-2023# ./grade-lab-util find
 make: 'kernel/kernel' is up to date.
-== Test find, in current directory == find, in current directory: OK (1.8s) 
-== Test find, recursive == find, recursive: OK (1.2s) 
+== Test find, in current directory == find, in current directory: OK (1.8s)
+== Test find, recursive == find, recursive: OK (1.2s)
 ```
 #### Notes
 - 能调用 OS 提供的用户调用，就尽量避免直接调用系统调用。
@@ -709,7 +716,7 @@ make: 'kernel/kernel' is up to date.
   hello
   hello
   $ $
-  
+
 ```
 
 #### Solution
@@ -725,7 +732,7 @@ make: 'kernel/kernel' is up to date.
 #include "kernel/param.h"
 
 int main(int argc, char *argv[]) {
-    int bufP , i, readLen; 
+    int bufP , i, readLen;
     char buf[512];
     char* new_argv[MAXARG];
     // 提取命令以及参数
@@ -766,7 +773,7 @@ int main(int argc, char *argv[]) {
 ```bash
 ******:~/xv6-labs-2023# ./grade-lab-util xargs
 make: 'kernel/kernel' is up to date.
-== Test xargs == xargs: OK (2.1s) 
+== Test xargs == xargs: OK (2.1s)
 ```
 
 #### Notes
@@ -804,32 +811,32 @@ which is conventionally the name of the program.
 ## 四、总结
 键入 `make grade` 就会打分：
 ```bash
-== Test sleep, no arguments == 
+== Test sleep, no arguments ==
 $ make qemu-gdb
-sleep, no arguments: OK (3.3s) 
-== Test sleep, returns == 
+sleep, no arguments: OK (3.3s)
+== Test sleep, returns ==
 $ make qemu-gdb
-sleep, returns: OK (1.1s) 
-== Test sleep, makes syscall == 
+sleep, returns: OK (1.1s)
+== Test sleep, makes syscall ==
 $ make qemu-gdb
-sleep, makes syscall: OK (1.0s) 
-== Test pingpong == 
+sleep, makes syscall: OK (1.0s)
+== Test pingpong ==
 $ make qemu-gdb
-pingpong: OK (1.1s) 
-== Test primes == 
+pingpong: OK (1.1s)
+== Test primes ==
 $ make qemu-gdb
-primes: OK (1.0s) 
-== Test find, in current directory == 
+primes: OK (1.0s)
+== Test find, in current directory ==
 $ make qemu-gdb
-find, in current directory: OK (1.1s) 
-== Test find, recursive == 
+find, in current directory: OK (1.1s)
+== Test find, recursive ==
 $ make qemu-gdb
-find, recursive: OK (1.4s) 
-== Test xargs == 
+find, recursive: OK (1.4s)
+== Test xargs ==
 $ make qemu-gdb
-xargs: OK (1.9s) 
-== Test time == 
-time: OK 
+xargs: OK (1.9s)
+== Test time ==
+time: OK
 Score: 100/100
 ```
 

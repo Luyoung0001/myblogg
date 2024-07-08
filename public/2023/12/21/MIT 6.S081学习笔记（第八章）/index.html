@@ -24,9 +24,13 @@
 <meta property="og:description" content="〇、前言本文主要完成MIT 6.S081 实验八：file system开始之前，切换分支： 123$ git fetch$ git checkout fs$ make clean  Large files (moderate) The format of an on-disk inode is defined by struct dinode in fs.h. You’re particul">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-12-21T11:22:05.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.563Z">
+<meta property="article:modified_time" content="2024-07-08T06:37:56.576Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="学习 笔记 xv6 OS 操作系统 文件系统">
+<meta property="article:tag" content="学习">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="MIT 6.S081">
+<meta property="article:tag" content="文件系统">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -282,7 +286,7 @@
 <p>The format of an on-disk <code>inode</code> is defined by <code>struct dinode</code> in <code>fs.h</code>. You’re particularly interested in <strong>NDIRECT</strong>, <strong>NINDIRECT</strong>, <strong>MAXFILE</strong>, and the <strong>addrs[]</strong> element of <code>struct dinode</code>. The code that finds a file’s data on disk is in <code>bmap()</code> in <code>fs.c</code>. Have a look at it and make sure you understand what it’s doing. <code>bmap()</code> is called both when reading and writing a file. When writing, <code>bmap()</code> allocates new blocks as needed to hold file content, as well as allocating an indirect block if needed to hold block addresses.<br><code>bmap()</code> deals with two kinds of block numbers. The <strong>bn</strong> argument is a “logical block number” – <strong>a block number</strong> within the file, relative to the start of the file. The block numbers in <code>ip-&gt;addrs[]</code>, and the argument to <code>bread()</code>, are disk block numbers. You can view <code>bmap()</code> as mapping a file’s logical block numbers into disk block numbers.</p>
 </blockquote>
 <h3 id="Question-requirements"><a href="#Question-requirements" class="headerlink" title="Question requirements"></a>Question requirements</h3><blockquote>
-<p>Modify <code>bmap()</code> so that it implements a doubly-indirect block, in addition to direct blocks and a singly-indirect block. You’ll have to have only 11 direct blocks, rather than 12, to make room for your new doubly-indirect block; you’re not allowed to change the size of an on-disk inode. The first 11 elements of <code>ip-&gt;addrs[]</code> should be direct blocks; the 12th should be a singly-indirect block (just like the current one); <strong>the 13th should be your new doubly-indirect block.</strong> </p>
+<p>Modify <code>bmap()</code> so that it implements a doubly-indirect block, in addition to direct blocks and a singly-indirect block. You’ll have to have only 11 direct blocks, rather than 12, to make room for your new doubly-indirect block; you’re not allowed to change the size of an on-disk inode. The first 11 elements of <code>ip-&gt;addrs[]</code> should be direct blocks; the 12th should be a singly-indirect block (just like the current one); <strong>the 13th should be your new doubly-indirect block.</strong></p>
 </blockquote>
 <h3 id="Some-hints"><a href="#Some-hints" class="headerlink" title="Some hints"></a>Some hints</h3><blockquote>
 <ul>
@@ -320,7 +324,7 @@
 <p>In this exercise you will add symbolic links to xv6. Symbolic links (or soft links) refer to a linked file by pathname; when a symbolic link is opened, the kernel follows the link to the referred file. Symbolic links resembles hard links, but hard links are restricted to pointing to file on the same disk, while symbolic links can cross disk devices. Although xv6 doesn’t support multiple devices, implementing this system call is a good exercise to understand how pathname lookup works.</p>
 </blockquote>
 <h3 id="Question-requirements-1"><a href="#Question-requirements-1" class="headerlink" title="Question requirements"></a>Question requirements</h3><blockquote>
-<p>You will implement the <code>symlink(char *target, char *path)</code> system call, which creates a new symbolic link at path that refers to file named by <strong>target</strong>. For further information, see the man page symlink. To test, add <strong>symlinktest</strong> to the <strong>Makefile</strong> and run it. </p>
+<p>You will implement the <code>symlink(char *target, char *path)</code> system call, which creates a new symbolic link at path that refers to file named by <strong>target</strong>. For further information, see the man page symlink. To test, add <strong>symlinktest</strong> to the <strong>Makefile</strong> and run it.</p>
 </blockquote>
 <h3 id="Some-hints-1"><a href="#Some-hints-1" class="headerlink" title="Some hints"></a>Some hints</h3><blockquote>
 <ul>
@@ -479,7 +483,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs c">uint64<br><span class="hljs-title function_">sys_open</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  ...<br>  <span class="hljs-keyword">if</span>(omode &amp; O_CREATE)&#123;<br>    ip = create(path, T_FILE, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span>(ip == <span class="hljs-number">0</span>)&#123;<br>      end_op();<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// 如果不是创建文件,那么就在这里进行检查</span><br>    <span class="hljs-type">int</span> symlink_depth = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>) &#123;<br>      <span class="hljs-keyword">if</span>((ip = namei(path)) == <span class="hljs-number">0</span>)&#123;<br>        end_op();<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>      &#125;<br>      ilock(ip);<br>      <span class="hljs-comment">// 如果是链接类型且指明要跟随,意味着要打开它，取出它的链接，进行迭代</span><br>      <span class="hljs-keyword">if</span>(ip-&gt;type == T_SYMLINK &amp;&amp; (omode &amp; O_NOFOLLOW) == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">if</span>(++symlink_depth &gt; <span class="hljs-number">10</span>) &#123;<br>          <span class="hljs-comment">// too many layer of symlinks, might be a loop</span><br>          iunlockput(ip);<br>          end_op();<br>          <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br>        <span class="hljs-comment">// 读到 path 中</span><br>        <span class="hljs-keyword">if</span>(readi(ip, <span class="hljs-number">0</span>, (uint64)path, <span class="hljs-number">0</span>, MAXPATH) &lt; <span class="hljs-number">0</span>) &#123;<br>          iunlockput(ip);<br>          end_op();<br>          <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br>        iunlockput(ip);<br>      &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// 说明这是一个普通文件,退出之后，准备返回</span><br>        <span class="hljs-keyword">break</span>;<br>      &#125;<br>    &#125;<br>...<br><br>  iunlock(ip);<br>  end_op();<br><br>  <span class="hljs-keyword">return</span> fd;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>这样，我们就完成了整个实验：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">== Test running bigfile == <br>$ make qemu-gdb<br>running bigfile: OK (171.3s) <br>== Test running symlinktest == <br>$ make qemu-gdb<br>(1.0s) <br>== Test   symlinktest: symlinks == <br>  symlinktest: symlinks: OK <br>== Test   symlinktest: concurrent symlinks == <br>  symlinktest: concurrent symlinks: OK <br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">== Test running bigfile ==<br>$ make qemu-gdb<br>running bigfile: OK (171.3s)<br>== Test running symlinktest ==<br>$ make qemu-gdb<br>(1.0s)<br>== Test   symlinktest: symlinks ==<br>  symlinktest: symlinks: OK<br>== Test   symlinktest: concurrent symlinks ==<br>  symlinktest: concurrent symlinks: OK<br></code></pre></td></tr></table></figure>
 
 
 
@@ -517,7 +521,15 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E5%AD%A6%E4%B9%A0-%E7%AC%94%E8%AE%B0-xv6-OS-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="print-no-link">#学习 笔记 xv6 OS 操作系统 文件系统</a>
+        <a href="/tags/%E5%AD%A6%E4%B9%A0/" class="print-no-link">#学习</a>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/MIT-6-S081/" class="print-no-link">#MIT 6.S081</a>
+      
+        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="print-no-link">#文件系统</a>
       
     </div>
   

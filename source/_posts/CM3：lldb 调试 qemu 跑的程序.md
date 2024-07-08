@@ -1,7 +1,10 @@
 ---
 title: CM3：lldb 调试 qemu 跑的程序
 date: 2024-04-28 11:50:57
-tags: 汇编 QEMU CM3
+tags:
+    - 汇编
+    - QEMU
+    - CM3
 categories: CM3
 ---
 

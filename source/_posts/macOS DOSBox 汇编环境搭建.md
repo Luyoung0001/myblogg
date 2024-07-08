@@ -1,8 +1,14 @@
 ---
 title: macOS DOSBox 汇编环境搭建
 date: 2024-05-05 22:35:14
-tags: macos 汇编 DOSBox 8086
-categories: 经验方法 8086
+tags:
+    - macos
+    - 汇编
+    - DOSBox
+    - 8086
+categories:
+    - 经验方法
+    - 8086
 ---
 
 <!--more-->
@@ -21,7 +27,7 @@ mkdir dosbox
 
 ![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/1ebdb91472984c688955a71222bf1e51_1720253679644.png?token=ANB4BCMKEFJADVHJ3GSX533GRD6S6)
  ### 三、配置自动挂载
- 
+
 由于**DOSBox**启动之后所有的设置都会复原，因此要实现自动挂载需要配置自动运行命令。
 
 打开**Terminal**，进入到 `~/Library/Preferences` 目录下，运行：

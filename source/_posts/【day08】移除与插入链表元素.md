@@ -1,7 +1,10 @@
 ---
 title: 【day08】移除与插入链表元素
 date: 2023-03-20 22:37:14
-tags: 链表 数据结构 算法
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 
@@ -36,7 +39,7 @@ MyLinkedList* myLinkedListCreate() {
 	obj->next = NULL;
     return obj;
 
- 
+
 }
 
 int myLinkedListGet(MyLinkedList* obj, int index) {
@@ -54,7 +57,7 @@ int myLinkedListGet(MyLinkedList* obj, int index) {
 // 这是有头结点的链表
 void myLinkedListAddAtHead(MyLinkedList* obj, int val) {
 MyLinkedList* p = (MyLinkedList*)malloc(sizeof(MyLinkedList));
-        
+
         p->val = val;
         p->next = obj->next;
         obj->next = p;
@@ -62,7 +65,7 @@ MyLinkedList* p = (MyLinkedList*)malloc(sizeof(MyLinkedList));
 
 void myLinkedListAddAtTail(MyLinkedList* obj, int val) {
 MyLinkedList* cur = obj;
-     
+
     while (cur->next!=NULL)
     {
         cur=cur->next;
@@ -71,11 +74,11 @@ MyLinkedList* cur = obj;
         p->next = NULL;
         p->val = val;
         cur->next = p;
-    
+
 }
 
 void myLinkedListAddAtIndex(MyLinkedList* obj, int index, int val) {
- 
+
     if (index <= 0)
     {
         MyLinkedList* p = (MyLinkedList*)malloc(sizeof(MyLinkedList));
@@ -135,15 +138,15 @@ void myLinkedListFree(MyLinkedList* obj) {
  * Your MyLinkedList struct will be instantiated and called as such:
  * MyLinkedList* obj = myLinkedListCreate();
  * int param_1 = myLinkedListGet(obj, index);
- 
+
  * myLinkedListAddAtHead(obj, val);
- 
+
  * myLinkedListAddAtTail(obj, val);
- 
+
  * myLinkedListAddAtIndex(obj, index, val);
- 
+
  * myLinkedListDeleteAtIndex(obj, index);
- 
+
  * myLinkedListFree(obj);
 */
 ```
@@ -200,7 +203,7 @@ class Solution {
         }
         p.val = q.val;
         p.next = null;
-        
+
     }
 }
 ```
@@ -231,7 +234,7 @@ class Solution {
         // 指向删除结点前的一个
         // 输入：head = [1,2,3,4,5], n = 2
         // 输出：[1,2,3,5]
-        for(int i = 0; i < len-n; i++){ 
+        for(int i = 0; i < len-n; i++){
             p = p.next;
         }
         // 删除结点
@@ -297,7 +300,7 @@ struct ListNode* deleteDuplicates(struct ListNode* head){
     }
     head->next = deleteDuplicates(head->next);
     return head;
-    
+
 }
 ```
 

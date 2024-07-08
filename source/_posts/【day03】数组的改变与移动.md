@@ -1,7 +1,10 @@
 ---
 title: 【day03】数组的改变与移动
 date: 2023-03-10 23:42:56
-tags: leetcode 算法 数据结构
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 

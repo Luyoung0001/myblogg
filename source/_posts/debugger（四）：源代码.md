@@ -1,7 +1,10 @@
 ---
 title: debugger（四）：源代码
 date: 2024-06-10 22:36:15
-tags: c++ debugger
+tags:
+    - c++
+    - debugger
+    - lldb
 categories: C++ debugger
 ---
 
@@ -55,9 +58,9 @@ dwarf::die Debugger::get_function_from_pc(std::intptr_t pc) {
   for (auto &cu : m_dwarf.compilation_units()) { // 循环遍历所有cu
     if (die_pc_range(cu.root()).contains(pc)) {
       for (const auto &die :
-           cu.root()) { 
+           cu.root()) {
         if (die.tag ==
-            dwarf::DW_TAG::subprogram) { 
+            dwarf::DW_TAG::subprogram) {
           if (die_pc_range(die).contains(pc)) {
             return die;
           }

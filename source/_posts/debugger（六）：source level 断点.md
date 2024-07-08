@@ -1,7 +1,10 @@
 ---
 title: debugger（六）：source level 断点
 date: 2024-06-11 18:37:27
-tags: c++ lldb debugger
+tags:
+    - c++
+    - debugger
+    - lldb
 categories: C++ debugger
 ---
 
@@ -12,7 +15,7 @@ categories: C++ debugger
 
 ```bash
 // 函数名
-break main 
+break main
 // 源代码
 break main.cpp:10
 // 地址

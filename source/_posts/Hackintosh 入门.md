@@ -1,8 +1,12 @@
 ---
 title: Hackintosh 入门
 date: 2023-07-27 11:28:57
-tags: 操作系统 Hackintosh
-categories: OS 经验方法
+tags:
+    - 操作系统
+    - Hackintosh
+categories:
+    - OS
+    - 经验方法
 ---
 
 <!--more-->

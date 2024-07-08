@@ -1,7 +1,10 @@
 ---
 title: 【day07】二维数组及滚动数组
 date: 2023-03-19 22:10:01
-tags: 算法 leetcode
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 
@@ -25,14 +28,14 @@ class Solution {
 
         //输入: numRows = 5
         //输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
-        
+
         List<List<Integer>> result = new ArrayList<>();
         ans[0][0] = 1;
         List<Integer> temp1 = new ArrayList<>();
         // 增加第一个元素
         temp1.add(1);
         result.add(temp1);
-        
+
         for(int i = 1; i < numRows; i++){
             List<Integer> temp = new ArrayList<>();
             for(int j = 0; j <= i; j++){
@@ -171,7 +174,7 @@ class Solution {
                     board[i][j] = '.';
                     for (int k = j + 1; k < col && board[i][k] == 'X'; ++k) {
                         board[i][k] = '.';
-                    }                    
+                    }
                     for (int k = i + 1; k < row && board[k][j] == 'X'; ++k) {
                         board[k][j] = '.';
                     }

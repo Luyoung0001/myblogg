@@ -1,7 +1,10 @@
 ---
 title: Unix/Linux编程：UDS 数据报
 date: 2023-06-08 20:51:32
-tags: unix linux udp
+tags:
+    - unix
+    - linux
+    - udp
 categories: socket Web Unix/Linux
 ---
 
@@ -47,7 +50,7 @@ ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *
 #include <sys/un.h>
 #include <zconf.h>
 
-#define BUF_SIZE 10 
+#define BUF_SIZE 10
 
 #define SV_SOCK_PATH "/tmp/ud_ucase"
 
@@ -182,7 +185,7 @@ int main(int argc, char *argv[]) {
 
 
     for (j = 1; j < argc; j++) {
-        msgLen = strlen(argv[j]); 
+        msgLen = strlen(argv[j]);
         if (sendto(sfd, argv[j], msgLen, 0, (struct sockaddr *)&svaddr,
                    sizeof(struct sockaddr_un)) != msgLen) {
             perror("sendto");
@@ -197,7 +200,7 @@ int main(int argc, char *argv[]) {
         }
         printf("Response %d: %.*s\n", j, (int)numBytes, resp);
     }
-    remove(claddr.sun_path); 
+    remove(claddr.sun_path);
     exit(EXIT_SUCCESS);
 }
 
@@ -206,7 +209,7 @@ int main(int argc, char *argv[]) {
 编译运行之后，启动客户端和服务端，键入：
 
 ```bash
-(base) ***@shenjian Test % ./client_ud 你好 
+(base) ***@shenjian Test % ./client_ud 你好
 hello nihao
 Response 1: 你好
 Response 2: HELLO

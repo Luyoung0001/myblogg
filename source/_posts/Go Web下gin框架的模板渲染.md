@@ -1,7 +1,11 @@
 ---
 title: Go Web下gin框架的模板渲染
 date: 2023-05-23 22:16:27
-tags: 前端 golang gin
+tags:
+	- golang
+	- 后端
+	- 前端
+	- 网络
 categories: Golang 前端
 ---
 
@@ -34,7 +38,7 @@ Gin框架的设计目标是保持简单和易于使用，同时提供足够的�
 使用`html/template`包可以将动态数据与静态HTML模板分离，使代码更易于维护和重用。你可以定义模板文件，然后将数据传递给模板进行渲染，最后生成最终的HTML输出。
 
  ### （一）初次渲染
- 
+
 先创建一个名为 `hello.tmpl`的文件：
 ```go
 <!DOCTYPE html>
@@ -390,7 +394,7 @@ import (
 
 func main() {
 	r := gin.Default()
-	
+
 	r.LoadHTMLGlob("/Users/luliang/GoLand/gin_practice/chap5/templates/**/*")
 	r.GET("/posts/index", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "posts/index.tmpl", gin.H{
@@ -458,7 +462,7 @@ func main() {
 	r := gin.Default()
 	// 加载静态文件
 	r.Static("/xxx", "/Users/luliang/GoLand/gin_practice/chap5/statics")
-	
+
 	r.LoadHTMLGlob("/Users/luliang/GoLand/gin_practice/chap5/templates/**/*")
 	r.GET("/posts/index", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "posts/index.tmpl", gin.H{

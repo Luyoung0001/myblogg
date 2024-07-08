@@ -1,8 +1,13 @@
 ---
 title: debugger（一）：打断点的实现以及案例分析
 date: 2024-05-25 23:32:01
-tags: c++ lldb
-categories: 系统编程 C++ debugger
+tags:
+    - c++
+    - debugger
+categories:
+    - 系统编程
+    - C++
+    - debugger
 ---
 
 <!--more-->
@@ -204,7 +209,7 @@ int main() {
 现在看看这个被调试的程序的文件结构：
 
 ```bash
-objdump -d hw        
+objdump -d hw
 
 hw:     file format elf64-x86-64
 
@@ -212,14 +217,14 @@ hw:     file format elf64-x86-64
 Disassembly of section .init:
 
 0000000000001000 <_init>:
-    1000:       f3 0f 1e fa             endbr64 
+    1000:       f3 0f 1e fa             endbr64
     1004:       48 83 ec 08             sub    $0x8,%rsp
     1008:       48 8b 05 d9 2f 00 00    mov    0x2fd9(%rip),%rax        # 3fe8 <__gmon_start__>
     100f:       48 85 c0                test   %rax,%rax
     1012:       74 02                   je     1016 <_init+0x16>
     1014:       ff d0                   callq  *%rax
     1016:       48 83 c4 08             add    $0x8,%rsp
-    101a:       c3                      retq   
+    101a:       c3                      retq
 
 Disassembly of section .plt:
 
@@ -227,15 +232,15 @@ Disassembly of section .plt:
     1020:       ff 35 82 2f 00 00       pushq  0x2f82(%rip)        # 3fa8 <_GLOBAL_OFFSET_TABLE_+0x8>
     1026:       f2 ff 25 83 2f 00 00    bnd jmpq *0x2f83(%rip)        # 3fb0 <_GLOBAL_OFFSET_TABLE_+0x10>
     102d:       0f 1f 00                nopl   (%rax)
-    1030:       f3 0f 1e fa             endbr64 
+    1030:       f3 0f 1e fa             endbr64
     1034:       68 00 00 00 00          pushq  $0x0
     1039:       f2 e9 e1 ff ff ff       bnd jmpq 1020 <.plt>
     103f:       90                      nop
-    1040:       f3 0f 1e fa             endbr64 
+    1040:       f3 0f 1e fa             endbr64
     1044:       68 01 00 00 00          pushq  $0x1
     1049:       f2 e9 d1 ff ff ff       bnd jmpq 1020 <.plt>
     104f:       90                      nop
-    1050:       f3 0f 1e fa             endbr64 
+    1050:       f3 0f 1e fa             endbr64
     1054:       68 02 00 00 00          pushq  $0x2
     1059:       f2 e9 c1 ff ff ff       bnd jmpq 1020 <.plt>
     105f:       90                      nop
@@ -243,31 +248,31 @@ Disassembly of section .plt:
 Disassembly of section .plt.got:
 
 0000000000001060 <__cxa_finalize@plt>:
-    1060:       f3 0f 1e fa             endbr64 
+    1060:       f3 0f 1e fa             endbr64
     1064:       f2 ff 25 65 2f 00 00    bnd jmpq *0x2f65(%rip)        # 3fd0 <__cxa_finalize@GLIBC_2.2.5>
     106b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
 
 Disassembly of section .plt.sec:
 
 0000000000001070 <__cxa_atexit@plt>:
-    1070:       f3 0f 1e fa             endbr64 
+    1070:       f3 0f 1e fa             endbr64
     1074:       f2 ff 25 3d 2f 00 00    bnd jmpq *0x2f3d(%rip)        # 3fb8 <__cxa_atexit@GLIBC_2.2.5>
     107b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
 
 0000000000001080 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>:
-    1080:       f3 0f 1e fa             endbr64 
+    1080:       f3 0f 1e fa             endbr64
     1084:       f2 ff 25 35 2f 00 00    bnd jmpq *0x2f35(%rip)        # 3fc0 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@GLIBCXX_3.4>
     108b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
 
 0000000000001090 <_ZNSt8ios_base4InitC1Ev@plt>:
-    1090:       f3 0f 1e fa             endbr64 
+    1090:       f3 0f 1e fa             endbr64
     1094:       f2 ff 25 2d 2f 00 00    bnd jmpq *0x2f2d(%rip)        # 3fc8 <_ZNSt8ios_base4InitC1Ev@GLIBCXX_3.4>
     109b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
 
 Disassembly of section .text:
 
 00000000000010a0 <_start>:
-    10a0:       f3 0f 1e fa             endbr64 
+    10a0:       f3 0f 1e fa             endbr64
     10a4:       31 ed                   xor    %ebp,%ebp
     10a6:       49 89 d1                mov    %rdx,%r9
     10a9:       5e                      pop    %rsi
@@ -279,7 +284,7 @@ Disassembly of section .text:
     10ba:       48 8d 0d 5f 01 00 00    lea    0x15f(%rip),%rcx        # 1220 <__libc_csu_init>
     10c1:       48 8d 3d c1 00 00 00    lea    0xc1(%rip),%rdi        # 1189 <main>
     10c8:       ff 15 12 2f 00 00       callq  *0x2f12(%rip)        # 3fe0 <__libc_start_main@GLIBC_2.2.5>
-    10ce:       f4                      hlt    
+    10ce:       f4                      hlt
     10cf:       90                      nop
 
 00000000000010d0 <deregister_tm_clones>:
@@ -292,7 +297,7 @@ Disassembly of section .text:
     10ed:       74 09                   je     10f8 <deregister_tm_clones+0x28>
     10ef:       ff e0                   jmpq   *%rax
     10f1:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)
-    10f8:       c3                      retq   
+    10f8:       c3                      retq
     10f9:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)
 
 0000000000001100 <register_tm_clones>:
@@ -310,16 +315,16 @@ Disassembly of section .text:
     112e:       74 08                   je     1138 <register_tm_clones+0x38>
     1130:       ff e0                   jmpq   *%rax
     1132:       66 0f 1f 44 00 00       nopw   0x0(%rax,%rax,1)
-    1138:       c3                      retq   
+    1138:       c3                      retq
     1139:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)
 
 0000000000001140 <__do_global_dtors_aux>:
-    1140:       f3 0f 1e fa             endbr64 
+    1140:       f3 0f 1e fa             endbr64
     1144:       80 3d e5 2f 00 00 00    cmpb   $0x0,0x2fe5(%rip)        # 4130 <completed.0>
     114b:       75 2b                   jne    1178 <__do_global_dtors_aux+0x38>
     114d:       55                      push   %rbp
     114e:       48 83 3d 7a 2e 00 00    cmpq   $0x0,0x2e7a(%rip)        # 3fd0 <__cxa_finalize@GLIBC_2.2.5>
-    1155:       00 
+    1155:       00
     1156:       48 89 e5                mov    %rsp,%rbp
     1159:       74 0c                   je     1167 <__do_global_dtors_aux+0x27>
     115b:       48 8b 3d a6 2e 00 00    mov    0x2ea6(%rip),%rdi        # 4008 <__dso_handle>
@@ -327,17 +332,17 @@ Disassembly of section .text:
     1167:       e8 64 ff ff ff          callq  10d0 <deregister_tm_clones>
     116c:       c6 05 bd 2f 00 00 01    movb   $0x1,0x2fbd(%rip)        # 4130 <completed.0>
     1173:       5d                      pop    %rbp
-    1174:       c3                      retq   
+    1174:       c3                      retq
     1175:       0f 1f 00                nopl   (%rax)
-    1178:       c3                      retq   
+    1178:       c3                      retq
     1179:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)
 
 0000000000001180 <frame_dummy>:
-    1180:       f3 0f 1e fa             endbr64 
+    1180:       f3 0f 1e fa             endbr64
     1184:       e9 77 ff ff ff          jmpq   1100 <register_tm_clones>
 
 0000000000001189 <main>:
-    1189:       f3 0f 1e fa             endbr64 
+    1189:       f3 0f 1e fa             endbr64
     118d:       55                      push   %rbp
     118e:       48 89 e5                mov    %rsp,%rbp
     1191:       48 8d 35 6d 0e 00 00    lea    0xe6d(%rip),%rsi        # 2005 <_ZStL19piecewise_construct+0x1>
@@ -345,10 +350,10 @@ Disassembly of section .text:
     119f:       e8 dc fe ff ff          callq  1080 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
     11a4:       b8 00 00 00 00          mov    $0x0,%eax
     11a9:       5d                      pop    %rbp
-    11aa:       c3                      retq   
+    11aa:       c3                      retq
 
 00000000000011ab <_Z41__static_initialization_and_destruction_0ii>:
-    11ab:       f3 0f 1e fa             endbr64 
+    11ab:       f3 0f 1e fa             endbr64
     11af:       55                      push   %rbp
     11b0:       48 89 e5                mov    %rsp,%rbp
     11b3:       48 83 ec 10             sub    $0x10,%rsp
@@ -366,24 +371,24 @@ Disassembly of section .text:
     11ed:       48 89 c7                mov    %rax,%rdi
     11f0:       e8 7b fe ff ff          callq  1070 <__cxa_atexit@plt>
     11f5:       90                      nop
-    11f6:       c9                      leaveq 
-    11f7:       c3                      retq   
+    11f6:       c9                      leaveq
+    11f7:       c3                      retq
 
 00000000000011f8 <_GLOBAL__sub_I_main>:
-    11f8:       f3 0f 1e fa             endbr64 
+    11f8:       f3 0f 1e fa             endbr64
     11fc:       55                      push   %rbp
     11fd:       48 89 e5                mov    %rsp,%rbp
     1200:       be ff ff 00 00          mov    $0xffff,%esi
     1205:       bf 01 00 00 00          mov    $0x1,%edi
     120a:       e8 9c ff ff ff          callq  11ab <_Z41__static_initialization_and_destruction_0ii>
     120f:       5d                      pop    %rbp
-    1210:       c3                      retq   
+    1210:       c3                      retq
     1211:       66 2e 0f 1f 84 00 00    nopw   %cs:0x0(%rax,%rax,1)
-    1218:       00 00 00 
+    1218:       00 00 00
     121b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
 
 0000000000001220 <__libc_csu_init>:
-    1220:       f3 0f 1e fa             endbr64 
+    1220:       f3 0f 1e fa             endbr64
     1224:       41 57                   push   %r15
     1226:       4c 8d 3d 5b 2b 00 00    lea    0x2b5b(%rip),%r15        # 3d88 <__frame_dummy_init_array_entry>
     122d:       41 56                   push   %r14
@@ -416,28 +421,28 @@ Disassembly of section .text:
     127e:       41 5d                   pop    %r13
     1280:       41 5e                   pop    %r14
     1282:       41 5f                   pop    %r15
-    1284:       c3                      retq   
+    1284:       c3                      retq
     1285:       66 66 2e 0f 1f 84 00    data16 nopw %cs:0x0(%rax,%rax,1)
-    128c:       00 00 00 00 
+    128c:       00 00 00 00
 
 0000000000001290 <__libc_csu_fini>:
-    1290:       f3 0f 1e fa             endbr64 
-    1294:       c3                      retq   
+    1290:       f3 0f 1e fa             endbr64
+    1294:       c3                      retq
 
 Disassembly of section .fini:
 
 0000000000001298 <_fini>:
-    1298:       f3 0f 1e fa             endbr64 
+    1298:       f3 0f 1e fa             endbr64
     129c:       48 83 ec 08             sub    $0x8,%rsp
     12a0:       48 83 c4 08             add    $0x8,%rsp
-    12a4:       c3                      retq   
+    12a4:       c3                      retq
 ```
 
 可以看到，这个程序虽然只是输出 `hello,world.`，但依然很复杂，因为它要包含其它很多的基础资源或者子程序，我们只需要重点关注 `main`：
 
 ```bash
 0000000000001189 <main>:
-    1189:       f3 0f 1e fa             endbr64 
+    1189:       f3 0f 1e fa             endbr64
     118d:       55                      push   %rbp
     118e:       48 89 e5                mov    %rsp,%rbp
     1191:       48 8d 35 6d 0e 00 00    lea    0xe6d(%rip),%rsi        # 2005 <_ZStL19piecewise_construct+0x1>
@@ -445,7 +450,7 @@ Disassembly of section .fini:
     119f:       e8 dc fe ff ff          callq  1080 <_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt>
     11a4:       b8 00 00 00 00          mov    $0x0,%eax
     11a9:       5d                      pop    %rbp
-    11aa:       c3                      retq   
+    11aa:       c3                      retq
 ```
 
 可以看到，这个段是从`0000000000001189`开始的，需要关注的输出语句为：
@@ -472,7 +477,7 @@ if (pid == 0) {
 ```cpp
 ./main hw
 Start debugging the progress: hw, pid = 260915:
-minidbg> 
+minidbg>
 ```
 可以看到，`pid` 为 `260915`，另开一个 **zsh**，直接查看：
 
@@ -488,7 +493,7 @@ cat /proc/260915/maps
 7ffff7fd0000-7ffff7ff3000 r-xp 00001000 fc:01 1185709                    /usr/lib/x86_64-linux-gnu/ld-2.31.so
 7ffff7ff3000-7ffff7ffb000 r--p 00024000 fc:01 1185709                    /usr/lib/x86_64-linux-gnu/ld-2.31.so
 7ffff7ffc000-7ffff7ffe000 rw-p 0002c000 fc:01 1185709                    /usr/lib/x86_64-linux-gnu/ld-2.31.so
-7ffff7ffe000-7ffff7fff000 rw-p 00000000 00:00 0 
+7ffff7ffe000-7ffff7fff000 rw-p 00000000 00:00 0
 7ffffffde000-7ffffffff000 rw-p 00000000 00:00 0                          [stack]
 ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0
 ```
@@ -514,7 +519,7 @@ Start debugging the progress: hw, pid = 261169:
 minidbg> break 0x55555555519f
 Set breakpoint at address 0x55555555519f
 minidbg> continue
-minidbg> 
+minidbg>
 ```
 我们换一个地址：
 
@@ -525,7 +530,7 @@ minidbg> break 0x0x5555555551a4
 Set breakpoint at address 0x5555555551a4
 minidbg> continue
 hello,world.
-minidbg> 
+minidbg>
 ```
 可以看到，以下就打印出了`hello,world`。以上符合我们的预期，因此实验是成功的，另外不需要担心 `pid` 不一样，由于我们关闭了地址空间布局随机化（**ASLR**, Address Space Layout Randomization），段地址不会变，因此地址也是固定的。
 

@@ -1,7 +1,10 @@
 ---
 title: macOS下binutils 的安装
 date: 2023-01-10 15:14:04
-tags: macos linux 服务器
+tags:
+    - macos
+    - linux
+    - 服务器
 categories: Some_Tools
 ---
 

@@ -24,9 +24,10 @@
 <meta property="og:description" content="〇、前言事实上，一个成熟的 debugger 是不会利用 break 0xADDR 类似的命令来打断点的，这个需要改进，使得它可以直接利用函数名、行数等来打断点。这就需要生成编译信息，只需要在编译的时候，在目标文件中加以下参数： 12# 添加编译器标志set(CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -g -O0 -gdwarf-2&amp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-06-10T13:46:30.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.567Z">
+<meta property="article:modified_time" content="2024-07-08T06:44:06.856Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="c++ debugger">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="debugger">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -330,7 +331,7 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp">#<span class="hljs-number">1</span> <span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br>#<span class="hljs-number">2</span> <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>#<span class="hljs-number">3</span>  std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world0.\n&quot;</span>;<br>#<span class="hljs-number">4</span>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>#<span class="hljs-number">5</span>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>如果我们想在源代码第三行处打断点，就应该把地址定在 <code>0x00001191</code>，这也可以在 elf 中找到依据：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">0000000000001189 &lt;main&gt;:<br>    1189:       f3 0f 1e fa             endbr64 <br>    118d:       55                      push   %rbp<br>    118e:       48 89 e5                mov    %rsp,%rbp<br>    1191:       48 8d 05 6c 0e 00 00    lea    0xe6c(%rip),%rax        <span class="hljs-comment"># 2004 &lt;_IO_stdin_used+0x4&gt;</span><br>    1198:       48 89 c6                mov    %rax,%rsi<br>    119b:       48 8d 05 7e 2e 00 00    lea    0x2e7e(%rip),%rax        <span class="hljs-comment"># 4020 &lt;_ZSt4cerr@GLIBCXX_3.4&gt;</span><br>    11a2:       48 89 c7                mov    %rax,%rdi<br>    11a5:       e8 d6 fe ff ff          call   1080 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;<br>    11aa:       b8 00 00 00 00          mov    <span class="hljs-variable">$0x0</span>,%eax<br>    11af:       5d                      pop    %rbp<br>    11b0:       c3               <br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">0000000000001189 &lt;main&gt;:<br>    1189:       f3 0f 1e fa             endbr64<br>    118d:       55                      push   %rbp<br>    118e:       48 89 e5                mov    %rsp,%rbp<br>    1191:       48 8d 05 6c 0e 00 00    lea    0xe6c(%rip),%rax        <span class="hljs-comment"># 2004 &lt;_IO_stdin_used+0x4&gt;</span><br>    1198:       48 89 c6                mov    %rax,%rsi<br>    119b:       48 8d 05 7e 2e 00 00    lea    0x2e7e(%rip),%rax        <span class="hljs-comment"># 4020 &lt;_ZSt4cerr@GLIBCXX_3.4&gt;</span><br>    11a2:       48 89 c7                mov    %rax,%rdi<br>    11a5:       e8 d6 fe ff ff          call   1080 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;<br>    11aa:       b8 00 00 00 00          mov    <span class="hljs-variable">$0x0</span>,%eax<br>    11af:       5d                      pop    %rbp<br>    11b0:       c3<br></code></pre></td></tr></table></figure>
 
 <p>另外还可以看到，编译单元中的：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">COMPILE_UNIT&lt;header overall offset = 0x00000000&gt;:<br>&lt; 0&gt;&lt;0x0000000b&gt;  DW_TAG_compile_unit<br>...<br>                    DW_AT_low_pc                0x00001189<br>                    DW_AT_high_pc               0x00001220<br>                    DW_AT_stmt_list             0x00000000<br>                    ...<br></code></pre></td></tr></table></figure>
@@ -354,8 +355,15 @@
     
       <span class="category-chain">
         
-  <a href="/categories/C-debugger/" class="category-chain-item">C++ debugger</a>
+  <a href="/categories/C/" class="category-chain-item">C++</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/C/debugger/" class="category-chain-item">debugger</a>
+  
+  
+
   
 
       </span>
@@ -369,7 +377,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/c-debugger/" class="print-no-link">#c++ debugger</a>
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/debugger/" class="print-no-link">#debugger</a>
       
     </div>
   

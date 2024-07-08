@@ -1,7 +1,11 @@
 ---
 title: xv6 文件系统面临的问题
 date: 2023-12-20 15:47:03
-tags: xv6 OS 学习 笔记 操作系统
+tags:
+    - xv6
+    - 操作系统
+    - OS
+    - 笔记
 categories: OS
 ---
 

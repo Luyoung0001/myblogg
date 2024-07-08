@@ -1,7 +1,10 @@
 ---
 title: Solutions for Xiyou Linux Group 2021 Interview Questions
 date: 2022-11-16 17:37:21
-tags: linux c++
+tags:
+    - linux
+    - c++
+    - 算法
 categories: Tests for Basic Knowledge of C
 ---
 
@@ -17,13 +20,13 @@ categories: Tests for Basic Knowledge of C
 > - The program source code in this test question is only used to examine the basics of C language and should not be used as an example of C language code style.
 > - The difficulty of the question has nothing to do with the serial number.
 > - All topics assume `x86_64 GNU/Linux` environment is compiled and run.
-> 
-> Copyright © Xiyou Linux Group, All Rights Reserved.  
+>
+> Copyright © Xiyou Linux Group, All Rights Reserved.
 > This exam is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 ## 1. Size and length don't mean the same thing
 >What are the similarities and differences between `sizeof()` and `strlen()`?
-> 
+>
 > How do their results differ for different parameters? Please try an example.
 
 ```c
@@ -57,7 +60,7 @@ int main(void) {
   printf("sizeof(t2): %d\n", sizeof(t2));
 }
 ```
-> **The answer is stated below:** 
+> **The answer is stated below:**
 ```c
 #include <stdio.h>
 struct test1 {
@@ -174,11 +177,11 @@ int main() {
 > Please explain how the following procedure accomplishes the summation?
 
 ```c
-unsigned sum(unsigned n) { 
-	return n ? sum(n - 1) + n : 0; 
+unsigned sum(unsigned n) {
+	return n ? sum(n - 1) + n : 0;
 }
 int main(void) {
-	printf("%u\n", sum(100)); 
+	printf("%u\n", sum(100));
 }
 ```
 > - This is actually a recursive function call, thus implementing the summation. Specifically, a tail recursion.
@@ -256,7 +259,7 @@ int main(void) {
   printf("%d %d %d \n", a[2][1], **(a + 1), *(ptr - 1));
 }
 ```
-> **The answer is stated below:** 
+> **The answer is stated below:**
 
 ```c
 #include <stdio.h>
@@ -345,7 +348,7 @@ void func4(const int *const n) {
 ## 9. I heard that flipping the case of letters does not affect the reading of English?
 
 > Please write the `convert` function to convert uppercase letters to lowercase letters and lowercase letters to uppercase letters in the string as a parameter. Returns the new string resulting from the conversion.
-> 
+>
 ```c
 char *convert(const char *s){
     char *ret = malloc(sizeof(char)*(strlen(s)+1));
@@ -358,7 +361,7 @@ char *convert(const char *s){
             ret[i] = ret[i] - 32;
         }
     }
-    return ret;   
+    return ret;
 }
 int main(void) {
   char *str = "XiyouLinux Group 2022";
@@ -421,7 +424,7 @@ int main(int argc, char *argv[]) {
     printf("%s\n", argv[i]);
 }
 ```
-> - argc is the number of parameters, here is a signed Integer type. Its value represents the number of parameters entered when executing the program. 
+> - argc is the number of parameters, here is a signed Integer type. Its value represents the number of parameters entered when executing the program.
 > - If it is run directly, its value is 1. After entering the loop,  its value will overflow, the conditional statement will be executed.
 > - If your program is a.out, if you run the program on the command line, (First, you should use the cd command to enter the directory where the a.out file is located on the command line)
 > -  The running command is: ./a.out Linux hello
@@ -484,9 +487,9 @@ int main(void) {
 > - In other scenarios, such as network transfers and file storage, big endian is used.
 
 ## 14. Please talk about your understanding of the process from "C source file to exe file"
-> - From source files to executable files generally need to go through several steps: preprocessing -> compile -> assembly -> link these four processes. 
-> - Preprocessing: Preprocessing is equivalent to converting the source code into a new c program according to the preprocessing command, but usually with an i extension. 
-> - Compile: Translate the resulting i file into assembly code, usually with an s extension. 
+> - From source files to executable files generally need to go through several steps: preprocessing -> compile -> assembly -> link these four processes.
+> - Preprocessing: Preprocessing is equivalent to converting the source code into a new c program according to the preprocessing command, but usually with an i extension.
+> - Compile: Translate the resulting i file into assembly code, usually with an s extension.
 > - Assembly: Translate assembly files into machine instructions and package them into o files for relocatable object programs
 ## 15. (Optional) Heap and Stack
 

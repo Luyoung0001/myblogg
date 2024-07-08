@@ -1,7 +1,11 @@
 ---
 title: xv6 中的一些系统调用（上）
 date: 2023-12-10 23:02:24
-tags: xv6 操作系统 OS 笔记
+tags:
+    - xv6
+    - 操作系统
+    - OS
+    - 笔记
 categories: OS
 ---
 
@@ -46,7 +50,7 @@ exit(int status)
 
   // Parent might be sleeping in wait().
   wakeup(p->parent);
-  
+
   acquire(&p->lock);
 
   p->xstate = status;
@@ -147,7 +151,7 @@ wait(uint64 addr)
       release(&wait_lock);
       return -1;
     }
-    
+
     // Wait for a child to exit.
     sleep(p, &wait_lock);  //DOC: wait-sleep
   }

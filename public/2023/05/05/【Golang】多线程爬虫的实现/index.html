@@ -25,9 +25,11 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce4dae7e22114a1e950a37a9d8001568_1720253831933.png?token=ANB4BCOYU3QPKG5QPU4S4SLGRD64K">
 <meta property="article:published_time" content="2023-05-05T11:23:51.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.571Z">
+<meta property="article:modified_time" content="2024-07-08T06:25:38.684Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="golang 爬虫 开发语言">
+<meta property="article:tag" content="开发语言">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="爬虫">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce4dae7e22114a1e950a37a9d8001568_1720253831933.png?token=ANB4BCOYU3QPKG5QPU4S4SLGRD64K">
   
@@ -335,8 +337,8 @@
 <p>运行结果：</p>
 <blockquote>
 <p>main进入阻塞状态,等待wg中的子goroutine结束 fun1.i: 1<br>        fun2.j, 1<br>        fun2.j, 2<br>        fun2.j, 3<br>        fun2.j, 4<br>        fun2.j, 5<br>        fun1.i: 2<br>        fun1.i: 3<br>        fun1.i: 4<br>        …<br>        main解除阻塞</p>
-<p>可以看到起到了很好的控制效果。<br>如果用第一个例子来说明，效果更好：</p>
 </blockquote>
+<p>可以看到起到了很好的控制效果。<br>如果用第一个例子来说明，效果更好：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">var</span> wg sync.WaitGroup <span class="hljs-comment">// 创建同步等待组对象</span><br>	wg.Add(<span class="hljs-number">1</span>)<br>	<span class="hljs-keyword">go</span> loop(&amp;wg)<br>	wg.Wait()<br>	fmt.Println(<span class="hljs-string">&quot;hello,world!&quot;</span>)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">loop</span><span class="hljs-params">(wg *sync.WaitGroup)</span></span> &#123;<br>	<span class="hljs-keyword">defer</span> wg.Done()<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++ &#123;<br>		fmt.Println(i)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <blockquote>
@@ -385,7 +387,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/golang-%E7%88%AC%E8%99%AB-%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#golang 爬虫 开发语言</a>
+        <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#开发语言</a>
+      
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
+      
+        <a href="/tags/%E7%88%AC%E8%99%AB/" class="print-no-link">#爬虫</a>
       
     </div>
   

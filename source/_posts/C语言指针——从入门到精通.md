@@ -1,7 +1,10 @@
 ---
 title: C语言指针——从入门到精通
 date: 2023-01-17 23:40:06
-tags: c语言 c++ 开发语言
+tags:
+    - c语言
+    - c++
+    - 开发语言
 categories: Things about C
 ---
 
@@ -92,7 +95,7 @@ int main() {
 
     printf("a的指针p1在%p\n", pp1);
     printf("a的指针p1在%p\n", pp2);
-    
+
     return 0;
 }
 ```
@@ -125,7 +128,7 @@ int main() {
     pp2 = temp;
     printf("a的指针p1在%p\n", pp1);
     printf("b的指针p2在%p\n", pp2);
-    
+
     return 0;
 }
 ```
@@ -166,7 +169,7 @@ int main() {
     pp2 = temp;
     printf("a的指针p1在%p\n", pp1);
     printf("a的指针p1在%p\n", pp2);
-    
+
     **pp2 = 10;
     printf("修改后a的值为:%d\n", a);
     return 0;
@@ -220,7 +223,7 @@ int main() {
 ```
 输出为：
 
-> 1 2 3 
+> 1 2 3
 
 其中 `p+i`的含义是，指针指向了 `p`所指的内存再向右偏移` i `个类型为 `int` 的内存单元。之所以是 `int`，是因为我们声明的是 `int` 类型的指针。比如：
 
@@ -228,7 +231,7 @@ int main() {
 #include <stdio.h>
 int main() {
     int a[3] = {1, 2, 3};
-    
+
     int* p = a;
     printf("%p\n", p);
     printf("%p\n", p + 1);

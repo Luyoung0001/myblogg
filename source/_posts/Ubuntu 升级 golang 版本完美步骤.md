@@ -1,7 +1,10 @@
 ---
 title: Ubuntu 升级 golang 版本完美步骤
 date: 2023-06-29 18:35:56
-tags: ubuntu golang linux
+tags:
+    - ubuntu
+    - golang
+    - linux
 categories: Some_Tools Golang Unix/Linux
 ---
 

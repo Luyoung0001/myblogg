@@ -1,7 +1,10 @@
 ---
 title: xv6 book Chapter3 中文翻译
 date: 2023-11-18 11:27:51
-tags: 操作系统 xv6 翻译
+tags:
+	- 操作系统
+	- xv6
+	- 翻译
 categories: OS
 ---
 

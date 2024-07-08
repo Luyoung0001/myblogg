@@ -2,7 +2,9 @@
 title: C++调试：函数调用过程和堆栈
 date: 2024-05-17 16:43:00
 tags: c++
-categories: 经验方法 C++
+categories:
+    - 经验方法
+    - C++
 ---
 
 <!--more-->
@@ -52,7 +54,7 @@ int main(void) {
 lldb ./main
 (lldb) target create "./main"
 Current executable set to '/.../main' (arm64).
-(lldb) 
+(lldb)
 ```
 
 首先打三个断点，然后运行：
@@ -70,9 +72,9 @@ Process 95341 stopped
 * thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 3.1
     frame #0: 0x0000000100003ea4 main`test3(int)
 main`test3:
-->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003ea8 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003eb0 <+12>: stur   w0, [x29, #-0x4]
 Target 0: (main) stopped.
 (lldb) bt
@@ -87,9 +89,9 @@ Target 0: (main) stopped.
 (lldb) f 0
 frame #0: 0x0000000100003ea4 main`test3(int)
 main`test3:
-->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003ea8 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003eb0 <+12>: stur   w0, [x29, #-0x4]
 (lldb) register read
 General Purpose Registers:
@@ -112,9 +114,9 @@ Process 95341 stopped
 * thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 2.1
     frame #0: 0x0000000100003e34 main`test2(int)
 main`test2:
-->  0x100003e34 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003e34 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003e38 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003e3c <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003e3c <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003e40 <+12>: stur   w0, [x29, #-0x4]
 Target 0: (main) stopped.
 (lldb) bt
@@ -126,9 +128,9 @@ Target 0: (main) stopped.
 (lldb) f 0
 frame #0: 0x0000000100003e34 main`test2(int)
 main`test2:
-->  0x100003e34 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003e34 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003e38 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003e3c <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003e3c <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003e40 <+12>: stur   w0, [x29, #-0x4]
 (lldb) register read
 General Purpose Registers:
@@ -150,9 +152,9 @@ Process 95341 stopped
 * thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
     frame #0: 0x0000000100003dd4 main`test1(int)
 main`test1:
-->  0x100003dd4 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003dd4 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003dd8 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003ddc <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003ddc <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003de0 <+12>: stur   w0, [x29, #-0x4]
 Target 0: (main) stopped.
 (lldb) bt
@@ -165,9 +167,9 @@ Target 0: (main) stopped.
 (lldb) f 0
 frame #0: 0x0000000100003dd4 main`test1(int)
 main`test1:
-->  0x100003dd4 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003dd4 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003dd8 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003ddc <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003ddc <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003de0 <+12>: stur   w0, [x29, #-0x4]
 (lldb) register read
 General Purpose Registers:
@@ -202,9 +204,9 @@ General Purpose Registers:
 ```bash
 frame #0: 0x0000000100003ea4 main`test3(int)
 main`test3:
-->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003ea8 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003eb0 <+12>: stur   w0, [x29, #-0x4]
 ```
 
@@ -225,9 +227,9 @@ main`test3:
 
 ```bash
 main`test3:
-->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30 
+->  0x100003ea4 <+0>:  sub    sp, sp, #0x30             ; =0x30
     0x100003ea8 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003eb0 <+12>: stur   w0, [x29, #-0x4]
 Target 0: (main) stopped.
 (lldb) n
@@ -236,7 +238,7 @@ Process 96869 stopped
     frame #0: 0x0000000100003ea8 main`test3(int) + 4
 main`test3:
 ->  0x100003ea8 <+4>:  stp    x29, x30, [sp, #0x20]
-    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20 
+    0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003eb0 <+12>: stur   w0, [x29, #-0x4]
     0x100003eb4 <+16>: mov    w8, #0x1
 Target 0: (main) stopped.
@@ -245,14 +247,14 @@ Process 96869 stopped
 * thread #1, queue = 'com.apple.main-thread', stop reason = instruction step over
     frame #0: 0x0000000100003eac main`test3(int) + 8
 main`test3:
-->  0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20 
+->  0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003eb0 <+12>: stur   w0, [x29, #-0x4]
     0x100003eb4 <+16>: mov    w8, #0x1
     0x100003eb8 <+20>: stur   w8, [x29, #-0x8]
 Target 0: (main) stopped.
 (lldb) register read x29
       fp = 0x000000016fdff000
-(lldb) 
+(lldb)
 ```
 从打印的信息可以看到，这个确实存储的是当前的 fp 以及 lr，也就是本函数返回之后的返回地址。
 
@@ -263,7 +265,7 @@ Target 0: (main) stopped.
 ```bash
     frame #0: 0x0000000100003eac main`test3(int) + 8
 main`test3:
-->  0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20 
+->  0x100003eac <+8>:  add    x29, sp, #0x20            ; =0x20
     0x100003eb0 <+12>: stur   w0, [x29, #-0x4]
     0x100003eb4 <+16>: mov    w8, #0x1
     0x100003eb8 <+20>: stur   w8, [x29, #-0x8]
@@ -289,8 +291,8 @@ Target 0: (main) stopped.
    - `stur` 是“Store Register”的缩写，这条指令将 `w0`（通常用于传递函数的第一个参数）的值存储到由 `x29` 指向的地址向下偏移 4 个字节的位置。
    - 这里使用的是帧指针 `x29`，并向上调整 4 字节，可能是为了在栈帧中保存一个参数值或局部变量。
    - **效果**：将函数的一个参数或局部变量保存在新的栈帧内部，通过帧指针进行偏移访问。
-  
-  
+
+
 
 ```bash
 * thread #1, queue = 'com.apple.main-thread', stop reason = instruction step over
@@ -405,7 +407,7 @@ __Z5test3i:                             ; @_Z5test3i
 
 
 |值 |解释|
-|:---------------------:| :------:| 
+|:---------------------:| :------:|
 | ---------------------| <- 更高的内存地址
 |  参数 n             |
 |  ...                |

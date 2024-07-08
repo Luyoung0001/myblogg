@@ -1,8 +1,11 @@
 ---
 title: C语言链表的头插法与尾插法
 date: 2023-02-28 18:54:15
-tags: 链表 c语言 数据结构
-categories: 
+tags:
+    - 链表
+    - c语言
+    - 数据结构
+categories:
 ---
 
 <!--more-->

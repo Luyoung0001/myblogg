@@ -1,7 +1,10 @@
 ---
 title: Course Shell of Missing Semester（一）
 date: 2023-12-22 21:42:32
-tags: Shell 学习 笔记
+tags:
+    - Shell
+    - 学习
+    - 笔记
 categories: Missing Semester
 ---
 

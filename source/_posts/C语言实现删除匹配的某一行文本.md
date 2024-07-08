@@ -1,7 +1,9 @@
 ---
 title: C语言实现删除匹配的某一行文本
 date: 2023-02-24 11:48:44
-tags: c语言 开发语言
+tags:
+    - c语言
+    - 开发语言
 categories: Things about C
 ---
 

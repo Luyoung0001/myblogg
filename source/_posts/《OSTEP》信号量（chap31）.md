@@ -1,7 +1,10 @@
 ---
 title: 《OSTEP》信号量（chap31）
 date: 2023-11-13 18:32:25
-tags: 操作系统 笔记 学习
+tags:
+    - 操作系统
+    - 笔记
+    - 学习
 categories: OS
 ---
 
@@ -82,7 +85,7 @@ int main() {
     return 0;
 }
 ```
-运行结果： 
+运行结果：
 
 ```bash
 ****** chap31_信号量 % ./a
@@ -523,7 +526,7 @@ int main(){
 ![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/99c48ab024d14f309e5a0db4e8417e64_1720253717123.png?token=ANB4BCLAN3VN3QWJJS2WG2TGRD6VC)
 
 因此，可达性矩阵为：
-$$  
+$$
   P =  \left(
    \begin{matrix}
    1 & 1 & 1 & 1  \\
@@ -534,7 +537,7 @@ $$
   \right)
 $$
 强分图也就是:
-$$  
+$$
   P\bigwedge P^T =  \left(
    \begin{matrix}
    1 & 1 & 1 & 1  \\

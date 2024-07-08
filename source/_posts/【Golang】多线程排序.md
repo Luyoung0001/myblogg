@@ -1,7 +1,10 @@
 ---
 title: 【Golang】多线程排序
 date: 2023-05-08 13:03:13
-tags: golang 开发语言 算法 后端
+tags:
+	- golang
+	- 开发语言
+	- 算法
 categories: Golang
 ---
 
@@ -102,7 +105,7 @@ func main() {
 	go randProduce(randNums, &wg)
 	go sort0(randNums, sortNUms, &wg)
 	go mergeAll(sortNUms, &wg)
-	
+
 	wg.Wait()
 	// fmt.Println(l)
 	elapsed := time.Since(start)
@@ -130,7 +133,7 @@ go mergeAll(sortNUms, &wg)
 运行结果：
 
 > (base) luliang@shenjian Sort % go build SortRoutine.go
-(base) luliang@shenjian Sort % ./SortRoutine          
+(base) luliang@shenjian Sort % ./SortRoutine
 开始运行!
 该函数执行完成耗时： 50.317081625s
 
@@ -177,7 +180,7 @@ func rand2(randNums chan int) {
 运行结果为：
 
 > (base) luliang@shenjian Sort % go build SortRoutine1.go
-(base) luliang@shenjian Sort % ./SortRoutine1          
+(base) luliang@shenjian Sort % ./SortRoutine1
 开始运行!
 该函数执行完成耗时： 54.869565792s
 

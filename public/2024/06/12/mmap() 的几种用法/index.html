@@ -24,9 +24,11 @@
 <meta property="og:description" content="〇、前言mmap 是一个非常强大的系统调用，常用于映射文件到内存中，以实现快速和方便的文件访问，也用于进程间通信等多种场景。下面是一些 mmap 的常见用法： 1. 文件映射（Memory-mapped files）文件映射是 mmap 最直接的用途之一，可以将整个文件或文件的一部分映射到进程的地址空间。这允许程序像访问普通内存那样访问文件数据，可以提高文件操作的性能，特别是对于大文件的随机访">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-06-12T09:50:07.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.567Z">
+<meta property="article:modified_time" content="2024-07-08T06:46:50.180Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="系统调用 mmap 文件">
+<meta property="article:tag" content="系统调用">
+<meta property="article:tag" content="mmap">
+<meta property="article:tag" content="文件">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -319,7 +321,7 @@
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs txt">aaaaaaaaa<br>bbbbbbbbb<br>cccccccccccc<br>dddddd<br></code></pre></td></tr></table></figure>
 
 <p>编译运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">❯ gcc mmap1.c -o main<br>❯ ./main data.txt<br><br>~/tests/test2                                                                       16:58:25<br>❯ <br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">❯ gcc mmap1.c -o main<br>❯ ./main data.txt<br><br>~/tests/test2                                                                       16:58:25<br>❯<br></code></pre></td></tr></table></figure>
 <p>data.txt直接被修改为了：</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs txt">aaaaaaaaa<br>bbbbbbbbb<br>9ccccccccccc<br>dddddd<br></code></pre></td></tr></table></figure>
 
@@ -335,7 +337,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">./a data.txt<br>aaaaaaaaa<br>bbbbbbbbb<br>cccccccccccc<br>dddddd<br>aaaaaaaaa		&lt;--- B程序启动<br>bbbbbbbbb<br>hccccccccccc<br>...<br></code></pre></td></tr></table></figure>
 
 <h2 id="三、进程间通信"><a href="#三、进程间通信" class="headerlink" title="三、进程间通信"></a>三、进程间通信</h2><p>还可以映射一个匿名文件，它的文件描述符为-1，通过这样的方法来通信：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BUF_SIZE 100</span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span>* p_map;<br>    <span class="hljs-comment">/* 匿名映射,创建一块内存供父子进程通信 */</span><br>    p_map = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, BUF_SIZE, PROT_READ | PROT_WRITE,<br>                        MAP_SHARED | MAP_ANONYMOUS, <span class="hljs-number">-1</span>, <span class="hljs-number">0</span>);<br><br>    <span class="hljs-keyword">if</span> (fork() == <span class="hljs-number">0</span>) &#123;<br>        sleep(<span class="hljs-number">1</span>);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;child got a message: %s\n&quot;</span>, p_map);<br>        <span class="hljs-built_in">sprintf</span>(p_map, <span class="hljs-string">&quot;%s&quot;</span>, <span class="hljs-string">&quot;hi, dad, this is son&quot;</span>);<br>        munmap(p_map, BUF_SIZE);  <span class="hljs-comment">// 实际上，进程终止时，会自动解除映射。</span><br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125;<br>    <br>    <span class="hljs-built_in">sprintf</span>(p_map, <span class="hljs-string">&quot;%s&quot;</span>, <span class="hljs-string">&quot;hi, this is father&quot;</span>);<br>    sleep(<span class="hljs-number">2</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;parent got a message: %s\n&quot;</span>, p_map);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BUF_SIZE 100</span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span>* p_map;<br>    <span class="hljs-comment">/* 匿名映射,创建一块内存供父子进程通信 */</span><br>    p_map = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, BUF_SIZE, PROT_READ | PROT_WRITE,<br>                        MAP_SHARED | MAP_ANONYMOUS, <span class="hljs-number">-1</span>, <span class="hljs-number">0</span>);<br><br>    <span class="hljs-keyword">if</span> (fork() == <span class="hljs-number">0</span>) &#123;<br>        sleep(<span class="hljs-number">1</span>);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;child got a message: %s\n&quot;</span>, p_map);<br>        <span class="hljs-built_in">sprintf</span>(p_map, <span class="hljs-string">&quot;%s&quot;</span>, <span class="hljs-string">&quot;hi, dad, this is son&quot;</span>);<br>        munmap(p_map, BUF_SIZE);  <span class="hljs-comment">// 实际上，进程终止时，会自动解除映射。</span><br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125;<br><br>    <span class="hljs-built_in">sprintf</span>(p_map, <span class="hljs-string">&quot;%s&quot;</span>, <span class="hljs-string">&quot;hi, this is father&quot;</span>);<br>    sleep(<span class="hljs-number">2</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;parent got a message: %s\n&quot;</span>, p_map);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>运行结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">gcc mmapname.c -o main<br>❯ ./main<br>child got a message: hi, this is father<br>parent got a message: hi, dad, this is son<br></code></pre></td></tr></table></figure>
@@ -373,8 +375,22 @@
     
       <span class="category-chain">
         
-  <a href="/categories/OS-Unix-Linux/" class="category-chain-item">OS Unix/Linux</a>
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/Unix-Linux/" class="category-chain-item">Unix/Linux</a>
+  
+  
+
+  
+
   
 
       </span>
@@ -388,7 +404,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-mmap-%E6%96%87%E4%BB%B6/" class="print-no-link">#系统调用 mmap 文件</a>
+        <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/" class="print-no-link">#系统调用</a>
+      
+        <a href="/tags/mmap/" class="print-no-link">#mmap</a>
+      
+        <a href="/tags/%E6%96%87%E4%BB%B6/" class="print-no-link">#文件</a>
       
     </div>
   

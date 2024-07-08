@@ -1,7 +1,12 @@
 ---
 title: MIT 6.S081学习笔记（第十章）
 date: 2023-12-24 18:41:41
-tags: 学习 笔记 xv6 OS 操作系统
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+    - 文件系统
 categories: OS
 ---
 
@@ -32,12 +37,12 @@ categories: OS
 int
 e1000_transmit(struct mbuf *m)
 {
-	
-  acquire(&e1000_lock); 
+
+  acquire(&e1000_lock);
 
   uint32 ind = regs[E1000_TDT]; // 下一个可用的 buffer 的下标
   // 拿到描述符
-  struct tx_desc *desc = &tx_ring[ind]; 
+  struct tx_desc *desc = &tx_ring[ind];
   // 安全检查
   if(!(desc->status & E1000_TXD_STAT_DD)) {
     release(&e1000_lock);
@@ -81,8 +86,8 @@ e1000_transmit(struct mbuf *m)
 static void
 e1000_recv(void)
 {
-  while(1) { 
-  	// 获取到软件可以读取的位置, 也就是接收且未被软件处理的第一个数据帧在接收队列的索引    
+  while(1) {
+  	// 获取到软件可以读取的位置, 也就是接收且未被软件处理的第一个数据帧在接收队列的索引
   	uint32 ind = (regs[E1000_RDT] + 1) % RX_RING_SIZE;
     // 获取缓冲描述符
     struct rx_desc *desc = &rx_ring[ind];
@@ -93,7 +98,7 @@ e1000_recv(void)
 
     rx_mbufs[ind]->len = desc->length;
     // 传递到上层
-    net_rx(rx_mbufs[ind]); 
+    net_rx(rx_mbufs[ind]);
 
     // 因为这个缓冲区还在使用，因此需要分配并设置新的 mbuf，供给下一次轮到该下标时使用
     rx_mbufs[ind] = mbufalloc(0);
@@ -107,19 +112,19 @@ e1000_recv(void)
 ### 测试
 
 ```bash
-== Test running nettests == 
+== Test running nettests ==
 $ make qemu-gdb
-(5.1s) 
-== Test   nettest: ping == 
-  nettest: ping: OK 
-== Test   nettest: single process == 
-  nettest: single process: OK 
-== Test   nettest: multi-process == 
-  nettest: multi-process: OK 
-== Test   nettest: DNS == 
-  nettest: DNS: OK 
-== Test time == 
-time: OK 
+(5.1s)
+== Test   nettest: ping ==
+  nettest: ping: OK
+== Test   nettest: single process ==
+  nettest: single process: OK
+== Test   nettest: multi-process ==
+  nettest: multi-process: OK
+== Test   nettest: DNS ==
+  nettest: DNS: OK
+== Test time ==
+time: OK
 Score: 100/100
 ```
 

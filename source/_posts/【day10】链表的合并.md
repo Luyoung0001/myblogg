@@ -1,7 +1,10 @@
 ---
 title: 【day10】链表的合并
 date: 2023-03-22 21:39:59
-tags: 链表 数据结构 算法
+tags:
+    - 链表
+    - 数据结构
+    - 算法
 categories: LeetCode
 ---
 
@@ -9,7 +12,7 @@ categories: LeetCode
 
 ## 题目 1：[合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists/)
 
-> 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+> 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
 
 示例 1：
 

@@ -24,9 +24,13 @@
 <meta property="og:description" content="〇、前言Context 是 gin 中最重要的部分。 例如，它允许我们在中间件之间传递变量、管理流程、验证请求的 JSON 并呈现 JSON 响应。 Context 中封装了原生的 Go HTTP 请求和响应对象，同时还提供了一些方法，用于获取请求和响应的信息、设置响应头、设置响应状态码等操作。 在 Gin 中，Context 是通过中间件来传递的。在处理 HTTP 请求时，Gin 会依次执行">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-01T03:40:21.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.567Z">
+<meta property="article:modified_time" content="2024-07-08T06:44:23.492Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="gin Context golang Web 网络">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="gin">
+<meta property="article:tag" content="Context">
+<meta property="article:tag" content="Web">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -278,7 +282,7 @@
 <h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>Context 是 gin 中最重要的部分。 例如，它允许我们在中间件之间传递变量、管理流程、验证请求的 JSON 并呈现 JSON 响应。</p>
 <p>Context 中封装了原生的 Go HTTP 请求和响应对象，同时还提供了一些方法，用于获取请求和响应的信息、设置响应头、设置响应状态码等操作。</p>
 <p>在 Gin 中，Context 是通过中间件来传递的。在处理 HTTP 请求时，Gin 会依次执行注册的中间件，每个中间件可以对 Context 进行一些操作，然后将 Context 传递给下一个中间件。</p>
-<h2 id="一、gin-Context-结构"><a href="#一、gin-Context-结构" class="headerlink" title="一、gin.Context 结构"></a>一、gin.Context 结构</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Context <span class="hljs-keyword">struct</span> &#123;<br>	writermem responseWriter<br>	Request   *http.Request<br>	Writer    ResponseWriter<br><br>	Params   Params<br>	handlers HandlersChain<br>	index    <span class="hljs-type">int8</span><br>	fullPath <span class="hljs-type">string</span><br><br>	engine       *Engine<br>	params       *Params<br>	skippedNodes *[]skippedNode<br><br>	<span class="hljs-comment">// 该互斥锁保护键映射。</span><br>	mu sync.RWMutex<br><br>	<span class="hljs-comment">// Keys 是专门用于每个请求上下文的键/值对。</span><br>	Keys <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]any<br><br>	<span class="hljs-comment">// 错误是附加到使用此上下文的所有处理程序/中间件的错误列表。</span><br>	Errors errorMsgs<br><br>	<span class="hljs-comment">// 已接受定义了用于内容协商的手动接受格式的列表。</span><br>	Accepted []<span class="hljs-type">string</span><br><br>	<span class="hljs-comment">// queryCache 缓存 c.Request.URL.Query() 的查询结果。</span><br>	queryCache url.Values<br><br>	<span class="hljs-comment">// formCache 缓存 c.Request.PostForm，其中包含从 POST、PATCH 或 PUT 正文参数解析的表单数据。	</span><br>	formCache url.Values<br><br>	<span class="hljs-comment">// SameSite 允许服务器定义 cookie 属性，从而使浏览器无法随跨站点请求发送此 cookie。</span><br>	sameSite http.SameSite<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="一、gin-Context-结构"><a href="#一、gin-Context-结构" class="headerlink" title="一、gin.Context 结构"></a>一、gin.Context 结构</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Context <span class="hljs-keyword">struct</span> &#123;<br>	writermem responseWriter<br>	Request   *http.Request<br>	Writer    ResponseWriter<br><br>	Params   Params<br>	handlers HandlersChain<br>	index    <span class="hljs-type">int8</span><br>	fullPath <span class="hljs-type">string</span><br><br>	engine       *Engine<br>	params       *Params<br>	skippedNodes *[]skippedNode<br><br>	<span class="hljs-comment">// 该互斥锁保护键映射。</span><br>	mu sync.RWMutex<br><br>	<span class="hljs-comment">// Keys 是专门用于每个请求上下文的键/值对。</span><br>	Keys <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]any<br><br>	<span class="hljs-comment">// 错误是附加到使用此上下文的所有处理程序/中间件的错误列表。</span><br>	Errors errorMsgs<br><br>	<span class="hljs-comment">// 已接受定义了用于内容协商的手动接受格式的列表。</span><br>	Accepted []<span class="hljs-type">string</span><br><br>	<span class="hljs-comment">// queryCache 缓存 c.Request.URL.Query() 的查询结果。</span><br>	queryCache url.Values<br><br>	<span class="hljs-comment">// formCache 缓存 c.Request.PostForm，其中包含从 POST、PATCH 或 PUT 正文参数解析的表单数据。</span><br>	formCache url.Values<br><br>	<span class="hljs-comment">// SameSite 允许服务器定义 cookie 属性，从而使浏览器无法随跨站点请求发送此 cookie。</span><br>	sameSite http.SameSite<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这里面需要重点关注的的几个字段就是：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go">writermem responseWriter<br>Request   *http.Request<br>Writer    ResponseWriter<br>Params    Params<br>params    *Params<br><br></code></pre></td></tr></table></figure>
 
@@ -330,8 +334,22 @@
     
       <span class="category-chain">
         
-  <a href="/categories/Golang-Golang-%E6%A1%86%E6%9E%B6-Web/" class="category-chain-item">Golang Golang_框架 Web</a>
+  <a href="/categories/Golang/" class="category-chain-item">Golang</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/Golang/Golang-%E6%A1%86%E6%9E%B6/" class="category-chain-item">Golang_框架</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Golang/Golang-%E6%A1%86%E6%9E%B6/Web/" class="category-chain-item">Web</a>
+  
+  
+
+  
+
   
 
       </span>
@@ -345,7 +363,15 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/gin-Context-golang-Web-%E7%BD%91%E7%BB%9C/" class="print-no-link">#gin Context golang Web 网络</a>
+        <a href="/tags/%E7%BD%91%E7%BB%9C/" class="print-no-link">#网络</a>
+      
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
+      
+        <a href="/tags/gin/" class="print-no-link">#gin</a>
+      
+        <a href="/tags/Context/" class="print-no-link">#Context</a>
+      
+        <a href="/tags/Web/" class="print-no-link">#Web</a>
       
     </div>
   

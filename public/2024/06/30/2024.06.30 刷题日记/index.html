@@ -24,9 +24,11 @@
 <meta property="og:description" content="121. 买卖股票的最佳时机实例 1：  输入：[7,1,5,3,6,4]输出：5解释：在第 2 天（股票价格 &#x3D; 1）的时候买入，在第 5 天（股票价格 &#x3D; 6）的时候卖出，最大利润 &#x3D; 6-1 &#x3D; 5 。注意利润不能是 7-1 &#x3D; 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。  示例 2：  输入：prices &amp;#x">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-06-30T15:29:37.000Z">
-<meta property="article:modified_time" content="2024-07-07T07:26:40.559Z">
+<meta property="article:modified_time" content="2024-07-08T06:27:29.812Z">
 <meta property="article:author" content="Luyoung">
-<meta property="article:tag" content="算法 数据结构 leetcode">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="leetcode">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -306,7 +308,7 @@
 <p>输入: nums &#x3D; [2,3,0,1,4]<br>输出: 2</p>
 </blockquote>
 <p>这道题目返回的是，最小的跳跃次数。应该思考，什么时候次数+1？答案是，当 i 遍历到currentEnd 的时候，就意味着还需要再跳一次。当然这个确定再跳一次后，可以提前结束。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">jump</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums)</span> </span>&#123;<br>        <span class="hljs-type">int</span> len = nums.<span class="hljs-built_in">size</span>();<br>        <span class="hljs-keyword">if</span> (len == <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">int</span> maxReach = <span class="hljs-number">0</span>, times = <span class="hljs-number">0</span>;<br>        <span class="hljs-type">int</span> currentEnd = <span class="hljs-number">0</span>;<br>        <br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; len; i++) &#123;<br>            maxReach = <span class="hljs-built_in">max</span>(maxReach, i + nums[i]);<br>            <span class="hljs-comment">// 更新</span><br>            <span class="hljs-keyword">if</span> (i == currentEnd) &#123;<br>                times++;<br>                currentEnd = maxReach;<br>                <span class="hljs-keyword">if</span> (currentEnd &gt;= len - <span class="hljs-number">1</span>)<br>                    <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> times;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">jump</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums)</span> </span>&#123;<br>        <span class="hljs-type">int</span> len = nums.<span class="hljs-built_in">size</span>();<br>        <span class="hljs-keyword">if</span> (len == <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">int</span> maxReach = <span class="hljs-number">0</span>, times = <span class="hljs-number">0</span>;<br>        <span class="hljs-type">int</span> currentEnd = <span class="hljs-number">0</span>;<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; len; i++) &#123;<br>            maxReach = <span class="hljs-built_in">max</span>(maxReach, i + nums[i]);<br>            <span class="hljs-comment">// 更新</span><br>            <span class="hljs-keyword">if</span> (i == currentEnd) &#123;<br>                times++;<br>                currentEnd = maxReach;<br>                <span class="hljs-keyword">if</span> (currentEnd &gt;= len - <span class="hljs-number">1</span>)<br>                    <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> times;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="1-买卖股票的最佳时机（LeetCode-121）"><a href="#1-买卖股票的最佳时机（LeetCode-121）" class="headerlink" title="1. 买卖股票的最佳时机（LeetCode 121）"></a>1. 买卖股票的最佳时机（LeetCode 121）</h3><p><strong>问题描述</strong>：找到一次交易（买入和随后的卖出）能获得的最大利润。</p>
 <p><strong>解题思路</strong>：</p>
 <ul>
@@ -363,7 +365,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%AE%97%E6%B3%95-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-leetcode/" class="print-no-link">#算法 数据结构 leetcode</a>
+        <a href="/tags/%E7%AE%97%E6%B3%95/" class="print-no-link">#算法</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="print-no-link">#数据结构</a>
+      
+        <a href="/tags/leetcode/" class="print-no-link">#leetcode</a>
       
     </div>
   

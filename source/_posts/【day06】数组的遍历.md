@@ -1,7 +1,10 @@
 ---
 title: 【day06】数组的遍历
 date: 2023-03-13 16:54:42
-tags: leetcode 算法 数据结构
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 
@@ -103,7 +106,7 @@ class Solution {
     public int thirdMax(int[] nums) {
         int len = nums.length;
         Arrays.sort(nums);
-        
+
         int tag = 1;
         for(int i = len-1; i >= 0; i--){
             if(i-1 >= 0 && nums[i] == nums[i-1]){

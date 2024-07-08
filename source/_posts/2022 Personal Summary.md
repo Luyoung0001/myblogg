@@ -1,7 +1,7 @@
 ---
 title: 2022 Personal Summary
 date: 2023-01-10 01:47:25
-tags: 其他
+tags: 个人总结
 categories: Personal_Summary
 ---
 

@@ -1,7 +1,10 @@
 ---
 title: Start to write a simple Linux kernel Module
 date: 2022-12-28 17:44:35
-tags: linux 服务器 运维
+tags:
+    - linux
+    - 服务器
+    - 运维
 categories: OS
 ---
 
@@ -49,7 +52,7 @@ Note that the letter `M` must be capitalized so that the `make` command will fin
 
 ```c
 obj-m:=hello.o
-  
+
 CURRENT_PATH:=$(shell pwd)
 LINUX_KERNEL:=$(shell uname -r)
 LINUX_KERNEL_PATH:=/usr/src/linux-headers-$(LINUX_KERNEL)
@@ -85,7 +88,7 @@ At this time, we can look at the various files generated after compilation. We n
 ```
 You can see that many files are generated:
 
-```c 
+```c
 .   hello.c   .hello.ko.cmd  hello.mod.c     hello.mod.o       hello.o       Makefile       Module.symvers
 ..  hello.ko  hello.mod      .hello.mod.cmd  .hello.mod.o.cmd  .hello.o.cmd  modules.order
 ```
@@ -178,7 +181,7 @@ Obviously, the `hello` module was successfully uninstalled.
 Let's look at the system log information again:
 
 ```c
-[    5.542072] audit: type=1400 audit(1672065866.280:7): apparmor="STATUS" operation="profile_load" profile="unconfined" name="/{,usr/}sbin/dhclient" pid=503 
+[    5.542072] audit: type=1400 audit(1672065866.280:7): apparmor="STATUS" operation="profile_load" profile="unconfined" name="/{,usr/}sbin/dhclient" pid=503
 comm="apparmor_parser"
 [    5.545811] audit: type=1400 audit(1672065866.284:8): apparmor="STATUS" operation="profile_load" profile="unconfined" name="/usr/lib/snapd/snap-confine" pi
 d=504 comm="apparmor_parser"

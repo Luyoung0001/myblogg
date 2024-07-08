@@ -1,7 +1,10 @@
 ---
 title: 【day04】数组的旋转
 date: 2023-03-11 14:48:46
-tags: leetcode 算法
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 
@@ -122,18 +125,18 @@ class Solution {
 
 >  F0 = 0*A0 + 1*A1 + 2*A2 + 3*A3
 
->F1 = 0*A3 + 1*A0 + 2*A1 + 3*A2 
-    = F0 + A0 + A1 + A2 - 3*A3 
-    = F0 + sum-A3 - 3*A3 
+>F1 = 0*A3 + 1*A0 + 2*A1 + 3*A2
+    = F0 + A0 + A1 + A2 - 3*A3
+    = F0 + sum-A3 - 3*A3
     = F0 + sum - 4*A3
-> 
+>
 
->  F2 = 0*A2 + 1*A3 + 2*A0 + 3*A1 
->     = F1 + A3 + A0 + A1 - 3*A2 
+>  F2 = 0*A2 + 1*A3 + 2*A0 + 3*A1
+>     = F1 + A3 + A0 + A1 - 3*A2
 >     = F1 + sum - 4*A2
 
->    F3 = 0*A1 + 1*A2 + 2*A3 + 3*A0 
-    = F2 + A2 + A3 + A0 - 3*A1 
+>    F3 = 0*A1 + 1*A2 + 2*A3 + 3*A0
+    = F2 + A2 + A3 + A0 - 3*A1
     = F2 + sum - 4*A1
 
 抽象化:

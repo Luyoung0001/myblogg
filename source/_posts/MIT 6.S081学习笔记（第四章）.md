@@ -1,7 +1,11 @@
 ---
 title: MIT 6.S081学习笔记（第四章）
 date: 2023-11-24 15:33:41
-tags: 学习 笔记 操作系统 OS
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
 categories: OS
 ---
 
@@ -125,8 +129,8 @@ printf(const char *fmt, ...)
 	unsigned int i = 0x00646c72;
 	printf("H%x Wo%s", 57616, &i);
 ```
-      
-- Q1: What is the output? 
+
+- Q1: What is the output?
 - A1: **57616** 转换为 **16** 进制为 **e110**，所以格式化描述符 `%x` 打印出了它的 **16** 进制值。所以会打印出：**He110 World**。
 - Q2: If the RISC-V were instead big-endian what would you set i to in order to yield the same output?
 - A2：如果在小端（little-endian）处理器中，数据**0x00646c72** 的高字节存储在内存的高位，那么从内存低位，也就是低字节开始读取，对应的 ASCII 字符为 **rld**。
@@ -184,7 +188,7 @@ Once your backtrace is working, call it from panic in `kernel/printf.c` so that 
 void backtrace(void) {
     uint64 fp = r_fp();
     uint64 top = PGROUNDUP(fp);
-    uint64 bottom = PGROUNDDOWN(fp);    
+    uint64 bottom = PGROUNDDOWN(fp);
     for (;fp >= bottom && fp < top; fp = *((uint64 *) (fp - 16))) {
         printf("%p\n", *((uint64 *) (fp - 8)));    // 输出当前栈中返回地址
     }
@@ -327,7 +331,7 @@ uint64 sys_sigalarm(void) {
   p->alarm_interval = n;
   p->alarm_handler = (void(*)())fn;
   p->alarm_ticks = n; // left equils n of course before start!
-  
+
   return 0;
 }
 uint64 sys_sigreturn(void) {
@@ -351,7 +355,7 @@ freeproc(struct proc *p)
   p->alarm_handler = 0;
   p->alarm_ticks = 0;
   p->alarm_goingoff = 0;
-  
+
   p->state = UNUSED;
 
 }

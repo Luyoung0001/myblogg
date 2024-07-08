@@ -1,7 +1,9 @@
 ---
 title: C++并发：线程函数传参（一）
 date: 2024-05-09 23:39:44
-tags: c++ 多线程
+tags:
+    - c++
+    - 多线程
 categories: C++
 ---
 
@@ -108,7 +110,7 @@ namespace std {
     public:
         // 构造函数，接受一个对象的引用
         reference_wrapper(T& ref) : _ref(ref) {}
-        
+
         // 拷贝构造函数和赋值运算符被删除，禁止拷贝和赋值
         reference_wrapper(const reference_wrapper&) = delete;
         reference_wrapper& operator=(const reference_wrapper&) = delete;
@@ -116,7 +118,7 @@ namespace std {
         // 重载解引用运算符，返回引用对象
         // 也可以隐式转换为引用对象
         operator T&() const { return _ref; }
-        
+
     private:
         T& _ref; // 存储引用对象的引用
     };
@@ -137,7 +139,7 @@ namespace std {
 void oops_again(int w) {
 ...
     std::thread t(update_data_for_BigOb, w, std::ref(data));
- 
+
 }
 ...
 ```

@@ -1,8 +1,16 @@
 ---
 title: MIT 6.S081学习笔记（第六章）（上）
 date: 2023-12-07 22:52:48
-tags: 学习 笔记 xv6 操作系统
-categories: OS
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+    - 文件系统
+categories:
+    - OS
+    - 系统编程
+    - Unix/Linux
 ---
 
 <!--more-->
@@ -210,14 +218,14 @@ enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 ```c
 // interrupts and exceptions from kernel code go here via kernelvec,
 // on whatever the current kernel stack is.
-void 
+void
 kerneltrap()
 {
   int which_dev = 0;
   uint64 sepc = r_sepc();
   uint64 sstatus = r_sstatus();
   uint64 scause = r_scause();
-  
+
   if((sstatus & SSTATUS_SPP) == 0)
     panic("kerneltrap: not from supervisor mode");
   if(intr_get() != 0)
@@ -290,8 +298,8 @@ sched(void)
 # Context switch
 #
 #   void swtch(struct context *old, struct context *new);
-# 
-# Save current registers in old. Load from new.	
+#
+# Save current registers in old. Load from new.
 
 
 .globl swtch
@@ -394,7 +402,7 @@ yield(void)
   ...
   sched();
   release(&p->lock); // 继续执行，释放多余的锁？这里其实释放的是调度程序中选中程序的锁
-  
+
 }
 ```
 然后返回到：
@@ -402,7 +410,7 @@ yield(void)
 ```c
 // interrupts and exceptions from kernel code go here via kernelvec,
 // on whatever the current kernel stack is.
-void 
+void
 kerneltrap()
 {
   ...
@@ -554,7 +562,7 @@ forkret(void)
     // File system initialization must be run in the context of a
     // regular process (e.g., because it calls sleep), and thus cannot
     // be run from main().
-    fsinit(ROOTDEV); 
+    fsinit(ROOTDEV);
 
     first = 0;
     // ensure other cores see first=0.

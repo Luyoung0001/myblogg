@@ -1,7 +1,11 @@
 ---
 title: Golang框架：cobra
 date: 2023-06-06 23:27:59
-tags: golang 开发语言 后端
+tags:
+	- golang
+	- 后端
+	- 前端
+	- 网络
 categories: Golang Golang_框架
 ---
 

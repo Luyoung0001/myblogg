@@ -1,7 +1,10 @@
 ---
 title: 《OSTEP》条件变量（chap30）
 date: 2023-11-11 22:10:26
-tags: 操作系统 学习 笔记
+tags:
+    - 操作系统
+    - 学习
+    - 笔记
 categories: OS
 ---
 
@@ -105,7 +108,7 @@ void *consumer(void *arg) {
         int temp = get();
         pthread_mutex_unlock(&mutex);
         printf("消费:%d\n", temp);
-        pthread_cond_signal(&cond); 
+        pthread_cond_signal(&cond);
     }
     return NULL;
 }
@@ -134,7 +137,7 @@ int main() {
 运行结果：
 
 ```bash
-*** chap30_条件变量 % ./a                    
+*** chap30_条件变量 % ./a
 消费:0
 消费:1
 消费:2
@@ -175,7 +178,7 @@ void *consumer(void *arg) {
         int temp = get();
         pthread_mutex_unlock(&mutex);
         printf("消费:%d\n", temp);
-        pthread_cond_signal(&cond); 
+        pthread_cond_signal(&cond);
     }
     return NULL;
 }
@@ -208,7 +211,7 @@ int main() {
 
 ```bash
 *** chap30_条件变量 % gcc -o a con_prodece2.c
-*** chap30_条件变量 % ./a                    
+*** chap30_条件变量 % ./a
 消费:0
 消费:1
 Assertion failed: (count == 1), function get, file con_prodece2.c, line 18.

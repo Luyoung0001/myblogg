@@ -1,8 +1,14 @@
 ---
 title: Docker网络模型以及容器网络初探（一）
 date: 2023-07-04 15:51:59
-tags: docker 网络 容器
-categories: NetWork OS Web
+tags:
+    - docker
+    - 网络
+    - 容器
+categories:
+    - NetWork
+    - OS
+    - Web
 ---
 
 <!--more-->
@@ -46,8 +52,8 @@ docker pull ubuntu
 以下命令以**默认方式**（bridge网络）创建并启动以及运行了容器里面的bash 程序（最好打开多个终端窗口，每个窗口运行不同的容器，不用来回切换），这样能直接进入容器里面：
 
 ```bash
-docker run -it --name=arch2 archlinux /bin/bash 
-docker run -it --name=ubuntu2 ubuntu /bin/bash 
+docker run -it --name=arch2 archlinux /bin/bash
+docker run -it --name=ubuntu2 ubuntu /bin/bash
 ```
 在另一个终端（宿主机）上看看：
 
@@ -71,7 +77,7 @@ da149ecc5bf3   bridge         bridge    local
 可以看到本地确实有 3 个网络，因为这是以默认方式启动的，直接查看 **bridge** 网络信息：
 
 ```bash
-root@*******:~# docker network inspect bridge 
+root@*******:~# docker network inspect bridge
 [
     {
         "Name": "bridge",
@@ -174,63 +180,63 @@ root@********:~# ip addr
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host 
+    inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
     link/ether 00:16:3e:00:7c:2d brd ff:ff:ff:ff:ff:ff
     inet 172.17.9.165/18 brd 172.17.63.255 scope global dynamic eth0
        valid_lft 314697479sec preferred_lft 314697479sec
-    inet6 fe80::216:3eff:fe00:7c2d/64 scope link 
+    inet6 fe80::216:3eff:fe00:7c2d/64 scope link
        valid_lft forever preferred_lft forever
-3: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+3: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 02:42:2c:62:19:d9 brd ff:ff:ff:ff:ff:ff
     inet 172.18.0.1/16 brd 172.18.255.255 scope global docker0
        valid_lft forever preferred_lft forever
-    inet6 fe80::42:2cff:fe62:19d9/64 scope link 
+    inet6 fe80::42:2cff:fe62:19d9/64 scope link
        valid_lft forever preferred_lft forever
-4: br-b1e26274afd7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+4: br-b1e26274afd7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 02:42:8e:59:43:24 brd ff:ff:ff:ff:ff:ff
     inet 172.19.0.1/16 brd 172.19.255.255 scope global br-b1e26274afd7
        valid_lft forever preferred_lft forever
-    inet6 fe80::42:8eff:fe59:4324/64 scope link 
+    inet6 fe80::42:8eff:fe59:4324/64 scope link
        valid_lft forever preferred_lft forever
-14: veth7958290@if13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default 
+14: veth7958290@if13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default
     link/ether 5e:67:bd:18:47:4d brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet6 fe80::5c67:bdff:fe18:474d/64 scope link 
+    inet6 fe80::5c67:bdff:fe18:474d/64 scope link
        valid_lft forever preferred_lft forever
-16: vetha2319a1@if15: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-b1e26274afd7 state UP group default 
+16: vetha2319a1@if15: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-b1e26274afd7 state UP group default
     link/ether 0e:28:d3:40:1e:97 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet6 fe80::c28:d3ff:fe40:1e97/64 scope link 
+    inet6 fe80::c28:d3ff:fe40:1e97/64 scope link
        valid_lft forever preferred_lft forever
-18: veth23c3fd5@if17: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default 
+18: veth23c3fd5@if17: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default
     link/ether 56:a1:a5:02:37:0b brd ff:ff:ff:ff:ff:ff link-netnsid 1
-    inet6 fe80::54a1:a5ff:fe02:370b/64 scope link 
+    inet6 fe80::54a1:a5ff:fe02:370b/64 scope link
        valid_lft forever preferred_lft forever
-20: veth952254a@if19: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-b1e26274afd7 state UP group default 
+20: veth952254a@if19: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-b1e26274afd7 state UP group default
     link/ether 42:83:4d:c3:7d:f8 brd ff:ff:ff:ff:ff:ff link-netnsid 1
-    inet6 fe80::4083:4dff:fec3:7df8/64 scope link 
+    inet6 fe80::4083:4dff:fec3:7df8/64 scope link
        valid_lft forever preferred_lft forever
 ```
 
 重点关注 `docker0` 上的信息：
 
 ```bash
-3: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+3: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 02:42:2c:62:19:d9 brd ff:ff:ff:ff:ff:ff
     inet 172.18.0.1/16 brd 172.18.255.255 scope global docker0
        valid_lft forever preferred_lft forever
-    inet6 fe80::42:2cff:fe62:19d9/64 scope link 
+    inet6 fe80::42:2cff:fe62:19d9/64 scope link
        valid_lft forever preferred_lft forever
      valid_lft forever preferred_lft forever
-       
-14: veth7958290@if13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default 
+
+14: veth7958290@if13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default
     link/ether 5e:67:bd:18:47:4d brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet6 fe80::5c67:bdff:fe18:474d/64 scope link 
+    inet6 fe80::5c67:bdff:fe18:474d/64 scope link
        valid_lft forever preferred_lft forever
-     
-18: veth23c3fd5@if17: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default 
+
+18: veth23c3fd5@if17: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default
     link/ether 56:a1:a5:02:37:0b brd ff:ff:ff:ff:ff:ff link-netnsid 1
-    inet6 fe80::54a1:a5ff:fe02:370b/64 scope link 
+    inet6 fe80::54a1:a5ff:fe02:370b/64 scope link
        valid_lft forever preferred_lft forever
 
 ```
@@ -256,7 +262,7 @@ root@*******:/# ip addr
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-17: eth0@if18: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+17: eth0@if18: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 02:42:ac:12:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0
     inet 172.18.0.3/16 brd 172.18.255.255 scope global eth0
        valid_lft forever preferred_lft forever
@@ -289,7 +295,7 @@ scope global 表示接口的地址在全局范围内可达。
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-13: eth0@if14: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+13: eth0@if14: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 02:42:ac:12:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0
     inet 172.18.0.2/16 brd 172.18.255.255 scope global eth0
        valid_lft forever preferred_lft forever

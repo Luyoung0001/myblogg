@@ -1,7 +1,9 @@
 ---
 title: 简单的 ls 命令的实现（三）
 date: 2023-02-17 18:22:21
-tags: c++ 开发语言
+tags:
+    - c++
+    - 开发语言
 categories: 系统编程
 ---
 
@@ -180,7 +182,7 @@ struct stat info;
 struct stat info;
     if(stat(filenames[j],&info)==-1)
        perror(filenames[j]);
-     printf("%d  ",info.st_ino); 
+     printf("%d  ",info.st_ino);
 
 ```
 

@@ -1,8 +1,12 @@
 ---
 title: C++调试：内存管理
 date: 2024-05-16 22:44:48
-tags: c++ lldb
-categories: 经验方法 C++
+tags:
+    - c++
+    - lldb
+categories:
+    - 经验方法
+    - C++
 ---
 
 <!--more-->
@@ -79,7 +83,7 @@ Target 0: (main) stopped.
 ```
 这些信息足够查看以及推断：
 
-局部符号     | 地址 | section 
+局部符号     | 地址 | section
 -- |-|-
 var  |0x000000016fdfeff8 |栈区
 p_var  | 0x000000016fdfeff0|栈区

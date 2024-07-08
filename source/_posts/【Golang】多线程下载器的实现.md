@@ -1,7 +1,10 @@
 ---
 title: 【Golang】多线程下载器的实现
 date: 2023-05-07 20:02:05
-tags: golang 服务器 后端
+tags:
+	- golang
+	- 服务器
+	- 后端
 categories: Golang
 ---
 
@@ -14,10 +17,10 @@ categories: Golang
 下载文件的本质就是从服务器获取数据，更笼统地说就是向服务器发送 GET请求。
  ### 1.1 http1.1协议
  HTTP1.1 协议（RFC2616）开始支持获取文件的部分内容，这为并行下载以及断点续传提供了技术支持：Range\Content-Range。Range参数是本地发往服务器的http头参数；Content-Range是远程服务器发往本地http头参数。
- 
+
  ### 1.2 Range\Content-Range
  range: (unit=first byte pos)-[last byte pos] ： 指定第一个字节位置和最后一个字节位置。
- 
+
 例子说明：
 
 - range: bytes=0-1300 : 表示第0-1300字节范围的内容发往远程服务器。
@@ -34,7 +37,7 @@ Content-Range: bytes (unit first byte pos) - [last byte pos]/[entity legth]
 比如：
 
 > (base) luliang@shenjian ~ % curl --location --head 'https://download.jetbrains.com/go/goland-2020.2.2.exe'
-HTTP/2 302 
+HTTP/2 302
 date: Sat, 06 May 2023 11:52:42 GMT
 content-type: text/html
 content-length: 138
@@ -47,7 +50,7 @@ x-xss-protection: 1; mode=block;
 x-geocountry: China
 x-geocode: CN
 x-geocity: Taiyigong
-HTTP/2 200 
+HTTP/2 200
 content-type: binary/octet-stream
 content-length: 338589968
 date: Sat, 06 May 2023 11:51:35 GMT
@@ -65,7 +68,7 @@ age: 72
 可以使用 curl 发送一个 HEADER 请求来进行检测：
 
 > (base) luliang@shenjian ~ % curl -I https://download.jetbrains.com.cn/go/goland-2020.2.2.exe
-HTTP/2 200 
+HTTP/2 200
 content-type: binary/octet-stream
 **content-length: 338589968**
 date: Sat, 06 May 2023 11:55:58 GMT
@@ -237,7 +240,7 @@ Clone() http.Header
 sortedKeyValues(exclude map[string]bool) (kvs []http.keyValues, hs *http.headerSorter)
 WriteSubset(w io.Writer, exclude map[string]bool) error
 writeSubset(w io.Writer, exclude map[string]bool, trace *httptrace.ClientTrace) error
-`Header` on pkg.go.dev 
+`Header` on pkg.go.dev
 ```
 里面有一个 get方法，它传入一个 key，返回一个值。我们可以传入一个想要的键从而得到想要的信息。
 如果我们可以传入一个"Content-Disposition"，得到 fileName。Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名。

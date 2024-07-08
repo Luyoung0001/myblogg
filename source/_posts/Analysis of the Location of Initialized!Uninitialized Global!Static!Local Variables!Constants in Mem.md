@@ -1,7 +1,10 @@
 ---
 title: Analysis of the Location of Initialized/Uninitialized Global/Static/Local Variables/Constants in Mem
 date: 2023-01-10 00:47:29
-tags: linux vscode macos c++
+tags:
+    - linux
+    - vscode macos
+    - c++
 categories: Things about C
 ---
 
@@ -37,9 +40,9 @@ int main(int argc, const char* argv[]) {
 After compiling it, type:
 
 > otool -l a.out
-> 
+>
 Outputs is:
- 
+
 ```c
 Load command 0
       cmd LC_SEGMENT_64
@@ -396,7 +399,7 @@ int main(int argc, const char* argv[]) {
 
     sleep(-1);
     return 0;
-} 
+}
 ```
 Check the symbol table after compiling: (for convenience, we use the `objdump -t` command to view)
 
@@ -432,8 +435,8 @@ __bss segment: The abbreviation of Block Started by Symbol, a memory area that s
 We can take a look directly to find out. Using the command `otool -d`, you can see:
 
 > (__DATA,__data) section
-0000000100008008        00000000 00000000 00000001 00000061 
-0000000100008018        00000002 62 
+0000000100008008        00000000 00000000 00000001 00000061
+0000000100008018        00000002 62
 
 
 It can be seen from **SYMBOL TABLE** that there are a total of 5 values in the (__DATA,__data) section, which are: 0,1,61,2,62.
@@ -507,7 +510,7 @@ Let's change the code to:
 int main(int argc, const char* argv[]) {
     // static int local_stat_init_a = 2;
     // static char local_stat_init_b = 'b';
-    
+
     int local_init_a = 3;
     char local_init_b = 'c';
 
@@ -719,7 +722,7 @@ Finally, look at the contents of the __const section:
 ```c
 Contents of section __const:
  100003fa0 02000000 62000000 04000000 64000000  ....b.......d...
- 100003fb0 00000000 00 
+ 100003fb0 00000000 00
 ```
 
 It can be found that all global variables and local static variables decorated with const are placed in the read-only __const segment. Compared with global variables and local static variables without const modification, there are mainly the following differences:

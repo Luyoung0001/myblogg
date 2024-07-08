@@ -1,7 +1,11 @@
 ---
 title: MIT 6.S081学习笔记（第九章）
 date: 2023-12-23 22:22:25
-tags: 学习 笔记 xv6 OS
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
 categories: OS
 ---
 
@@ -146,7 +150,7 @@ sys_mmap(void)
 
   struct proc *p = myproc();
   struct vma *v = 0;
-  uint64 vaend = MMAPEND; 
+  uint64 vaend = MMAPEND;
   for(int i=0;i<NVMA;i++) {
   	// 寻找空槽
     struct vma *vv = &p->vmas[i];
@@ -225,14 +229,14 @@ int vmatrylazytouch(uint64 va) {
  	// 失败
     return 0;
   }
-  
+
   // 分配内存
   void *pa = kalloc();
   if(pa == 0) {
     panic("vmalazytouch: kalloc");
   }
   memset(pa, 0, PGSIZE);
-  
+
   // 从硬盘中将文件读到内存
   begin_op();
   ilock(v->f->ip);
@@ -291,7 +295,7 @@ sys_munmap(void)
   vmaunmap(p->pagetable, addr_aligned, nunmap, v); // custom memory page unmap routine for mmapped pages.
 
 // 有重叠
-  if(addr <= v->vastart && addr + sz > v->vastart) { 
+  if(addr <= v->vastart && addr + sz > v->vastart) {
     v->offset += addr + sz - v->vastart;
     v->vastart = addr + sz;
   }
@@ -347,7 +351,7 @@ vmaunmap(pagetable_t pagetable, uint64 va, uint64 nbytes, struct vma *v)
     if(*pte & PTE_V){
       uint64 pa = PTE2PA(*pte);
       // 脏且共享，写回
-      if((*pte & PTE_D) && (v->flags & MAP_SHARED)) { 
+      if((*pte & PTE_D) && (v->flags & MAP_SHARED)) {
         begin_op();
         ilock(v->f->ip);
         uint64 aoff = a - v->vastart; // offset relative to the start of memory range
@@ -399,12 +403,12 @@ freeproc(struct proc *p)
   if(p->trapframe)
     kfree((void*)p->trapframe);
   p->trapframe = 0;
-  
+
   for(int i = 0; i < NVMA; i++) {
     struct vma *v = &p->vmas[i];
     vmaunmap(p->pagetable, v->vastart, v->sz, v);
   }
-  
+
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
   p->pagetable = 0;
@@ -452,30 +456,30 @@ void            vmaunmap(pagetable_t, uint64, uint64, struct vma *);
 这样，这个实验就结束了：
 
 ```bash
-== Test running mmaptest == 
+== Test running mmaptest ==
 $ make qemu-gdb
-(6.6s) 
-== Test   mmaptest: mmap f == 
-  mmaptest: mmap f: OK 
-== Test   mmaptest: mmap private == 
-  mmaptest: mmap private: OK 
-== Test   mmaptest: mmap read-only == 
-  mmaptest: mmap read-only: OK 
-== Test   mmaptest: mmap read/write == 
-  mmaptest: mmap read/write: OK 
-== Test   mmaptest: mmap dirty == 
-  mmaptest: mmap dirty: OK 
-== Test   mmaptest: not-mapped unmap == 
-  mmaptest: not-mapped unmap: OK 
-== Test   mmaptest: two files == 
-  mmaptest: two files: OK 
-== Test   mmaptest: fork_test == 
-  mmaptest: fork_test: OK 
-== Test usertests == 
+(6.6s)
+== Test   mmaptest: mmap f ==
+  mmaptest: mmap f: OK
+== Test   mmaptest: mmap private ==
+  mmaptest: mmap private: OK
+== Test   mmaptest: mmap read-only ==
+  mmaptest: mmap read-only: OK
+== Test   mmaptest: mmap read/write ==
+  mmaptest: mmap read/write: OK
+== Test   mmaptest: mmap dirty ==
+  mmaptest: mmap dirty: OK
+== Test   mmaptest: not-mapped unmap ==
+  mmaptest: not-mapped unmap: OK
+== Test   mmaptest: two files ==
+  mmaptest: two files: OK
+== Test   mmaptest: fork_test ==
+  mmaptest: fork_test: OK
+== Test usertests ==
 $ make qemu-gdb
-usertests: OK (102.5s) 
-== Test time == 
-time: OK 
+usertests: OK (102.5s)
+== Test time ==
+time: OK
 Score: 140/140
 ```
 
@@ -483,7 +487,7 @@ Score: 140/140
 这个实验的核心是实现对文件的内存映射，让文件内容可以直接映射到进程的地址空间中，允许对文件内容进行直接的读写操作。在实现 **mmap** 和 **munmap** 这两个系统调用时，需要注意：
 
 1. **Lazy Loading**: 实现了懒加载，即在 **mmap** 中不立即分配物理内存或读取文件内容，而是在发生页错误时根据需要进行操作。这可以提高效率，特别是对于大文件或超过物理内存大小的文件映射。
-  
+
 2. **VMA 结构**: 使用 **VMA**（Virtual Memory Area）结构记录映射的文件信息，包括起始地址、大小、权限、文件等信息。每个进程维护一个 **VMA** 数组，用于跟踪其映射的文件区域。
 
 3. **文件写回**: 在 **munmap** 时需要注意，如果文件是共享的（**MAP_SHARED**），并且有脏页（**PTE_D**），则需要将脏页的内容写回文件。

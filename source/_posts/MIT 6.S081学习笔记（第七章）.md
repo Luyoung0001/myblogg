@@ -1,7 +1,11 @@
 ---
 title: MIT 6.S081学习笔记（第七章）
 date: 2023-12-13 23:37:58
-tags: 学习 笔记 xv6 OS 操作系统
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
 categories: OS
 ---
 
@@ -20,7 +24,7 @@ categories: OS
 ## 一、Memory allocator (moderate)
 ### Question requirements
 
-> The program user/kalloctest stresses xv6's memory allocator: three processes grow and shrink their address spaces, resulting in many calls to `kalloc` and `kfree`. `kalloc` and `kfree` obtain `kmem.lock`. **kalloctest** prints (as "#fetch-and-add") the number of loop iterations in acquire due to attempts to acquire a lock that another core **already holds**, for the `kmem lock` and a few other locks. The number of loop iterations in acquire is a **rough measure of lock contention**. 
+> The program user/kalloctest stresses xv6's memory allocator: three processes grow and shrink their address spaces, resulting in many calls to `kalloc` and `kfree`. `kalloc` and `kfree` obtain `kmem.lock`. **kalloctest** prints (as "#fetch-and-add") the number of loop iterations in acquire due to attempts to acquire a lock that another core **already holds**, for the `kmem lock` and a few other locks. The number of loop iterations in acquire is a **rough measure of lock contention**.
 
 ### Some hints
 
@@ -45,13 +49,13 @@ kalloc(void)
   struct run *r;
 
   acquire(&kmem.lock);
-  r = kmem.freelist; 
+  r = kmem.freelist;
   if(r)
     kmem.freelist = r->next;
   release(&kmem.lock);
 
   if(r)
-    memset((char*)r, 5, PGSIZE); 
+    memset((char*)r, 5, PGSIZE);
   return (void*)r;
 }
 ```
@@ -64,7 +68,7 @@ kalloc(void)
 struct {
   struct spinlock lock;
   struct run *freelist;
-} kmem[NCPU]; 
+} kmem[NCPU];
 
 char *kmem_lock_names[] = {
   "kmem_cpu_0",
@@ -130,11 +134,11 @@ kalloc(void)
 
   acquire(&kmem[cpu].lock);
 
-  if(!kmem[cpu].freelist) { 
-    int steal_left = 64; 
+  if(!kmem[cpu].freelist) {
+    int steal_left = 64;
     for(int i=0;i<NCPU;i++) {
-      if(i == cpu) continue; 
-      
+      if(i == cpu) continue;
+
       acquire(&kmem[i].lock);
       struct run *rr = kmem[i].freelist;
       while(rr && steal_left) {
@@ -142,7 +146,7 @@ kalloc(void)
         // 头插法
         rr->next = kmem[cpu].freelist;
         kmem[cpu].freelist = rr;
-        
+
         rr = kmem[i].freelist;
         steal_left--;
       }
@@ -164,14 +168,14 @@ kalloc(void)
 至此，这个实验就完成了：
 
 ```bash
-== Test running kalloctest == 
+== Test running kalloctest ==
 $ make qemu-gdb
-(186.2s) 
-== Test   kalloctest: test1 == 
-  kalloctest: test1: OK 
-== Test   kalloctest: test2 == 
-  kalloctest: test2: OK 
-== Test   kalloctest: test3 == 
+(186.2s)
+== Test   kalloctest: test1 ==
+  kalloctest: test1: OK
+== Test   kalloctest: test2 ==
+  kalloctest: test2: OK
+== Test   kalloctest: test3 ==
   kalloctest: test3: OK
 ```
 
@@ -253,14 +257,14 @@ kalloc(void)
 
         rr->next = kmem[cpu].freelist; // 插入
         kmem[cpu].freelist = rr;
-      
+
         rr = kmem[i].freelist;
         steal_left--;
       }
       release(&kmem[i].lock);
       if(steal_left == 0) break; // 转移完成
     }
-    acquire(&kmem[cpu].lock);	
+    acquire(&kmem[cpu].lock);
     release(&kmem[cpu].stealing_lock);
   }
 
@@ -284,14 +288,14 @@ kalloc(void)
 修改后，自然通过了测试：
 
 ```bash
-== Test running kalloctest == 
+== Test running kalloctest ==
 $ make qemu-gdb
-(195.1s) 
-== Test   kalloctest: test1 == 
-  kalloctest: test1: OK 
-== Test   kalloctest: test2 == 
-  kalloctest: test2: OK 
-== Test   kalloctest: test3 == 
+(195.1s)
+== Test   kalloctest: test1 ==
+  kalloctest: test1: OK
+== Test   kalloctest: test2 ==
+  kalloctest: test2: OK
+== Test   kalloctest: test3 ==
   kalloctest: test3: OK
 ```
 
@@ -302,7 +306,7 @@ $ make qemu-gdb
 
 > You will likely see different output, but the number of acquire loop iterations for the `bcache lock` will be **high**. If you look at the code in `kernel/bio.c`, you'll see that `bcache.lock` protects the list of cached block buffers, the reference count (b->refcnt) in each block buffer, and the identities of the cached blocks (`b->dev` and `b->blockno`).
 
-> Modify the `block cache` so that the number of acquire loop iterations for all locks in the bcache is **close to zero** when running `bcachetest`. Ideally the sum of the counts for all locks involved in the block cache should be zero, but it's OK if the sum is **less than 500**. Modify `bget` and `brelse` so that concurrent lookups and releases for different blocks that are in the bcache are unlikely to conflict on locks (e.g., **don't all have to wait for bcache.lock**). You must maintain the invariant that at most one copy of each block is cached. 
+> Modify the `block cache` so that the number of acquire loop iterations for all locks in the bcache is **close to zero** when running `bcachetest`. Ideally the sum of the counts for all locks involved in the block cache should be zero, but it's OK if the sum is **less than 500**. Modify `bget` and `brelse` so that concurrent lookups and releases for different blocks that are in the bcache are unlikely to conflict on locks (e.g., **don't all have to wait for bcache.lock**). You must maintain the invariant that at most one copy of each block is cached.
 
 ### Some hints
 > - It is OK to use a fixed number of buckets and not resize the hash table dynamically. Use a prime number of buckets (e.g., 13) to reduce the likelihood of hashing conflicts.
@@ -440,7 +444,7 @@ brelse(struct buf *b)
     bcache.head.next->prev = b;
     bcache.head.next = b;
   }
-  
+
   release(&bcache.lock);
 }
 ```
@@ -542,12 +546,12 @@ for(b = bcache.bufmap[key].next;b;b = b->next){
     }
   }
 // 如果依然没有命中，循环循环找目标 buf
-// 定义一个最久未使用的前一个结点：struct buf *before_least = 0; 
+// 定义一个最久未使用的前一个结点：struct buf *before_least = 0;
 uint holding_bucket = -1;
 for(int i = 0; i < NBUFMAP_BUCKET; i++){
 	// 获取小锁（此时持有大锁）
     acquire(&bcache.bufmap_locks[i]);
-    int newfound = 0; 
+    int newfound = 0;
     // 选中一个最久未使用的（ticks大的）且引用计数为 0 的 buf块
     for(b = &bcache.bufmap[i]; b->next; b = b->next) {
       if(b->next->refcnt == 0 && (!before_least || b->next->lastuse < before_least->next->lastuse)) {
@@ -662,7 +666,7 @@ bget(uint dev, uint blockno)
 {
   struct buf *b;
   uint key = BUFMAP_HASH(dev,blockno);
-  acquire(&bcache.bufmap_locks[key]);  
+  acquire(&bcache.bufmap_locks[key]);
 
   // hit cache
   for(b = bcache.bufmap[key].next;b;b = b->next){
@@ -693,10 +697,10 @@ bget(uint dev, uint blockno)
 
   // 依然没有命中缓存
   struct buf *before_least = 0;
-  uint holding_bucket = -1;  
+  uint holding_bucket = -1;
 
   for(int i = 0; i < NBUFMAP_BUCKET; i++){
-    int newfound = 0;   
+    int newfound = 0;
     acquire(&bcache.bufmap_locks[i]);
     for(b = &bcache.bufmap[i]; b->next; b = b->next){
       if(b->next->refcnt == 0 && (!before_least || b->next->lastuse < before_least->next->lastuse)){
@@ -704,25 +708,25 @@ bget(uint dev, uint blockno)
         newfound = 1;
       }
     }
-    if(!newfound){  
+    if(!newfound){
       release(&bcache.bufmap_locks[i]);
-    }else{  
+    }else{
       if(holding_bucket != -1) release(&bcache.bufmap_locks[holding_bucket]);
       holding_bucket = i;
     }
   }
 
-  if(!before_least){  
+  if(!before_least){
     panic("bget: no buffers!");
   }
 
   b = before_least->next;
 
-  if(holding_bucket !=key){ 
+  if(holding_bucket !=key){
     before_least->next = b->next;
     release(&bcache.bufmap_locks[holding_bucket]);
     acquire(&bcache.bufmap_locks[key]);
-    
+
     b->next= bcache.bufmap[key].next;
     bcache.bufmap[key].next = b;
   }
@@ -814,30 +818,30 @@ bunpin(struct buf *b) {
 至此，实验就完成了：
 
 ```bash
-== Test running kalloctest == 
+== Test running kalloctest ==
 $ make qemu-gdb
-(195.1s) 
-== Test   kalloctest: test1 == 
-  kalloctest: test1: OK 
-== Test   kalloctest: test2 == 
-  kalloctest: test2: OK 
-== Test   kalloctest: test3 == 
-  kalloctest: test3: OK 
-== Test kalloctest: sbrkmuch == 
+(195.1s)
+== Test   kalloctest: test1 ==
+  kalloctest: test1: OK
+== Test   kalloctest: test2 ==
+  kalloctest: test2: OK
+== Test   kalloctest: test3 ==
+  kalloctest: test3: OK
+== Test kalloctest: sbrkmuch ==
 $ make qemu-gdb
-kalloctest: sbrkmuch: OK (29.8s) 
-== Test running bcachetest == 
+kalloctest: sbrkmuch: OK (29.8s)
+== Test running bcachetest ==
 $ make qemu-gdb
-(61.1s) 
-== Test   bcachetest: test0 == 
-  bcachetest: test0: OK 
-== Test   bcachetest: test1 == 
-  bcachetest: test1: OK 
-== Test usertests == 
+(61.1s)
+== Test   bcachetest: test0 ==
+  bcachetest: test0: OK
+== Test   bcachetest: test1 ==
+  bcachetest: test1: OK
+== Test usertests ==
 $ make qemu-gdb
-usertests: OK (161.1s) 
-== Test time == 
-time: OK 
+usertests: OK (161.1s)
+== Test time ==
+time: OK
 Score: 80/80
 ```
 

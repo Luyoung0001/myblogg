@@ -1,7 +1,10 @@
 ---
 title: 【day05】统计数组中的元素
 date: 2023-03-12 15:37:15
-tags: leetcode 算法 数据结构
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 
@@ -15,7 +18,7 @@ categories: LeetCode
 
 示例 1：
 
-> 输入：nums = [1,2,2,4] 
+> 输入：nums = [1,2,2,4]
 > 输出：[2,3]
 
 思路：因为需要计数，因此哈希表很合适
@@ -127,7 +130,7 @@ class Solution {
 举个例子：
 
 > 原始数组：[4,3,2,7,8,2,3,1]
-> 
+>
 > 重置后为：[-4,-3,-2,-7,8,2,-3,-1]
 
 结论：[8,2] 分别对应的index为[5,6]
@@ -205,7 +208,7 @@ class Solution {
                return tag;
            }else{
                tag++;
-           }  
+           }
         }
         return tag;
     }

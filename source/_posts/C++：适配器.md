@@ -1,7 +1,9 @@
 ---
 title: C++：适配器
 date: 2024-04-24 21:30:19
-tags: c++ 开发语言
+tags:
+    - c++
+    - 开发语言
 categories: C++
 ---
 
@@ -108,7 +110,7 @@ public:
     { c.push_back(__x); }
 
     void pop()
-    { 
+    {
         __glibcxx_requires_nonempty();
       c.pop_front();
     }
@@ -137,7 +139,7 @@ protected:
 
 public:
     reference
-    top() 
+    top()
     {
 	    __glibcxx_requires_nonempty();
 	    return c.front();

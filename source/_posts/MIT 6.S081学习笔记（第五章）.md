@@ -1,8 +1,15 @@
 ---
 title: MIT 6.S081学习笔记（第五章）
 date: 2023-12-06 11:33:52
-tags: xv6 OS 操作系统
-categories: OS
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
+categories:
+    - OS
+    - 系统编程
+    - Unix/Linux
 ---
 
 <!--more-->
@@ -30,7 +37,7 @@ COW `fork()` makes freeing of the physical pages that implement user memory a li
 ### Here's a reasonable plan of attack.
 
 >- Modify `uvmcopy()` to map the parent's physical pages into the child, instead of allocating new pages. Clear **PTE_W** in the **PTEs** of both child and parent for pages that have **PTE_W** set.
->- Modify `usertrap()` to recognize page faults. When a write page-fault occurs on a **COW** page that was originally writeable, allocate a new page with `kalloc()`, copy the old page to the new page, and install the new page in the **PTE** with **PTE_W** set. Pages that were originally read-only (not mapped PTE_W, like pages in the text segment) should remain read-only and shared between parent and child; a process that tries to write such a page should be killed. 
+>- Modify `usertrap()` to recognize page faults. When a write page-fault occurs on a **COW** page that was originally writeable, allocate a new page with `kalloc()`, copy the old page to the new page, and install the new page in the **PTE** with **PTE_W** set. Pages that were originally read-only (not mapped PTE_W, like pages in the text segment) should remain read-only and shared between parent and child; a process that tries to write such a page should be killed.
 >- Ensure that each physical page is freed when the last PTE reference to it goes away -- but not before. A good way to do this is to keep, for each physical page, a "reference count" of the number of user page tables that refer to that page. Set a page's reference count to one when `kalloc()` allocates it. Increment a page's reference count when fork causes a child to share the page, and decrement a page's count each time any process drops the page from its page table. `kfree()` should only place a page back on the free list if its reference count is zero. It's OK to to keep these counts in a fixed-size array of integers. You'll have to work out a scheme for how to index the array and how to choose its size. For example, you could index the array with the page's physical address divided by 4096, and give the array a number of elements equal to highest physical address of any page placed on the free list by `kinit()` in kalloc.c. Feel free to modify kalloc.c (e.g., `kalloc()` and `kfree()`) to maintain the reference counts.
 >- Modify `copyout()` to use the same scheme as page faults when it encounters a **COW** page.
 
@@ -91,7 +98,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
 ### 2、在 kernel/trap.c 中修改 `usertrap()`
 
 ```c
-else if(r_scause() == 15) {  
+else if(r_scause() == 15) {
     // 找到当前错误页
     uint64 addr = r_stval();
     // 进行cow处理
@@ -316,27 +323,27 @@ int             get_refcnt(void *pa);
 ## 三、测试
 
 ```bash
-== Test running cowtest == 
+== Test running cowtest ==
 $ make qemu-gdb
-(13.4s) 
-== Test   simple == 
-  simple: OK 
-== Test   three == 
-  three: OK 
-== Test   file == 
-  file: OK 
-== Test usertests == 
+(13.4s)
+== Test   simple ==
+  simple: OK
+== Test   three ==
+  three: OK
+== Test   file ==
+  file: OK
+== Test usertests ==
 $ make qemu-gdb
-(11.8s) 
+(11.8s)
     (Old xv6.out.usertests failure log removed)
-== Test   usertests: copyin == 
-  usertests: copyin: OK 
-== Test   usertests: copyout == 
-  usertests: copyout: OK 
-== Test   usertests: all tests == 
-  usertests: all tests: OK 
-== Test time == 
-time: OK 
+== Test   usertests: copyin ==
+  usertests: copyin: OK
+== Test   usertests: copyout ==
+  usertests: copyout: OK
+== Test   usertests: all tests ==
+  usertests: all tests: OK
+== Test time ==
+time: OK
 Score: 110/110
 ```
 ## 四、实验总结

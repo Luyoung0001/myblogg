@@ -1,7 +1,10 @@
 ---
 title: Solutions for Xiyou Linux Group 2022 Interview Questions
 date: 2022-11-15 21:13:14
-tags: linux c++
+tags:
+    - linux
+    - c++
+    - 算法
 categories: Tests for Basic Knowledge of C
 ---
 
@@ -14,31 +17,31 @@ categories: Tests for Basic Knowledge of C
 > - This topic is only a limited reference for the `Xiyou Linux  Group` 2022 interview.
 > - In order to save layout, the program source code of this question omits the `#include` directive.
 > - The program source code in this question is only used to examine the basics of the C language, and should not be used as an example of the "code style" of the C language.
-> - The questions is arranged randomly on difficulty. 
+> - The questions is arranged randomly on difficulty.
 >  All topics are compiled and run on `x86_64 GNU/Linux` environment.
-> 
-> Message from the seniors: 
+>
+> Message from the seniors:
 > For a long time, the interview questions of Xiyou Linux Group have been known in XUPT for their high difficulty. We, as test-makers, also know that this test is slightly difficult. Please do not worry. **If you can complete half of the questions, it is already very good. ** Secondly, we are more interested in your thinking and process than the answers to the questions. Maybe your answer is slightly flawed, but your correct thinking and understanding of knowledge are enough to win more points. Finally, the process of doing the test is also a process of learning and growth. We believe the test questions will definitely help you to master the C language more familiarly. Good luck. See you at FZ103!
-> 
-> Copyright © Xiyou Linux Group, All Rights Reserved.  
+>
+> Copyright © Xiyou Linux Group, All Rights Reserved.
 > This exam is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 
-## 0. Is my calculator broken?! 
-> `2^10=1024` corresponds to 4 digits in decimal, so how many digits does `2^10000` correspond to in decimal? 
+## 0. Is my calculator broken?!
+> `2^10=1024` corresponds to 4 digits in decimal, so how many digits does `2^10000` correspond to in decimal?
 
-> **The answer is stated below:** 
+> **The answer is stated below:**
 ```c
 #include <stdio.h>
 int main(){
     int count = 0;
     double temp = 1;
-    for(int i = 0; i < 1000; i++){     
+    for(int i = 0; i < 1000; i++){
         temp *= 1024;               // Must be of type double, the last digit may carry
         while(temp >= 10){
             count++;
             temp /= 10.0;
-        }   
+        }
     }
     printf("%d\n", count+1);
 }
@@ -59,7 +62,7 @@ int main(void) {
 
 ## 2. Hellllllllllloooooooo!
 
-> - The output of the program is a bit strange, please try to explain the output. 
+> - The output of the program is a bit strange, please try to explain the output.
 > - Please talk about your understanding of `sizeof()` and `strlen()`.
 
 ```c
@@ -74,7 +77,7 @@ int main(void){
 }
 ```
 > - p has been specified, the size is 15, and p1 is a pointer, and the size of the pointer is generally 8 bytes (4 bytes and 32 bits only support a maximum of 4GB memory, which is obviously to be eliminated). *p2 is'H', 1 byte in size.
-> -  strlen() calculates the length of the string, obviously they are all 11. 
+> -  strlen() calculates the length of the string, obviously they are all 11.
 
 ## 3. Can you change the name of  the variable?
 
@@ -96,7 +99,7 @@ int main(void) {
     printf("a= %d\n", a);
 }
 ```
-> - **The answer is stated below:** 
+> - **The answer is stated below:**
 ```c
 #include <stdio.h>
 int a = 3;
@@ -134,7 +137,7 @@ typedef struct{
     double collect;
 } STRUCT;
 int main(void){
-    printf("sizeof (UNION) = %zu \n", sizeof(UNION)); 
+    printf("sizeof (UNION) = %zu \n", sizeof(UNION));
     printf("sizeof (STRUCT) = %zu \n", sizeof(STRUCT));
 }
 ```
@@ -165,7 +168,7 @@ int main(void){
     printf("e: %#x \n", e);
 }
 ```
-> - **The answer is stated below:** 
+> - **The answer is stated below:**
 
 ```c
 #include <stdio.h>
@@ -216,7 +219,7 @@ int main(void) {
 ```c
 1. int *p[10];
 2. int p[10];int *t = (int*)p; // now pointer t points to array p;
-3. int (*p[3])(int); // First it is an array. Second, every return value of the member of the array is a pointer. Because of the name of function is a pointer too, so we just let the array contains the functions. 
+3. int (*p[3])(int); // First it is an array. Second, every return value of the member of the array is a pointer. Because of the name of function is a pointer too, so we just let the array contains the functions.
 ```
 ## 8. Order in Chaos
 
@@ -225,7 +228,7 @@ int main(void) {
 > Hint: It's better to knock it out with your own hands~
 
 > - Bubble sorting, similar to bubbling in water, the larger number sinks, and the smaller number slowly rises. Assuming from small to large, that is, the larger number is slowly arranged to the back, and the smaller number is slowly moved to the back. front row.
- 
+
 ```c
 int nums[10] = {2,1,3,4,5,6,4,5,3,7};
 for(int i = 0; i < 10-1; i++){
@@ -332,7 +335,7 @@ int main(int argc, char **argv){
     }
 }
 ```
-> - argc is the number of parameters, here is a signed Integer type. Its value represents the number of parameters entered when executing the program. 
+> - argc is the number of parameters, here is a signed Integer type. Its value represents the number of parameters entered when executing the program.
 > - If it is run directly, its value is 1. After entering the loop,  its value will overflow, the conditional statement will be executed.
 > - If your program is a.out, if you run the program on the command line, (First, you should use the cd command to enter the directory where the a.out file is located on the command line)
 > -  The running command is: ./a.out Linux hello

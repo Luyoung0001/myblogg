@@ -1,8 +1,14 @@
 ---
 title: debugger（五）：source level stepping
 date: 2024-06-11 18:00:33
-tags: c++ lldb debugger
-categories: C++ debugger
+tags:
+    - c++
+    - debugger
+    - lldb
+categories:
+    - 系统编程
+    - C++
+    - debugger
 ---
 
 <!--more-->
@@ -101,9 +107,9 @@ int main() {
 
 ```bash
 #1  0x000055555555526d in main () at /home/luyoung/mydebugger/examples/stack.cpp:53
-(gdb) disassemble 
+(gdb) disassemble
 Dump of assembler code for function _Z1fv:
-   0x0000555555555210 <+0>:     endbr64 
+   0x0000555555555210 <+0>:     endbr64
    0x0000555555555214 <+4>:     push   %rbp
    0x0000555555555215 <+5>:     mov    %rsp,%rbp
    0x0000555555555218 <+8>:     sub    $0x10,%rsp
@@ -113,8 +119,8 @@ Dump of assembler code for function _Z1fv:
    0x000055555555522f <+31>:    movl   $0x1,-0x8(%rbp)
    0x0000555555555236 <+38>:    movl   $0x1,-0x4(%rbp)
    0x000055555555523d <+45>:    nop
-   0x000055555555523e <+46>:    leave  
-   0x000055555555523f <+47>:    ret    
+   0x000055555555523e <+46>:    leave
+   0x000055555555523f <+47>:    ret
 End of assembler dump.
 ```
 
@@ -176,7 +182,7 @@ void Debugger::step_out() {
 
     if (should_remove_breakpoint) {
         remove_breakpoint(return_address);
- 
+
 ```
 
 这里有一个细节，就是得判断返回地址是不是一个断点，如果是，那就不用管，继续执行之后它自动会停在返回处；如果不是，那就要手动打断点，单步执行之后它就回停在那里，接着将断点取消，就可以了。
@@ -226,7 +232,7 @@ step_over意味着如果下一行是一个函数，会直接运行下一行结�
 
 ```cpp
 void f() {
-  int foo = 1;		
+  int foo = 1;
   int foo1 = 1;
   e();
   int foo2 = 1;

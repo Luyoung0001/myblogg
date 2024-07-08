@@ -1,7 +1,10 @@
 ---
 title: 【day09】链表的旋转与反转
 date: 2023-03-21 23:18:45
-tags: 链表 数据结构 leetcode
+tags:
+    - leetcode
+    - 算法
+    - 数据结构
 categories: LeetCode
 ---
 

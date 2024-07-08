@@ -1,7 +1,9 @@
 ---
 title: C++：智能指针（一）
 date: 2024-04-21 23:18:59
-tags: c++ 开发语言
+tags:
+    - c++
+    - 开发语言
 categories: C++
 ---
 

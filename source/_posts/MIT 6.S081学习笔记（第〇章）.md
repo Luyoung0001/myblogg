@@ -1,7 +1,11 @@
 ---
 title: MIT 6.S081学习笔记（第〇章）
 date: 2023-09-07 23:04:29
-tags: 学习 笔记 操作系统 MIT 6.S081
+tags:
+    - 学习
+    - 笔记
+    - 操作系统
+    - MIT 6.S081
 categories: OS 系统编程 Unix/Linux
 ---
 
@@ -27,11 +31,11 @@ int main() {
     if (pid > 0) {
         // 父进程
         printf("这是父进程:子进程的 id 为:%d\n", pid);
-        int status; 
+        int status;
         pid = wait(&status);
         if (WIFEXITED(status)) {
             int exit_status = WEXITSTATUS(
-                status); 
+                status);
             printf("子进程 %d 已经退出，退出的状态码为:%d\n", pid, exit_status);
         }
     } else if (pid == 0) {
@@ -103,7 +107,7 @@ Z+   45316 45317
 ****** ~ % kill 45317
 ****** ~ % ps -A -ostat,ppid,pid | grep -e '^[Zz]'
 Z+   45316 45317
-****** ~ % kill -9 45317                          
+****** ~ % kill -9 45317
 ****** ~ % ps -A -ostat,ppid,pid | grep -e '^[Zz]'
 Z+   45316 45317
 ```
@@ -112,7 +116,7 @@ Z+   45316 45317
 一般僵尸进程很难直接 kill 掉，不过您可以kill僵尸进程的父进程。父进程死后，僵尸进程成为”孤儿进程**”，过继给1号进程init，init 始终会负责清理僵尸进程**。它产生的所有僵尸进程也跟着消失。
 
 ```bash
-****** ~ % kill 45316                             
+****** ~ % kill 45316
 ****** ~ % ps -A -ostat,ppid,pid | grep -e '^[Zz]'
 
 ```
@@ -177,7 +181,7 @@ int main() {
 ```
 运行结果：
 
-> ****** chap0 % ./main               
+> ****** chap0 % ./main
 父进程正在运行,pid:47198 ppid:18751
 孙子进程正在运行,pid:47203 ppid:1
 孙子进程正在运行,pid:47203 ppid:1
@@ -257,7 +261,7 @@ int main() {
 ```
 运行之后，通过 kill 命令杀死子进程，运行结果：
 
-> ****** chap0 % ./main               
+> ****** chap0 % ./main
 父进程在运行!
 子进程正在运行pid:48472!
 父进程在运行!
@@ -267,7 +271,7 @@ int main() {
 父进程在运行!
 ...
 
-kill 命令是通过**向进程发送指定的信号**来结束相应进程的。 在默认情况下，采用编号为15的TERM信号。 
+kill 命令是通过**向进程发送指定的信号**来结束相应进程的。 在默认情况下，采用编号为15的TERM信号。
 
 ### 问题 4： 为什么 kill 不能终止僵尸进程？
 kill -9 发送SIGKILL信号将其终止，但是以下两种情况不起作用：
@@ -295,7 +299,7 @@ int main() {
 ```
 运行结果：
 
-> ****** chap0 % ./main            
+> ****** chap0 % ./main
 hello
 
 这段代码将调用程序替换为“/bin/echo”这个程序，这个程序的参数列表为“hello”。
@@ -437,8 +441,8 @@ int main() {
 ```
 运行结果：
 
-> ****** chap0 % ./main            
-hello world1                                                                                                                        
+> ****** chap0 % ./main
+hello world1
 hello world2
 hello world3
 this is fproc
@@ -512,7 +516,7 @@ int main() {
 
 运行结果：
 
-> ****** chap0 % ./main            
+> ****** chap0 % ./main
 父进程运行!
 子进程运行!
 hello world1

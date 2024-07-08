@@ -1,7 +1,10 @@
 ---
 title: 【day02】之链表操作
 date: 2023-03-08 22:41:48
-tags: 链表 数据结构 算法
+tags:
+    - 链表
+    - 数据结构
+    - 算法
 categories: LeetCode
 ---
 
