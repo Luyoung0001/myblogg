@@ -226,6 +226,143 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2024/05/09/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+          C++并发：线程函数传参（一）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/09/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+        <div>
+          一、问题当创建 std::thread 对象时，传递给线程的函数的所有参数都会被复制或移动到新创建的线程的内存空间中。这是为了确保线程的执行不会依赖于父线程可能销毁的栈上变量，从这个机制上看，这是很合理的。 在新的线程的栈上，这些变量都会以右值的方式传递给线程函数，这主要是为了提高传参的性能。但是在某些情况下，这些右值并不能满足线程函数的参数。如果线程函数需要引用参数，直接传递普通变量会因为无
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-05-09 23:39" pubdate>
+              2024-05-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c/">#c++</a>
+            
+              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/05/05/macOS%20DOSBox%20%E6%B1%87%E7%BC%96%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_self">
+          macOS DOSBox 汇编环境搭建
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/05/macOS%20DOSBox%20%E6%B1%87%E7%BC%96%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_self">
+        <div>
+          正文一、安装DOSBox首先前往DOSBox的官网下载并安装最新版本的DOSBox。 二、下载必备的工具包在用户目录下新建一个文件夹，比如 dosbox: 1mkdir dosbox 然后下载一些常用的工具。下载好了后，将这些工具解压，重新放在 dosbox 这个文件夹中：  三、配置自动挂载由于DOSBox启动之后所有的设置都会复原，因此要实现自动挂载需要配置自动运行命令。 打开Termin
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-05-05 22:35" pubdate>
+              2024-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/" class="category-chain-item">经验方法</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/8086/" class="category-chain-item">8086</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%B1%87%E7%BC%96/">#汇编</a>
+            
+              <a href="/tags/8086/">#8086</a>
+            
+              <a href="/tags/macos/">#macos</a>
+            
+              <a href="/tags/DOSBox/">#DOSBox</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2024/04/28/CM3%EF%BC%9Alldb%20%E8%B0%83%E8%AF%95%20qemu%20%E8%B7%91%E7%9A%84%E7%A8%8B%E5%BA%8F/" target="_self">
           CM3：lldb 调试 qemu 跑的程序
         </a>
@@ -721,134 +858,6 @@
               <a href="/tags/c/">#c++</a>
             
               <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#开发语言</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" target="_self">
-          C++：返回值优化
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" target="_self">
-        <div>
-          正文对于返回一个对象的函数，它在返回后前，应该在栈外用复制构造函数创建一个临时对象t2，然后返回 t1，随后 t1 在栈内被析构掉，t2 被传回。如下： 1234567891011121314151617181920212223242526272829303132333435363738394041424344#include &lt;iostream&gt;#include &lt;stri
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-04-17 19:25" pubdate>
-              2024-04-17
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/c/">#c++</a>
-            
-              <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#开发语言</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
-          C++：异常处理
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
-        <div>
-          异常处理中对象参数与引用参数的选择User：  catch()中的参数如果使用基类的引用，是不是相当于声明了一个引用，它是基类类型的，catch 到 throw的抛出的对象之后，就相当于这个基类引用指向了抛出的对象？  ChatGPT：  是的，你说得很对。当在 catch 块中使用基类的引用作为参数时，相当于声明了一个引用，它是基类类型的。当程序抛出一个异常并且在调用栈中找到匹配的 catc
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-04-17 18:01" pubdate>
-              2024-04-17
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/c/">#c++</a>
-            
-              <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#开发语言</a>
-            
-              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">#学习笔记</a>
             
           </div>
         

@@ -226,6 +226,148 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2024/06/11/debugger%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E6%A0%88%E5%B8%A7%EF%BC%88backtrace%EF%BC%89/" target="_self">
+          debugger（七）：栈帧（backtrace）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/06/11/debugger%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E6%A0%88%E5%B8%A7%EF%BC%88backtrace%EF%BC%89/" target="_self">
+        <div>
+          〇、前言在前面已经详细得介绍了栈帧，这里实现 backtrace。 一、backtrace思路是遍历 stack，搜索 stack pointer，逐个打印栈帧信息，一直打印到 main 函数。 12345678910111213141516171819void Debugger::print_backtrace() &#123;    auto output_frame = [frame_n
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-06-11 20:37" pubdate>
+              2024-06-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C/debugger/" class="category-chain-item">debugger</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c/">#c++</a>
+            
+              <a href="/tags/debugger/">#debugger</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/06/11/debugger%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9Asource%20level%20%E6%96%AD%E7%82%B9/" target="_self">
+          debugger（六）：source level 断点
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/06/11/debugger%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9Asource%20level%20%E6%96%AD%E7%82%B9/" target="_self">
+        <div>
+          〇、前言前面一直使用 break 0xADDR 来打断点，这种打断点的方式及其不方便，需要手动获取某一行的断点，这一节的目标是采用以下方式打断点： 123456// 函数名break main// 源代码break main.cpp:10// 地址break 0xADDR  一、break 函数名这个可以在所有的编译单元中搜索。对于每一个 cu，只需要判断：(die.has(dwarf::DW
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-06-11 18:37" pubdate>
+              2024-06-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C-debugger/" class="category-chain-item">C++ debugger</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c/">#c++</a>
+            
+              <a href="/tags/lldb/">#lldb</a>
+            
+              <a href="/tags/debugger/">#debugger</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2024/06/11/debugger%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9Asource%20level%20stepping/" target="_self">
           debugger（五）：source level stepping
         </a>
@@ -750,137 +892,6 @@
   
   
 
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/c/">#c++</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/05/16/C++%E8%B0%83%E8%AF%95%EF%BC%9A%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" target="_self">
-          C++调试：内存管理
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/16/C++%E8%B0%83%E8%AF%95%EF%BC%9A%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" target="_self">
-        <div>
-          正文本文将会通过一个例子，通过 nm、lldb 工具查看 ELF 文件的内存管理： 123456789101112131415161718192021#include &lt;iostream&gt;using namespace std;/*说明：C++中不再区分初始化和未初始化的全局变量、静态变量的存储区，如果非要区分下述程序标注在了括号中*/int g_var = 0; // g_var
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-05-16 22:44" pubdate>
-              2024-05-16
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/" class="category-chain-item">经验方法</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E7%BB%8F%E9%AA%8C%E6%96%B9%E6%B3%95/C/" class="category-chain-item">C++</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/c/">#c++</a>
-            
-              <a href="/tags/lldb/">#lldb</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/05/15/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E6%9E%84%E5%BB%BA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%98%9F%E5%88%97/" target="_self">
-          C++并发：构建线程安全的队列
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/15/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E6%9E%84%E5%BB%BA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%98%9F%E5%88%97/" target="_self">
-        <div>
-          正文线程安全队列的完整的类定义，其中采用了条件变量： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455#include &lt;condition_variable&gt;#include &lt;memory&gt;#include &lt
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-05-15 17:44" pubdate>
-              2024-05-15
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/C/" class="category-chain-item">C++</a>
-  
   
 
       </span>
