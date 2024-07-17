@@ -1,0 +1,738 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、加法器一位加法器就是异或作为结果，与作为进位标志，因此可以很简单的设计出一位加法器：  如果将四个一位加法器连起来，那么就成 4位了串行进位加法器电路：  需要注意的是，上面的加法器是基础构建，它只执行加法功能，其它任何溢出、进位等等都是高层的概念，和加法器没有任何关系。 二、加法器执行加法计算在数据类型一致的情况下，比如，长度统一。这时候就可以由加法器计算它们之间的加法运算，但是数据类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字电路实验-带有减法功能的加法器">
+<meta property="og:url" content="http://blog.luliang.online/2024/07/15/%E6%95%B0%E5%AD%97%E7%94%B5%E8%B7%AF%E5%9F%BA%E7%A1%80%E5%AE%9E%E9%AA%8C3/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一、加法器一位加法器就是异或作为结果，与作为进位标志，因此可以很简单的设计出一位加法器：  如果将四个一位加法器连起来，那么就成 4位了串行进位加法器电路：  需要注意的是，上面的加法器是基础构建，它只执行加法功能，其它任何溢出、进位等等都是高层的概念，和加法器没有任何关系。 二、加法器执行加法计算在数据类型一致的情况下，比如，长度统一。这时候就可以由加法器计算它们之间的加法运算，但是数据类型">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/adder02.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/adder04.png">
+<meta property="article:published_time" content="2024-07-15T08:57:40.000Z">
+<meta property="article:modified_time" content="2024-07-17T06:31:37.326Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="ysyx">
+<meta property="article:tag" content="NVBoard">
+<meta property="article:tag" content="加法器">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/adder02.png">
+  
+  
+  
+  <title>数字电路实验-带有减法功能的加法器 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="数字电路实验-带有减法功能的加法器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-15 16:57" pubdate>
+          2024年7月15日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">数字电路实验-带有减法功能的加法器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一、加法器"><a href="#一、加法器" class="headerlink" title="一、加法器"></a>一、加法器</h2><p>一位加法器就是异或作为结果，与作为进位标志，因此可以很简单的设计出一位加法器：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/adder02.png" srcset="/img/loading.gif" lazyload></p>
+<p>如果将四个一位加法器连起来，那么就成 4位了串行进位加法器电路：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/adder04.png" srcset="/img/loading.gif" lazyload></p>
+<p>需要注意的是，上面的加法器是基础构建，它只执行加法功能，其它任何溢出、进位等等都是高层的概念，和加法器没有任何关系。</p>
+<h2 id="二、加法器执行加法计算"><a href="#二、加法器执行加法计算" class="headerlink" title="二、加法器执行加法计算"></a>二、加法器执行加法计算</h2><p>在数据类型一致的情况下，比如，长度统一。这时候就可以由加法器计算它们之间的加法运算，但是数据类型的长度注定了加法的结果会溢出、进位等行为。注意这是上层计算的范畴，和加法器本身 没有任何关系，我们是在讨论加法，而不是加法器。</p>
+<h3 id="1、溢出"><a href="#1、溢出" class="headerlink" title="1、溢出"></a>1、溢出</h3><p>溢出的概念是，两个相同符号的数比如两个负数或者正数相加后，结果超出了类型的范围。比如 带符号的 4 位类型，它的范围为{-8,….7}，以下几种情况就会溢出：</p>
+<ul>
+<li>3+6 &#x3D; 9 &gt; 7</li>
+<li>(-4)+(-5) &#x3D; (-9) &lt; -8</li>
+</ul>
+<p>溢出后会怎么样呢？对于加法器来说，它并不知道什么是溢出。对于用补码表示的数，一旦溢出，符号位会反转。比如：</p>
+<ul>
+<li>3+6 &#x3D; 0011+0110 &#x3D; 1001</li>
+<li>(-4)+(-5) &#x3D; 1100+1011 &#x3D; 0111</li>
+</ul>
+<p>因此我们可以获得到这种溢出特征，那就是：assign Overflow &#x3D; (A[n-1] &#x3D;&#x3D; B[n-1]) &amp;&amp; (Result [n-1] !&#x3D; A[n-1])。也就是说，两个操作数的符号必须相同，且结果符号翻转，这就是溢出。</p>
+<p>需要注意的是，并不是说，这和加法器有关，这个和加法器半毛钱关系都没有，溢出能自动回绕这种特性，是人为设计出来的补码。</p>
+<h3 id="2、进位（借位）"><a href="#2、进位（借位）" class="headerlink" title="2、进位（借位）"></a>2、进位（借位）</h3><p>什么时候会进位呢？溢出和进位等价吗？事实上，这两个概念没有任何关系：</p>
+<ul>
+<li>3+6 &#x3D; 0011+0110 &#x3D; 1001</li>
+<li>(-4)+(-5) &#x3D; 1100+1011 &#x3D; 0111<br>显然第一个计算式并没有进位，但发生了溢出；第二个既有进位也有溢出。</li>
+</ul>
+<p>在计算机运算中，溢出（overflow）、进位（carry）和借位（borrow）是处理数字运算时非常关键的概念，尤其在涉及二进制数的算术运算时。它们之间存在一定的联系，但也有重要的区别。</p>
+<h4 id="进位（Carry）"><a href="#进位（Carry）" class="headerlink" title="进位（Carry）"></a>进位（Carry）</h4><p>进位是指在二进制加法中，最高位（最左边的位）相加后产生的超出当前位数的额外位。进位仅在加法中产生，且通常用于无符号数的运算。例如，如果两个8位的无符号数相加，其和超过了255（即 (11111111_2)），则会产生一个向上的进位，但这个进位位于计算范围之外。</p>
+<h4 id="借位（Borrow）"><a href="#借位（Borrow）" class="headerlink" title="借位（Borrow）"></a>借位（Borrow）</h4><p>借位是在二进制减法中使用的概念。当你从一个较小的位减去一个较大的位时，需要从更高的位“借”一位来完成减法。这是减法中的一个基本步骤，尤其是在多位数的减法中。</p>
+<h4 id="溢出（Overflow）"><a href="#溢出（Overflow）" class="headerlink" title="溢出（Overflow）"></a>溢出（Overflow）</h4><p>溢出是指在进行有符号数运算时，结果超出了该数据类型所能表示的范围。它通常与数的正负符号有关。溢出表示结果的符号位被错误地计算，从而导致结果不正确。例如，在一个8位的有符号整数系统中，最大值为127（(01111111_2)），最小值为-128（(10000000_2)）。如果两个正数相加得到一个负数，或两个负数相加得到一个正数，这就发生了溢出。</p>
+<h4 id="关系和区别"><a href="#关系和区别" class="headerlink" title="关系和区别"></a>关系和区别</h4><ul>
+<li><strong>关系</strong>：这三者都涉及二进制运算中位的额外调整。进位和借位直接影响相邻的高位或低位，而溢出则是对整个运算结果有效性的一个指标。</li>
+<li><strong>区别</strong>：<ul>
+<li><strong>使用场景</strong>：进位用于加法中，借位用于减法中，而溢出可以在加法或减法中发生，尤其是涉及有符号数时。</li>
+<li><strong>影响范围</strong>：进位和借位影响的是单个位之间的运算，而溢出则是整个结果的有效性问题。</li>
+<li><strong>数据类型相关性</strong>：进位和借位通常与无符号数的处理更相关，溢出则主要关注有符号数。</li>
+</ul>
+</li>
+</ul>
+<p>因此，要判断进位标志，只需要：assign {Carry,Result} &#x3D; A + B;</p>
+<h2 id="三、加法器执行减法运算"><a href="#三、加法器执行减法运算" class="headerlink" title="三、加法器执行减法运算"></a>三、加法器执行减法运算</h2><p>我们用的补码，补码的好处之一就是可以将减法表示为加法，操作前只需要将被减数写成相反数，然后加起来就行，比如：</p>
+<ul>
+<li>3-2 &#x3D; 0011-0010 &#x3D; 0011+1110 &#x3D; 0001</li>
+<li>(-2)-(-3) &#x3D; 1110-1101 &#x3D; 1110+0011 &#x3D; 0001</li>
+</ul>
+<p>那么为何要将 -B 再 求一次补码，给一个补码再补一次，这是在干什么？比如：</p>
+<ul>
+<li>-2 的补码为 [1110]补 &#x3D; [0010] &#x3D; 2;</li>
+<li>-3 的补码为 [1101]补 &#x3D; [0011] &#x3D; 3;</li>
+<li>0 的补码为 [0000]补 &#x3D; [0000] &#x3D; 0;</li>
+<li>7 的补码为 [0111]补 &#x3D; [1001] &#x3D; -7;</li>
+<li>-8 的补码为 [1000]补 &#x3D; [1000] &#x3D; -8;</li>
+<li>…</li>
+</ul>
+<p>可以看到，补码的补码就在做一件事，那就是求它的相反数，这个相反数依然使用补码表示的。对于前几个，都能正常工作，但是对于 -8 问题就出来了，-8 的相反数就会溢出。</p>
+<p>也就是说，在求特殊的最小的负数的补码时候，要注意溢出标志位的更新时机。比如：</p>
+<ul>
+<li>0-(-8) &#x3D; 0000-1000 &#x3D; 0000+1000 &#x3D; 1000</li>
+</ul>
+<p>这种时机可以通过两种方法的不同来体现。</p>
+<h3 id="1、方法一"><a href="#1、方法一" class="headerlink" title="1、方法一"></a>1、方法一</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">assign</span> subs = ~B;<br><span class="hljs-keyword">assign</span> &#123;Carry,Result&#125; = A + subs + <span class="hljs-number">1</span>;<br><span class="hljs-keyword">assign</span> Overflow = (A[n-<span class="hljs-number">1</span>] == subs[n-<span class="hljs-number">1</span>]) &amp;&amp; (Result [n-<span class="hljs-number">1</span>] != A[n-<span class="hljs-number">1</span>]);<br></code></pre></td></tr></table></figure>
+<p>对于 0-(-8)：</p>
+<ul>
+<li>subs &#x3D; 0111</li>
+<li>{Carray, Result} &#x3D; 0000 + 0111 + 1 &#x3D; 0_1000</li>
+<li>Overflow &#x3D; (0 &#x3D;&#x3D; 0) &amp;&amp; (1 !&#x3D; 0) &#x3D; 1</li>
+</ul>
+<p>能正确计算溢出标志。</p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">assign</span> subs = ~B + <span class="hljs-number">1</span>;<br><span class="hljs-keyword">assign</span> &#123;Carry,Result&#125; = A + subs<br><span class="hljs-keyword">assign</span> Overflow = (A[n-<span class="hljs-number">1</span>] == subs[n-<span class="hljs-number">1</span>]) &amp;&amp; (Result [n-<span class="hljs-number">1</span>] != A[n-<span class="hljs-number">1</span>]);<br></code></pre></td></tr></table></figure>
+
+<p>对于 0-(-8)：</p>
+<ul>
+<li>subs &#x3D; 1000</li>
+<li>{Carray, Result} &#x3D; 0000 + 0111 + 1 &#x3D; 0_1000</li>
+<li>Overflow &#x3D; (0 &#x3D;&#x3D; 1) &amp;&amp; (1 !&#x3D; 0) &#x3D; 0</li>
+</ul>
+<p>没能计算出溢出标志。</p>
+<p>为什么会这样？那是因为将补码再求补码时，求补码的目的为了计算它的相反数，任何一个除了 0 的数的相反数，符号位一定相反，但是对于最小的负数比如-8 来说，它的相反数会溢出，从7 溢出到了-8，因此还是自身。但不管怎样，这仍然属于溢出。<strong>为了统一，我们将求补码延迟，这样能准确抓到被减数的符号位</strong>，这很关键。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/ysyx/" class="category-chain-item">ysyx</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/ysyx/%E6%95%B0%E5%AD%97%E7%94%B5%E8%B7%AF%E5%AE%9E%E9%AA%8C/" class="category-chain-item">数字电路实验</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ysyx/" class="print-no-link">#ysyx</a>
+      
+        <a href="/tags/NVBoard/" class="print-no-link">#NVBoard</a>
+      
+        <a href="/tags/%E5%8A%A0%E6%B3%95%E5%99%A8/" class="print-no-link">#加法器</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>数字电路实验-带有减法功能的加法器</div>
+      <div>http://blog.luliang.online/2024/07/15/数字电路基础实验3/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年7月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/07/16/%E6%95%B0%E5%AD%97%E7%94%B5%E8%B7%AF%E5%AE%9E%E9%AA%8C3.5/" title="数字电路实验3">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数字电路实验3</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/14/%E6%95%B0%E5%AD%97%E7%94%B5%E8%B7%AF%E5%9F%BA%E7%A1%80%E5%AE%9E%E9%AA%8C2/" title="数字电路实验2">
+                        <span class="hidden-mobile">数字电路实验2</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
