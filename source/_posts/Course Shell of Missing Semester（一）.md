@@ -5,7 +5,8 @@ tags:
     - Shell
     - 学习
     - 笔记
-categories: Missing Semester
+categories:
+    - Missing Semester
 ---
 
 <!--more-->

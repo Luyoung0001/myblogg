@@ -7,7 +7,6 @@ tags:
    - bash
    - 脚本
 categories:
-   - Some_Tools
    - Missing Semester
 ---
 
