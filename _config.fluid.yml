@@ -4,18 +4,64 @@
 
 # Sit
 
+favicon: https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png # 网站图标
 
 navbar:
     blog_title: Luyoung
     menu:
     - { key: 'home', link: '/', icon: 'iconfont icon-home-fill', name: '首页'}
-    - { key: 'guidang', link: '/archives/', icon: 'iconfont icon-archive-fill', name: '归档'}
-    - { key: 'catag', link: '/categories/', icon: 'iconfont icon-category-fill' ,name: '分类'}
+    - { key: 'archive', link: '/archives/', icon: 'iconfont icon-archive-fill', name: '归档'}
+    - { key: 'category', link: '/categories/', icon: 'iconfont icon-category-fill' ,name: '分类'}
     - { key: 'tag', link: '/tags/', icon: 'iconfont icon-tags-fill', name: '标签'}
     - { key: 'about', link: '/about/', icon: 'iconfont icon-user-fill', name: '关于' }
     # - { key: 'dreams', link: '/dreams/', icon: 'iconfont icon-user-fill', name: '梦境' }
     # - { key: 'opinion', link: '/opinions/', icon: 'iconfont icon-user-fill', name: '观点' }
 
+post:
+  default_index_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/2.jpg # 文章封面图
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg # 文章背景图
+  banner_img_height: 65
+  banner_mask_alpha: 0
+
+# 页面背景图
+
+# 应该在 index 中设置
+# home:
+#   enable: true
+#   banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/trees.jpg
+#   banner_img_height: 65
+#   banner_mask_alpha: 0
+
+
+
+archive:
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/8.jpg
+  banner_img_height: 65
+  banner_mask_alpha: 0
+
+
+category:
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/6.jpg
+  banner_img_height: 65
+  banner_mask_alpha: 0
+
+
+tag:
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/5.jpg
+  banner_img_height: 65
+  banner_mask_alpha: 0
+
+
+about:
+  avatar: https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png
+  name: "Luyoung"
+  intro: "我自飞扬临天下。——《遮天》孔雀王"
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/4.jpg
+  banner_img_height: 65
+  banner_mask_alpha: 0
+  icons:
+    - { class: 'iconfont icon-github-fill', link: 'https://github.com/Luyoung0001', tip: 'GitHub' }
+    - { class: 'iconfont icon-wechat-fill', link: 'https://raw.githubusercontent.com/Luyoung0001/picBed/main/WechatIMG315.jpg'}
 
 index:
   slogan:
@@ -27,8 +73,19 @@ index:
       method: "GET"
       headers: {}
       keys: ["hitokoto"]
-  menu:
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/7.jpg
+  banner_img_height: 65
+  banner_mask_alpha: 0
 
+page404:
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/trees.jpg
+  banner_img_height: 65
+  banner_mask_alpha: 0
+
+links:
+  banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/trees.jpg
+  banner_img_height: 65
+  banner_mask_alpha: 0
 
 
 lazyload:
@@ -48,13 +105,27 @@ language: zh-CN
 timezone: 'Asia/Shanghai'
 
 
-about:
-  avatar: /img/avatar.png
-  name: "Luyoung"
-  intro: "我自飞扬临天下。——《遮天》孔雀王"
-  icons:
-    - { class: 'iconfont icon-github-fill', link: 'https://github.com/Luyoung0001', tip: 'GitHub' }
-    - { class: 'iconfont icon-wechat-fill', link: 'https://raw.githubusercontent.com/Luyoung0001/picBed/main/WechatIMG315.jpg'}
+
+
+
+
+code:
+  copy_btn: true
+  highlight:
+    enable: true
+    line_number: true
+    lib: "highlightjs"
+    highlightjs:
+      style: 'Github Gist'
+      bg_color: false
+    prismjs:
+      style: "default"
+      preprocess: true
+
+dark_mode:
+  enable: true
+  default: light #auto / light / dark
+
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -104,15 +175,15 @@ prismjs:
 # path: Root path for your blogs index page. (default = '')
 # per_page: Posts displayed per page. (0 = disable pagination)
 # order_by: Posts order. (Order by date descending by default)
-index_generator:
-  path: ''
-  per_page: 7
-  order_by: -date
+# index_generator:
+#   path: ''
+#   per_page: 7
+#   order_by: -date
 
-# Category & Tag
-default_category: uncategorized
-category_map:
-tag_map:
+# # Category & Tag
+# default_category: uncategorized
+# category_map:
+# tag_map:
 
 # Metadata elements
 ## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
