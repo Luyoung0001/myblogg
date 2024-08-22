@@ -1,5 +1,5 @@
 ---
-title: NEMU 添加指令
+title: NEMU 添加更多的指令
 date: 2024-08-21 11:22:33
 tags:
     - 模拟器
