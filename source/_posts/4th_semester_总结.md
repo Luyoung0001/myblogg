@@ -20,7 +20,7 @@ categories:
 好了废话不说了，开始总结。
 
 ## 一、学习
-大二下学期主要学习了 C++。是的，我看完了 C++ Primer Plus，并且敲了一遍其中的90% 的代码，一共做了 对 C++ 的基本思想有了深刻的理解，标记了 2140 个知识点，这里是 [github仓库](https://github.com/Luyoung0001/Cpp_Notes)。
+大二下学期主要学习了 C++。是的，我看完了 C++ Primer Plus，并且敲了一遍其中的90% 的代码，对 C++ 的基本思想有了深刻的理解，标记了 2140 个知识点，这里是 [github仓库](https://github.com/Luyoung0001/Cpp_Notes)。
 
 之后立即做了两个 C++ 小项目，一个是学校的课程设计管理系统，我用的是 C++11，里面用了大量的移动语义；另一个是我重构了的mini debugger，这个项目很著名，里面我抛弃了Makefile，全部用 Cmake 构建。仓库分别是：[minidebug](https://github.com/Luyoung0001/minidbg)、[公司管理系统](https://github.com/Luyoung0001/cpp_design)。
 
