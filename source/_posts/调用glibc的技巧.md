@@ -290,8 +290,6 @@ gcc -o main -Wl,--whole-archive -L. -lmylib aaa.o main.o -Wl,-no-whole-archive -
 这个将 `aaa.o main.o` 链接到一起形成 `main`，并且将 `mylib` 中的符号全部包含到 `main`。当 `main` 调用 `printf` 时，可以选择动态加载这个符号（因为我们使用了`dlsym`）。
 
 
-以上就是文章的所有内容了。
-
 
 
 
