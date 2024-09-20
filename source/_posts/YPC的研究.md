@@ -1,13 +1,12 @@
 ---
-title: Chisel 测试模块
-date: 2024-09-19 22:20:40
+title: YPC的研究
+date: 2024-09-20 18:20:40
 tags:
-    - Scala
-    - Chisel
+    - YPC
+    - 模拟器
 categories:
-    - Scala
-    - Chisel
     - PA2
+    - 模拟器
 ---
 
 <!--more-->
