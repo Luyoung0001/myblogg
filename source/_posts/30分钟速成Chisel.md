@@ -12,7 +12,7 @@ categories:
 
 <!--more-->
 
-当然，我很高兴为你提供一个针对拥有基础 Scala 知识但对 Chisel 完全零基础的入门教程。Chisel（Constructing Hardware In a Scala Embedded Language）是一个基于 Scala 的硬件描述语言，用于设计数字电路。这个教程将带你从环境设置开始，逐步介绍 Chisel 的基本概念和实际应用。
+这针对拥有基础 Scala 知识但对 Chisel 完全零基础的入门教程。Chisel（Constructing Hardware In a Scala Embedded Language）是一个基于 Scala 的硬件描述语言，用于设计数字电路。这个教程从环境设置开始，逐步介绍 Chisel 的基本概念和实际应用。
 
 ---
 
