@@ -1,0 +1,712 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文将会结合源代码谈论 exit、wait、kill 这三个系统调用。 一、exit 系统调用以下是 exit()的源码： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647&#x2F;&#x2F; Exit the current process.  Does not return.&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 中的一些系统调用（上）">
+<meta property="og:url" content="http://blog.luliang.online/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文将会结合源代码谈论 exit、wait、kill 这三个系统调用。 一、exit 系统调用以下是 exit()的源码： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647&#x2F;&#x2F; Exit the current process.  Does not return.&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-10T15:02:24.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.776Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="xv6">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>xv6 中的一些系统调用（上） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="xv6 中的一些系统调用（上）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-10 23:02" pubdate>
+          2023年12月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          16 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">xv6 中的一些系统调用（上）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文将会结合源代码谈论 <strong>exit</strong>、<strong>wait</strong>、<strong>kill</strong> 这三个系统调用。</p>
+<h2 id="一、exit-系统调用"><a href="#一、exit-系统调用" class="headerlink" title="一、exit 系统调用"></a>一、exit 系统调用</h2><p>以下是 <code>exit()</code>的源码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Exit the current process.  Does not return.</span><br><span class="hljs-comment">// An exited process remains in the zombie state</span><br><span class="hljs-comment">// until its parent calls wait().</span><br><span class="hljs-type">void</span><br><span class="hljs-title function_">exit</span><span class="hljs-params">(<span class="hljs-type">int</span> status)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">p</span> =</span> myproc();<br><br>  <span class="hljs-keyword">if</span>(p == initproc)<br>    panic(<span class="hljs-string">&quot;init exiting&quot;</span>);<br><br>  <span class="hljs-comment">// Close all open files.</span><br>  <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> fd = <span class="hljs-number">0</span>; fd &lt; NOFILE; fd++)&#123;<br>    <span class="hljs-keyword">if</span>(p-&gt;ofile[fd])&#123;<br>      <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file</span> *<span class="hljs-title">f</span> =</span> p-&gt;ofile[fd];<br>      fileclose(f);<br>      p-&gt;ofile[fd] = <span class="hljs-number">0</span>;<br>    &#125;<br>  &#125;<br><br>  begin_op();<br>  iput(p-&gt;cwd);<br>  end_op();<br>  p-&gt;cwd = <span class="hljs-number">0</span>;<br><br>  acquire(&amp;wait_lock);<br><br>  <span class="hljs-comment">// Give any children to init.</span><br>  reparent(p);<br><br>  <span class="hljs-comment">// Parent might be sleeping in wait().</span><br>  wakeup(p-&gt;parent);<br><br>  acquire(&amp;p-&gt;lock);<br><br>  p-&gt;xstate = status;<br>  p-&gt;state = ZOMBIE;<br><br>  release(&amp;wait_lock);<br><br>  <span class="hljs-comment">// Jump into the scheduler, never to return.</span><br>  sched();<br>  panic(<span class="hljs-string">&quot;zombie exit&quot;</span>);<br>&#125;<br><br><span class="hljs-comment">// Wait for a child process to exit and return its pid.</span><br><span class="hljs-comment">// Return -1 if this process has no children.</span><br></code></pre></td></tr></table></figure>
+
+<p>这个函数做的第一个检查就是判断这个被退出的函数是不是 <code>initproc</code>，众所周知，这个线程是 <code>pid=1</code> 的线程，是不能退出的。</p>
+<p>然后就是关闭这个进程的文件了。这里面涉及到引用计数，<code>fileclose()</code>就减少这个文件的引用计数。</p>
+<p>如果一个进程要退出，但是它又有自己的子进程，接下来需要设置这些子进程的父进程为<code>initproc</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Pass p&#x27;s abandoned children to init.</span><br><span class="hljs-comment">// Caller must hold wait_lock.</span><br><span class="hljs-type">void</span><br><span class="hljs-title function_">reparent</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> proc *p)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">pp</span>;</span><br><br>  <span class="hljs-keyword">for</span>(pp = proc; pp &lt; &amp;proc[NPROC]; pp++)&#123;<br>    <span class="hljs-keyword">if</span>(pp-&gt;parent == p)&#123;<br>      pp-&gt;parent = initproc;<br>      wakeup(initproc);<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>如果父进程退出了，那么子进程就不再有父进程，当它们要退出时就没有对应的父进程的<code>wait()</code>。这些失去父进程的子进程，在后面的时间段里一旦调用了 <code>exit()</code>，而没有父进程在执行 <code>wait()</code>，后面我们会看到，这些子进程将会变成僵尸进程。所以最好在<code>exit()</code>函数中，为即将<strong>exit</strong>进程的子进程重新指定父进程为 <code>initproc</code> 是很明智的。正常来说，每一个 <code>exit()</code>的进程，父进程都在调用 <code>wait()</code>（这也不一定，这取决于程序员是否有好的编程习惯）。</p>
+<p>问题是，当一个父进程结束时，没有调用 <code>exit()</code>，这自然地就导致了它的子进程没有过继给 <strong>initproc</strong>，这时候，就产生了孤儿进程。当孤儿进程调用 <code>exit()</code> 时，由于没有父进程，自然就成了僵尸进程。</p>
+<p>我没有在 xv6 中看到它是如何解决这一问题的，但是在 <strong>LINUX</strong> 中，它是通过将没有父进程的孤儿进程自然地过继给 <strong>initproc</strong>，即 <strong>initproc</strong> 不停地在找孤儿进程，找到后就完成过继。</p>
+<p>之后唤醒父进程，父进程从 <code>wait()</code> 处醒来，继续执行。</p>
+<p>进程的状态被设置为<strong>ZOMBIE</strong>。</p>
+<p>现在进程还没有完全释放它的资源，所以它还不能被重用。所谓的进程重用是指，我们期望在最后，进程的所有状态都可以被一些其他无关的fork系统调用复用，但是目前我们还没有到那一步。<br>现在我们还没有结束，因为我们还没有释放进程资源。我们在还没有完全释放所有资源的时候，通过调用 <code>sched()</code> 函数进入到调度器线程。</p>
+<p>到目前位置，进程的状态是<strong>ZOMBIE</strong>，并且进程不会再运行，因为调度器只会运行<strong>RUNNABLE</strong>进程。同时进程资源也并没有完全释放，如果释放了进程的状态应该是<strong>UNUSED</strong>。但是可以肯定的是进程不会再运行了，因为它的状态是<strong>ZOMBIE</strong>。所以调度器线程会决定运行其他的进程。</p>
+<h2 id="二、wait-系统调用"><a href="#二、wait-系统调用" class="headerlink" title="二、wait 系统调用"></a>二、wait 系统调用</h2><p>以下是 <code>wait()</code>的源码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Wait for a child process to exit and return its pid.</span><br><span class="hljs-comment">// Return -1 if this process has no children.</span><br><span class="hljs-type">int</span><br><span class="hljs-title function_">wait</span><span class="hljs-params">(uint64 addr)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">pp</span>;</span><br>  <span class="hljs-type">int</span> havekids, pid;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">p</span> =</span> myproc();<br><br>  acquire(&amp;wait_lock);<br><br>  <span class="hljs-keyword">for</span>(;;)&#123;<br>    <span class="hljs-comment">// Scan through table looking for exited children.</span><br>    havekids = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(pp = proc; pp &lt; &amp;proc[NPROC]; pp++)&#123;<br>      <span class="hljs-keyword">if</span>(pp-&gt;parent == p)&#123;<br>        <span class="hljs-comment">// make sure the child isn&#x27;t still in exit() or swtch().</span><br>        acquire(&amp;pp-&gt;lock);<br><br>        havekids = <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">if</span>(pp-&gt;state == ZOMBIE)&#123;<br>          <span class="hljs-comment">// Found one.</span><br>          pid = pp-&gt;pid;<br>          <span class="hljs-keyword">if</span>(addr != <span class="hljs-number">0</span> &amp;&amp; copyout(p-&gt;pagetable, addr, (<span class="hljs-type">char</span> *)&amp;pp-&gt;xstate,<br>                                  <span class="hljs-keyword">sizeof</span>(pp-&gt;xstate)) &lt; <span class="hljs-number">0</span>) &#123;<br>            release(&amp;pp-&gt;lock);<br>            release(&amp;wait_lock);<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>          &#125;<br>          freeproc(pp);<br>          release(&amp;pp-&gt;lock);<br>          release(&amp;wait_lock);<br>          <span class="hljs-keyword">return</span> pid;<br>        &#125;<br>        release(&amp;pp-&gt;lock);<br>      &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// No point waiting if we don&#x27;t have any children.</span><br>    <span class="hljs-keyword">if</span>(!havekids || killed(p))&#123;<br>      release(&amp;wait_lock);<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// Wait for a child to exit.</span><br>    sleep(p, &amp;wait_lock);  <span class="hljs-comment">//DOC: wait-sleep</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>首先进入一个无限循环里，最开始标记它的孩子数目为 <strong>0</strong>。然后遍历，如果某个进程的父进程是它，那么标记它的还子进程数目为 <strong>1</strong>。之后继续检查它的状态是否是 <strong>ZOMBIE</strong>，如果是，那么就继续释放资源（上一步 <code>exit()</code> 没有完全是释放完全的）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// free a proc structure and the data hanging from it,</span><br><span class="hljs-comment">// including user pages.</span><br><span class="hljs-comment">// p-&gt;lock must be held.</span><br><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">freeproc</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> proc *p)</span><br>&#123;<br>  <span class="hljs-keyword">if</span>(p-&gt;trapframe)<br>    kfree((<span class="hljs-type">void</span>*)p-&gt;trapframe);<br>  p-&gt;trapframe = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">if</span>(p-&gt;pagetable)<br>    proc_freepagetable(p-&gt;pagetable, p-&gt;sz);<br>  p-&gt;pagetable = <span class="hljs-number">0</span>;<br>  p-&gt;sz = <span class="hljs-number">0</span>;<br>  p-&gt;pid = <span class="hljs-number">0</span>;<br>  p-&gt;parent = <span class="hljs-number">0</span>;<br>  p-&gt;name[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;<br>  p-&gt;chan = <span class="hljs-number">0</span>;<br>  p-&gt;killed = <span class="hljs-number">0</span>;<br>  p-&gt;xstate = <span class="hljs-number">0</span>;<br>  p-&gt;state = UNUSED;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>直到子进程 <code>exit()</code> 的最后，它都没有释放所有的资源，因为它还在运行的过程中，所以不能释放这些资源。相应的其他的进程，也就是父进程，释放了运行子进程代码所需要的资源。这样的设计可以让我们极大的精简 <code>exit()</code> 的实现。</p>
+<h2 id="三、kill-系统调用"><a href="#三、kill-系统调用" class="headerlink" title="三、kill 系统调用"></a>三、kill 系统调用</h2><p>以下是<code>kill()</code>的源码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Kill the process with the given pid.</span><br><span class="hljs-comment">// The victim won&#x27;t exit until it tries to return</span><br><span class="hljs-comment">// to user space (see usertrap() in trap.c).</span><br><span class="hljs-type">int</span><br><span class="hljs-title function_">kill</span><span class="hljs-params">(<span class="hljs-type">int</span> pid)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">proc</span> *<span class="hljs-title">p</span>;</span><br><br>  <span class="hljs-keyword">for</span>(p = proc; p &lt; &amp;proc[NPROC]; p++)&#123;<br>    acquire(&amp;p-&gt;lock);<br>    <span class="hljs-keyword">if</span>(p-&gt;pid == pid)&#123;<br>      p-&gt;killed = <span class="hljs-number">1</span>;<br>      <span class="hljs-keyword">if</span>(p-&gt;state == SLEEPING)&#123;<br>        <span class="hljs-comment">// Wake process from sleep().</span><br>        p-&gt;state = RUNNABLE;<br>      &#125;<br>      release(&amp;p-&gt;lock);<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    release(&amp;p-&gt;lock);<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，<code>kill()</code>仅仅做了很简单的事情。它拿到某个 <strong>pid</strong> 之后，将 <strong>kill</strong> 标志位置为 <strong>1</strong>，如果它处于 <strong>SLEEPING</strong> 状态，就将其置于 <strong>RUNNABLE</strong>，然后就结束了。</p>
+<p>而目标进程运行到内核代码中能安全停止运行的位置时，会检查自己的 <strong>killed</strong> 标志位，如果设置为<strong>1</strong>，目标进程会自愿的执行<strong>exit</strong>系统调用。</p>
+<p>所以当你 <strong>kill</strong> 一个僵尸进程，僵尸进程是无法被 <strong>kill</strong> 掉的，因为它的状态不是 <strong>SLEEPING</strong>，无法转为 <strong>RUNNABLE</strong>。</p>
+<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><p>这篇文章主要介绍了在 <strong>xv6</strong> 操作系统中的三个系统调用：<code>exit()</code>、<code>wait() </code>和 <code>kill()</code>。下面是这些系统调用的主要功能：</p>
+<h3 id="1、exit-系统调用"><a href="#1、exit-系统调用" class="headerlink" title="1、exit() 系统调用"></a>1、exit() 系统调用</h3><p><code>exit()</code> 用于终止当前进程的执行，并进行一系列清理工作。<br>它关闭当前进程打开的文件，释放当前进程的工作目录资源，设置进程状态为 <strong>ZOMBIE</strong>，并且如果有子进程，将这些子进程的父进程设置为 <strong>initproc</strong>。<br>最终，进程进入 <strong>ZOMBIE</strong> 状态并放入等待队列，等待父进程调用 <code>wait()</code> 进行回收。</p>
+<h3 id="2、wait-系统调用"><a href="#2、wait-系统调用" class="headerlink" title="2、wait() 系统调用"></a>2、wait() 系统调用</h3><p><code>wait()</code> 用于等待子进程退出，并返回子进程的 <strong>PID</strong>。<br>它首先遍历当前进程的子进程，检查是否有子进程处于 <strong>ZOMBIE</strong> 状态，如果有，释放资源并返回子进程的 <strong>PID</strong>。<br>如果当前进程没有子进程或者子进程尚未退出，则进入睡眠状态等待子进程退出。</p>
+<h3 id="3、kill-系统调用"><a href="#3、kill-系统调用" class="headerlink" title="3、kill() 系统调用"></a>3、kill() 系统调用</h3><p><code>kill()</code> 用于向指定 <strong>PID</strong> 的进程发送信号，设置被杀进程的 <strong>killed</strong> 标志为 <strong>1</strong>。<br>如果目标进程处于 <strong>SLEEPING</strong> 状态，它会被唤醒，状态转换为 <strong>RUNNABLE</strong>，然后等待检查 <strong>killed</strong> 标志位进行 <strong>exit</strong>。<br>被杀的进程会在下次进入内核代码时检查自己的 <strong>killed</strong> 标志，如果设置为 <strong>1</strong>，则自愿执行 <strong>exit</strong> 系统调用。<br>这些系统调用是操作系统中非常基础和重要的部分，它们负责管理进程的生命周期和资源释放，确保系统中的资源能够被充分利用和重用。</p>
+<p><em>嗯，大模型总结地真好，全文完，感谢阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/xv6/" class="print-no-link">#xv6</a>
+      
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>xv6 中的一些系统调用（上）</div>
+      <div>http://blog.luliang.online/2023/12/10/xv6 中的一些系统调用（上）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/11/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8B%EF%BC%89/" title="xv6 中的一些系统调用（下）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">xv6 中的一些系统调用（下）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/" title="MIT 6.S081学习笔记（第六章）（下）">
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第六章）（下）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

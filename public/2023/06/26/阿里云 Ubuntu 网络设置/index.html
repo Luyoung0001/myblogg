@@ -1,0 +1,706 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、问题描述在云服务器 Ubuntu 中运行 go 的时候，某些库在加载的时候速度太慢，甚至被限制了以至于没有速度。网上的教程或多或少的有难以捉摸的问题，本文旨在提供一个可靠的方案。 一、安装v2ray-core 核心代码12curl -O https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;v2rayA&#x2F;v2rayA@master&#x2F;install&#x2F;go.shsudo bash go.sh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里云 Ubuntu 网络设置">
+<meta property="og:url" content="http://blog.luliang.online/2023/06/26/%E9%98%BF%E9%87%8C%E4%BA%91%20Ubuntu%20%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、问题描述在云服务器 Ubuntu 中运行 go 的时候，某些库在加载的时候速度太慢，甚至被限制了以至于没有速度。网上的教程或多或少的有难以捉摸的问题，本文旨在提供一个可靠的方案。 一、安装v2ray-core 核心代码12curl -O https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;gh&#x2F;v2rayA&#x2F;v2rayA@master&#x2F;install&#x2F;go.shsudo bash go.sh">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-06-26T14:03:58.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.779Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="阿里云">
+<meta property="article:tag" content="网络工具">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>阿里云 Ubuntu 网络设置 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="阿里云 Ubuntu 网络设置"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-26 22:03" pubdate>
+          2023年6月26日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          905 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">阿里云 Ubuntu 网络设置</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、问题描述"><a href="#〇、问题描述" class="headerlink" title="〇、问题描述"></a>〇、问题描述</h2><p>在云服务器 Ubuntu 中运行 go 的时候，某些库在加载的时候速度太慢，甚至被限制了以至于没有速度。网上的教程或多或少的有难以捉摸的问题，本文旨在提供一个可靠的方案。</p>
+<h2 id="一、安装v2ray-core-核心代码"><a href="#一、安装v2ray-core-核心代码" class="headerlink" title="一、安装v2ray-core 核心代码"></a>一、安装v2ray-core 核心代码</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -O https://cdn.jsdelivr.net/gh/v2rayA/v2rayA@master/install/go.sh<br>sudo bash go.sh<br></code></pre></td></tr></table></figure>
+
+<p>按道理，上面两条命令就可以按照脚本 <code>go.sh</code>自动化执行，但是由于某些原因，这个脚本是下载不下来的。只需要一些技巧即可解决：</p>
+<p>现在本地浏览器中输入上述地址：<code>https://cdn.jsdelivr.net/gh/v2rayA/v2rayA@master/install/go.sh</code>，就会在本地下载一个 go.sh 的文件，打开后，里面长这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;\e[37;44;4;1mThe old script is abandoned, we will redirect you to the new one in 5 seconds.\e[0m&quot;</span><br><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;\e[37;44;4;1mIf you want to download the new script and run it manually,</span><br><span class="hljs-string">press Ctrl+C and visit https://v2raya.org/en/docs/prologue/installation/\e[0m&quot;</span><br><br><span class="hljs-built_in">sleep</span> 5s<br>curl -Ls https://mirrors.v2raya.org/go.sh | sudo bash<br><br></code></pre></td></tr></table></figure>
+<p>可以看到这个脚本里面有两条命令，第二条命令依然是去下载一个bash 脚本，然后用 sudo 权限去执行。<br>继续在浏览器中打开这个地址，这个脚本长这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><span class="hljs-comment"># shellcheck disable=SC2268</span><br><br><span class="hljs-comment"># The files installed by the script conform to the Filesystem Hierarchy Standard:</span><br><span class="hljs-comment"># https://wiki.linuxfoundation.org/lsb/fhs</span><br><br><span class="hljs-comment"># The URL of the script project is:</span><br><span class="hljs-comment"># https://github.com/v2fly/fhs-install-v2ray</span><br><br><span class="hljs-comment"># The URL of the script is:</span><br><span class="hljs-comment"># https://hubmirror.v2raya.org/raw/v2fly/fhs-install-v2ray/master/install-release.sh</span><br><br><span class="hljs-comment"># If the script executes incorrectly, go to:</span><br><span class="hljs-comment"># https://github.com/v2fly/fhs-install-v2ray/issues</span><br><br><span class="hljs-comment"># You can set this variable whatever you want in shell session right before running this script by issuing:</span><br><span class="hljs-comment"># export DAT_PATH=&#x27;/usr/local/share/v2ray&#x27;</span><br>DAT_PATH=<span class="hljs-variable">$&#123;DAT_PATH:-/usr/local/share/v2ray&#125;</span><br><br><span class="hljs-comment"># You can set this variable whatever you want in shell session right before running this script by issuing:</span><br><span class="hljs-comment"># export JSON_PATH=&#x27;/usr/local/etc/v2ray&#x27;</span><br>JSON_PATH=<span class="hljs-variable">$&#123;JSON_PATH:-/usr/local/etc/v2ray&#125;</span><br><br><span class="hljs-comment"># Set this variable only if you are starting v2ray with multiple configuration files:</span><br><span class="hljs-comment"># export JSONS_PATH=&#x27;/usr/local/etc/v2ray&#x27;</span><br><br><span class="hljs-comment"># Set this variable only if you want this script to check all the systemd unit file:</span><br><span class="hljs-comment"># export check_all_service_files=&#x27;yes&#x27;</span><br><br><span class="hljs-function"><span class="hljs-title">curl</span></span>() &#123;<br>  $(<span class="hljs-built_in">type</span> -P curl) -L -q --retry 5 --retry-delay 10 --retry-max-time 60 <span class="hljs-string">&quot;<span class="hljs-variable">$@</span>&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">systemd_cat_config</span></span>() &#123;<br>  <span class="hljs-keyword">if</span> systemd-analyze --<span class="hljs-built_in">help</span> | grep -qw <span class="hljs-string">&#x27;cat-config&#x27;</span>; <span class="hljs-keyword">then</span><br>    systemd-analyze --no-pager cat-config <span class="hljs-string">&quot;<span class="hljs-variable">$@</span>&quot;</span><br>    <span class="hljs-built_in">echo</span><br>  <span class="hljs-keyword">else</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;aoi&#125;</span>~~~~~~~~~~~~~~~~&quot;</span><br>    <span class="hljs-built_in">cat</span> <span class="hljs-string">&quot;<span class="hljs-variable">$@</span>&quot;</span> <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>.d/*<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;aoi&#125;</span>~~~~~~~~~~~~~~~~&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;red&#125;</span>warning: <span class="hljs-variable">$&#123;green&#125;</span>The systemd version on the current operating system is too low.&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;red&#125;</span>warning: <span class="hljs-variable">$&#123;green&#125;</span>Please consider to upgrade the systemd or the operating system.<span class="hljs-variable">$&#123;reset&#125;</span>&quot;</span><br>    <span class="hljs-built_in">echo</span><br>  <span class="hljs-keyword">fi</span><br>&#125;<br>......<br></code></pre></td></tr></table></figure>
+<p>之后就简单了，先复制所有脚本。然后再云 Ubuntu 上新建一个名为 go.sh 的文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim go.sh<br></code></pre></td></tr></table></figure>
+<p>打开时候，就可以用 sudo bash 执行这个文件了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo bash go.sh<br></code></pre></td></tr></table></figure>
+<p>之后就进入了脚本执行环节（就是一些下载和执行操作）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@**************:~<span class="hljs-comment"># sudo bash go.sh</span><br>info: Installing V2Ray v5.7.0 <span class="hljs-keyword">for</span> x86_64<br>Downloading V2Ray archive: https://github.com/v2fly/v2ray-core/releases/download/v5.7.0/v2ray-linux-64.zip<br>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current<br>                                 Dload  Upload   Total   Spent    Left  Speed<br>  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0<br>100 11.4M  100 11.4M    0     0  18422      0  0:10:49  0:10:49 --:--:-- 11091<br>Downloading verification file <span class="hljs-keyword">for</span> V2Ray archive: https://github.com/v2fly/v2ray-core/releases/download/v5.7.0/v2ray-linux-64.zip.dgst<br>Reading package lists... Done<br>Building dependency tree<br>Reading state information... Done<br>......<br><br></code></pre></td></tr></table></figure>
+<p>这样就完成了下载，对了再加两条命令，以完成核心服务自启动和现在启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl start v2ray<br>systemctl <span class="hljs-built_in">enable</span> v2ray<br></code></pre></td></tr></table></figure>
+
+<h2 id="二、安装v2raya客户端"><a href="#二、安装v2raya客户端" class="headerlink" title="二、安装v2raya客户端"></a>二、安装v2raya客户端</h2><h3 id="（一）方法一（可能会失败）"><a href="#（一）方法一（可能会失败）" class="headerlink" title="（一）方法一（可能会失败）"></a>（一）方法一（可能会失败）</h3><h3 id="1、添加公钥"><a href="#1、添加公钥" class="headerlink" title="1、添加公钥"></a>1、添加公钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">wget -qO - https://apt.v2raya.org/key/public-key.asc | sudo <span class="hljs-built_in">tee</span> /etc/apt/trusted.gpg.d/v2raya.asc<br></code></pre></td></tr></table></figure>
+<h3 id="2、添加软件源"><a href="#2、添加软件源" class="headerlink" title="2、添加软件源"></a>2、添加软件源</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;deb https://apt.v2raya.org/ v2raya main&quot;</span> | sudo <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/v2raya.list<br>sudo apt update<br></code></pre></td></tr></table></figure>
+
+<h3 id="3、安装-v2raya"><a href="#3、安装-v2raya" class="headerlink" title="3、安装 v2raya"></a>3、安装 v2raya</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install v2raya<br></code></pre></td></tr></table></figure>
+<h3 id="（二）手动安装-deb-包（100-会成功）"><a href="#（二）手动安装-deb-包（100-会成功）" class="headerlink" title="（二）手动安装 deb 包（100%会成功）"></a>（二）手动安装 deb 包（100%会成功）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install /path/download/installer_debian_xxx_vxxx.deb<br></code></pre></td></tr></table></figure>
+<p>自行替换 <a target="_blank" rel="noopener" href="https://github.com/v2rayA/v2rayA/releases">deb</a> 包所在的实际路径。这里的方法是，可以在本地将这个包下载下来，然后通过 ssh 上传到服务器。</p>
+<h2 id="三、运行服务"><a href="#三、运行服务" class="headerlink" title="三、运行服务"></a>三、运行服务</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo systemctl start v2raya.service<br>sudo systemctl <span class="hljs-built_in">enable</span> v2raya.service<br><br></code></pre></td></tr></table></figure>
+<p>之后就可以登陆 <code>127.0.0.1:2017</code> 进行配置了。但是由于云服务器 ubuntu 没有可视化界面和浏览器，因此我们可以通过端口映射， 从本地映射到<code>127.0.0.1:2017</code>，然后打开本地浏览器，输入地址即可配置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh username@remote_address -L 127.0.0.1:8888:127.0.0.1:2017<br></code></pre></td></tr></table></figure>
+<p>其中8888是本地端口号，2017是服务器端端口号（也就是 v2ray服务器端口号），可根据实际情况进行调整。<em>如果连接不上，就使用 sudo 权限</em>。</p>
+<p>然后进行配置就好了~</p>
+<p><em>注：本文章仅仅供个人参考</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Web/" class="category-chain-item">Web</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ubuntu/" class="print-no-link">#ubuntu</a>
+      
+        <a href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" class="print-no-link">#阿里云</a>
+      
+        <a href="/tags/%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/" class="print-no-link">#网络工具</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>阿里云 Ubuntu 网络设置</div>
+      <div>http://blog.luliang.online/2023/06/26/阿里云 Ubuntu 网络设置/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月26日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/06/29/Ubuntu%20%E5%8D%87%E7%BA%A7%20golang%20%E7%89%88%E6%9C%AC%E5%AE%8C%E7%BE%8E%E6%AD%A5%E9%AA%A4/" title="Ubuntu 升级 golang 版本完美步骤">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Ubuntu 升级 golang 版本完美步骤</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/17/%E3%80%8A%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6%E3%80%8B%EF%BC%9A%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE/" title="《离散数学》：特殊的图">
+                        <span class="hidden-mobile">《离散数学》：特殊的图</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

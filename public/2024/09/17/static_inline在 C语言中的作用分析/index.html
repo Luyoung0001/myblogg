@@ -1,0 +1,835 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="static、inline1. static 关键字 作用：限制函数的作用域仅限于定义它的源文件（即内部链接）。这意味着每个包含该头文件的源文件都会生成该函数的一个独立实例，避免了多个定义导致的链接错误。 在头文件中使用：适用于小型、频繁调用的函数，允许每个源文件拥有自己的函数副本，避免链接器的重复定义错误。  2. inline 关键字 作用：建议编译器将函数调用替换为函数体本身，以减少函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="static、inline 关键字在C语言中的作用分析">
+<meta property="og:url" content="http://blog.luliang.online/2024/09/17/static_inline%E5%9C%A8%20C%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E4%BD%9C%E7%94%A8%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="static、inline1. static 关键字 作用：限制函数的作用域仅限于定义它的源文件（即内部链接）。这意味着每个包含该头文件的源文件都会生成该函数的一个独立实例，避免了多个定义导致的链接错误。 在头文件中使用：适用于小型、频繁调用的函数，允许每个源文件拥有自己的函数副本，避免链接器的重复定义错误。  2. inline 关键字 作用：建议编译器将函数调用替换为函数体本身，以减少函数">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-17T04:50:40.000Z">
+<meta property="article:modified_time" content="2024-09-17T04:52:58.373Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>static、inline 关键字在C语言中的作用分析 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="static、inline 关键字在C语言中的作用分析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-17 12:50" pubdate>
+          2024年9月17日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">static、inline 关键字在C语言中的作用分析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="static、inline"><a href="#static、inline" class="headerlink" title="static、inline"></a>static、inline</h2><h3 id="1-static-关键字"><a href="#1-static-关键字" class="headerlink" title="1. static 关键字"></a><strong>1. <code>static</code> 关键字</strong></h3><ul>
+<li><strong>作用</strong>：限制函数的作用域仅限于定义它的源文件（即内部链接）。这意味着每个包含该头文件的源文件都会生成该函数的一个独立实例，避免了多个定义导致的链接错误。</li>
+<li><strong>在头文件中使用</strong>：适用于小型、频繁调用的函数，允许每个源文件拥有自己的函数副本，避免链接器的重复定义错误。</li>
+</ul>
+<h3 id="2-inline-关键字"><a href="#2-inline-关键字" class="headerlink" title="2. inline 关键字"></a><strong>2. <code>inline</code> 关键字</strong></h3><ul>
+<li><strong>作用</strong>：建议编译器将函数调用替换为函数体本身，以减少函数调用的开销，提高性能。</li>
+<li><strong>在头文件中使用</strong>：结合 <code>static</code> 使用时，可以在多个源文件中安全地定义内联函数，而不会导致链接冲突。</li>
+<li><strong>链接行为</strong>：<ul>
+<li><strong>C99 标准</strong>：<code>inline</code> 函数具有外部链接，但需要在某个翻译单元中提供一个非 <code>inline</code> 的定义，供链接器使用。</li>
+<li><strong>GNU 扩展</strong>：GNU C 允许 <code>inline</code> 函数在头文件中被多次定义，只要它们是 <code>inline</code> 的，并且链接器能够处理这些定义。</li>
+</ul>
+</li>
+</ul>
+<h3 id="组合使用-static-inline"><a href="#组合使用-static-inline" class="headerlink" title="组合使用 static inline"></a><strong>组合使用 <code>static inline</code></strong></h3><ul>
+<li><strong>消除重复定义</strong>：在头文件中使用 <code>static inline</code>，每个包含该头文件的源文件都会有自己的函数副本，避免了链接器在合并多个目标文件时因重复定义同名函数而报错。</li>
+<li><strong>优化性能</strong>：编译器可能将这些函数内联展开，减少函数调用的开销。</li>
+</ul>
+<h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><p>test.h:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">void</span> <span class="hljs-title function_">func1</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;this is func1: static inline void func1()\n&quot;</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>test2.c:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;test.h&quot;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">func2</span><span class="hljs-params">()</span> &#123;<br>    func1();<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;this is func2: int func2() \n&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>test3.c:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;test.h&quot;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">func3</span><span class="hljs-params">()</span> &#123;<br>    func1();<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;this is func3: int func3() \n&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>main.c:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;this is main: int main()\n&quot;</span>);<br>    func2();<br>    func3();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Makefile:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">main: main.o test2.o test3.o</span><br>	gcc -o main main.o test2.o test3.o<br><br><span class="hljs-section">clean:</span><br>	rm main.o test2.o test3.o main<br><br></code></pre></td></tr></table></figure>
+
+<p><code>&#123;static(Y) inline(Y)]、[static(Y) inline(N)&#125;</code>这两种情况下都可以编译成功，这很正常：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make<br>cc    -c -o main.o main.c<br>main.c: In <span class="hljs-keyword">function</span> ‘main’:<br>main.c:4:5: warning: implicit declaration of <span class="hljs-keyword">function</span> ‘func2’ [-Wimplicit-function-declaration]<br>    4 |     func2();<br>      |     ^~~~~<br>main.c:5:5: warning: implicit declaration of <span class="hljs-keyword">function</span> ‘func3’ [-Wimplicit-function-declaration]<br>    5 |     func3();<br>      |     ^~~~~<br>cc    -c -o test2.o test2.c<br>cc    -c -o test3.o test3.c<br>gcc -o main main.o test2.o test3.o<br><br>luyoung at luyoung-desktop <span class="hljs-keyword">in</span> ~/Test/test13<br>$ nm test2.o | grep func1<br>0000000000000000 t func1<br><br>luyoung at luyoung-desktop <span class="hljs-keyword">in</span> ~/Test/test13<br>$ nm test3.o | grep func1<br>0000000000000000 t func1<br><br>luyoung at luyoung-desktop <span class="hljs-keyword">in</span> ~/Test/test13<br>$ nm main | grep func1<br>000000000000117b t func1<br>00000000000011b9 t func1<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，虽然是 inline，但是编译器没有听从建议，全部用的是内部链接。</p>
+<p><code>&#123;static(N) inline(Y)]</code>这两种情况下编译不成功了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">make<br>cc    -c -o main.o main.c<br>main.c: In <span class="hljs-keyword">function</span> ‘main’:<br>main.c:4:5: warning: implicit declaration of <span class="hljs-keyword">function</span> ‘func2’ [-Wimplicit-function-declaration]<br>    4 |     func2();<br>      |     ^~~~~<br>main.c:5:5: warning: implicit declaration of <span class="hljs-keyword">function</span> ‘func3’ [-Wimplicit-function-declaration]<br>    5 |     func3();<br>      |     ^~~~~<br>cc    -c -o test2.o test2.c<br>cc    -c -o test3.o test3.c<br>gcc -o main main.o test2.o test3.o<br>/usr/bin/ld: test2.o: <span class="hljs-keyword">in</span> <span class="hljs-keyword">function</span> `func2<span class="hljs-string">&#x27;:</span><br><span class="hljs-string">test2.c:(.text+0xe): undefined reference to `func1&#x27;</span><br>/usr/bin/ld: test3.o: <span class="hljs-keyword">in</span> <span class="hljs-keyword">function</span> `func3<span class="hljs-string">&#x27;:</span><br><span class="hljs-string">test3.c:(.text+0xe): undefined reference to `func1&#x27;</span><br>collect2: error: ld returned 1 <span class="hljs-built_in">exit</span> status<br>make: *** [Makefile:2: main] Error 1<br><br>luyoung at luyoung-desktop <span class="hljs-keyword">in</span> ~/Test/test13<br>$ nm test2.o | grep func1<br>                 U func1<br><br>luyoung at luyoung-desktop <span class="hljs-keyword">in</span> ~/Test/test13<br>$ nm test3.o | grep func1<br>                 U func1<br></code></pre></td></tr></table></figure>
+
+<p>可以看到它报的错误是 <code>undefined reference to func1</code>，并且 <code>test2.o</code>、<code>test3.o</code> 中有未定义的 <code>func1</code>，这是为什么？这是因为编译器期望存在一个外部定义，但是并没有外部定义，因此C99要求：inline 函数具有外部链接，但需要在某个翻译单元中提供一个非 inline 的声明，供链接器使用。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;test.h&quot;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">func1</span><span class="hljs-params">()</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">func3</span><span class="hljs-params">()</span> &#123;<br>    func1();<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;this is func3: int func3() \n&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>就可以通过编译。</p>
+<p>另外，如果强制内联，那么内联函数就自然不存在什么外部链接了，直接在预处理阶段就处理好了:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-keyword">inline</span> __attribute__((always_inline)) <span class="hljs-type">void</span> <span class="hljs-title function_">func1</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;this is func1: static inline void func1()\n&quot;</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>或者，直接在变异的时候，最大概率内联（不一定会内联，但是概率较大，最好的方法就是强制内联）：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">test2.o: test2.c</span><br>	gcc -O3 -finline-functions -c test2.c -o test2.o<br><span class="hljs-section">test3.o: test3.c</span><br>	gcc -O3 -finline-functions -c test3.c -o test3.o<br></code></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="1-函数的链接属性"><a href="#1-函数的链接属性" class="headerlink" title="1. 函数的链接属性"></a><strong>1. 函数的链接属性</strong></h3><p>在C语言中，函数有两种主要的链接属性：</p>
+<ul>
+<li><p><strong>内部链接（Internal Linkage）</strong>：函数只能在定义它的源文件内部使用。使用 <code>static</code> 关键字可以实现这一点。</p>
+</li>
+<li><p><strong>外部链接（External Linkage）</strong>：函数可以被整个程序中的其他源文件访问。默认情况下，函数具有外部链接，除非使用 <code>static</code> 限制其作用域。</p>
+</li>
+</ul>
+<h3 id="2-inline-关键字的作用"><a href="#2-inline-关键字的作用" class="headerlink" title="2. inline 关键字的作用"></a><strong>2. <code>inline</code> 关键字的作用</strong></h3><p><code>inline</code> 关键字是对编译器的一个建议，表示希望将函数调用替换为函数体本身，以减少函数调用的开销，提高执行效率。然而，<code>inline</code> 并不保证编译器一定会内联所有的函数调用。编译器会根据函数的复杂性、调用频率以及优化级别等因素决定是否内联。</p>
+<h3 id="3-仅移除-static，保留-inline-的影响"><a href="#3-仅移除-static，保留-inline-的影响" class="headerlink" title="3. 仅移除 static，保留 inline 的影响"></a><strong>3. 仅移除 <code>static</code>，保留 <code>inline</code> 的影响</strong></h3><p>当您在头文件中定义一个函数并仅移除 <code>static</code>，保留 <code>inline</code>，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">inline</span> <span class="hljs-type">uint32_t</span> <span class="hljs-title function_">inst_fetch</span><span class="hljs-params">(<span class="hljs-type">vaddr_t</span> *pc, <span class="hljs-type">int</span> len)</span> &#123;<br>    <span class="hljs-comment">// 函数体</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这会导致以下情况发生：</p>
+<ol>
+<li><p><strong>外部链接</strong>：函数 <code>inst_fetch</code> 现在具有外部链接，这意味着它在整个程序中都是一个全局符号，可以被其他源文件引用。</p>
+</li>
+<li><p><strong>多重定义的风险</strong>：如果多个源文件包含这个头文件，每个源文件都会尝试定义一个名为 <code>inst_fetch</code> 的全局符号。这违反了C语言的“一定义规则”（One Definition Rule），即每个全局符号只能有一个定义。</p>
+</li>
+<li><p><strong>编译器的内联行为</strong>：</p>
+<ul>
+<li><strong>部分内联</strong>：编译器可能会在某些调用点内联 <code>inst_fetch</code>，将函数体直接插入到调用处，从而不生成对该函数的外部调用。</li>
+<li><strong>未内联的调用</strong>：对于未被内联的调用，编译器会生成对 <code>inst_fetch</code> 的函数调用指令，期望在链接阶段找到该函数的定义。</li>
+</ul>
+</li>
+<li><p><strong>链接器的期望</strong>：</p>
+<ul>
+<li>链接器在处理这些调用时，期望在某处找到 <code>inst_fetch</code> 的唯一定义。</li>
+<li>由于头文件中的 <code>inline</code> 定义被多个源文件包含，并且没有提供一个统一的外部定义，链接器无法找到一个确定的 <code>inst_fetch</code> 实现，这也是为什么 C99 要求必须提供一个外部实现或者定义。</li>
+<li>结果，链接器报告“未定义引用”（undefined reference）错误，因为它找不到函数的实际实现。</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-为什么会看到未定义引用"><a href="#4-为什么会看到未定义引用" class="headerlink" title="4. 为什么会看到未定义引用"></a><strong>4. 为什么会看到未定义引用</strong></h3><p>尽管 <code>inline</code> 关键字建议编译器内联展开函数，编译器并不保证所有的调用都会被内联。对于那些未被内联的调用，编译器生成了对 <code>inst_fetch</code> 的外部调用指令，但由于缺乏一个统一的外部定义，链接器无法解析这些调用，导致未定义引用错误。</p>
+<h3 id="5-nm-工具显示未定义符号的原因"><a href="#5-nm-工具显示未定义符号的原因" class="headerlink" title="5. nm 工具显示未定义符号的原因"></a><strong>5. <code>nm</code> 工具显示未定义符号的原因</strong></h3><p>当使用 <code>nm</code> 工具查看对象文件时，看到类似以下的输出：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gcode">U fu<span class="hljs-symbol">nc1</span><br></code></pre></td></tr></table></figure>
+
+<p>这里的 <code>U</code> 表示“未定义”（Undefined）符号，意味着这个对象文件引用了 <code>func1</code>，但没有在该文件中找到它的定义。具体原因如下：</p>
+<ul>
+<li><strong>未内联的调用</strong>：某些调用点未被内联展开，编译器生成了对 <code>func1</code> 的调用，但并未在当前源文件中提供其实现。</li>
+<li><strong>缺乏统一的外部定义</strong>：由于头文件中定义的 <code>inline</code> 函数被多个源文件包含，且没有一个源文件提供一个非 <code>inline</code> 的外部定义，导致链接器找不到 <code>func1</code> 的实际实现。</li>
+</ul>
+<h3 id="6-为什么同时去掉-static-和-inline-会导致多重定义错误"><a href="#6-为什么同时去掉-static-和-inline-会导致多重定义错误" class="headerlink" title="6. 为什么同时去掉 static 和 inline 会导致多重定义错误"></a><strong>6. 为什么同时去掉 <code>static</code> 和 <code>inline</code> 会导致多重定义错误</strong></h3><p>当同时去掉 <code>static</code> 和 <code>inline</code>，函数定义变为一个普通的全局函数，具有外部链接：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">uint32_t</span> <span class="hljs-title function_">inst_fetch</span><span class="hljs-params">(<span class="hljs-type">vaddr_t</span> *pc, <span class="hljs-type">int</span> len)</span> &#123;<br>    <span class="hljs-comment">// 函数体</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这种情况下：</p>
+<ol>
+<li><strong>外部链接</strong>：函数 <code>inst_fetch</code> 具有外部链接，可以被整个程序中的其他源文件访问。</li>
+<li><strong>多重定义</strong>：多个源文件包含这个头文件，每个源文件都会生成一个名为 <code>inst_fetch</code> 的全局符号。</li>
+<li><strong>链接器冲突</strong>：链接器在合并这些目标文件时，发现多个同名的全局符号，导致多重定义错误。</li>
+</ol>
+<h3 id="7-为什么仅移除-static-会导致未定义引用，而去掉-static-和-inline-会导致多重定义"><a href="#7-为什么仅移除-static-会导致未定义引用，而去掉-static-和-inline-会导致多重定义" class="headerlink" title="7. 为什么仅移除 static 会导致未定义引用，而去掉 static 和 inline 会导致多重定义"></a><strong>7. 为什么仅移除 <code>static</code> 会导致未定义引用，而去掉 <code>static</code> 和 <code>inline</code> 会导致多重定义</strong></h3><ul>
+<li><p>**仅移除 <code>static</code>，保留 <code>inline</code>**：</p>
+<ul>
+<li><strong>部分内联</strong>：编译器可能内联一些调用，但未内联的调用需要一个外部定义。</li>
+<li><strong>缺少外部定义</strong>：由于没有提供一个统一的外部定义，链接器无法找到 <code>inst_fetch</code>，导致未定义引用错误。</li>
+</ul>
+</li>
+<li><p>**同时去掉 <code>static</code> 和 <code>inline</code>**：</p>
+<ul>
+<li><strong>全部外部定义</strong>：每个包含头文件的源文件都定义了一个全局的 <code>inst_fetch</code>，导致链接器发现多个定义，报出多重定义错误。</li>
+</ul>
+</li>
+</ul>
+<h2 id="声明和定义：static"><a href="#声明和定义：static" class="headerlink" title="声明和定义：static"></a>声明和定义：static</h2><p><strong>第一问：</strong></p>
+<p>在 <code>nemu/include/common.h</code> 中添加一行 <code>volatile static int dummy;</code> 后重新编译 NEMU。由于 <code>common.h</code> 被多个源文件包含，而 <code>static</code> 关键字在文件作用域内使变量具有内部链接，每个源文件都会有自己独立的 <code>dummy</code> 变量。</p>
+<p><strong>因此，NEMU 中的 <code>dummy</code> 变量实体数量等于包含了 <code>common.h</code> 的源文件数量。</strong></p>
+<hr>
+<p><strong>第二问：</strong></p>
+<p>在 <code>nemu/include/debug.h</code> 中也添加一行 <code>volatile static int dummy;</code>，然后重新编译 NEMU。</p>
+<p><strong>比较和解释：</strong></p>
+<ul>
+<li><p><strong>实体数量：</strong> NEMU 中的 <code>dummy</code> 变量实体数量仍然等于源文件的数量，因为每个源文件中，<code>dummy</code> 变量只会被定义一次。</p>
+</li>
+<li><p><strong>原因：</strong> 即使某个源文件同时包含了 <code>common.h</code> 和 <code>debug.h</code>，由于两个头文件中对 <code>dummy</code> 的声明都是 <code>volatile static int dummy;</code>，这在 C 语言中属于多次声明同一个具有内部链接的变量，是被允许的。</p>
+</li>
+<li><p><strong>结论：</strong> 与第一问相比，<code>dummy</code> 变量的实体数量不变，仍然等于源文件的数量。</p>
+</li>
+</ul>
+<hr>
+<p><strong>第三问：</strong></p>
+<p>将两处 <code>dummy</code> 变量修改为初始化形式：<code>volatile static int dummy = 0;</code>，然后重新编译 NEMU。</p>
+<p><strong>发现的问题：</strong></p>
+<ul>
+<li>编译器会在包含了 <strong>同时包含 <code>common.h</code> 和 <code>debug.h</code></strong> 的源文件中报错，提示重复定义了 <code>dummy</code> 变量。</li>
+</ul>
+<p><strong>原因分析：</strong></p>
+<ul>
+<li><p><strong>定义与声明的区别：</strong> 在 C 语言中，未初始化的文件作用域的 <code>static</code> 变量（如 <code>static int dummy;</code>）被视为<strong>声明</strong>，可多次声明。但带有初始化的 <code>static</code> 变量（如 <code>static int dummy = 0;</code>）被视为<strong>定义</strong>，在同一作用域内只能定义一次。</p>
+</li>
+<li><p><strong>重复定义错误：</strong> 当一个源文件同时包含了 <code>common.h</code> 和 <code>debug.h</code>，并且这两个头文件中都对 <code>dummy</code> 进行了初始化定义，编译器会检测到在同一作用域内对具有内部链接的变量进行了多次定义，从而报错。</p>
+</li>
+</ul>
+<p><strong>为什么之前没有出现这样的问题？</strong></p>
+<ul>
+<li><p><strong>未初始化时的行为：</strong> 未初始化的 <code>static</code> 变量在同一作用域内可以多次声明，编译器会将其视为对同一变量的多次声明，不会报错。</p>
+</li>
+<li><p><strong>初始化后的行为：</strong> 一旦对 <code>static</code> 变量进行了初始化，就变成了定义。在同一作用域内多次定义同名的具有内部链接的变量是非法的，编译器会报重复定义错误。</p>
+</li>
+</ul>
+<hr>
+<p><strong>总结：</strong></p>
+<ul>
+<li><p>在头文件中声明未初始化的 <code>static</code> 变量是安全的，即使多个头文件中有相同的声明，编译器也不会报错。</p>
+</li>
+<li><p>但在头文件中定义（初始化）具有内部链接的 <code>static</code> 变量时，需要确保这些头文件不会被同一源文件多次包含，否则会导致重复定义错误。</p>
+</li>
+<li><p><strong>建议：</strong> 为避免此类问题，最好避免在头文件中对 <code>static</code> 变量进行初始化。如果需要初始化，应该在源文件中进行，或者采取其他设计方式。</p>
+</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C-C/" class="category-chain-item">C/C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C-C/PA2/" class="category-chain-item">PA2</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C-C/" class="print-no-link">#C/C++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>static、inline 关键字在C语言中的作用分析</div>
+      <div>http://blog.luliang.online/2024/09/17/static_inline在 C语言中的作用分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/09/17/PA2%E6%80%BB%E7%BB%93/" title="PA2总结">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PA2总结</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/12/%E8%B0%83%E7%94%A8glibc%E7%9A%84%E6%8A%80%E5%B7%A7/" title="调用 glibc 的技巧">
+                        <span class="hidden-mobile">调用 glibc 的技巧</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

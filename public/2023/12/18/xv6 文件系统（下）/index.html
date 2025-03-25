@@ -1,0 +1,967 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言计算机崩溃后如何恢复，是一个很重要的话题。对于内存中的数据无关痛痒，开机后重新载入就能解决问题；但是对于持久化存储设备，当你尝试修改一个文件，突然断电当你重新打开文件后，这个文件的状态是否正确，是一个问题。 我们讨论文件的状态是否正确，是指文件系统对于这个文件是否运行正常，比如 entry 中的 inode 信息是否与用户期望的一致，比如 size 字段是否正确等。 因此，如何从崩溃中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 文件系统（下）">
+<meta property="og:url" content="http://blog.luliang.online/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言计算机崩溃后如何恢复，是一个很重要的话题。对于内存中的数据无关痛痒，开机后重新载入就能解决问题；但是对于持久化存储设备，当你尝试修改一个文件，突然断电当你重新打开文件后，这个文件的状态是否正确，是一个问题。 我们讨论文件的状态是否正确，是指文件系统对于这个文件是否运行正常，比如 entry 中的 inode 信息是否与用户期望的一致，比如 size 字段是否正确等。 因此，如何从崩溃中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/599ef52b6c164eb89805125337551fdd_1720253687327.png?token=ANB4BCOBAKVCKZKLUUAOVS3GRD6TK">
+<meta property="article:published_time" content="2023-12-18T14:43:42.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.776Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="xv6">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/599ef52b6c164eb89805125337551fdd_1720253687327.png?token=ANB4BCOBAKVCKZKLUUAOVS3GRD6TK">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>xv6 文件系统（下） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="xv6 文件系统（下）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-18 22:43" pubdate>
+          2023年12月18日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          59 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">xv6 文件系统（下）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>计算机崩溃后如何恢复，是一个很重要的话题。对于内存中的数据无关痛痒，开机后重新载入就能解决问题；但是对于持久化存储设备，当你尝试修改一个文件，突然断电当你重新打开文件后，这个文件的状态是否正确，是一个问题。</p>
+<p>我们讨论文件的状态是否正确，是指文件系统对于这个文件是否运行正常，比如 <strong>entry</strong> 中的 <strong>inode</strong> 信息是否与用户期望的一致，比如 <strong>size</strong> 字段是否正确等。</p>
+<p>因此，如何从崩溃中恢复文件，是着重研究的问题。事实上，logging 是解决这一类问题的普遍方法，不管是 <strong>Redis</strong>、<strong>MySQL</strong>，还是其它数据系统，都利用 <strong>logging</strong> 技术恢复、导入、复制数据等。</p>
+<p>在文件系统中，<strong>logging</strong> 通过记录修改操作的顺序和内容来确保文件系统的数据一致性。通过在事务发生前将修改操作写入日志，然后再将这些修改应用到实际的文件系统结构中，即使在崩溃时，系统也可以根据日志来重新应用这些操作，从而恢复到崩溃之前的状态。</p>
+<p>这种技术在许多数据系统中也被广泛应用，比如数据库系统（比如<strong>MySQL</strong>、<strong>PostgreSQL</strong>等）、缓存系统（比如<strong>Redis</strong>）等。它们使用日志记录来确保数据库或者缓存在崩溃或者异常情况下的数据完整性和一致性。通过记录操作和事务，系统可以在崩溃后重新应用这些记录，从而确保数据的恢复和一致性。</p>
+<p>对于文件系统而言，<strong>logging</strong> 技术能够确保即使在发生意外情况时，文件系统也能够安全地进行崩溃恢复，防止数据损坏或丢失。</p>
+<h2 id="一、文件系统-logging"><a href="#一、文件系统-logging" class="headerlink" title="一、文件系统 logging"></a>一、文件系统 logging</h2><p>在 <strong>super block</strong> 之后就是 <strong>log block</strong>，我们今天主要介绍的就是 <strong>log block</strong>。<strong>log block</strong> 之后是 <strong>inode block</strong>，每个 <strong>block</strong> 可能包含了多个 <strong>inode</strong>。之后是 <strong>bitmap block</strong>，它记录了哪个 <strong>data block</strong> 是空闲的。最后是 <strong>data block</strong>，这里包含了文件系统的实际数据。</p>
+<p><strong>logging</strong>的基本思想就是将磁盘分成两部分：一个是用于记录变更的log区域；另一个是存储实际文件系统的数据区域。这种分区的方式确保了在写入文件系统之前，<strong>先将变更记录到log中，从而提供了一种安全机制以应对崩溃或意外关机等情况</strong>。</p>
+<p>这种方式的优点在于，即使在写入文件系统的过程中发生了意外情况，比如断电或者系统崩溃，<strong>log中的记录仍然存在</strong>，记录了文件系统的变更操作。这样，在系统重启时，可以根据 <strong>log</strong> 中的内容重新应用这些变更，从而恢复到上一次的一致状态。</p>
+<p>文件系统通常会选择定期地或者在关键操作之前将 <strong>log</strong> 中的变更同步到文件系统数据区域中，以确保文件系统的一致性和持久性。</p>
+<p>这种设计对于确保数据的完整性和系统的稳定性非常有帮助，因为它提供了一种机制来处理异常情况下的数据恢复，并且在很大程度上减少了数据损失的风险。</p>
+<p>它有一些好的属性：</p>
+<ul>
+<li>首先，它可以确保文件系统的系统调用是原子性的。比如你调用 <code>create/write</code> 系统调用，这些系统调用的效果是要么完全出现，要么完全不出现，这样就避免了一个系统调用只有部分写磁盘操作出现在磁盘上。</li>
+<li>其次，它支持快速恢复（<strong>Fast Recovery</strong>）。在重启之后，我们不需要做大量的工作来修复文件系统，只需要非常小的工作量。这里的快速是相比另一个解决方案来说，在另一个解决方案中，你可能需要读取文件系统的所有 <strong>block</strong>，读取 <strong>inode</strong>，<strong>bitmap block</strong>，并检查文件系统是否还在一个正确的状态，再来修复。<strong>而logging可以有快速恢复的属性</strong>。</li>
+<li>最后，原则上来说，它可以非常的高效。</li>
+</ul>
+<h3 id="log-write"><a href="#log-write" class="headerlink" title="log write"></a>log write</h3><p>当需要更新文件系统时，我们并不是更新文件系统本身。假设我们在内存中缓存了 <strong>bitmap block</strong>，也就是 <strong>block45</strong>。当需要更新<strong>bitmap</strong> 时，我们并不是直接写 <strong>block45</strong>，而是将数据写入到 <strong>log</strong> 中，并记录这个更新应该写入到 <strong>block45</strong>。对于所有的<strong>写 block</strong> 都会有相同的操作，例如<strong>更新inode</strong>，也会记录一条写 <strong>block33</strong>的 <strong>log</strong>。</p>
+<p>所以基本上，任何一次写操作都是先写入到 <strong>log</strong>，我们并不是直接写入到 <strong>block</strong> 所在的位置，而总是先将写操作写入到 <strong>log</strong> 中。</p>
+<h3 id="commit-op"><a href="#commit-op" class="headerlink" title="commit op"></a>commit op</h3><p>之后在某个时间，当文件系统的操作结束了，并且都存在于 <strong>log</strong> 中，我们会 <strong>commit</strong> 文件系统的操作。这意味着我们需要在 <strong>log</strong> 的某个位置记录属于同一个文件系统的操作的个数，例如 <strong>5</strong>。</p>
+<h3 id="install-log"><a href="#install-log" class="headerlink" title="install log"></a>install log</h3><p>当我们在 <strong>log</strong> 中存储了所有写 <strong>block</strong> 的内容时，如果我们要真正执行这些操作，只需要将 <strong>block</strong> 从 <strong>log分区</strong> 移到 <strong>文件系统分区</strong>。我们知道第一个操作该写入到 <strong>block45</strong>，我们会直接将数据从 <strong>log</strong> 写到 <strong>block45</strong>，第二个操作该写入到 <strong>block33</strong>，我们会将它写入到 <strong>block33</strong>，依次类推。</p>
+<h3 id="clean-log"><a href="#clean-log" class="headerlink" title="clean log"></a>clean log</h3><p>一旦完成了，就可以 <strong>清除log</strong>。<strong>清除log</strong> 实际上就是<strong>将属于同一个文件系统的操作的个数设置为0</strong>。</p>
+<p>因此 logging 可以分为以下几步：</p>
+<ul>
+<li>1）log write;</li>
+<li><ol start="2">
+<li>commit op;</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>install;</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>clean up.</li>
+</ol>
+</li>
+</ul>
+<p>我们考虑 <strong>crash</strong> 的几种可能情况：</p>
+<ul>
+<li>在第1步和第2步之间崩溃，会导致数据丢失，因为 <strong>log</strong> 还未被写入磁盘。这样的情况下，系统重启时不会有任何数据变更，就好像这些系统调用从未发生过一样；</li>
+<li>在第2步和第3步之间崩溃，由于 <strong>log</strong> 已经被成功写入磁盘并有<strong>commit</strong>记录，所有的文件系统操作已经完成。这种情况下，在重启后系统能够保持一致性；</li>
+<li>在install（第3步）过程中和第4步之前崩溃，系统在下次重启时会重新执行 <strong>log</strong>，<strong>redo log</strong> 会再次将 <strong>log block</strong> 的数据应用到文件系统。因为 <strong>install log</strong> 是幂等操作，即使重复多次也不会产生问题，这确保了系统在恢复时能够达到一致状态。</li>
+</ul>
+<p>有一个有意思的问题：当正在 <strong>commit log</strong> 的时候 <strong>crash</strong> 了会发生什么？比如说你想执行多个写操作，但是只 <strong>commit</strong> 了一半。</p>
+<p>在上面的第2步，执行 <strong>commit</strong> 操作时，你只会在记录了<strong>所有的 write操作</strong>之后，<strong>才会执行commit操作</strong>。所以在执行 <strong>commit</strong> 时，<strong>所有的write操作必然都在log中</strong>。而commit操作本身也有个有趣的问题，它究竟会发生什么？如我在前面指出的，commit操作本身只会写一个block。</p>
+<p>文件系统通常可以这么假设，单个block或者单个sector的write是原子操作。这里的意思是，如果你执行写操作，要么整个sector都会被写入，要么sector完全不会被修改。所以sector本身永远也不会被部分写入，并且commit的 <strong>目标sector</strong> 总是包含了有效的数据。</p>
+<p>而commit操作本身只是写log的header，如果它成功了只是在commit header中写入log的长度，例如5，这样我们就知道log的长度为5。这时crash 并重启，我们就知道需要<strong>重新install 5个block的log</strong>。如果 <strong>commit header</strong> 没能成功写入磁盘，那这里的数值会是0。<strong>我们会认为这一次事务并没有发生过。</strong>这里本质上是 <strong>write ahead rule</strong>，<strong>它表示 logging系统在所有的写操作都记录在log中之前，不能install log。</strong></p>
+<p>在执行 <strong>commit</strong> 操作时，系统会确保在<strong>将所有的write操作记录到log之后再执行commit</strong>。这种写前日志记录（<strong>write-ahead logging</strong>）确保了事务的持久性。</p>
+<p>当执行 <strong>commit</strong> 时，系统会记录一个 <strong>commit header</strong> 到 <strong>log</strong> 中。这个 <strong>header</strong> 包含了当前事务的信息，比如事务的长度等。这个写入commit header的操作本身也是原子的，并且遵循着原子性和持久性的规则。<strong>如果这个 commit header 成功写入磁盘，系统就知道了这个事务已经完整地被记录下来了。如果在写commit header时系统崩溃，那么在重启时会认为这个事务并没有发生过，因为这个commit操作本身的信息并没有被成功地记录下来。</strong></p>
+<p>这种机制确保了在系统崩溃或故障时能够维持数据的一致性，并且能够通过log中的信息来进行恢复，使得系统能够重新执行那些还未完全记录的操作，从而达到事务的完整性和原子性。</p>
+<p>xv6的 <strong>log结构</strong>如往常一样也是极其的简单。我们在最开始有一个 <strong>header block</strong>，也就是我们的 <strong>commit record</strong>，里面包含了：</p>
+<ul>
+<li>数字<strong>n</strong>代表有效的 <strong>log block</strong> 的数量；</li>
+<li>每个 <strong>log block</strong> 的实际对应的 <strong>block</strong> 编号。</li>
+</ul>
+<p>之后就是 <strong>log的数据</strong>，也就是<strong>每个block的数据</strong>，依次为 <strong>bn0</strong> 对应的 <strong>block</strong> 的数据，<strong>bn1</strong> 对应的 <strong>block</strong> 的数据以此类推。这就是 <strong>log</strong> 中的内容，并且 <strong>log</strong> 也不包含其他内容。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/599ef52b6c164eb89805125337551fdd_1720253687327.png?token=ANB4BCOBAKVCKZKLUUAOVS3GRD6TK" alt="在这里插入图片描述"></p>
+<p>当文件系统在运行时，<strong>在内存中也有header block的一份拷贝</strong>，拷贝中也包含了 <strong>n</strong> 和 <strong>block编号</strong> 的数组。这里的 <strong>block编号</strong> 数组就是<strong>log</strong>数据对应的实际<strong>block</strong>编号，并且相应的 <strong>block</strong> 也会缓存在 <strong>block cache</strong> 中。</p>
+<h2 id="二、log-write-函数"><a href="#二、log-write-函数" class="headerlink" title="二、log_write() 函数"></a>二、<code>log_write()</code> 函数</h2><p>我们 <strong>不应该在所有的写操作完成之前写入commit record</strong>，这意味着文件系统操作必须表明事务的开始和结束。在 <strong>xv6</strong> 中，以创建文件的 <strong>sys_open</strong> 为例（在 <code>sysfile.c</code> 文件中）每个文件系统操作，都有<strong>begin_op</strong>和<strong>end_op</strong>分别表示事务的开始和结束。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c">uint64<br><span class="hljs-title function_">sys_open</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  ...<br><br>  begin_op(); <span class="hljs-comment">// 事务开始</span><br><br>  <span class="hljs-keyword">if</span>(omode &amp; O_CREATE)&#123;<br>    ip = create(path, T_FILE, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span>(ip == <span class="hljs-number">0</span>)&#123;<br>      end_op(); <span class="hljs-comment">// 事务结束</span><br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>  &#125;<br>  ...<br>  <span class="hljs-keyword">return</span> fd;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>事务中的所有写block操作具备原子性，这意味着这些写block操作要么全写入，要么全不写入。xv6 中的文件系统调用都有这样的结构，最开始是<strong>begin_op</strong>，<strong>之后是实现系统调用的代码</strong>，最后是<strong>end_op</strong>。在<strong>end_op</strong>中会实现<strong>commit</strong>操作。</p>
+<p>在 <strong>begin_op</strong> 和 <strong>end_op</strong> 之间，磁盘上或者内存中的数据结构会更新，但是磁盘中的数据不会有实际的改变。即在 <strong>end_op</strong> 之前，是不会写入到实际的 <strong>block</strong>中。在 <strong>end_op</strong> 时，<strong>我们会将数据写入到log中，之后再写入commit record或者log header</strong>。</p>
+<p>可以看到，这个事务看了一件事，就是<strong>创建了inode</strong>。看看 <code>create()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-keyword">struct</span> inode*<br><span class="hljs-title function_">create</span><span class="hljs-params">(<span class="hljs-type">char</span> *path, <span class="hljs-type">short</span> type, <span class="hljs-type">short</span> major, <span class="hljs-type">short</span> minor)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode</span> *<span class="hljs-title">ip</span>, *<span class="hljs-title">dp</span>;</span><br>  <span class="hljs-type">char</span> name[DIRSIZ];<br><br>  <span class="hljs-keyword">if</span>((dp = nameiparent(path, name)) == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br><br>  ilock(dp);<br><br>  <span class="hljs-keyword">if</span>((ip = dirlookup(dp, name, <span class="hljs-number">0</span>)) != <span class="hljs-number">0</span>)&#123;<br>    iunlockput(dp);<br>    ilock(ip);<br>    <span class="hljs-keyword">if</span>(type == T_FILE &amp;&amp; (ip-&gt;type == T_FILE || ip-&gt;type == T_DEVICE))<br>      <span class="hljs-keyword">return</span> ip;<br>    iunlockput(ip);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">if</span>((ip = ialloc(dp-&gt;dev, type)) == <span class="hljs-number">0</span>)&#123;<br>    iunlockput(dp);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br>  ilock(ip);<br>  ip-&gt;major = major;<br>  ip-&gt;minor = minor;<br>  ip-&gt;nlink = <span class="hljs-number">1</span>;<br>  iupdate(ip);<br><br>  <span class="hljs-keyword">if</span>(type == T_DIR)&#123;  <span class="hljs-comment">// Create . and .. entries.</span><br>    <span class="hljs-comment">// No ip-&gt;nlink++ for &quot;.&quot;: avoid cyclic ref count.</span><br>    <span class="hljs-keyword">if</span>(dirlink(ip, <span class="hljs-string">&quot;.&quot;</span>, ip-&gt;inum) &lt; <span class="hljs-number">0</span> || dirlink(ip, <span class="hljs-string">&quot;..&quot;</span>, dp-&gt;inum) &lt; <span class="hljs-number">0</span>)<br>      <span class="hljs-keyword">goto</span> fail;<br>  &#125;<br><br>  <span class="hljs-keyword">if</span>(dirlink(dp, name, ip-&gt;inum) &lt; <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">goto</span> fail;<br><br>  <span class="hljs-keyword">if</span>(type == T_DIR)&#123;<br>    <span class="hljs-comment">// now that success is guaranteed:</span><br>    dp-&gt;nlink++;  <span class="hljs-comment">// for &quot;..&quot;</span><br>    iupdate(dp);<br>  &#125;<br><br>  iunlockput(dp);<br><br>  <span class="hljs-keyword">return</span> ip;<br><br> fail:<br>  <span class="hljs-comment">// something went wrong. de-allocate ip.</span><br>  ip-&gt;nlink = <span class="hljs-number">0</span>;<br>  iupdate(ip);<br>  iunlockput(ip);<br>  iunlockput(dp);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这段代码是一个函数 <code>create</code>，其作用是在文件系统中创建一个新的文件或目录，并返回对应的 inode 结构体指针。</p>
+<ol>
+<li><p><strong>参数</strong>：</p>
+<ul>
+<li><code>path</code>: 要创建文件或目录的路径。</li>
+<li><code>type</code>: 文件类型，可以是文件 (<code>T_FILE</code>) 或目录 (<code>T_DIR</code>)。</li>
+<li><code>major</code>: 设备文件的主设备号。</li>
+<li><code>minor</code>: 设备文件的次设备号。</li>
+</ul>
+</li>
+<li><p><strong>主要步骤</strong>：</p>
+<ul>
+<li>函数首先通过 <code>nameiparent</code> 函数获取路径的父目录的 <code>inode</code> 结构体指针 <code>dp</code>，并且获取了要创建的文件或目录的名称 <code>name</code>。</li>
+<li>然后对父目录 <code>dp</code> 进行加锁 <code>ilock(dp)</code>，确保不会在并发情况下出现问题。</li>
+<li>接着，通过 <code>dirlookup</code> 函数在父目录中查找要创建的文件或目录。如果找到了同名的文件或目录，且其类型与要创建的类型相同（即均为文件或目录），则直接返回该 <code>inode</code> 指针。</li>
+<li>如果没有找到同名文件或目录，则通过 <code>ialloc</code> 函数分配一个新的 <code>inode</code>，表示新文件或目录。如果分配失败，则解锁父目录并返回 0。</li>
+<li>为新分配的 <code>inode</code> 设置一些基本属性，如 <code>major</code>、<code>minor</code>、<code>nlink</code>，然后通过 <code>iupdate</code> 函数将这些属性更新到磁盘上。</li>
+<li>如果要创建的是目录 (<code>T_DIR</code>)，则创建 <code>.</code> 和 <code>..</code> 两个目录项，分别表示当前目录和父目录。</li>
+<li>将新创建的文件或目录项写入父目录中，如果写入失败，则跳转到 <code>fail</code> 标签进行错误处理。</li>
+<li>如果创建的是目录 (<code>T_DIR</code>)，则在操作成功后更新父目录的 <code>nlink</code>，表示父目录包含了一个子目录。</li>
+<li>最后解锁父目录 <code>dp</code> 并返回新创建的 <code>inode</code> 结构体指针。</li>
+</ul>
+</li>
+<li><p><strong>错误处理</strong>：</p>
+<ul>
+<li>在出现错误时，函数会跳转到 <code>fail</code> 标签处，将 <code>inode</code> 的 <code>nlink</code> 设为 0，通过 <code>iupdate</code> 将这个修改写入磁盘，然后释放这个 <code>inode</code> 的锁并解锁父目录，最后返回 0，表示创建过程出现了问题。</li>
+</ul>
+</li>
+</ol>
+<p>再看看它是怎么获取 <strong>inode</strong> 的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Allocate an inode on device dev.</span><br><span class="hljs-comment">// Mark it as allocated by  giving it type type.</span><br><span class="hljs-comment">// Returns an unlocked but allocated and referenced inode,</span><br><span class="hljs-comment">// or NULL if there is no free inode.</span><br><span class="hljs-keyword">struct</span> inode*<br><span class="hljs-title function_">ialloc</span><span class="hljs-params">(uint dev, <span class="hljs-type">short</span> type)</span><br>&#123;<br>  <span class="hljs-type">int</span> inum;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">bp</span>;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dinode</span> *<span class="hljs-title">dip</span>;</span><br><br>  <span class="hljs-keyword">for</span>(inum = <span class="hljs-number">1</span>; inum &lt; sb.ninodes; inum++)&#123;<br>    bp = bread(dev, IBLOCK(inum, sb));<br>    dip = (<span class="hljs-keyword">struct</span> dinode*)bp-&gt;data + inum%IPB;<br>    <span class="hljs-keyword">if</span>(dip-&gt;type == <span class="hljs-number">0</span>)&#123;  <span class="hljs-comment">// a free inode</span><br>      <span class="hljs-built_in">memset</span>(dip, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(*dip));<br>      dip-&gt;type = type;<br>      log_write(bp);   <span class="hljs-comment">// mark it allocated on the disk</span><br><br>      brelse(bp);<br>      <span class="hljs-keyword">return</span> iget(dev, inum);<br>    &#125;<br>    brelse(bp);<br>  &#125;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ialloc: no inodes\n&quot;</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，在拿到 <strong>inode</strong> 之后，并没有直接在磁盘中 <strong>block</strong>修改这个 <strong>inode</strong> 中的字段，而是初始化 <strong>buffer</strong>（内存中） 中的 <strong>inode</strong>、修改这个 <strong>inode</strong> 的 <strong>type</strong>。它并没有将这些改变写回到磁盘中，而是直接调用 <code>log_write()</code>，写到日志中。</p>
+<p>来看看 <code>log_write()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Caller has modified b-&gt;data and is done with the buffer.</span><br><span class="hljs-comment">// Record the block number and pin in the cache by increasing refcnt.</span><br><span class="hljs-comment">// commit()/write_log() will do the disk write.</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// log_write() replaces bwrite(); a typical use is:</span><br><span class="hljs-comment">//   bp = bread(...)</span><br><span class="hljs-comment">//   modify bp-&gt;data[]</span><br><span class="hljs-comment">//   log_write(bp)</span><br><span class="hljs-comment">//   brelse(bp)</span><br><span class="hljs-type">void</span><br><span class="hljs-title function_">log_write</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> buf *b)</span><br>&#123;<br>  <span class="hljs-type">int</span> i;<br>  acquire(&amp;<span class="hljs-built_in">log</span>.lock);<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">log</span>.lh.n &gt;= LOGSIZE || <span class="hljs-built_in">log</span>.lh.n &gt;= <span class="hljs-built_in">log</span>.size - <span class="hljs-number">1</span>)<br>    panic(<span class="hljs-string">&quot;too big a transaction&quot;</span>);<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">log</span>.outstanding &lt; <span class="hljs-number">1</span>)<br>    panic(<span class="hljs-string">&quot;log_write outside of trans&quot;</span>);<br><br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">log</span>.lh.n; i++) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">log</span>.lh.block[i] == b-&gt;blockno)   <span class="hljs-comment">// log absorption</span><br>      <span class="hljs-keyword">break</span>;<br>  &#125;<br>  <span class="hljs-built_in">log</span>.lh.block[i] = b-&gt;blockno;<br>  <span class="hljs-keyword">if</span> (i == <span class="hljs-built_in">log</span>.lh.n) &#123;  <span class="hljs-comment">// Add new block to log?</span><br>    bpin(b);<br>    <span class="hljs-built_in">log</span>.lh.n++;<br>  &#125;<br>  release(&amp;<span class="hljs-built_in">log</span>.lock);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这段代码是一个日志系统中的 <code>log_write</code> 函数。它的作用是记录被修改的数据块，并在日志中进行相应的标记，以便稍后将这些数据块的更改写入磁盘。</p>
+<p>这个函数的主要步骤：</p>
+<ol>
+<li><p><strong>函数作用</strong>：</p>
+<ul>
+<li>记录被修改的数据块的块号，并将其标记在日志中，以便在后续的事务提交 (<code>commit()</code>) 或日志写入 (<code>write_log()</code>) 过程中执行磁盘写入。</li>
+</ul>
+</li>
+<li><p><strong>主要步骤</strong>：</p>
+<ul>
+<li>首先，通过 <code>acquire(&amp;log.lock)</code> 获取了日志的锁，确保在并发情况下不会出现问题。</li>
+<li>然后检查当前日志中记录的块号数量是否超出了规定的阈值 (<code>LOGSIZE</code>) 或者超出了日志的最大容量 (<code>log.size - 1</code>)，如果超出，则会产生  <strong>panic</strong>。</li>
+<li>接着检查 <code>log_write</code> 是否在一个事务 (<code>transaction</code>) 中进行调用，如果不是，则会产生 panic。</li>
+<li>然后，通过循环遍历当前日志中已经记录的块号，检查是否存在与要记录的块号相同的块号，如果存在则跳出循环，否则将当前要记录的块号加入到日志中。</li>
+<li>如果要记录的块号是新的，即不存在于当前日志中，则增加日志的块号数量 <code>log.lh.n</code>，并通过 <code>bpin(b)</code> 增加对应数据块的引用计数，表示这个数据块被日志所引用。</li>
+</ul>
+</li>
+<li><p><strong>释放资源</strong>：</p>
+<ul>
+<li>最后通过 <code>release(&amp;log.lock)</code> 释放了日志的锁，表示记录过程结束。</li>
+</ul>
+</li>
+</ol>
+<p>这个函数是日志系统中的一部分，用于记录被修改的数据块的块号，并在日志中进行标记，以备后续的磁盘写入操作。</p>
+<p>可以看到它做的事情不多，就是简单地记录下需要写入的块号，如果是 <strong>新block</strong>，就把 <strong>log.lh.n</strong> 字段自增1。<strong>log</strong> 字段如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Contents of the header block, used for both the on-disk header block</span><br><span class="hljs-comment">// and to keep track in memory of logged block# before commit.</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">logheader</span> &#123;</span><br>  <span class="hljs-type">int</span> n;<br>  <span class="hljs-type">int</span> block[LOGSIZE];<br>&#125;;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">log</span> &#123;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">spinlock</span> <span class="hljs-title">lock</span>;</span><br>  <span class="hljs-type">int</span> start;<br>  <span class="hljs-type">int</span> size;<br>  <span class="hljs-type">int</span> outstanding; <span class="hljs-comment">// how many FS sys calls are executing.</span><br>  <span class="hljs-type">int</span> committing;  <span class="hljs-comment">// in commit(), please wait.</span><br>  <span class="hljs-type">int</span> dev;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">logheader</span> <span class="hljs-title">lh</span>;</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>以上就是 <strong>log_write</strong> 的全部工作了。<strong>任何文件系统调用，如果需要更新block或者说更新block cache中的block，都会将block编号加在这个内存数据中（注，也就是log header在内存中的cache），除非编号已经存在。</strong></p>
+<h2 id="三、end-op-函数"><a href="#三、end-op-函数" class="headerlink" title="三、end_op() 函数"></a>三、<code>end_op()</code> 函数</h2><p>事务在完成之后，立即调用 <code>end_op()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// called at the end of each FS system call.</span><br><span class="hljs-comment">// commits if this was the last outstanding operation.</span><br><span class="hljs-type">void</span><br><span class="hljs-title function_">end_op</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">int</span> do_commit = <span class="hljs-number">0</span>;<br><br>  acquire(&amp;<span class="hljs-built_in">log</span>.lock);<br>  <span class="hljs-built_in">log</span>.outstanding -= <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">log</span>.committing)<br>    panic(<span class="hljs-string">&quot;log.committing&quot;</span>);<br>  <span class="hljs-keyword">if</span>(<span class="hljs-built_in">log</span>.outstanding == <span class="hljs-number">0</span>)&#123;<br>    do_commit = <span class="hljs-number">1</span>;<br>    <span class="hljs-built_in">log</span>.committing = <span class="hljs-number">1</span>;<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// begin_op() may be waiting for log space,</span><br>    <span class="hljs-comment">// and decrementing log.outstanding has decreased</span><br>    <span class="hljs-comment">// the amount of reserved space.</span><br>    wakeup(&amp;<span class="hljs-built_in">log</span>);<br>  &#125;<br>  release(&amp;<span class="hljs-built_in">log</span>.lock);<br><br>  <span class="hljs-keyword">if</span>(do_commit)&#123;<br>    <span class="hljs-comment">// call commit w/o holding locks, since not allowed</span><br>    <span class="hljs-comment">// to sleep with locks.</span><br>    commit();<br>    acquire(&amp;<span class="hljs-built_in">log</span>.lock);<br>    <span class="hljs-built_in">log</span>.committing = <span class="hljs-number">0</span>;<br>    wakeup(&amp;<span class="hljs-built_in">log</span>);<br>    release(&amp;<span class="hljs-built_in">log</span>.lock);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在简单情况下，没有其他的文件系统操作正在处理中。这部分代码非常简单直观，首先调用了 <code>commit()</code>  函数。让我们看一下<code>commit()</code> 函数的实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">commit</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">log</span>.lh.n &gt; <span class="hljs-number">0</span>) &#123;<br>    write_log();     <span class="hljs-comment">// Write modified blocks from cache to log</span><br>    write_head();    <span class="hljs-comment">// Write header to disk -- the real commit</span><br>    install_trans(<span class="hljs-number">0</span>); <span class="hljs-comment">// Now install writes to home locations</span><br>    <span class="hljs-built_in">log</span>.lh.n = <span class="hljs-number">0</span>;<br>    write_head();    <span class="hljs-comment">// Erase the transaction from the log</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<p>这个 <code>commit()</code> 函数是文件系统中用于提交事务的部分，它负责实际执行事务的提交操作：</p>
+<ol>
+<li><p><strong>检查日志中是否有待提交的内容</strong>：</p>
+<ul>
+<li>首先，它会检查日志头中的记录数 <code>log.lh.n</code> 是否大于 0，这表示是否存在需要提交到磁盘的修改。</li>
+</ul>
+</li>
+<li><p><strong>执行提交的具体步骤</strong>：</p>
+<ul>
+<li>如果 <code>log.lh.n &gt; 0</code>，表示有待提交的内容：<ul>
+<li><code>write_log()</code>: 将缓存中被修改的块（blocks）写入到日志（log）中。这一步是将对磁盘上数据的修改记录在日志中，以便在需要时恢复数据。</li>
+<li><code>write_head()</code>: 将日志头（log header）写入磁盘。<strong>这个动作是真正的提交（commit），表示事务的变更已经被记录到了日志中。</strong></li>
+<li><code>install_trans(0)</code>: 将修改写入到各自的位置，也就是将对文件系统的修改从日志应用到实际的位置上。这一步确保了数据的一致性。</li>
+<li><code>log.lh.n = 0</code>: 清零记录在日志头中的日志计数，表示事务已经成功提交并完成。</li>
+<li><code>write_head()</code>: 最后一次调用，此次是为了擦除日志中的事务记录，确保之前的事务已经完全提交，日志可以重新开始记录新的事务。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>来看看  <code>write_log()</code> 干了什么：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Copy modified blocks from cache to log.</span><br><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">write_log</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">int</span> tail;<br><br>  <span class="hljs-keyword">for</span> (tail = <span class="hljs-number">0</span>; tail &lt; <span class="hljs-built_in">log</span>.lh.n; tail++) &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">to</span> =</span> bread(<span class="hljs-built_in">log</span>.dev, <span class="hljs-built_in">log</span>.start+tail+<span class="hljs-number">1</span>); <span class="hljs-comment">// log block</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">from</span> =</span> bread(<span class="hljs-built_in">log</span>.dev, <span class="hljs-built_in">log</span>.lh.block[tail]); <span class="hljs-comment">// cache block</span><br>    memmove(to-&gt;data, from-&gt;data, BSIZE);<br>    bwrite(to);  <span class="hljs-comment">// write the log</span><br>    brelse(from);<br>    brelse(to);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个 <code>write_log()</code> 函数是用来将缓存中被修改的块（blocks）复制到日志（log）中的过程：</p>
+<ol>
+<li><p><strong>循环处理需要写入日志的块</strong>：</p>
+<ul>
+<li><code>for</code> 循环遍历日志头中记录的需要写入日志的块数 <code>log.lh.n</code>。</li>
+</ul>
+</li>
+<li><p><strong>从缓存中读取和写入到日志中</strong>：</p>
+<ul>
+<li><code>struct buf *to = bread(log.dev, log.start+tail+1);</code>: 从日志中读取一个指定位置的日志块（log block）。</li>
+<li><code>struct buf *from = bread(log.dev, log.lh.block[tail]);</code>: 从缓存中读取一个需要被写入到日志的块（cache block）。<strong>这里需要注意的是，这个块是缓存块，它已经被修改好了，现在准备要将它复制到日志块中，而且还要写到硬盘中。</strong></li>
+<li><code>memmove(to-&gt;data, from-&gt;data, BSIZE);</code>: 将缓存块中的数据复制到日志块中。这一步实际上是将被修改的数据从缓存中拷贝到了日志中，以记录这些修改。</li>
+<li><code>bwrite(to);</code>: 将这个日志块写入磁盘，这一步是将缓存块的内容写入到日志中，记录了被修改的数据。</li>
+<li><code>brelse(from); brelse(to);</code>: 释放对缓存块和日志块的引用，表示不再需要这些块的数据。</li>
+</ul>
+</li>
+</ol>
+<p>我们来看看 <code>bwrite()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Write b&#x27;s contents to disk.  Must be locked.</span><br><span class="hljs-type">void</span><br><span class="hljs-title function_">bwrite</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> buf *b)</span><br>&#123;<br>  <span class="hljs-keyword">if</span>(!holdingsleep(&amp;b-&gt;lock))<br>    panic(<span class="hljs-string">&quot;bwrite&quot;</span>);<br>  virtio_disk_rw(b, <span class="hljs-number">1</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之前有提到，<code>bwrite()</code>是真正向硬盘中写东西的函数，所以 <code>write_log()</code> 的作用，就是将缓存中的数据，或者说需要修改的缓存块，写到日志中，而且是硬盘中的 <strong>log block</strong> 中！</p>
+<p><code>write_head()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Write in-memory log header to disk.</span><br><span class="hljs-comment">// This is the true point at which the</span><br><span class="hljs-comment">// current transaction commits.</span><br><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">write_head</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">buf</span> =</span> bread(<span class="hljs-built_in">log</span>.dev, <span class="hljs-built_in">log</span>.start);<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">logheader</span> *<span class="hljs-title">hb</span> =</span> (<span class="hljs-keyword">struct</span> logheader *) (buf-&gt;data);<br>  <span class="hljs-type">int</span> i;<br>  hb-&gt;n = <span class="hljs-built_in">log</span>.lh.n;<br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">log</span>.lh.n; i++) &#123;<br>    hb-&gt;block[i] = <span class="hljs-built_in">log</span>.lh.block[i];<br>  &#125;<br>  bwrite(buf);<br>  brelse(buf);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个函数 <code>write_head()</code> 的功能是将内存中的日志头信息写入硬盘中的日志块中，<strong>实现当前事务的真正提交</strong>。</p>
+<p>具体步骤如下：</p>
+<ol>
+<li><p><strong>读取日志块</strong>：</p>
+<ul>
+<li><code>struct buf *buf = bread(log.dev, log.start);</code>: 从磁盘中读取日志块到内存中的缓冲区 <code>buf</code> 中。</li>
+</ul>
+</li>
+<li><p><strong>更新日志头信息</strong>：</p>
+<ul>
+<li><code>struct logheader *hb = (struct logheader *) (buf-&gt;data);</code>: 将缓冲区中的<strong>数据强制转换为日志头结构体</strong> （C语言的强转机制，就是这么暴力！），以便更新其中的信息。</li>
+<li><code>hb-&gt;n = log.lh.n;</code>: 将当前事务中记录的块数更新到日志头中。</li>
+<li><code>for (i = 0; i &lt; log.lh.n; i++) &#123; hb-&gt;block[i] = log.lh.block[i]; &#125;</code>: 将当前事务中记录的每个块的块号（block number）更新到日志头中。</li>
+</ul>
+</li>
+<li><p><strong>将更新后的日志头信息写入硬盘</strong>：</p>
+<ul>
+<li><code>bwrite(buf);</code>: 使用 <code>bwrite()</code> <strong>函数将更新后的日志头数据写入硬盘中的日志块，这个过程实际上是将当前事务的信息提交到磁盘中的日志。</strong></li>
+</ul>
+</li>
+<li><p><strong>释放缓冲区</strong>：</p>
+<ul>
+<li><code>brelse(buf);</code>: 释放对日志块的引用，表示不再需要这个块的数据。</li>
+</ul>
+</li>
+</ol>
+<p>这个函数的作用就是将当前事务的日志头信息持久化到磁盘中，标志着事务的正式提交。</p>
+<p><code>install_trans(int recovering)</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Copy committed blocks from log to their home location</span><br><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">install_trans</span><span class="hljs-params">(<span class="hljs-type">int</span> recovering)</span><br>&#123;<br>  <span class="hljs-type">int</span> tail;<br><br>  <span class="hljs-keyword">for</span> (tail = <span class="hljs-number">0</span>; tail &lt; <span class="hljs-built_in">log</span>.lh.n; tail++) &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">lbuf</span> =</span> bread(<span class="hljs-built_in">log</span>.dev, <span class="hljs-built_in">log</span>.start+tail+<span class="hljs-number">1</span>); <span class="hljs-comment">// read log block</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">dbuf</span> =</span> bread(<span class="hljs-built_in">log</span>.dev, <span class="hljs-built_in">log</span>.lh.block[tail]); <span class="hljs-comment">// read dst</span><br>    memmove(dbuf-&gt;data, lbuf-&gt;data, BSIZE);  <span class="hljs-comment">// copy block to dst</span><br>    bwrite(dbuf);  <span class="hljs-comment">// write dst to disk</span><br>    <span class="hljs-keyword">if</span>(recovering == <span class="hljs-number">0</span>)<br>      bunpin(dbuf);<br>    brelse(lbuf);<br>    brelse(dbuf);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个函数 <code>install_trans()</code> 的主要功能是<strong>将已经提交的块（blocks）从日志（log）中复制到它们原本的位置（home location）。</strong></p>
+<p>具体步骤如下：</p>
+<ol>
+<li><p><strong>循环处理需要安装的块</strong>：</p>
+<ul>
+<li><code>for (tail = 0; tail &lt; log.lh.n; tail++) &#123;</code>: 使用循环遍历日志头中记录的需要安装的块数 <code>log.lh.n</code>。</li>
+</ul>
+</li>
+<li><p><strong>从日志和目标位置读取块</strong>：</p>
+<ul>
+<li><code>struct buf *lbuf = bread(log.dev, log.start+tail+1);</code>: 从日志中读取一个指定位置的日志块（log block）。</li>
+<li><code>struct buf *dbuf = bread(log.dev, log.lh.block[tail]);</code>: 从磁盘中读取一个目标位置的块（destination block），这个块是在日志中记录的需要被修改的块。</li>
+</ul>
+</li>
+<li><p><strong>复制块数据到目标位置</strong>：</p>
+<ul>
+<li><code>memmove(dbuf-&gt;data, lbuf-&gt;data, BSIZE);</code>: 将日志块中的数据复制到目标位置的块中，实际上是将日志中记录的修改写入到了原本的位置。</li>
+</ul>
+</li>
+<li><p><strong>将更新后的块数据写回磁盘</strong>：</p>
+<ul>
+<li><code>bwrite(dbuf);</code>: 将被修改后的块数据写回到磁盘中，这一步是将日志中记录的修改应用到了磁盘的相应位置。</li>
+</ul>
+</li>
+<li><p><strong>解除引用和释放资源</strong>：</p>
+<ul>
+<li><code>bunpin(dbuf);</code>: 如果正在恢复过程中，则解除对目标位置块的引用。这可能会是一个引用计数的操作，确保释放相关资源。</li>
+<li><code>brelse(lbuf); brelse(dbuf);</code>: 释放对日志块和目标位置块的引用，表示不再需要这些块的数据。</li>
+</ul>
+</li>
+</ol>
+<p>这个函数实现了事务的安装。</p>
+<p>回到 commit()函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">commit</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">log</span>.lh.n &gt; <span class="hljs-number">0</span>) &#123;<br>    write_log();     <span class="hljs-comment">// Write modified blocks from cache to log</span><br>    write_head();    <span class="hljs-comment">// Write header to disk -- the real commit</span><br>    install_trans(<span class="hljs-number">0</span>); <span class="hljs-comment">// Now install writes to home locations</span><br>    <span class="hljs-built_in">log</span>.lh.n = <span class="hljs-number">0</span>;<br>    write_head();    <span class="hljs-comment">// Erase the transaction from the log</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在<strong>commit</strong>函数中，<strong>install</strong>结束之后，<strong>会将log header中的n设置为0，再将log header写回到磁盘中。将n设置为0的效果就是清除log</strong>。这里，才算是 <code>commit()</code> 真正结束！</p>
+<h2 id="四、文件恢复"><a href="#四、文件恢复" class="headerlink" title="四、文件恢复"></a>四、文件恢复</h2><p>我们看一下发生在xv6的启动过程中的文件系统的恢复流程。当系统crash并重启了，在xv6启动过程中做的一件事情就是调用<code>initlog()</code> 函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span><br><span class="hljs-title function_">initlog</span><span class="hljs-params">(<span class="hljs-type">int</span> dev, <span class="hljs-keyword">struct</span> superblock *sb)</span><br>&#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">struct</span> logheader) &gt;= BSIZE)<br>    panic(<span class="hljs-string">&quot;initlog: too big logheader&quot;</span>);<br><br>  initlock(&amp;<span class="hljs-built_in">log</span>.lock, <span class="hljs-string">&quot;log&quot;</span>);<br>  <span class="hljs-built_in">log</span>.start = sb-&gt;logstart;<br>  <span class="hljs-built_in">log</span>.size = sb-&gt;nlog;<br>  <span class="hljs-built_in">log</span>.dev = dev;<br>  recover_from_log();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>从 <strong>superblock</strong> 中拿到 <strong>log</strong> 初始化所需的数据后，开始恢复：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">recover_from_log</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  read_head();<br>  install_trans(<span class="hljs-number">1</span>); <span class="hljs-comment">// if committed, copy from log to disk</span><br>  <span class="hljs-built_in">log</span>.lh.n = <span class="hljs-number">0</span>;<br>  write_head(); <span class="hljs-comment">// clear the log</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>首先从硬盘中的 <strong>log block</strong> 中的 <strong>log header</strong> 数据恢复到内存中的 <strong>log header</strong>，还恢复了一点 <strong>log</strong> 信息：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Read the log header from disk into the in-memory log header</span><br><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">read_head</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">buf</span> =</span> bread(<span class="hljs-built_in">log</span>.dev, <span class="hljs-built_in">log</span>.start);<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">logheader</span> *<span class="hljs-title">lh</span> =</span> (<span class="hljs-keyword">struct</span> logheader *) (buf-&gt;data);<br>  <span class="hljs-type">int</span> i;<br>  <span class="hljs-built_in">log</span>.lh.n = lh-&gt;n;<br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">log</span>.lh.n; i++) &#123;<br>    <span class="hljs-built_in">log</span>.lh.block[i] = lh-&gt;block[i];<br>  &#125;<br>  brelse(buf);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后就再一次 <code>install_trans()</code>，将日志中的数据复制到 <strong>buffer</strong> 中，然后写回硬盘。</p>
+<p>这就是恢复的全部流程。如果我们在 <code>install_trans</code>函数中又crash了，也不会有问题。</p>
+<h2 id="五、Log-写磁盘流程"><a href="#五、Log-写磁盘流程" class="headerlink" title="五、Log 写磁盘流程"></a>五、Log 写磁盘流程</h2><p>为了追踪写磁盘，修改 <code>bwrite()</code> 函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Write b&#x27;s contents to disk.  Must be locked.</span><br><span class="hljs-type">void</span><br><span class="hljs-title function_">bwrite</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> buf *b)</span><br>&#123;<br>  <span class="hljs-keyword">if</span>(!holdingsleep(&amp;b-&gt;lock))<br>    panic(<span class="hljs-string">&quot;bwrite&quot;</span>);<br><br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;bwrite: %d\n&quot;</span>,b-&gt;blockno);<br>  virtio_disk_rw(b, <span class="hljs-number">1</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>然后运行以下命令（ <strong>文件x</strong> 之前存在，因此开始将它删了）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs bash">xv6 kernel is booting<br><br>hart 1 starting<br>hart 2 starting<br>bwrite: 2<br>init: starting sh<br>$ <span class="hljs-built_in">rm</span> x<br>bwrite: 3<br>bwrite: 4<br>bwrite: 5<br>bwrite: 6<br>bwrite: 2<br>bwrite: 46<br>bwrite: 32<br>bwrite: 33<br>bwrite: 45<br>bwrite: 2<br>$ <span class="hljs-built_in">echo</span> hi &gt; x<br>1	bwrite: 3<br>2	bwrite: 4<br>3	bwrite: 5<br>4	bwrite: 2<br>5	bwrite: 33<br>6	bwrite: 46<br>7	bwrite: 32<br>8	bwrite: 2<br><br>9	bwrite: 3<br>10	bwrite: 4<br>11	bwrite: 5<br>12	bwrite: 2<br>13	bwrite: 45<br>14	bwrite: 908<br>15	bwrite: 33<br>16	bwrite: 2<br><br>17	bwrite: 3<br>18	bwrite: 4<br>19	bwrite: 2<br>20	bwrite: 908<br>21	bwrite: 33<br>22	bwrite: 2<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，系统刚启动，就往磁盘中 <strong>log block2</strong>中写东西了。根据这些输出信息，我们随意畅谈，只要合理就好。</p>
+<p>比如，对于 <code>rm x</code>，很明显，需要修改多个 log block，然后修改根目录的 block，然后还要修改 inode block、bitmap block。这都能与 shell 打印的信息吻合。</p>
+<p>我们再看看 <code>echo hi &gt; x</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">1	bwrite: 3<br>2	bwrite: 4<br>3	bwrite: 5<br></code></pre></td></tr></table></figure>
+<p>这 3 行都是 log block，记录的 3 个操作，写入到了这里。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">4	bwrite: 2<br></code></pre></td></tr></table></figure>
+
+<p>这个是 <strong>log header</strong>，这条是 <strong>commit</strong> 记录，因为只有 <code>commit()</code> 中才会执行 <code>write_head()</code> 函数。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">5	bwrite: 33<br>6	bwrite: 46<br>7	bwrite: 32<br></code></pre></td></tr></table></figure>
+
+<p>这里实际就是将前3行的 <strong>log data</strong> 写入到实际的文件系统的<strong>block</strong>位置，这里 <strong>install log</strong>，还写了<strong>entry</strong>（创建了<strong>文件x</strong>），顺便修改了根目录的 <strong>inode</strong> 字段的 <strong>size</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">4	bwrite: 2<br>5	bwrite: 33<br>6	bwrite: 46<br>7	bwrite: 32<br>8	bwrite: 2<br></code></pre></td></tr></table></figure>
+<p>连起来看，就很清楚，完美对应<code>commit()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">commit</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">log</span>.lh.n &gt; <span class="hljs-number">0</span>) &#123;<br>    write_log();     <span class="hljs-comment">// Write modified blocks from cache to log</span><br>    write_head();    <span class="hljs-comment">// Write header to disk -- the real commit</span><br>    install_trans(<span class="hljs-number">0</span>); <span class="hljs-comment">// Now install writes to home locations</span><br>    <span class="hljs-built_in">log</span>.lh.n = <span class="hljs-number">0</span>;<br>    write_head();    <span class="hljs-comment">// Erase the transaction from the log</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>因此，第 8 行的 bwrite 2 就是在清除log。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">9	bwrite: 3<br>10	bwrite: 4<br>11	bwrite: 5<br>12	bwrite: 2<br>13	bwrite: 45<br>14	bwrite: 908<br>15	bwrite: 33<br>16	bwrite: 2<br></code></pre></td></tr></table></figure>
+<p>这里也是，记录 3 组操作之后，然后 <code>commit()</code>。这里修改了位图，之后写了 <code>hi</code>,并修改了 <strong>文件x</strong> 的 <strong>inode</strong> 中的 <strong>size</strong> 等字段（<strong>block33</strong>），</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">17	bwrite: 3<br>18	bwrite: 4<br>19	bwrite: 2<br>20	bwrite: 908<br>21	bwrite: 33<br>22	bwrite: 2<br></code></pre></td></tr></table></figure>
+
+<p>这里记录了两组操作，也就 <code>commit()</code>了，最后清除 <strong>log</strong>。这里应该在写最后的换行符，同时修改文件大小。</p>
+<p>所以以上就是 <strong>xv6</strong> 中文件系统的 <strong>logging</strong> 介绍，即使是这么一个简单的 <strong>logging</strong> 系统也有一定的复杂度。这里立刻可以想到的一个问题是，通过观察这些记录，这是一个很有效的实现吗？很明显不是的，因为数据被写了两次。如果我写一个大文件，我需要在磁盘中将这个大文件写两次。所以这必然不是一个高性能的实现，<strong>为了实现 Crash safety 我们将原本的性能降低了一倍。</strong></p>
+<p><em>全文完，感谢阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/xv6/" class="print-no-link">#xv6</a>
+      
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>xv6 文件系统（下）</div>
+      <div>http://blog.luliang.online/2023/12/18/xv6 文件系统（下）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月18日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/19/%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%97%A5%E5%BF%97%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88C%E8%AF%AD%E8%A8%80%EF%BC%89/" title="实现个人日志命令行工具（C语言）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">实现个人日志命令行工具（C语言）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" title="xv6 文件系统（上）">
+                        <span class="hidden-mobile">xv6 文件系统（上）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

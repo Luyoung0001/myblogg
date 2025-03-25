@@ -1,0 +1,771 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言mmap 是一个非常强大的系统调用，常用于映射文件到内存中，以实现快速和方便的文件访问，也用于进程间通信等多种场景。下面是一些 mmap 的常见用法： 1. 文件映射（Memory-mapped files）文件映射是 mmap 最直接的用途之一，可以将整个文件或文件的一部分映射到进程的地址空间。这允许程序像访问普通内存那样访问文件数据，可以提高文件操作的性能，特别是对于大文件的随机访">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mmap() 的几种用法">
+<meta property="og:url" content="http://blog.luliang.online/2024/06/12/mmap()%20%E7%9A%84%E5%87%A0%E7%A7%8D%E7%94%A8%E6%B3%95/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言mmap 是一个非常强大的系统调用，常用于映射文件到内存中，以实现快速和方便的文件访问，也用于进程间通信等多种场景。下面是一些 mmap 的常见用法： 1. 文件映射（Memory-mapped files）文件映射是 mmap 最直接的用途之一，可以将整个文件或文件的一部分映射到进程的地址空间。这允许程序像访问普通内存那样访问文件数据，可以提高文件操作的性能，特别是对于大文件的随机访">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-12T09:50:07.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.775Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="系统调用">
+<meta property="article:tag" content="mmap">
+<meta property="article:tag" content="文件">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>mmap() 的几种用法 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="mmap() 的几种用法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-12 17:50" pubdate>
+          2024年6月12日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          16 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">mmap() 的几种用法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p><code>mmap</code> 是一个非常强大的系统调用，常用于映射文件到内存中，以实现快速和方便的文件访问，也用于进程间通信等多种场景。下面是一些 <code>mmap</code> 的常见用法：</p>
+<h3 id="1-文件映射（Memory-mapped-files）"><a href="#1-文件映射（Memory-mapped-files）" class="headerlink" title="1. 文件映射（Memory-mapped files）"></a>1. <strong>文件映射（Memory-mapped files）</strong></h3><p>文件映射是 <code>mmap</code> 最直接的用途之一，可以将整个文件或文件的一部分映射到进程的地址空间。这允许程序像访问普通内存那样访问文件数据，可以提高文件操作的性能，特别是对于大文件的随机访问。</p>
+<p><strong>示例用途</strong>：</p>
+<ul>
+<li>数据库系统中的数据文件管理。</li>
+<li>大型文件的快速读写，如媒体文件处理或科学数据处理。</li>
+</ul>
+<h3 id="2-进程间通信（Interprocess-Communication-IPC）"><a href="#2-进程间通信（Interprocess-Communication-IPC）" class="headerlink" title="2. 进程间通信（Interprocess Communication, IPC）"></a>2. <strong>进程间通信（Interprocess Communication, IPC）</strong></h3><p>通过映射匿名内存（不与任何文件关联的内存区域），<code>mmap</code> 可以用来在父子进程或者任何共享同一个内存映射的不同进程之间进行数据共享。</p>
+<p><strong>示例用途</strong>：</p>
+<ul>
+<li>多进程应用程序中共享状态或数据。</li>
+<li>实现复杂的同步机制，如共享内存中的锁或信号量。</li>
+</ul>
+<h3 id="3-创建高效的缓冲区（Efficient-Buffering）"><a href="#3-创建高效的缓冲区（Efficient-Buffering）" class="headerlink" title="3. 创建高效的缓冲区（Efficient Buffering）"></a>3. <strong>创建高效的缓冲区（Efficient Buffering）</strong></h3><p>使用 <code>mmap</code> 创建的内存区域可以用作自定义的缓冲区，例如，为网络数据传输创建大型缓冲区，或者用于音视频数据的快速缓存。</p>
+<p><strong>示例用途</strong>：</p>
+<ul>
+<li>网络服务器中的数据缓冲，以减少读写文件的系统调用。</li>
+<li>音视频播放软件中的数据缓冲。</li>
+</ul>
+<h3 id="4-动态内存管理"><a href="#4-动态内存管理" class="headerlink" title="4. 动态内存管理"></a>4. <strong>动态内存管理</strong></h3><p>除了映射文件，<code>mmap</code> 还可以请求操作系统分配一块新的内存区域（匿名映射），用于自定义的内存管理策略。</p>
+<p><strong>示例用途</strong>：</p>
+<ul>
+<li>实现内存池。</li>
+<li>替代 <code>malloc</code> 或 <code>free</code> 用于特定场景下的内存分配，以控制内存使用更细致。</li>
+</ul>
+<h3 id="5-反射和修改程序的行为（Self-modifying-code）"><a href="#5-反射和修改程序的行为（Self-modifying-code）" class="headerlink" title="5. 反射和修改程序的行为（Self-modifying code）"></a>5. <strong>反射和修改程序的行为（Self-modifying code）</strong></h3><p>在一些高级用途中，<code>mmap</code> 可以用于实现程序的代码部分的动态修改，比如即时编译（JIT）技术。</p>
+<p><strong>示例用途</strong>：</p>
+<ul>
+<li>动态编译器和运行时代码生成。</li>
+<li>修改运行中的程序，以调整其功能或优化性能。</li>
+</ul>
+<h3 id="6-大内存对象的管理"><a href="#6-大内存对象的管理" class="headerlink" title="6. 大内存对象的管理"></a>6. <strong>大内存对象的管理</strong></h3><p>利用 <code>mmap</code> 映射的内存不受传统堆大小限制，可以用来管理非常大的内存对象。</p>
+<p><strong>示例用途</strong>：</p>
+<ul>
+<li>大规模数值计算，需要分配大量内存的应用。</li>
+<li>处理大型图像或视频帧序列。</li>
+</ul>
+<p>通过这些用法，<code>mmap</code> 提供了一种灵活而强大的机制，用于处理大量数据、优化性能、实现进程间通信等多种需求。</p>
+<h2 id="一、文件映射"><a href="#一、文件映射" class="headerlink" title="一、文件映射"></a>一、文件映射</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/stat.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    <span class="hljs-type">int</span> fd, nread;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">sb</span>;</span><br>    <span class="hljs-type">char</span>* mapped;<br><br>    <span class="hljs-comment">// 打开文件</span><br>    <span class="hljs-keyword">if</span> ((fd = open(argv[<span class="hljs-number">1</span>], O_RDWR)) &lt; <span class="hljs-number">0</span>) &#123;<br>        perror(<span class="hljs-string">&quot;open&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 读取文件的属性</span><br>    <span class="hljs-keyword">if</span> ((fstat(fd, &amp;sb)) == <span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;fstat&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 将文件映射到进程空间</span><br>    <span class="hljs-keyword">if</span> ((mapped = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, sb.st_size, PROT_READ | PROT_WRITE,<br>                              MAP_SHARED, fd, <span class="hljs-number">0</span>)) == (<span class="hljs-type">void</span>*)<span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;mmap&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 修改一个字，同步到硬盘文件</span><br>    mapped[<span class="hljs-number">20</span>] = <span class="hljs-string">&#x27;9&#x27;</span>;<br>    <span class="hljs-keyword">if</span> ((msync((<span class="hljs-type">void</span>*)mapped, sb.st_size, MS_SYNC)) == <span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;msync&quot;</span>);<br>    &#125;<br>    <span class="hljs-comment">// 释放存储映射区</span><br>    <span class="hljs-keyword">if</span> ((munmap((<span class="hljs-type">void</span>*)mapped, sb.st_size)) == <span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;munmap&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这是测试文件，data.txt：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs txt">aaaaaaaaa<br>bbbbbbbbb<br>cccccccccccc<br>dddddd<br></code></pre></td></tr></table></figure>
+
+<p>编译运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">❯ gcc mmap1.c -o main<br>❯ ./main data.txt<br><br>~/tests/test2                                                                       16:58:25<br>❯<br></code></pre></td></tr></table></figure>
+<p>data.txt直接被修改为了：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs txt">aaaaaaaaa<br>bbbbbbbbb<br>9ccccccccccc<br>dddddd<br></code></pre></td></tr></table></figure>
+
+<p>通过文件映射，可以先将文件映射到内存中，可以随机访问、修改，然后同步到磁盘文件中，极大的提升了 IO 效率。</p>
+<h2 id="二、进程间共享文件"><a href="#二、进程间共享文件" class="headerlink" title="二、进程间共享文件"></a>二、进程间共享文件</h2><p>A 程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/stat.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> &#123;<br>    <span class="hljs-type">int</span> fd;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">sb</span>;</span><br>    <span class="hljs-type">char</span>* mapped;<br><br>    <span class="hljs-comment">/* 打开文件 */</span><br>    <span class="hljs-keyword">if</span> ((fd = open(argv[<span class="hljs-number">1</span>], O_RDWR)) &lt; <span class="hljs-number">0</span>) &#123;<br>        perror(<span class="hljs-string">&quot;open&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/* 获取文件的属性 */</span><br>    <span class="hljs-keyword">if</span> ((fstat(fd, &amp;sb)) == <span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;fstat&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/* 将文件映射至进程的地址空间 */</span><br>    <span class="hljs-keyword">if</span> ((mapped = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, sb.st_size, PROT_READ | PROT_WRITE,<br>                              MAP_SHARED, fd, <span class="hljs-number">0</span>)) == (<span class="hljs-type">void</span>*)<span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;mmap&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/* 文件已在内存, 关闭文件也可以操纵内存 */</span><br>    close(fd);<br><br>    <span class="hljs-comment">/* 每隔两秒查看存储映射区是否被修改 */</span><br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, mapped);<br>        sleep(<span class="hljs-number">2</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这个程序将 data.txt 映射到内存中之后将文件关闭，接着每隔 2 s 打印一次映射到内存中的文件（此时就算 data.txt被删除，都不受影响）。</p>
+<p>B 程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/stat.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> &#123;<br>    <span class="hljs-type">int</span> fd;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">sb</span>;</span><br>    <span class="hljs-type">char</span>* mapped;<br><br>    <span class="hljs-comment">/* 打开文件 */</span><br>    <span class="hljs-keyword">if</span> ((fd = open(argv[<span class="hljs-number">1</span>], O_RDWR)) &lt; <span class="hljs-number">0</span>) &#123;<br>        perror(<span class="hljs-string">&quot;open&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/* 获取文件的属性 */</span><br>    <span class="hljs-keyword">if</span> ((fstat(fd, &amp;sb)) == <span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;fstat&quot;</span>);<br>    &#125;<br>    <span class="hljs-comment">/* 私有文件映射将无法修改文件 */</span><br>    <span class="hljs-keyword">if</span> ((mapped = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, sb.st_size, PROT_READ | PROT_WRITE,<br>                              MAP_SHARED, fd, <span class="hljs-number">0</span>)) == (<span class="hljs-type">void</span>*)<span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;mmap&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/* 映射完后, 关闭文件也可以操纵内存 */</span><br>    close(fd);<br><br>    <span class="hljs-comment">/* 修改一个字符 */</span><br>    mapped[<span class="hljs-number">20</span>] = <span class="hljs-string">&#x27;9&#x27;</span>;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>B 程序修改了文件，因为是共享的，所以会被同步到磁盘中，又因为 A 也是共享的映射，所以内存文件就会被影响到：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">./a data.txt<br>aaaaaaaaa<br>bbbbbbbbb<br>cccccccccccc<br>dddddd<br>aaaaaaaaa		&lt;--- B程序启动<br>bbbbbbbbb<br>hccccccccccc<br>...<br></code></pre></td></tr></table></figure>
+
+<h2 id="三、进程间通信"><a href="#三、进程间通信" class="headerlink" title="三、进程间通信"></a>三、进程间通信</h2><p>还可以映射一个匿名文件，它的文件描述符为-1，通过这样的方法来通信：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BUF_SIZE 100</span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span>* p_map;<br>    <span class="hljs-comment">/* 匿名映射,创建一块内存供父子进程通信 */</span><br>    p_map = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, BUF_SIZE, PROT_READ | PROT_WRITE,<br>                        MAP_SHARED | MAP_ANONYMOUS, <span class="hljs-number">-1</span>, <span class="hljs-number">0</span>);<br><br>    <span class="hljs-keyword">if</span> (fork() == <span class="hljs-number">0</span>) &#123;<br>        sleep(<span class="hljs-number">1</span>);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;child got a message: %s\n&quot;</span>, p_map);<br>        <span class="hljs-built_in">sprintf</span>(p_map, <span class="hljs-string">&quot;%s&quot;</span>, <span class="hljs-string">&quot;hi, dad, this is son&quot;</span>);<br>        munmap(p_map, BUF_SIZE);  <span class="hljs-comment">// 实际上，进程终止时，会自动解除映射。</span><br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125;<br><br>    <span class="hljs-built_in">sprintf</span>(p_map, <span class="hljs-string">&quot;%s&quot;</span>, <span class="hljs-string">&quot;hi, this is father&quot;</span>);<br>    sleep(<span class="hljs-number">2</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;parent got a message: %s\n&quot;</span>, p_map);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">gcc mmapname.c -o main<br>❯ ./main<br>child got a message: hi, this is father<br>parent got a message: hi, dad, this is son<br></code></pre></td></tr></table></figure>
+
+<p>在 <code>fork()</code> 之前，匿名映射的变量等，父子进程共享。</p>
+<h2 id="四、mmap-访问范围"><a href="#四、mmap-访问范围" class="headerlink" title="四、mmap() 访问范围"></a>四、mmap() 访问范围</h2><p>对文件进行映射以后，并不是说映射了多少内存，就能随意读写多少内存。能否访问，主要看文件文件权限&amp;文件大小：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/stat.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> &#123;<br>    <span class="hljs-type">int</span> fd, i;<br>    <span class="hljs-type">int</span> pagesize, offset;<br>    <span class="hljs-type">char</span>* p_map;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">sb</span>;</span><br><br>    <span class="hljs-comment">/* 取得page size */</span><br>    pagesize = sysconf(_SC_PAGESIZE);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;pagesize is %d\n&quot;</span>, pagesize);<br><br>    <span class="hljs-comment">/* 打开文件 */</span><br>    fd = open(argv[<span class="hljs-number">1</span>], O_RDWR, <span class="hljs-number">00777</span>);<br>    fstat(fd, &amp;sb);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;file size is %zd\n&quot;</span>, (<span class="hljs-type">size_t</span>)sb.st_size);<br><br>    offset = <span class="hljs-number">0</span>;<br>    p_map = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, pagesize * <span class="hljs-number">2</span>, PROT_READ | PROT_WRITE, MAP_SHARED,<br>                        fd, offset);<br>    close(fd);<br><br>    p_map[sb.st_size<span class="hljs-number">-1</span>] = <span class="hljs-string">&#x27;9&#x27;</span>;<br>    msync((<span class="hljs-type">void</span>*)p_map, sb.st_size, MS_SYNC);<br><br>    munmap(p_map, pagesize * <span class="hljs-number">2</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">aaaaaaaaaaaaaaa<br>aaaaaaaaaaaaaaa<br>aaaaaaaaaaaaaaa<br>aaaaaaaaaaaaaa9<br></code></pre></td></tr></table></figure>
+
+<p>可以看到成功得将最后一个字符修改为了 ‘9’。但是如果我们修改超过文件范围的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/stat.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> &#123;<br>    <span class="hljs-type">int</span> fd, i;<br>    <span class="hljs-type">int</span> pagesize, offset;<br>    <span class="hljs-type">char</span>* p_map;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">sb</span>;</span><br><br>    <span class="hljs-comment">/* 取得page size */</span><br>    pagesize = sysconf(_SC_PAGESIZE);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;pagesize is %d\n&quot;</span>, pagesize);<br><br>    <span class="hljs-comment">/* 打开文件 */</span><br>    fd = open(argv[<span class="hljs-number">1</span>], O_RDWR, <span class="hljs-number">00777</span>);<br>    fstat(fd, &amp;sb);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;file size is %zd\n&quot;</span>, (<span class="hljs-type">size_t</span>)sb.st_size);<br><br>    offset = <span class="hljs-number">0</span>;<br>    p_map = (<span class="hljs-type">char</span>*)mmap(<span class="hljs-literal">NULL</span>, pagesize * <span class="hljs-number">2</span>, PROT_READ | PROT_WRITE, MAP_SHARED,<br>                        fd, offset);<br>    close(fd);<br><br>    p_map[sb.st_size] = <span class="hljs-string">&#x27;9&#x27;</span>;  <span class="hljs-comment">// 没有意义，覆盖不上</span><br>    p_map[pagesize] = <span class="hljs-string">&#x27;9&#x27;</span>;    <span class="hljs-comment">// bus error</span><br><br>    msync((<span class="hljs-type">void</span>*)p_map, sb.st_size, MS_SYNC);<br>    munmap(p_map, pagesize * <span class="hljs-number">2</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">❯ gcc mmap.c -o main<br>❯ ./main data.txt<br>pagesize is 4096<br>file size is 63<br>zsh: bus error  ./main data.txt<br></code></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="五、参考"><a href="#五、参考" class="headerlink" title="五、参考"></a>五、参考</h2><p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/whatday/article/details/89239331">这里</a>。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/Unix-Linux/" class="category-chain-item">Unix/Linux</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/" class="print-no-link">#系统调用</a>
+      
+        <a href="/tags/mmap/" class="print-no-link">#mmap</a>
+      
+        <a href="/tags/%E6%96%87%E4%BB%B6/" class="print-no-link">#文件</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>mmap() 的几种用法</div>
+      <div>http://blog.luliang.online/2024/06/12/mmap() 的几种用法/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/16/2024.06.16%20%E5%88%B7%E9%A2%98%E6%97%A5%E8%AE%B0/" title="2024.06.16 刷题日记">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">2024.06.16 刷题日记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/11/debugger%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E6%A0%88%E5%B8%A7%EF%BC%88backtrace%EF%BC%89/" title="debugger（七）：栈帧（backtrace）">
+                        <span class="hidden-mobile">debugger（七）：栈帧（backtrace）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

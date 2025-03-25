@@ -1,0 +1,875 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="What is DNSDNS (Domain Name System) is the English abbreviation of “Domain Name System”. It is a computer and network service naming system organized into a domain hierarchy. It is used in TCP&amp;#x2F">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(1) DNS Protocol Analysis Based on Wireshark at the Application Layer">
+<meta property="og:url" content="http://blog.luliang.online/2022/12/31/(1)%20DNS%20Protocol%20Analysis%20Based%20on%20Wireshark%20at%20the%20Application%20Layer/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="What is DNSDNS (Domain Name System) is the English abbreviation of “Domain Name System”. It is a computer and network service naming system organized into a domain hierarchy. It is used in TCP&amp;#x2F">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d288b338ff2f4644b59c395fc63e9c94_1720253884434.png?token=ANB4BCKJ752YW2BBC2JN25LGRD67Y">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ca97b1c38431427daa33eacc68b2da85_1720253884434.png?token=ANB4BCIVOTM77MXCUXLE7DDGRD674">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/2abc7a7358854aa4a87c5a86ae36a78e_1720253884434.png?token=ANB4BCIMFUU3DPPYVFGHHUTGRD676">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/927e70b564b647baaf2e9217a49420b5_1720253891632.png?token=ANB4BCPQBMQAK47VXQLRWJTGRD7AC">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e97d9043c82d459d95828c5fbdec49e1_1720253891632.png?token=ANB4BCKBCDFA4QB4R6P36PDGRD7AE">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7e344ad50b934b28bc5be0bbc864c94e_1720253891632.png?token=ANB4BCNPOMGKRVNGZOH35J3GRD7AO">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/b6d6c2f7f0f34b4cbed6ef8698746255_1720253891632.png?token=ANB4BCPG4DUKLNCZKAAFE2LGRD7AS">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/bb220bc7190744d09b76724ac96f405c_1720253891632.png?token=ANB4BCM26NA6T62SFHHUIITGRD7AU">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/4203da069bf44d7983a1dc80d102e399_1720253902706.png?token=ANB4BCPZYSUTMIMSBMPODEDGRD7AY">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/682ebdc7e4974464bd9565c54f640245_1720253902706.png?token=ANB4BCPL2MAOMGN3TFDZY6LGRD7A2">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d614accbbc7a4f24aad0b2a87d0dd44c_1720253902706.png?token=ANB4BCOMHYPOIGPVS3IUTZTGRD7A4">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f36b82c39ef94873b05cb5d60f7f74bd_1720253902706.png?token=ANB4BCPMRW34NFKNFIHUNUDGRD7A6">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/19b410989a644b78b173ebc733391332_1720253902706.png?token=ANB4BCLEFM5Q7Y4YY5QVRXTGRD7BC">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a7ac837b9efe4fc4b69d0c8194525165_1720253909407.png?token=ANB4BCOP2HZNSZAT6ZYCJELGRD7BE">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c3aaf18aa86b4026aeb4721202df1c3c_1720253909407.png?token=ANB4BCIAGWVTSLKCYM3F32DGRD7BI">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cb373d0ab7a04c889bcce87521147006_1720253909407.png?token=ANB4BCL24EMK7UCWLX535V3GRD7BK">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/626ecbeee6ee43ca8f02f3ce291dbf88_1720253909407.png?token=ANB4BCIH5NZUFLVNAN3KZTLGRD7BM">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/9e2dbc116a324499b3eb9f5951018e46_1720253909407.png?token=ANB4BCO44AXED7E533KSNOLGRD7BO">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/4e1a1b0212e84a399ad1c7818fb2cf5a_1720253916289.png?token=ANB4BCJYDQUGL5H4ENPW6I3GRD7BS">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/da07f9e337fe407e9820348f0f55941d_1720253916289.png?token=ANB4BCOIKZHLYW5WBDWAUUTGRD7BU">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/598e7609263844f9ad78ed0a2d5b4cc2_1720253916289.png?token=ANB4BCIGUZCJQR5C52T36CLGRD7BY">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ac78a30068db45c8a9c2141b76f36fcd_1720253916289.png?token=ANB4BCKFJ2BSYUOLHI2RJ6DGRD7B6">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/104dd84ddc6146dca0e5d7301b6fa6da_1720253916289.png?token=ANB4BCPLZRGVK6NA7QM3WNTGRD7CC">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/942e77c01402481e8a16caf33a69ec74_1720253925484.png?token=ANB4BCOIAJAGGJLCDMJ3R73GRD7CG">
+<meta property="article:published_time" content="2022-12-31T09:57:38.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.767Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="wireshark">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="服务器">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d288b338ff2f4644b59c395fc63e9c94_1720253884434.png?token=ANB4BCKJ752YW2BBC2JN25LGRD67Y">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>(1) DNS Protocol Analysis Based on Wireshark at the Application Layer - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="(1) DNS Protocol Analysis Based on Wireshark at the Application Layer"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-31 17:57" pubdate>
+          2022年12月31日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          641 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          6 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">(1) DNS Protocol Analysis Based on Wireshark at the Application Layer</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+
+<h2 id="What-is-DNS"><a href="#What-is-DNS" class="headerlink" title="What is DNS"></a>What is DNS</h2><p>DNS (Domain Name System) is the English abbreviation of “Domain Name System”. It is a computer and network service naming system organized into a domain hierarchy. It is used in TCP&#x2F;IP networks. The job of converting domain names to IP addresses.<br>When port 53 of the computer uses TCP&#x2F;UDP domain name request query, if the data packet is less than 512 bytes, UDP is used; if the returned request size is greater than 512 bytes, the two sides of the interaction will negotiate to use TCP.</p>
+<h2 id="DNS-Domain-Name-Space-Structure"><a href="#DNS-Domain-Name-Space-Structure" class="headerlink" title="DNS Domain Name Space Structure"></a>DNS Domain Name Space Structure</h2><p>The Domain Name System acts as a hierarchical and distributed database that contains various types of data, including hostnames and domain names. The names in the DNS database form a hierarchical tree structure called a domain namespace.<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d288b338ff2f4644b59c395fc63e9c94_1720253884434.png?token=ANB4BCKJ752YW2BBC2JN25LGRD67Y"></p>
+<ul>
+<li><p>Root domain: In the use of DNS domain names, it is stipulated that the trailing period ‘.’ is used to specify the domain hierarchy whose name is at the root or a higher level.</p>
+</li>
+<li><p>Top-level domain: used to indicate a country, region or organization. Use three characters, such as com -&gt; commercial companies, edu -&gt; educational institutions, net -&gt; Internet companies, gov -&gt; non-military government agencies, and so on.</p>
+</li>
+<li><p>Second-level domain: The registered name used by an individual or organization on the Internet. Use two characters, such as: cn -&gt; for China, jp -&gt; Japan, uk -&gt; United Kingdom, hk -&gt; Hong Kong and so on.</p>
+</li>
+<li><p>Host: The host name is at the bottom of the domain name space structure. The combination of the host name and the domain name constitutes the FQDN, and the host name is the leftmost part of the FQDN. For example, FQDN: (Fully Qualified Domain Name) fully qualified domain name: a name with both a host name and a domain name. (via the symbol “.”) For example: the host name is “bigserver”, the domain name is “mycompany.com”, then the FQDN is “bigserver.mycompany.com”.</p>
+</li>
+</ul>
+<h2 id="Three-DNS-Acquisition-Process"><a href="#Three-DNS-Acquisition-Process" class="headerlink" title="Three DNS Acquisition Process"></a>Three DNS Acquisition Process</h2><p>DNS is an application layer protocol. In fact, it also works for other application layer protocols, including but not limited to HTTP, SMTP and FTP, and is used to resolve the hostname provided by the user into an IP address.</p>
+<p>The specific process is as follows:</p>
+<ol>
+<li><p>The DNS client is running on the user host, that is, our PC or mobile client is running the DNS client.</p>
+</li>
+<li><p>The browser extracts the domain name field from the received url, which is the accessed host name, such as <a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com/</a>, and transmits the host name to the client of the DNS application.</p>
+</li>
+<li><p>The DNS client sends a query message to the DNS server, which contains the field of the host name to be accessed (including some column cache queries and the work of the distributed DNS cluster).</p>
+</li>
+<li><p>The DNS client will finally receive a reply message, which contains the IP address corresponding to the host name.</p>
+</li>
+<li><p>Once the browser receives the IP address from the DNS, it can initiate a TCP connection to the HTTP server located by the IP address.</p>
+</li>
+</ol>
+<h2 id="DNS-Service-Architecture"><a href="#DNS-Service-Architecture" class="headerlink" title="DNS Service Architecture"></a>DNS Service Architecture</h2><p>The role of the DNS service: resolve the domain name to an IP address, and resolve the IP address to a domain name.</p>
+<p>Assume that some applications (such as web browsers or mail readers) running on the user’s host need to convert the host name to an IP address. These applications will call the client side of DNS and specify the hostnames that need to be translated. (On many UNIX-based machines, the application needs to call the function gethostbyname() in order to perform this conversion). After receiving the DNS client of the user host, it sends a DNS query message to the network. The UDP datagrams used by all DNS request and answer messages are sent through port 53. After a delay of several ms to several s, the DNS client on the user host receives a DNS answer message that provides the desired mapping. The result of this query is passed to the application calling DNS. Therefore, from the perspective of invoking applications on the user’s host, DNS is a black box that provides simple and direct conversion services. But in fact, the black box that implements this service is very complex. It consists of a large number of DNS servers distributed around the world and an application layer protocol that defines the communication method between DNS servers and query hosts.</p>
+<h2 id="DNS-Adopts-Distributed-Cluster-Work-Mode"><a href="#DNS-Adopts-Distributed-Cluster-Work-Mode" class="headerlink" title="DNS Adopts Distributed Cluster Work Mode"></a>DNS Adopts Distributed Cluster Work Mode</h2><p>A simple design pattern of DNS is to use only one DNS server on the Internet, which contains all the mappings. In this centralized design, the client directly sends all query requests to a single DNS server, and the DNS servers respond directly to all querying clients. As tempting as this design approach is, it doesn’t work with the current Internet. Because today’s Internet has a huge and growing number of hosts, this centralized design has problems with single point of failure, communication capacity, long-distance time delay, and high maintenance overhead.</p>
+<p>DNS servers are generally divided into three types, root DNS servers, top-level DNS servers, and authoritative DNS servers.</p>
+<h2 id="DNS-Working-Process"><a href="#DNS-Working-Process" class="headerlink" title="DNS Working Process"></a>DNS Working Process</h2><p>When a DNS client needs to look up a name used in a program, it queries a local DNS server to resolve the name. Each query message sent by the client includes 3 pieces of information to specify the question the server should answer.</p>
+<ul>
+<li><p>The specified DNS domain name, expressed as a Fully Qualified Domain Name (FQDN).</p>
+</li>
+<li><p>The specified query type, which can specify a resource record by type, or as a specialized type of query operation.</p>
+</li>
+<li><p>The specified category of DNS domain names.</p>
+</li>
+</ul>
+<p>For DNS servers, it should always be specified as the Internet category. For example, the specified name can be a computer’s fully qualified domain name, such as im.qq.com, and the specified query type is used to search for address resource records by this name.</p>
+<p>DNS queries are resolved in a variety of different ways. Clients can also sometimes answer queries in-place by using cached information obtained from previous queries. A DNS server can answer queries using its own cache of resource record information, or it can query or contact other DNS servers on behalf of the requesting client to fully resolve the name, and then return an answer to the client. This process is called recursion.</p>
+<p>Alternatively, the client itself may try to contact other DNS servers to resolve the name. If the client does this, it uses independent and additional queries based on the server’s answers. This process is called iteration, that is, interactive queries between DNS servers are iterative queries.</p>
+<p>The DNS query process is as follows:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ca97b1c38431427daa33eacc68b2da85_1720253884434.png?token=ANB4BCIVOTM77MXCUXLE7DDGRD674" alt="在这里插入图片描述"></p>
+<ol>
+<li><p>Enter the <a target="_blank" rel="noopener" href="http://www.qq.com/">www.qq.com</a> domain name in the browser, and the operating system will first check whether its local hosts file has this URL mapping relationship. If so, it will first call this IP address mapping to complete domain name resolution.</p>
+</li>
+<li><p>If there is no mapping of this domain name in hosts, search the cache of the local DNS resolver to see if there is a mapping relationship of this URL. If so, return directly to complete the domain name resolution.</p>
+</li>
+<li><p>If there is no corresponding URL mapping relationship between hosts and the local DNS resolver cache, it will first find the preferred DNS server set in the TCP&#x2F;IP parameters. Here we call it the local DNS server. When this server receives a query, if you want to The queried domain name is included in the local configuration area resources, and the resolution result is returned to the client to complete the domain name resolution, which is authoritative.</p>
+</li>
+<li><p>If the domain name to be queried is not resolved by the local DNS server area, but the server has cached the URL mapping relationship, then call this IP address mapping to complete the domain name resolution, which is not authoritative.</p>
+</li>
+<li><p>If the local zone file and cache resolution of the local DNS server are invalid, then query according to the settings of the local DNS server (whether to set a forwarder). If the forwarding mode is not used, the local DNS will send the request to 13 root DNS, the root After receiving the request, the DNS server will determine who is authorized to manage the domain name (.com), and will return an IP responsible for the top-level domain name server. After the local DNS server receives the IP information, it will contact the server responsible for the .com domain. After the server responsible for the .com domain receives the request, if it cannot resolve it, it will find a lower-level DNS server address (<a target="_blank" rel="noopener" href="http://qq.com/">http://qq.com</a>) that manages the .com domain to the local DNS server. When the local DNS server receives this address, it will look for the <a target="_blank" rel="noopener" href="http://qq.com/">http://qq.com</a> domain server, repeat the above actions, and query until it finds the <a target="_blank" rel="noopener" href="http://www.qq.com/">www.qq.com</a> host.</p>
+</li>
+<li><p>If the forwarding mode is used, the DNS server will forward the request to the upper-level DNS server, and the upper-level server will analyze it. If the upper-level server cannot resolve it, it will either find the root DNS or forward the request to the upper-level , and cycle through it. Regardless of whether the local DNS server uses forwarding or root hints, the result is finally returned to the local DNS server, and the DNS server then returns to the client.</p>
+</li>
+</ol>
+<p>From the client to the local DNS server is a recursive query, and the interactive query between DNS servers is an iterative query.</p>
+<h2 id="DNS-Message-Format"><a href="#DNS-Message-Format" class="headerlink" title="DNS Message Format"></a>DNS Message Format</h2><p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/2abc7a7358854aa4a87c5a86ae36a78e_1720253884434.png?token=ANB4BCIMFUU3DPPYVFGHHUTGRD676" alt="在这里插入图片描述"></p>
+<ul>
+<li>16-bit identifier: Mark a bunch of DNS queries and responses to distinguish which DNS response corresponds to which DNS query response</li>
+<li>16 flag bits:<br>  <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/927e70b564b647baaf2e9217a49420b5_1720253891632.png?token=ANB4BCPQBMQAK47VXQLRWJTGRD7AC" alt="在这里插入图片描述"><blockquote>
+<ul>
+<li>a. QR: query&#x2F;response flag, 0 means this is a query message, 1 means a response message</li>
+<li>b. opcode: Define the type of query&#x2F;response, 0 means standard query, 1 means reverse query (obtain host domain name from IP address), 2 means request server status</li>
+<li>c. AA: Authorization response flag, only used by the response message. 1 indicates that the DNS service provider is an authorized server</li>
+<li>d. TC: Truncation flag, only used by response messages. Because UDP datagrams are limited in length, DNS packets that are too long will be truncated. For 1, the DNS message exceeds 512 bytes and is truncated</li>
+<li>e. RD: Recursive query flag, 1 table performs recursive query: if the target DNS server cannot resolve a certain host name, it will continue to query other DNS servers, so recursively, until the result is obtained and returned to the client; 0 Indicates iterative query: If the target DNS server cannot resolve a certain host name, it will return the IP addresses of other DNS servers it knows to the client, and let the client decide whether to continue sending requests to other DNSs.</li>
+<li>f. RA: Allow recursion flag, only used by response message. 1 indicates that DNS supports server recursive query</li>
+<li>g. ZERO: These 3 bits are unused and must be set to 0</li>
+<li>h. rcode: 4-digit return code, indicating the response status. 0 means no error, 3 means the domain name does not exist</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>For inquiries:</p>
+<ul>
+<li><p>16-digit number of questions: generally includes a query question</p>
+</li>
+<li><p>The number of 16-bit response resources, the number of 16-bit authorized resource records, and the data of 16-bit additional resource records: at least 1 in the query report;</p>
+</li>
+</ul>
+<p>For acknowledgments:</p>
+<ul>
+<li><p>the number of response resource records for the response message: at least 1,</p>
+</li>
+<li><p>Authorized resource, additional resource record data: can be 0 or non-0</p>
+</li>
+</ul>
+<p>The query question format is:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e97d9043c82d459d95828c5fbdec49e1_1720253891632.png?token=ANB4BCKBCDFA4QB4R6P36PDGRD7AE" alt="在这里插入图片描述"><br>The query name encapsulates the host name to be queried in a certain format, and how to perform query operations in the query type table:</p>
+<blockquote>
+<ul>
+<li>a. Type A, the value is 1: the table obtains the IP address of the destination host</li>
+<li>b. Type CNAME, the value is 5: the table gets the alias of the target host</li>
+<li>c. Type PTR, value 12, table reverse query (obtain domain name by IP address)</li>
+<li>d. The query type is generally 1, and the table obtains the IP address.</li>
+</ul>
+</blockquote>
+<p>Response, authorization, and additional information fields all use the Resource Record (RR) format:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7e344ad50b934b28bc5be0bbc864c94e_1720253891632.png?token=ANB4BCNPOMGKRVNGZOH35J3GRD7AO" alt="在这里插入图片描述"></p>
+<blockquote>
+<ul>
+<li>domain name, type, class: the name corresponding to the resource, the format is the same as that of the query question</li>
+<li>Survival time: how long the record result of the query can be cached by the local client, the unit is S</li>
+<li>resource data length, resource data: depends on the type field. For type A, the resource data is a 32-bit IPv4 address, and the resource data length is 4 bytes</li>
+</ul>
+</blockquote>
+<h2 id="Wireshark-Capture-Packets"><a href="#Wireshark-Capture-Packets" class="headerlink" title="Wireshark Capture Packets"></a>Wireshark Capture Packets</h2><p>WireShark is mainly divided into these interfaces:</p>
+<ul>
+<li><p>Display Filter (display filter), used to set filter conditions for packet list filtering. Menu path: Analyze –&gt; Display Filters.<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/b6d6c2f7f0f34b4cbed6ef8698746255_1720253891632.png?token=ANB4BCPG4DUKLNCZKAAFE2LGRD7AS" alt="在这里插入图片描述"></p>
+</li>
+<li><p>Packet List Pane (data packet list), display the captured data packets, each data packet contains number, time stamp, source address, destination address, protocol, length, and data packet information. Packets of different protocols are displayed in different colors.<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/bb220bc7190744d09b76724ac96f405c_1720253891632.png?token=ANB4BCM26NA6T62SFHHUIITGRD7AU" alt="在这里插入图片描述"></p>
+</li>
+<li><p>Packet Details Pane (packet details), select the specified packet in the packet list, and all the detailed information of the packet will be displayed in the packet details. The packet details panel is the most important, used to view every field in the protocol. The lines of information are:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/4203da069bf44d7983a1dc80d102e399_1720253902706.png?token=ANB4BCPZYSUTMIMSBMPODEDGRD7AY" alt="在这里插入图片描述"></p>
+</li>
+</ul>
+<p>(1) Frame: Overview of data frames at the physical layer<br>(2) Ethernet II: Data link layer Ethernet frame header information<br>(3) Internet Protocol Version 4: Internet layer IP packet header information<br>(4) User Datagram Protocol: The data segment header information of the transport layer T, here is UDP<br>(5) Domain Name System: Application layer information, here is DNS</p>
+<h3 id="Grab-the-DPU-of-DNS-first"><a href="#Grab-the-DPU-of-DNS-first" class="headerlink" title="Grab the DPU of DNS first"></a>Grab the DPU of DNS first</h3><p>Since DNS uses port 53 of the computer, we directly write <code>udp port 53</code> in the filter:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/682ebdc7e4974464bd9565c54f640245_1720253902706.png?token=ANB4BCPL2MAOMGN3TFDZY6LGRD7A2" alt="在这里插入图片描述"><br>Then we start crawling:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d614accbbc7a4f24aad0b2a87d0dd44c_1720253902706.png?token=ANB4BCOMHYPOIGPVS3IUTZTGRD7A4" alt="在这里插入图片描述"><br>But we didn’t get any results, because our computer doesn’t have any DNS requests, so let’s try typing <code>baidu.com</code> in the browser:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f36b82c39ef94873b05cb5d60f7f74bd_1720253902706.png?token=ANB4BCPMRW34NFKNFIHUNUDGRD7A6" alt="在这里插入图片描述"><br>It can be found that there is still no result. This is because the local address has been cached. If there is no mapping of this domain name in hosts, then search the local DNS resolver cache to see if there is such a URL mapping relationship. If so, return directly and complete DNS. So we should enter an unfamiliar address, such as <code>www.nihao.com</code>:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/19b410989a644b78b173ebc733391332_1720253902706.png?token=ANB4BCLEFM5Q7Y4YY5QVRXTGRD7BC" alt="在这里插入图片描述"><br>At this time, two crawling results were obtained in an instant.<br>Here is the first result:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a7ac837b9efe4fc4b69d0c8194525165_1720253909407.png?token=ANB4BCOP2HZNSZAT6ZYCJELGRD7BE" alt="在这里插入图片描述"><br>We only look at the DNS protocol:</p>
+<h3 id="Query"><a href="#Query" class="headerlink" title="Query:"></a>Query:</h3><p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c3aaf18aa86b4026aeb4721202df1c3c_1720253909407.png?token=ANB4BCIAGWVTSLKCYM3F32DGRD7BI" alt="在这里插入图片描述"></p>
+<ul>
+<li><p><code>Transaction ID: 0x4a57</code> indicates that the request is <code>0x4a57</code> whose ID is 16 bits;<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cb373d0ab7a04c889bcce87521147006_1720253909407.png?token=ANB4BCL24EMK7UCWLX535V3GRD7BK" alt="在这里插入图片描述"></p>
+</li>
+<li><p>For 16-bit Flags: QR is 0, indicating that it is a query; opcode is 0, indicating that it is a standard query; AA is missing because it is only used for response (response); TC is 0, indicating that it is not truncated; RD 1, indicating that a recursive query is to be performed; RA is missing because it is only used for responses.</p>
+</li>
+<li><p>For four-digit rcode (range 0-15):</p>
+<blockquote>
+<p>-0 No errors.</p>
+<ul>
+<li>1 Format error - The server cannot understand the requested message.</li>
+<li>2 Server failure (Server failure) - The request cannot be processed because of the server.</li>
+<li>3 Name Error - only meaningful to authoritative domain name resolution servers, indicating that the resolved domain name does not exist.</li>
+<li>4 Not Implemented - The name server does not support the query type.</li>
+<li>5 Refused (Refused) - The server refused to respond due to the set policy. For example, the server does not want to respond to some requesters, or the server does not want to perform certain operations (such as zone transfer).</li>
+<li>6-15 Reserved, not used yet.</li>
+</ul>
+</blockquote>
+</li>
+<li><p>Questions and Answers:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/626ecbeee6ee43ca8f02f3ce291dbf88_1720253909407.png?token=ANB4BCIH5NZUFLVNAN3KZTLGRD7BM"></p>
+<blockquote>
+<ul>
+<li>Questions (Questions): Unsigned 16-bit integer indicates the number of question records in the message request segment.</li>
+<li>Number of resource records (Answer RRs): An unsigned 16-bit integer indicates the number of answer records in the answer section of the message.</li>
+<li>Number of Authorization Resource Records (Authority RRs): The unsigned 16-bit integer indicates the number of authorization records in the authorization section of the message.</li>
+<li>Number of additional resource records (Additional RRs): An unsigned 16-bit integer indicating the number of additional records in the additional segment of the message.</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/9e2dbc116a324499b3eb9f5951018e46_1720253909407.png?token=ANB4BCO44AXED7E533KSNOLGRD7BO" alt="在这里插入图片描述"><br>The crawl results show that there is 1 question record, 0 answer records, 0 authorization records, and 0 additional records.</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/4e1a1b0212e84a399ad1c7818fb2cf5a_1720253916289.png?token=ANB4BCJYDQUGL5H4ENPW6I3GRD7BS" alt="在这里插入图片描述"></p>
+<blockquote>
+<ul>
+<li>The query name is: time.apple.com, which is a FQDN</li>
+<li>The type is A, indicating that the corresponding IP address is obtained from the domain name</li>
+<li>class IN, the query class is 1, and the table obtains the IP address (The CLASS of a record is set to IN (for Internet) for common DNS records involving Internet hostnames, servers, or IP addresses. In addition, the classes Chaos (CH) and Hesiod (HS) exist.[34] Each class is an independent name space with potentially different delegations of DNS zones.)<br>  IN 1 the Internet<br>  CS 2 the CSNET class (Obsolete - used only for examples in some obsolete RFCs)<br>  CH 3 the CHAOS class<br>  HS 4 Hesiod [Dyer 87]</li>
+<li>and word length (“time.apple.com”) is 14, Lable Count is 3.</li>
+</ul>
+</blockquote>
+<h3 id="Response"><a href="#Response" class="headerlink" title="Response"></a>Response</h3><p>  We can see that this response belongs to query because they have the same Transaction ID (0x4a57).</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/da07f9e337fe407e9820348f0f55941d_1720253916289.png?token=ANB4BCOIKZHLYW5WBDWAUUTGRD7BU" alt="在这里插入图片描述"></p>
+<p>It can also be seen that this time it has AA, rcode; and a status of Answer RRs &#x3D; 3, indicating that three answers have been obtained.<br>Let’s look at Answer again:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/598e7609263844f9ad78ed0a2d5b4cc2_1720253916289.png?token=ANB4BCIGUZCJQR5C52T36CLGRD7BY" alt="在这里插入图片描述"><br>We got a total of three results:</p>
+<ul>
+<li>17.253.116.253</li>
+<li>17.253.114.253</li>
+<li>17.253.114.125</li>
+</ul>
+<p>According to the DNS protocol, we know that these three addresses should all point to “time.apple.com”, let’s check it!<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ac78a30068db45c8a9c2141b76f36fcd_1720253916289.png?token=ANB4BCKFJ2BSYUOLHI2RJ6DGRD7B6" alt="17.253.116.253"></p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/104dd84ddc6146dca0e5d7301b6fa6da_1720253916289.png?token=ANB4BCPLZRGVK6NA7QM3WNTGRD7CC" alt="17.253.114.253"></p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/942e77c01402481e8a16caf33a69ec74_1720253925484.png?token=ANB4BCOIAJAGGJLCDMJ3R73GRD7CG" alt="17.253.114.125"></p>
+<p>It can be seen that it is indeed so.</p>
+<p>But: <strong>Why does the DNS response message captured by Wireshark provide multiple “Answers”?</strong><br><strong>The answer is for load balancing.</strong> DNS provides domain name resolution service. When accessing a site, it is first necessary to provide a DNS server to obtain the IP address corresponding to the domain name. During this process, the DNS server completes the mapping from the domain name to the IP address. Similarly, this mapping can also be One-to-many. That is, the DNS server can calculate and return many IP addresses according to the records and load balancing algorithm, and let the client choose a connection by itself.</p>
+<p><em>This text is over, thank you for reading.</em></p>
+<p><strong>Links for reference:</strong><br><em>1:<a target="_blank" rel="noopener" href="https://www.cnblogs.com/longlyseul/p/16251432.html">https://www.cnblogs.com/longlyseul/p/16251432.html</a><br>2:<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45946755/article/details/105301541">https://blog.csdn.net/qq_45946755/article/details/105301541</a><br>3:<a target="_blank" rel="noopener" href="https://nordvpn.com/zh/ip-lookup/">https://nordvpn.com/zh/ip-lookup/</a><br>4:<a target="_blank" rel="noopener" href="https://www.mdnice.com/writing/cf64bb84044447bfa438f76c669f3ee2">https://www.mdnice.com/writing/cf64bb84044447bfa438f76c669f3ee2</a><br>5:<a target="_blank" rel="noopener" href="http://jaminzhang.github.io/dns/DNS-Message-Format/">http://jaminzhang.github.io/dns/DNS-Message-Format/</a><br>6:<a target="_blank" rel="noopener" href="https://www.cnblogs.com/bonelee/p/12326832.html">https://www.cnblogs.com/bonelee/p/12326832.html</a><br>7:<a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/102237.html">https://help.aliyun.com/document_detail/102237.html</a><br>8:<a target="_blank" rel="noopener" href="https://blog.csdn.net/JXH_123/article/details/26055215">https://blog.csdn.net/JXH_123/article/details/26055215</a><br>9:<a target="_blank" rel="noopener" href="https://www.freebuf.com/sectool/256745.html">https://www.freebuf.com/sectool/256745.html</a><br>10:<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/60016607/what-is-in-in-dns-records">https://stackoverflow.com/questions/60016607/what-is-in-in-dns-records</a></em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NetWork/" class="category-chain-item">NetWork</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/wireshark/" class="print-no-link">#wireshark</a>
+      
+        <a href="/tags/%E7%BD%91%E7%BB%9C/" class="print-no-link">#网络</a>
+      
+        <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="print-no-link">#服务器</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>(1) DNS Protocol Analysis Based on Wireshark at the Application Layer</div>
+      <div>http://blog.luliang.online/2022/12/31/(1) DNS Protocol Analysis Based on Wireshark at the Application Layer/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月31日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01/01/%5BProject%201%5DDesign%20a%20Dynamic%20Expansion%20Buffer%20(strbuf)%20with%20C%20Language/" title="Design a Dynamic Expansion Buffer (strbuf) with C Language">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Design a Dynamic Expansion Buffer (strbuf) with C Language</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/28/Start%20to%20write%20a%20simple%20Linux%20kernel%20Module/" title="Start to write a simple Linux kernel Module">
+                        <span class="hidden-mobile">Start to write a simple Linux kernel Module</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

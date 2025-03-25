@@ -1,0 +1,734 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="什么是 Chisel 中的 BlackBox？在硬件设计中，BlackBox 是一种用于集成外部硬件模块的方法。在 Chisel 中，BlackBox 允许设计者将已经存在的硬件描述（如 Verilog 或 SystemVerilog 编写的模块）引入到 Chisel 项目中，而无需用 Chisel 重新实现这些模块。这种方法特别适用于以下情况：  重用现有模块：你可能已经有一些经过验证的 V">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chisel 中的 BlackBox 机制">
+<meta property="og:url" content="http://blog.luliang.online/2024/09/24/Chisel_BlackBox/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="什么是 Chisel 中的 BlackBox？在硬件设计中，BlackBox 是一种用于集成外部硬件模块的方法。在 Chisel 中，BlackBox 允许设计者将已经存在的硬件描述（如 Verilog 或 SystemVerilog 编写的模块）引入到 Chisel 项目中，而无需用 Chisel 重新实现这些模块。这种方法特别适用于以下情况：  重用现有模块：你可能已经有一些经过验证的 V">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-24T10:20:40.000Z">
+<meta property="article:modified_time" content="2024-09-24T14:44:51.890Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="Chisel">
+<meta property="article:tag" content="DPI-C">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Chisel 中的 BlackBox 机制 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Chisel 中的 BlackBox 机制"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-24 18:20" pubdate>
+          2024年9月24日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Chisel 中的 BlackBox 机制</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h3 id="什么是-Chisel-中的-BlackBox？"><a href="#什么是-Chisel-中的-BlackBox？" class="headerlink" title="什么是 Chisel 中的 BlackBox？"></a>什么是 Chisel 中的 BlackBox？</h3><p>在硬件设计中，<strong>BlackBox</strong> 是一种用于集成外部硬件模块的方法。在 Chisel 中，BlackBox 允许设计者将已经存在的硬件描述（如 Verilog 或 SystemVerilog 编写的模块）引入到 Chisel 项目中，而无需用 Chisel 重新实现这些模块。这种方法特别适用于以下情况：</p>
+<ol>
+<li><strong>重用现有模块</strong>：你可能已经有一些经过验证的 Verilog&#x2F;SystemVerilog 模块，希望在新的 Chisel 项目中重用它们。</li>
+<li><strong>使用第三方 IP 核</strong>：许多硬件设计中会使用第三方提供的知识产权（IP）核，如处理器核心、存储控制器等。</li>
+<li><strong>集成特定功能</strong>：某些功能可能需要用特定语言或工具实现，BlackBox 提供了一个桥梁，将这些功能集成到 Chisel 项目中。</li>
+</ol>
+<h3 id="为什么使用-BlackBox？"><a href="#为什么使用-BlackBox？" class="headerlink" title="为什么使用 BlackBox？"></a>为什么使用 BlackBox？</h3><p>Chisel 是一个基于 Scala 的硬件描述语言，它提供了强大的抽象能力和灵活性。然而，在某些情况下，使用 Chisel 重新实现所有模块可能既费时又不实际。BlackBox 允许你在 Chisel 项目中无缝集成其他语言（如 Verilog&#x2F;SystemVerilog）编写的模块，从而结合了 Chisel 的高层次抽象和传统硬件描述语言的广泛支持。</p>
+<h3 id="如何在-Chisel-中使用-BlackBox？"><a href="#如何在-Chisel-中使用-BlackBox？" class="headerlink" title="如何在 Chisel 中使用 BlackBox？"></a>如何在 Chisel 中使用 BlackBox？</h3><p>以下是使用 BlackBox 的基本步骤：</p>
+<ol>
+<li><strong>定义 BlackBox 类</strong>：在 Chisel 中创建一个继承自 <code>BlackBox</code> 的类，定义其输入和输出端口。</li>
+<li><strong>实例化 BlackBox</strong>：在你的 Chisel 模块中实例化 BlackBox 并连接相应的信号。</li>
+<li><strong>生成 Verilog</strong>：使用 Chisel 的工具生成最终的 Verilog 文件，确保外部模块被正确引用。</li>
+</ol>
+<h3 id="详细步骤解析"><a href="#详细步骤解析" class="headerlink" title="详细步骤解析"></a>详细步骤解析</h3><h4 id="0-定义-BlackBox"><a href="#0-定义-BlackBox" class="headerlink" title="0. 定义 BlackBox"></a>0. 定义 BlackBox</h4><p>这里需要注意的是，这个黑盒子使用 Verilog 实现的，它 将会在里面做一些 Chisel 做不到的事情，比如DPI-C 机制。因此我们要利用这个黑科技，让它在 Chisel 中发挥作用。</p>
+<p>假设我们的黑盒子长这个样子（<code>./aaa/MyBlackBox.sv</code>）：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs Verilog"><span class="hljs-keyword">module</span> MyBlackBox(<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span>        clock,<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span>        reset,<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] input1,<br>    <span class="hljs-keyword">output</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] output1<br>);<br>    <span class="hljs-keyword">import</span> <span class="hljs-string">&quot;DPI-C&quot;</span> <span class="hljs-keyword">function</span> <span class="hljs-keyword">void</span> call_c_function(<br>        <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] input1,<br>        <span class="hljs-keyword">output</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] output1<br>    );<br><br>    <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] temp_output1;<br><br>    <span class="hljs-keyword">always_ff</span> @(<span class="hljs-keyword">posedge</span> clock <span class="hljs-keyword">or</span> <span class="hljs-keyword">posedge</span> reset) <span class="hljs-keyword">begin</span><br>        <span class="hljs-keyword">if</span> (reset) <span class="hljs-keyword">begin</span><br>            output1 &lt;= <span class="hljs-number">32&#x27;b0</span>;<br>        <span class="hljs-keyword">end</span> <span class="hljs-keyword">else</span> <span class="hljs-keyword">begin</span><br>            call_c_function(input1, temp_output1);<br>            output1 &lt;= temp_output1;<br>        <span class="hljs-keyword">end</span><br>    <span class="hljs-keyword">end</span><br><span class="hljs-keyword">endmodule</span><br><br><br></code></pre></td></tr></table></figure>
+
+<p>这样黑盒子就定义完成了，接下来就是把它接入到 Chisel 中。</p>
+<h4 id="1-定义-BlackBox-类（包装器）-MyBlackBox-scala"><a href="#1-定义-BlackBox-类（包装器）-MyBlackBox-scala" class="headerlink" title="1. 定义 BlackBox 类（包装器） (./MyBlackBox.scala)"></a>1. 定义 BlackBox 类（包装器） (<code>./MyBlackBox.scala</code>)</h4><p>这个类是用来包装黑盒子的，给它包装一下，这样就能在 Chisel 中使用了。注意包装的时候，一定要将这里的引脚名字、类型、数量等严格与被包装的黑盒子相同，不然会在编译（verilater）的时候报错。比如你不能在黑盒子中定义<code>input1</code>，又在包装器（Wrapper）中定义<code>input2</code>。</p>
+<p>这里再插一嘴，这里的这个<code>包装器</code>（我起的名字）是一个特殊的类，它扩展于 BlackBox，因此它不需要连线就可以编译到 <code>hdl</code> 成功。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> chisel3._<br><span class="hljs-keyword">import</span> chisel3.util._<br><span class="hljs-keyword">import</span> chisel3.experimental._<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyBlackBox</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BlackBox</span> <span class="hljs-keyword">with</span> <span class="hljs-title">HasBlackBoxPath</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> io = <span class="hljs-type">IO</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">Bundle</span> &#123;<br>    <span class="hljs-keyword">val</span> clock = <span class="hljs-type">Input</span>(<span class="hljs-type">Clock</span>())<br>    <span class="hljs-keyword">val</span> reset = <span class="hljs-type">Input</span>(<span class="hljs-type">Bool</span>())<br>    <span class="hljs-keyword">val</span> input1 = <span class="hljs-type">Input</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>    <span class="hljs-keyword">val</span> output1 = <span class="hljs-type">Output</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>  &#125;)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>extends BlackBox</code>**：这表示 <code>MyBlackBox</code> 是一个黑盒模块，不在 Chisel 代码中实现其具体逻辑。</li>
+<li>**<code>with HasBlackBoxPath</code>**：这允许你指定 BlackBox 的文件路径，Chisel 在生成 Verilog 时会知道去哪里找到相应的外部模块。</li>
+<li>**<code>val io = IO(new Bundle &#123; ... &#125;)</code>**：定义了 BlackBox 的输入和输出端口，这些端口需要与外部模块（如 <code>MyBlackBox.sv</code>）的端口相匹配。</li>
+</ul>
+<h4 id="2-实例化-BlackBox-MyModule-scala"><a href="#2-实例化-BlackBox-MyModule-scala" class="headerlink" title="2. 实例化 BlackBox (./MyModule.scala)"></a>2. 实例化 BlackBox (<code>./MyModule.scala</code>)</h4><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> chisel3._<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Module</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> io = <span class="hljs-type">IO</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">Bundle</span> &#123;<br>    <span class="hljs-keyword">val</span> in = <span class="hljs-type">Input</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>    <span class="hljs-keyword">val</span> out = <span class="hljs-type">Output</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>  &#125;)<br><br>  <span class="hljs-comment">// 实例化 BlackBox</span><br>  <span class="hljs-keyword">val</span> blackBox = <span class="hljs-type">Module</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">MyBlackBox</span>)<br><br>  <span class="hljs-comment">// 连接信号</span><br>  blackBox.io.clock := clock<br>  blackBox.io.reset := reset<br>  blackBox.io.input1 := io.in<br>  io.out := blackBox.io.output1<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">MyModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>  (<span class="hljs-keyword">new</span> chisel3.stage.<span class="hljs-type">ChiselStage</span>).emitVerilog(<span class="hljs-keyword">new</span> <span class="hljs-type">MyModule</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>实例化 BlackBox</strong>：使用 <code>Module(new MyBlackBox)</code> 创建一个 BlackBox 实例。</li>
+<li><strong>连接信号</strong>：将 Chisel 模块的信号连接到 BlackBox 的端口。例如，将顶层模块的 <code>io.in</code> 连接到 BlackBox 的 <code>input1</code>，并将 BlackBox 的 <code>output1</code> 连接到顶层模块的 <code>io.out</code>。</li>
+</ul>
+<h4 id="3-生成-Verilog-MyModule-对象"><a href="#3-生成-Verilog-MyModule-对象" class="headerlink" title="3. 生成 Verilog (MyModule 对象)"></a>3. 生成 Verilog (<code>MyModule</code> 对象)</h4><p>运行 <code>MyModule</code> 对象的 <code>App</code> 将使用 Chisel 的 <code>ChiselStage</code> 生成最终的 Verilog 文件。生成的 Verilog 文件将包含对 <code>MyBlackBox.sv</code> 的引用，确保在综合和仿真时能够正确找到并使用外部模块。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sbt run<br></code></pre></td></tr></table></figure>
+
+<p>运行上述命令后，Chisel 会生成包含 <code>MyModule</code> 的 Verilog 文件，通常命名为 <code>MyModule.v</code>。确保在综合工具或仿真环境中将 <code>MyBlackBox.sv</code> 文件包含进去，以便正确解析 BlackBox 模块。</p>
+<h4 id="4-编译-main-cpp"><a href="#4-编译-main-cpp" class="headerlink" title="4. 编译(./main.cpp)"></a>4. 编译(<code>./main.cpp</code>)</h4><p>main.cpp:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs Cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;VMyModule.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;verilated.h&quot;</span></span><br><br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">call_c_function</span><span class="hljs-params">(<span class="hljs-type">uint32_t</span> input1, <span class="hljs-type">uint32_t</span>* output1)</span> </span>&#123;<br>    <span class="hljs-type">uint32_t</span> in_val = input1;<br>    <span class="hljs-type">uint32_t</span> out_val = in_val + <span class="hljs-number">1</span>; <span class="hljs-comment">// 示例处理</span><br>    *output1 = out_val;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;hello, this is a test func.\n&quot;</span>);<br>&#125;<br><br><span class="hljs-type">static</span> VMyModule* top = <span class="hljs-literal">NULL</span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">step</span><span class="hljs-params">()</span> </span>&#123;<br>    top-&gt;clock = <span class="hljs-number">0</span>;<br>    top-&gt;<span class="hljs-built_in">eval</span>();<br>    top-&gt;clock = <span class="hljs-number">1</span>;<br>    top-&gt;<span class="hljs-built_in">eval</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">reset</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>&#123;<br>    top-&gt;reset = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">while</span> (n--) &#123;<br>        <span class="hljs-built_in">step</span>();<br>    &#125;<br>    top-&gt;reset = <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> </span>&#123;<br>    Verilated::<span class="hljs-built_in">commandArgs</span>(argc, argv);<br>    top = <span class="hljs-keyword">new</span> VMyModule;<br><br>    <span class="hljs-built_in">reset</span>(<span class="hljs-number">1</span>);  <span class="hljs-comment">// 初始化</span><br><br>    <span class="hljs-comment">// 设置输入信号</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; ++i) &#123;<br>        top-&gt;io_in = <span class="hljs-built_in">uint32_t</span>(i); <span class="hljs-comment">// 更新输入信号</span><br>        <span class="hljs-built_in">step</span>(); <span class="hljs-comment">// 进行一步仿真</span><br><br>        <span class="hljs-comment">// 打印输出结果</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Input: %u, Output: %d\n&quot;</span>, top-&gt;io_in, top-&gt;io_out); <span class="hljs-comment">// 这里其实在打印地址</span><br>    &#125;<br><br>    <span class="hljs-keyword">delete</span> top; <span class="hljs-comment">// 释放资源</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>此时就可以编译了，但是编译要注意使用<code>-I</code> 将黑盒子连接起来，这里就不使用在包装器中重定路径的方法了，不能用，不知道为什么。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><br><span class="hljs-section">hdl:</span><br>	@sbt clean<br>	@sbt run<br><br><span class="hljs-section">build:</span><br>	bear -- verilator --cc MyModule.v --exe --build main.cpp -I/home/luyoung/Test/BlackBox/aaa<br><br><span class="hljs-section">clean:</span><br>	@rm -rf obj_dir project target<br><br><span class="hljs-section">run:</span><br>	./obj_dir/VMyModule<br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: hdl build clean</span><br><br><br></code></pre></td></tr></table></figure>
+
+<p>直接生成 hdl、编译、运行，就好了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs bash">make hdl<br>make build<br>make run<br><br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 0, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 1, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 2, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 3, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 4, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 5, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 6, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 7, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 8, Output: -609878311<br>hello, this is a <span class="hljs-built_in">test</span> func.<br>Input: 9, Output: -609878311<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="BlackBox-的使用场景"><a href="#BlackBox-的使用场景" class="headerlink" title="BlackBox 的使用场景"></a>BlackBox 的使用场景</h3><ol>
+<li><strong>集成现有模块</strong>：例如，你有一个经过验证的加密模块或通信接口模块，直接在 Chisel 项目中复用它们。</li>
+<li><strong>混合语言设计</strong>：某些模块可能用不同的语言编写，如 Verilog、SystemVerilog 或 VHDL，BlackBox 允许这些模块与 Chisel 代码协同工作。</li>
+<li><strong>第三方 IP 核</strong>：许多芯片设计中使用第三方提供的 IP 核（如存储控制器、处理器核心），通过 BlackBox 可以轻松集成这些 IP 核。</li>
+<li><strong>特定功能实现</strong>：某些功能可能需要用特定的工具或库实现，BlackBox 提供了一个桥梁，将这些功能集成到 Chisel 设计中。</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上是一个包装器包装黑盒子的最佳实践，也算是 BlackBox 的入门。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PA2/" class="category-chain-item">PA2</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PA2/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="category-chain-item">模拟器</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Chisel/" class="print-no-link">#Chisel</a>
+      
+        <a href="/tags/DPI-C/" class="print-no-link">#DPI-C</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Chisel 中的 BlackBox 机制</div>
+      <div>http://blog.luliang.online/2024/09/24/Chisel_BlackBox/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/09/25/verilator%E7%BC%96%E8%AF%91%E5%A4%9A%E4%B8%AAcpp%E6%96%87%E4%BB%B6/" title="verilator 编译多个 cpp 文件">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">verilator 编译多个 cpp 文件</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/20/YPC%E7%9A%84%E7%A0%94%E7%A9%B6/" title="YPC的研究">
+                        <span class="hidden-mobile">YPC的研究</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

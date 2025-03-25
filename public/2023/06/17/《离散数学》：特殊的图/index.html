@@ -1,0 +1,822 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言这一节会重点讨论一下一些特殊的图，这些图会解决一些特殊的问题。 一、欧拉图给定无向连通图 G，若存在一条路经过 G 中每边一次且仅一次，则该路为欧拉路。若存在一条回路经过 G 中每边一次且仅一次，则该回路称为欧拉回路。  具有欧拉路的图称为半欧拉图。 具有欧拉回路的图称为欧拉图。  1、（半）欧拉图的判定这些判定很简单，我们可以找一个欧拉图的充要条件：G的所有结点的度数都是偶数。同样，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《离散数学》：特殊的图">
+<meta property="og:url" content="http://blog.luliang.online/2023/06/17/%E3%80%8A%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6%E3%80%8B%EF%BC%9A%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言这一节会重点讨论一下一些特殊的图，这些图会解决一些特殊的问题。 一、欧拉图给定无向连通图 G，若存在一条路经过 G 中每边一次且仅一次，则该路为欧拉路。若存在一条回路经过 G 中每边一次且仅一次，则该回路称为欧拉回路。  具有欧拉路的图称为半欧拉图。 具有欧拉回路的图称为欧拉图。  1、（半）欧拉图的判定这些判定很简单，我们可以找一个欧拉图的充要条件：G的所有结点的度数都是偶数。同样，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d55bfe974cf8406c9bed4b8f5c988d79_1720253746882.png?token=ANB4BCLLCNTV7EDOMQURXCTGRD6XI">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/af8ae74992954cad9dc7204e3ec39bdb_1720253746882.png?token=ANB4BCKLM3SRN5SSRYD6YVTGRD6XK">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/637ba6d4023f4f6f95161a3d1957b27b_1720253754080.png?token=ANB4BCLR3VT7PMXO2NIDBKLGRD6XQ">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/173977e7b6fe4eb594d4e8880fbe300e_1720253754080.png?token=ANB4BCLZNWSR4Z6UUC3IZDLGRD6XS">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/4414871a83dc4ffb9aa88d2ae26cb3ef_1720253754080.png?token=ANB4BCIBHTQ4IZJRW2WIZJDGRD6XU">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/93c7c11e45bb4a7e93d40f4a3bdbdb55_1720253754080.png?token=ANB4BCO6GFXH2WCFH23KTCLGRD6XW">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f3e5c818711640e1a5cfed9b46d97799_1720253754080.png?token=ANB4BCOBXU5RYGMZ33UR2ILGRD6XY">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7b976798c551432d9b5a1aaa86e45f9c_1720253760767.png?token=ANB4BCJS3LEVKOV63FYW4Q3GRD6X2">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e883ea8546b4405cafcaa7459c0e1d4e_1720253760767.png?token=ANB4BCOV4N4OYSLKFYJWWOTGRD6X6">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/810e48b84d3b47c3aaa4a4a2f865ebef_1720253760767.png?token=ANB4BCNPE2K3VGJ35M65XUDGRD6YA">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/b463fe37eab14442b2d6dee834c680a5_1720253760767.png?token=ANB4BCLEBR73SAZJ6A3GMSLGRD6YC">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3d5df69b194d4c7fb7dc41c1048e60fd_1720253760767.png?token=ANB4BCOSP2ZFXUBYKCPUKKLGRD6YG">
+<meta property="article:published_time" content="2023-06-17T14:37:43.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.776Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="图论">
+<meta property="article:tag" content="离散数学">
+<meta property="article:tag" content="特殊的图">
+<meta property="article:tag" content="数学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d55bfe974cf8406c9bed4b8f5c988d79_1720253746882.png?token=ANB4BCLLCNTV7EDOMQURXCTGRD6XI">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>《离散数学》：特殊的图 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《离散数学》：特殊的图"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-17 22:37" pubdate>
+          2023年6月17日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《离散数学》：特殊的图</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>这一节会重点讨论一下一些<strong>特殊的图</strong>，这些图会解决一些特殊的问题。</p>
+<h2 id="一、欧拉图"><a href="#一、欧拉图" class="headerlink" title="一、欧拉图"></a>一、欧拉图</h2><p>给定无向连通图 G，若存在一条路经过 G 中每边一次且仅一次，则该路为欧拉路。若存在一条回路经过 G 中每边一次且仅一次，则该回路称为欧拉回路。</p>
+<ul>
+<li>具有欧拉路的图称为<strong>半欧拉图</strong>。</li>
+<li>具有欧拉回路的图称为<strong>欧拉图</strong>。</li>
+</ul>
+<h3 id="1、（半）欧拉图的判定"><a href="#1、（半）欧拉图的判定" class="headerlink" title="1、（半）欧拉图的判定"></a>1、（半）欧拉图的判定</h3><p>这些判定很简单，我们可以找一个<strong>欧拉图</strong>的充要条件：<strong>G的所有结点的度数都是偶数</strong>。<br>同样，我们也可以找一个<strong>半欧拉图</strong>的充要条件：<strong>连通图 G 具有一条连接顶点 u 和 v 的欧拉通路当且仅当 u 和 v 是 G 中仅有的奇数度顶点</strong>。</p>
+<h3 id="2、有向（半）欧拉图"><a href="#2、有向（半）欧拉图" class="headerlink" title="2、有向（半）欧拉图"></a>2、有向（半）欧拉图</h3><p>一个<strong>连通有向图</strong>具有（单向）<strong>欧拉回路</strong>的充要条件是<em><strong>图中每个结点的入度等于出度</strong></em>。<br> 一个<strong>连通有向图</strong>具有<strong>单向欧拉路</strong>的充要条件是<em><strong>最多除两个结点外的每个结点的入度等于出度，但在这两个结点中，一个结点的入度比出度大1，另一个结点的入度比出度少1</strong></em>。</p>
+<h3 id="3、应用欧拉回路的一个经典例子：中国邮递员问题"><a href="#3、应用欧拉回路的一个经典例子：中国邮递员问题" class="headerlink" title="3、应用欧拉回路的一个经典例子：中国邮递员问题"></a>3、应用欧拉回路的一个经典例子：中国邮递员问题</h3><p>问题是这样叙述的：邮递员从邮局出发，走遍他负责的街区投递邮件，最后回到邮局。问如何走才能使他走的路最短？<br>从图论的观点来看，该问题就是：<strong>给定一个带权无向图，其中每条边的权为非负实数，求每条边至少经过一次的最短回路</strong>。<br>这个问题是我国管梅谷教授1962年提出的，故被称为中国邮递员问题。</p>
+<p>注意：<em><strong>每条边至少走一遍，可以走多遍，只要遍历完后路程最短就是该问题的解。</strong></em></p>
+<p>邮递员负责的街区如下图所示，长度单位是百米，邮局位于 a 处。试设计邮递员的最短投递路线：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d55bfe974cf8406c9bed4b8f5c988d79_1720253746882.png?token=ANB4BCLLCNTV7EDOMQURXCTGRD6XI" alt="在这里插入图片描述"><br>解：如果图中有欧拉回路，显然<strong>欧拉回路就是最短</strong>的投递路线。<br>图中有 4 个奇数度顶点b, c, e, j，<strong>不存在欧拉回路，因此邮递员必须重复走某些边</strong>。<br>为此，只需把 4 个奇数度顶点<strong>分成两对</strong>，在每对顶点之间沿着某些<strong>路重复走一遍，要求重复走的路线最短，以使投递的路线最短</strong>。这样就得到了解：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/af8ae74992954cad9dc7204e3ec39bdb_1720253746882.png?token=ANB4BCKLM3SRN5SSRYD6YVTGRD6XK" alt="在这里插入图片描述"></p>
+<h2 id="二、哈密尔顿图"><a href="#二、哈密尔顿图" class="headerlink" title="二、哈密尔顿图"></a>二、哈密尔顿图</h2><p>和欧拉图类似，人们想要寻找一个能<strong>同时遍历图中所有结点，且只遍历一次的回路</strong>。如果该回路存在，那么就是一个哈密尔顿图。看起来很简单，其实<strong>哈密尔顿图比欧拉图复杂得多</strong>，完全不是一个等级。</p>
+<p>1859年英国数学家威廉-汉密尔顿图爵士发明了一个小玩具，这个小玩具是一个木刻的<strong>正十二面体</strong>，每面系正五角形，共有20个顶点，每个顶点标有世界上一个重要城市。他提出一个问题：<strong>要求沿正十二面体的边寻找一条路通过20个城市，而每个城市只通过一次，最后返回原地</strong>。</p>
+<p>事实上，任何一个凸多面体都能“平铺”在平面上，并形成一个“<strong>平面图</strong>”。</p>
+<p>汉密尔顿问题既应用广泛又具有实际价值。</p>
+<p><strong>若给无向图的每一条边带上不同的权重，问题又转化为在多条路线中寻找最优路线使得既能实现遍游，又代价最小的最优化问题</strong>。</p>
+<p>结果不唯一：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/637ba6d4023f4f6f95161a3d1957b27b_1720253754080.png?token=ANB4BCLR3VT7PMXO2NIDBKLGRD6XQ" alt="在这里插入图片描述"><br> 严格的定义：给定图G，若有一条路通过 G 中每个顶点恰好一次，则这样的路称为汉密尔顿路； 若有一个圈，通过 G 个每个顶点恰好一次，这样的圈称为<strong>汉密尔顿回路</strong>（或汉密尔顿圈）。 具有汉密尔顿路的图称为<strong>半汉密尔顿图</strong>。具有汉密尔顿回路的图称为<strong>汉密尔顿图</strong>。</p>
+<h3 id="1、哈密尔图的判定"><a href="#1、哈密尔图的判定" class="headerlink" title="1、哈密尔图的判定"></a>1、哈密尔图的判定</h3><p>但是到目前为止还<strong>找不到一个图为汉密尔顿图的充要条件</strong>，寻找该充要条件仍是图论中尚未解决的主要问题之一。下面先给出一个简单而有用的必要条件：<br>定理一：<strong>设图G＝〈V ,E〉是汉密尔顿图， 则对于V 的每个非空子集 S，  均有 W(G－S )≤|S| 。</strong></p>
+<p>这个定理是在说，对于哈密尔顿图 G，如果删去结点集合 S，那么形成的子图的个数（连通分支）一定少于删去的点集数目。</p>
+<p>推论  <strong>设图G＝〈V ,E〉是半哈密顿图， 则对于V 的每个非空子集 S，均有 P(G－S )≤|S|+1。</strong></p>
+<p>比如：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/173977e7b6fe4eb594d4e8880fbe300e_1720253754080.png?token=ANB4BCLZNWSR4Z6UUC3IZDLGRD6XS" alt="在这里插入图片描述"><br>若取<code>S＝&#123;v1, v4&#125;</code>，则<code>G－S</code> 有<code>3</code>个连通分支故，该图不是哈密顿图。</p>
+<p>因为这是一个必要条件，即 <strong>P-&gt;Q</strong>，那么我们是能通过<strong>非 Q -&gt;非 P</strong>，来<strong>证明一个图不是哈密尔顿图</strong>，即只能用来证否。因此如果一个图满足 Q，那么它什么都不能证明。</p>
+<p>比如<strong>彼得森图</strong>：任意删除 1 个顶点或者 2 个顶点都连通，任意删除 3 个顶点最多产生两个连通分支。可以进行实验，彼得森图总能满足：W(G－S )≤|S|。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/4414871a83dc4ffb9aa88d2ae26cb3ef_1720253754080.png?token=ANB4BCIBHTQ4IZJRW2WIZJDGRD6XU" alt="在这里插入图片描述"><br><strong>该定理不能证明彼得森图是哈密尔顿图，实际上彼得森图不是哈密尔顿图。</strong></p>
+<h3 id="2、哈密尔顿图的充分条件"><a href="#2、哈密尔顿图的充分条件" class="headerlink" title="2、哈密尔顿图的充分条件"></a>2、哈密尔顿图的充分条件</h3><p>定理：设 <code>G＝〈V ,E〉</code>是有 n 个结点的简单图，</p>
+<ul>
+<li>(1) 如果任两结点u，v∈V， 均有<code>deg(u)＋deg(v)≥ n－1</code>，则在G中存在一条哈密尔顿路；</li>
+<li>(2) 如果对任两结点u，v∈V， 均有<code>deg(u)＋deg(v)≥ n</code>，则G是哈密尔顿图。</li>
+</ul>
+<p>这些是<strong>充分条件</strong>，即 P-&gt;Q，但是<strong>非P</strong> 什么都推不出来。</p>
+<p>例1： 某地有5个风景点。若每个景点均有两条道路与其他景点相通，问是否可经过每个景点恰好一次而游完这5处？</p>
+<blockquote>
+<p>解   将景点作为结点，道路作为边，则得到一个有5个结点的无向图。<br>由题意，对每个结点vi，有deg(vi)＝2（i∈N5）。<br>则对任两点vi，vj（i，j∈N5）均有<br>                deg(vi)＋deg(vj)＝2＋2＝4＝5－1<br>可知此图一定有一条汉密尔顿路，本题有解。</p>
+</blockquote>
+<p>例 2：考虑在七天内安排七门课程的考试，使得同一位老师所任的<strong>两门课程的考试不排在接连的两天</strong>中，试证明如果没有老师担任多于四门课程，则符合上述要求的考试安排总是可能的。</p>
+<blockquote>
+<p>如果一个老师担任了四门课，那么显然可以满足要求；但是如果一个老师担任了 5 门课以及以上的课程，那么7 天中至少有两门课相邻，不符合要求。那么怎么用图论来解决呢？</p>
+</blockquote>
+<blockquote>
+<p>假设 A 老师担任了四门课，每个顶点的度数至少是3，任意两个顶点的度数至少是6，故存在哈密顿路：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/93c7c11e45bb4a7e93d40f4a3bdbdb55_1720253754080.png?token=ANB4BCO6GFXH2WCFH23KTCLGRD6XW" alt="在这里插入图片描述"><br>假设 A 老师担任了五门课，每个顶点的度数至少是2，任意两个顶点的度数至少是4，4 &lt; 6，故不存在哈密顿路：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f3e5c818711640e1a5cfed9b46d97799_1720253754080.png?token=ANB4BCOBXU5RYGMZ33UR2ILGRD6XY" alt="在这里插入图片描述"></p>
+</blockquote>
+<p>例3：货郎担问题</p>
+<blockquote>
+<p>作为汉密尔顿回路的自然推广是著名的货郎担问题。问题是这样叙述的：设有一个货郎，从他所在的城镇出发去n-1个城镇。要求经过每个城镇恰好一次，然后返回原地，问他的旅行路线怎样安排才最经济？从图论的观点来看，该问题就是：<strong>在一个带权完全图中找一条权最小的汉密尔顿回路</strong>。</p>
+</blockquote>
+<p>解答：</p>
+<blockquote>
+<p>根据上面的充分性定理，完全图一定是一个哈密尔顿图。<br>因此步骤如下：<br>(1)由任意选择的结点开始，找与该点最靠近（即权最小）的点， 形成有一条边的初始路径。<br>(2)设x表示最新加到这条路上的结点，从不在路上的所有结点中选一个与x最靠近的结点， 把连接x与这一结点的边加到这条路上。重复这一步，直到G中所有结点包含在路上。<br>(3)将连接起始点与最后加入的结点之间的边加到这条路上，就得到一个圈，即为问题的近似解。<br>遗憾的是，这个方法得到的并不是最小回路，因为贪心法在这个问题中并不能得到最值。</p>
+</blockquote>
+<p>以上就是哈密尔顿图的一些讨论。</p>
+<h2 id="三、二分图"><a href="#三、二分图" class="headerlink" title="三、二分图"></a>三、二分图</h2><p>二分图的概念很简单，本质上来说，这就是在研究图与图之间的关系。</p>
+<h3 id="1、二分图的判定"><a href="#1、二分图的判定" class="headerlink" title="1、二分图的判定"></a>1、二分图的判定</h3><p>定理： 一个无向图 G 是二分图，<strong>当且仅当</strong> G 中所有回路的长度均为<strong>偶数</strong>。这是一个充要条件，因此判断起来就很简单。</p>
+<h3 id="2、匹配问题"><a href="#2、匹配问题" class="headerlink" title="2、匹配问题"></a>2、匹配问题</h3><p>定义：  无向图 G&#x3D;&lt;V，E&gt; ，M 为 E 的子集。若 M 中任意两条边都不相邻，则称 M 为 E 中的匹配。若 M 中再添加任意一条边就不是 G 中的匹配了，则称 M 为<strong>极大匹配</strong>。边数最多的匹配称为<strong>最大匹配</strong>，<strong>最大匹配中边的条数称为 G 的匹配数</strong>。其中，M 中的点就是<strong>饱和点</strong>，若 G 中每个结点都是M饱和点，则称 M 为<strong>完美匹配</strong>。</p>
+<p>鉴于此，有以下结论：</p>
+<ul>
+<li>（1）极大匹配不是任何其它匹配的子集。</li>
+<li>（2）一个图的极大匹配可能是不唯一的。</li>
+<li>（3）一个图的最大匹配可能是不唯一的。</li>
+<li>（4）每个最大匹配都是极大匹配，反之不真。</li>
+<li>（5）在完美匹配中，图    中的每个结点都关联匹配中的一条边。</li>
+<li>（6）如果图    存在完美匹配，则图    的匹配数为图    的阶数的一半，且图    为偶数阶。</li>
+<li>（7）每一个完美匹配都是最大匹配，反之不真。</li>
+</ul>
+<h3 id="3、完备匹配"><a href="#3、完备匹配" class="headerlink" title="3、完备匹配"></a>3、完备匹配</h3><p>定义：设  $G&#x3D;&lt;V_1,V_2,E&gt;$ 是一个二分图，|V1| $\le$ |V2|，M为 G 的一个最大匹配，若|M| &#x3D; |V1|，则M 为G 中V1 到V2 的<strong>完备匹配</strong>。如果|V2| &#x3D; |V1|，那么就是<strong>完备匹配</strong>。</p>
+<p>一个<strong>充要条件</strong>（相异性条件）： $G&#x3D;&lt;V_1,V_2,E&gt;$ 是一个二分图，|V1| $\le$ |V2|，   $G$中存在$V_1$到 $V_2$ 的完备匹配当<strong>且仅当</strong> $V_1$ 中任何k个结点至少邻接$V_2$中的k个结点。</p>
+<p>一个<strong>充分条件</strong>：设二分图 $G&#x3D;&lt;V_1,V_2,E&gt;$ ，如果存在 $t&gt;0$，使得：</p>
+<ul>
+<li>(1)   中每个结点至少关联  条边；</li>
+<li>(2)   中每个结点至多关联  条边。</li>
+</ul>
+<p>则$G$中存在$V_1$到$V_2$的完备匹配。</p>
+<p>例1：</p>
+<blockquote>
+<p>某学校有3个课外小组：物理组、化学组、生物组。有张、王、李、赵、陈5名同学。问在以下3种情况下能否选出3名不兼任的组长？<br>已知： 张、王为物理组成员，张、李、赵为化学组成员，李、赵、陈为生物组成员；</p>
+</blockquote>
+<p>解答：</p>
+<blockquote>
+<p>设$V_1，V_2，V_3，V_4，V_5$分别表示张、王、李、赵、陈5名同学。$U_1，U_2，U_3$ 分别表示物理组、化学组、生物组。<br>这个问题就可以转化为，二分图中 $G&lt;V，U，E&gt;$ 是否存在一个 U到 V 的完备匹配。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7b976798c551432d9b5a1aaa86e45f9c_1720253760767.png?token=ANB4BCJS3LEVKOV63FYW4Q3GRD6X2" alt="在这里插入图片描述"><br>答案是显然。</p>
+</blockquote>
+<h2 id="四、平面图"><a href="#四、平面图" class="headerlink" title="四、平面图"></a>四、平面图</h2><p>平面图是一种很特殊的图，并且很具有应用的价值，比如设计单层电路板的时候，为了减少感抗、电感等，就使得电器原件之间的走线成为一个平面图。</p>
+<p><strong>定义</strong>：  设图 $G＝〈V ,E〉$是一个无向图，如果能把图 G 的所有结点和边画在平面上，且使得任何两条边除了端点外<strong>没有其它的交点</strong>，就称图G是一个平面图，否则称图G为<strong>非平面图</strong>。</p>
+<p>以下两个图为最简单的非平面图：$K_3,_3$<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e883ea8546b4405cafcaa7459c0e1d4e_1720253760767.png?token=ANB4BCOV4N4OYSLKFYJWWOTGRD6X6"><br>$K_5$:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/810e48b84d3b47c3aaa4a4a2f865ebef_1720253760767.png?token=ANB4BCNPE2K3VGJ35M65XUDGRD6YA" alt="在这里插入图片描述"><br>前者是<strong>变数最少</strong>的非平面图，后者是<strong>点数最少</strong>的非平面图，这两个图也是<strong>最基本</strong>的非平面图。称为<strong>Kuratowski图</strong>。</p>
+<p>定义：设G是一个平面图，由G的边所包围的区域（其内部不包含图的结点，也不包含图的边）称为G的一个<strong>面</strong>(Facet)，包围一个面$r$的所有边所组成的回路称面$r$的边界，边界的长度称为该面的次数，记为$deg(r)$。如果面的面积有限，则称该面为<strong>有限面</strong>，否则称为<strong>无限面</strong>。如果两个面的边界<strong>至少</strong>有一条公共边，则称这两个面是<strong>相邻</strong>的，否则是不相邻的。</p>
+<p>定理：<strong>一个有限平面图G&#x3D;〈V，E〉，面的次数之和等于其边数的两倍</strong>。</p>
+<p>定理（Euler定理)：<strong>设图G是连通平面图，有v个结点e条边和r个面，则Euler公式 $v-e+r&#x3D;2$  成立。</strong></p>
+<p>欧拉公式是凸多面体的公式，为什么能用在这里？</p>
+<blockquote>
+<p>前面说了，任何一个凸多面体都能铺在平面上，并且在平面上形成的是一个平面图，而且，任何一个平面图，只要满足了一些<strong>基本条件</strong>都一定能映射出一个凸多面体。不满足<strong>基本条件</strong>的平面图，人们发现它们恰好也是满足欧拉公式的，因此欧拉公式就能用在平面图上了~</p>
+</blockquote>
+<p>关于映射：</p>
+<p>对于任何一个平面图（Planar Graph），<strong>并不一定</strong>能够映射出一个凸多面体（Convex Polyhedron）。</p>
+<p>虽然平面图可以在平面上进行绘制，其中顶点由点表示，边由线段表示，并且没有边交叉，但<strong>并非所有的平面图都能对应到一个凸多面体</strong>。</p>
+<p>为了能够映射出一个凸多面体，平面图需要满足一些特定的性质，即<strong>必须是一个平面图的特例</strong>，称为平面图的<strong>平面嵌入</strong>（Planar Embedding）。</p>
+<p>一个平面嵌入要求满足以下条件：</p>
+<ul>
+<li>图的边不能交叉。</li>
+<li>每个面都是一个多边形，包括外部的无限面。</li>
+<li>每个面的边界由一条简单封闭曲线组成。</li>
+<li>每个面的边界经过的顶点和边都是连续的，没有间断。</li>
+</ul>
+<p>在平面图的<strong>平面嵌入满足上述条件</strong>的情况下，可以使用多种算法将平面图转换为凸多面体，例如使用<strong>凸包算法</strong>（Convex Hull Algorithm）或<strong>平面图嵌入算法</strong>（Planar Embedding Algorithm）。</p>
+<p>定理：Euler公式的推广形式：对于任何具有p个连通分支的平面图，有 $v-e+r&#x3D;p+1$。</p>
+<p>定理：设图$G$是有 $v$ 个结点 $e$ 条边的<strong>连通简单平面图</strong>，若 $v≥3$，则 $e≤3v-6$。</p>
+<blockquote>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/b463fe37eab14442b2d6dee834c680a5_1720253760767.png?token=ANB4BCLEBR73SAZJ6A3GMSLGRD6YC" alt="在这里插入图片描述"></p>
+</blockquote>
+<p>注意：</p>
+<ul>
+<li><strong>以上只是连通平面图的必要条件，即 $P-&gt;Q$，只能用来证否</strong>；</li>
+<li>当结点数和边数较多时，应用Euler公式等判别一个图是非平面图会相当困难。</li>
+</ul>
+<p>因此，1930年，Kuratowski给出了判断一个图为平面图的<strong>充要条件</strong>，这极大地推动了平面图的研究。</p>
+<p>定义：给定两图G1和G2，如果它们是同构的，或者通过<strong>反复插入或除去度数为2</strong>的结点，使<strong>G1和G2</strong>同构，则称G1和G2是在2度<strong>结点内同构</strong>的（或称G1和G2<strong>同胚</strong>）。</p>
+<p>例如以下两组图都是<strong>同胚</strong>的：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3d5df69b194d4c7fb7dc41c1048e60fd_1720253760767.png?token=ANB4BCOSP2ZFXUBYKCPUKKLGRD6YG" alt="在这里插入图片描述"></p>
+<p><strong>充要条件</strong>：一个图是平面图的充要条件是它不包含与$K_3,_3$ 或 $K_5$同胚的子图。</p>
+<p>一般地，判定图G是否为平面图的<strong>步骤</strong>如下：</p>
+<ul>
+<li>①若$e&lt;9或v&lt;5$，则G是平面图；如果$e&gt;3v-6$，则G是非平面图；</li>
+<li>②如果 G 是不连通的，则分别检测每个分图；当且仅当每个分图都是平面图时，G是平面图；</li>
+<li>③如果G中存在割点，可把图G的割点删除，构成若干个不含割点的连通子图。显然，G是平面图当且仅当每个连通子图是平面图；</li>
+<li>④移去自回路；</li>
+<li>⑤否则利用Kuratowski定理检测，或尝试看能否画一个相应的边不相交的图解；</li>
+<li>⑥移去平行边。</li>
+<li>反复运用⑤ 和⑥，并结合①进行检测。</li>
+</ul>
+<p><em><strong>以上就是关于几种常见特殊的图的讨论，全文完，感谢阅读。</strong></em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/" class="category-chain-item">离散数学</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%9B%BE%E8%AE%BA/" class="print-no-link">#图论</a>
+      
+        <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/" class="print-no-link">#离散数学</a>
+      
+        <a href="/tags/%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE/" class="print-no-link">#特殊的图</a>
+      
+        <a href="/tags/%E6%95%B0%E5%AD%A6/" class="print-no-link">#数学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《离散数学》：特殊的图</div>
+      <div>http://blog.luliang.online/2023/06/17/《离散数学》：特殊的图/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/06/26/%E9%98%BF%E9%87%8C%E4%BA%91%20Ubuntu%20%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE/" title="阿里云 Ubuntu 网络设置">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">阿里云 Ubuntu 网络设置</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/16/%E3%80%8A%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6%E3%80%8B%EF%BC%9A%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F%E5%92%8C%E5%9B%BE%E8%AE%BA%E5%AF%BC%E8%AE%BA/" title="《离散数学》：代数系统和图论导论">
+                        <span class="hidden-mobile">《离散数学》：代数系统和图论导论</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

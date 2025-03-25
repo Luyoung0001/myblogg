@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、前言 题目要求，实现 ls 的 -a、-l、-R、-t、-r、-i、-s 参数，并允许这些参数任意组合。  -a：–all的缩写，显示所有的文件，包括隐藏文件(以.开头的文件) l：列出长数据串，显示出文件的属性与权限等数据信息(常用) -t：以修改时间排序 -r：–reverse，将排序结果以倒序方式显示 -i：结合-l参数，列出每个文件的inode -s, –size 以块大小为单位列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单的 ls 命令的实现（二）">
+<meta property="og:url" content="http://blog.luliang.online/2023/02/17/%E7%AE%80%E5%8D%95%E7%9A%84%20ls%20%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一、前言 题目要求，实现 ls 的 -a、-l、-R、-t、-r、-i、-s 参数，并允许这些参数任意组合。  -a：–all的缩写，显示所有的文件，包括隐藏文件(以.开头的文件) l：列出长数据串，显示出文件的属性与权限等数据信息(常用) -t：以修改时间排序 -r：–reverse，将排序结果以倒序方式显示 -i：结合-l参数，列出每个文件的inode -s, –size 以块大小为单位列">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce573cf49dce4edd92a9506cd303b07a_1720253841019.png?token=ANB4BCKZRHG6E3ADNZTS53TGRD65I">
+<meta property="article:published_time" content="2023-02-17T09:08:47.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.779Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="开发语言">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce573cf49dce4edd92a9506cd303b07a_1720253841019.png?token=ANB4BCKZRHG6E3ADNZTS53TGRD65I">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>简单的 ls 命令的实现（二） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="简单的 ls 命令的实现（二）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-17 17:08" pubdate>
+          2023年2月17日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">简单的 ls 命令的实现（二）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p> 题目要求，实现 ls 的 -a、-l、-R、-t、-r、-i、-s 参数，并允许这些参数任意组合。</p>
+<ul>
+<li>-a：–all的缩写，显示所有的文件，包括隐藏文件(以.开头的文件)</li>
+<li>l：列出长数据串，显示出文件的属性与权限等数据信息(常用)</li>
+<li>-t：以修改时间排序</li>
+<li>-r：–reverse，将排序结果以倒序方式显示</li>
+<li>-i：结合-l参数，列出每个文件的inode</li>
+<li>-s, –size 以块大小为单位列出所有文件的大小</li>
+<li>-R, –recursive 同时列出所有子目录层</li>
+</ul>
+<h3 id="（一）显示所有的文件，包括隐藏文件"><a href="#（一）显示所有的文件，包括隐藏文件" class="headerlink" title="（一）显示所有的文件，包括隐藏文件"></a>（一）显示所有的文件，包括隐藏文件</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">luliang@shenjian linux<span class="hljs-number">-6.1</span><span class="hljs-number">.1</span> % ls -a<br>.                       .mailmap                LICENSES                crypto                  kernel                  security<br>..                      .rustfmt.toml           MAINTAINERS             drivers                 lib                     sound<br>.clang-format           COPYING                 Makefile                fs                      mm                      tools<br>.cocciconfig            CREDITS                 README                  include                 net                     usr<br>.get_maintainer.ignore  Documentation           arch                    init                    rust                    virt<br>.gitattributes          Kbuild                  block                   io_uring                samples<br>.gitignore              Kconfig                 certs                   ipc                     scripts<br></code></pre></td></tr></table></figure>
+<h3 id="（二）列出长数据串，显示出文件的属性与权限等数据信息"><a href="#（二）列出长数据串，显示出文件的属性与权限等数据信息" class="headerlink" title="（二）列出长数据串，显示出文件的属性与权限等数据信息"></a>（二）列出长数据串，显示出文件的属性与权限等数据信息</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c">luliang@shenjian linux<span class="hljs-number">-6.1</span><span class="hljs-number">.1</span> % ls -l<br>total <span class="hljs-number">1728</span><br>-rw-rw-r--@   <span class="hljs-number">1</span> luliang  staff     <span class="hljs-number">496</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> COPYING<br>-rw-rw-r--@   <span class="hljs-number">1</span> luliang  staff  <span class="hljs-number">101639</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> CREDITS<br>drwxrwxr-x@ <span class="hljs-number">101</span> luliang  staff    <span class="hljs-number">3232</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> Documentation<br>-rw-rw-r--@   <span class="hljs-number">1</span> luliang  staff    <span class="hljs-number">2573</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> Kbuild<br>-rw-rw-r--@   <span class="hljs-number">1</span> luliang  staff     <span class="hljs-number">555</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> Kconfig<br>drwxrwxr-x@   <span class="hljs-number">6</span> luliang  staff     <span class="hljs-number">192</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> LICENSES<br>-rw-rw-r--@   <span class="hljs-number">1</span> luliang  staff  <span class="hljs-number">688447</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> MAINTAINERS<br>-rw-rw-r--@   <span class="hljs-number">1</span> luliang  staff   <span class="hljs-number">70608</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> Makefile<br>-rw-rw-r--@   <span class="hljs-number">1</span> luliang  staff     <span class="hljs-number">727</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> README<br>drwxrwxr-x@  <span class="hljs-number">26</span> luliang  staff     <span class="hljs-number">832</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> arch<br>drwxrwxr-x@  <span class="hljs-number">81</span> luliang  staff    <span class="hljs-number">2592</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> block<br>drwxrwxr-x@  <span class="hljs-number">14</span> luliang  staff     <span class="hljs-number">448</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> certs<br>drwxrwxr-x@ <span class="hljs-number">152</span> luliang  staff    <span class="hljs-number">4864</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> crypto<br>drwxrwxr-x@ <span class="hljs-number">141</span> luliang  staff    <span class="hljs-number">4512</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> drivers<br>drwxrwxr-x@ <span class="hljs-number">157</span> luliang  staff    <span class="hljs-number">5024</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> fs<br>drwxrwxr-x@  <span class="hljs-number">31</span> luliang  staff     <span class="hljs-number">992</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> include<br>drwxrwxr-x@  <span class="hljs-number">17</span> luliang  staff     <span class="hljs-number">544</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> init<br>drwxrwxr-x@  <span class="hljs-number">58</span> luliang  staff    <span class="hljs-number">1856</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> io_uring<br>drwxrwxr-x@  <span class="hljs-number">15</span> luliang  staff     <span class="hljs-number">480</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> ipc<br>drwxrwxr-x@ <span class="hljs-number">133</span> luliang  staff    <span class="hljs-number">4256</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> kernel<br>drwxrwxr-x@ <span class="hljs-number">287</span> luliang  staff    <span class="hljs-number">9184</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> lib<br>drwxrwxr-x@ <span class="hljs-number">135</span> luliang  staff    <span class="hljs-number">4320</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> mm<br>drwxrwxr-x@  <span class="hljs-number">78</span> luliang  staff    <span class="hljs-number">2496</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> net<br>drwxrwxr-x@  <span class="hljs-number">12</span> luliang  staff     <span class="hljs-number">384</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> rust<br>drwxrwxr-x@  <span class="hljs-number">41</span> luliang  staff    <span class="hljs-number">1312</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> samples<br>drwxrwxr-x@ <span class="hljs-number">158</span> luliang  staff    <span class="hljs-number">5056</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> scripts<br>drwxrwxr-x@  <span class="hljs-number">23</span> luliang  staff     <span class="hljs-number">736</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> security<br>drwxrwxr-x@  <span class="hljs-number">32</span> luliang  staff    <span class="hljs-number">1024</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> sound<br>drwxrwxr-x@  <span class="hljs-number">42</span> luliang  staff    <span class="hljs-number">1344</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> tools<br>drwxrwxr-x@  <span class="hljs-number">11</span> luliang  staff     <span class="hljs-number">352</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> usr<br>drwxrwxr-x@   <span class="hljs-number">5</span> luliang  staff     <span class="hljs-number">160</span> <span class="hljs-number">12</span> <span class="hljs-number">22</span> <span class="hljs-number">00</span>:<span class="hljs-number">48</span> virt<br></code></pre></td></tr></table></figure>
+<h3 id="（三）以修改时间排序"><a href="#（三）以修改时间排序" class="headerlink" title="（三）以修改时间排序"></a>（三）以修改时间排序</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">luliang@shenjian linux<span class="hljs-number">-6.1</span><span class="hljs-number">.1</span> % ls -t<br>COPYING         Kconfig         README          crypto          init            lib             samples         tools<br>CREDITS         LICENSES        arch            drivers         io_uring        mm              scripts         usr<br>Documentation   MAINTAINERS     block           fs              ipc             net             security        virt<br>Kbuild          Makefile        certs           include         kernel          rust            sound<br></code></pre></td></tr></table></figure>
+<h3 id="（四）将排序结果以倒序方式显示"><a href="#（四）将排序结果以倒序方式显示" class="headerlink" title="（四）将排序结果以倒序方式显示"></a>（四）将排序结果以倒序方式显示</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">luliang@shenjian linux<span class="hljs-number">-6.1</span><span class="hljs-number">.1</span> % ls -r<br>virt            security        net             ipc             fs              block           MAINTAINERS     Documentation<br>usr             scripts         mm              io_uring        drivers         arch            LICENSES        CREDITS<br>tools           samples         lib             init            crypto          README          Kconfig         COPYING<br>sound           rust            kernel          include         certs           Makefile        Kbuild<br></code></pre></td></tr></table></figure>
+<h3 id="（五）列出每个文件的inode"><a href="#（五）列出每个文件的inode" class="headerlink" title="（五）列出每个文件的inode"></a>（五）列出每个文件的inode</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">luliang@shenjian linux<span class="hljs-number">-6.1</span><span class="hljs-number">.1</span> % ls -i<br><span class="hljs-number">60508833</span> COPYING        <span class="hljs-number">60508494</span> MAINTAINERS    <span class="hljs-number">60449690</span> crypto         <span class="hljs-number">60527795</span> ipc            <span class="hljs-number">60508518</span> samples        <span class="hljs-number">60508496</span> virt<br><span class="hljs-number">60532891</span> CREDITS        <span class="hljs-number">60502255</span> Makefile       <span class="hljs-number">60468171</span> drivers        <span class="hljs-number">60532892</span> kernel         <span class="hljs-number">60526544</span> scripts<br><span class="hljs-number">60449877</span> Documentation  <span class="hljs-number">60508495</span> README         <span class="hljs-number">60527868</span> fs             <span class="hljs-number">60527056</span> lib            <span class="hljs-number">60501981</span> security<br><span class="hljs-number">60508493</span> Kbuild         <span class="hljs-number">60508848</span> arch           <span class="hljs-number">60502256</span> include        <span class="hljs-number">60527614</span> mm             <span class="hljs-number">60530087</span> sound<br><span class="hljs-number">60508492</span> Kconfig        <span class="hljs-number">60533478</span> block          <span class="hljs-number">60449674</span> init           <span class="hljs-number">60466188</span> net            <span class="hljs-number">60459396</span> tools<br><span class="hljs-number">60501955</span> LICENSES       <span class="hljs-number">60508834</span> certs          <span class="hljs-number">60527810</span> io_uring       <span class="hljs-number">60508453</span> rust           <span class="hljs-number">60459381</span> usr<br></code></pre></td></tr></table></figure>
+<h3 id="（六）以块大小为单位列出所有文件的大小"><a href="#（六）以块大小为单位列出所有文件的大小" class="headerlink" title="（六）以块大小为单位列出所有文件的大小"></a>（六）以块大小为单位列出所有文件的大小</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">luliang@shenjian linux<span class="hljs-number">-6.1</span><span class="hljs-number">.1</span> % ls -s<br>total <span class="hljs-number">1728</span><br>   <span class="hljs-number">8</span> COPYING            <span class="hljs-number">1352</span> MAINTAINERS           <span class="hljs-number">0</span> crypto                <span class="hljs-number">0</span> ipc                   <span class="hljs-number">0</span> samples               <span class="hljs-number">0</span> virt<br> <span class="hljs-number">200</span> CREDITS             <span class="hljs-number">144</span> Makefile              <span class="hljs-number">0</span> drivers               <span class="hljs-number">0</span> kernel                <span class="hljs-number">0</span> scripts<br>   <span class="hljs-number">0</span> Documentation         <span class="hljs-number">8</span> README                <span class="hljs-number">0</span> fs                    <span class="hljs-number">0</span> lib                   <span class="hljs-number">0</span> security<br>   <span class="hljs-number">8</span> Kbuild                <span class="hljs-number">0</span> arch                  <span class="hljs-number">0</span> include               <span class="hljs-number">0</span> mm                    <span class="hljs-number">0</span> sound<br>   <span class="hljs-number">8</span> Kconfig               <span class="hljs-number">0</span> block                 <span class="hljs-number">0</span> init                  <span class="hljs-number">0</span> net                   <span class="hljs-number">0</span> tools<br>   <span class="hljs-number">0</span> LICENSES              <span class="hljs-number">0</span> certs                 <span class="hljs-number">0</span> io_uring              <span class="hljs-number">0</span> rust                  <span class="hljs-number">0</span> usr<br></code></pre></td></tr></table></figure>
+<h3 id="（七）同时列出所有子目录层"><a href="#（七）同时列出所有子目录层" class="headerlink" title="（七）同时列出所有子目录层"></a>（七）同时列出所有子目录层</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c">luliang@shenjian Stusys % ls -aR<br>.               ..              .DS_Store       stuinfo         stusts<br><br>./stuinfo:<br>.                       .DS_Store               class2的副本.txt        class4的副本.txt<br>..                      class1.txt              class3的副本.txt        class5的副本.txt<br><br>./stusts:<br>.               ..              <span class="hljs-number">1.</span>txt           a.out           haha            stu_man_sys.c   test.c<br></code></pre></td></tr></table></figure>
+<p>以上就是 7 种参数的组合</p>
+<h2 id="二、ls-l"><a href="#二、ls-l" class="headerlink" title="二、ls -l"></a>二、ls -l</h2><p><code>ls -l</code>需要列出文件类型和许可权限、文件链接数、用户ID、所属组ID、所占空间大小、文件修改时间和文件名称。<br>而我们可以通过<code>readdir函数</code>读取到的文件名，再通过调用函数<br><code>int stat(const char *file_name, struct stat *buf)</code>获取文件名为<code>d_name</code>的文件的详细信息，存储在<code>stat结构体中</code>。<br>以下为<code>stat结构体</code>的定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> &#123;</span><br>	<span class="hljs-type">dev_t</span>           st_dev;         <span class="hljs-comment">/* [XSI] ID of device containing file */</span><br>	<span class="hljs-type">ino_t</span>           st_ino;         <span class="hljs-comment">/* [XSI] File serial number */</span><br>	<span class="hljs-type">mode_t</span>          st_mode;        <span class="hljs-comment">/* [XSI] Mode of file (see below) */</span><br>	<span class="hljs-type">nlink_t</span>         st_nlink;       <span class="hljs-comment">/* [XSI] Number of hard links */</span><br>	<span class="hljs-type">uid_t</span>           st_uid;         <span class="hljs-comment">/* [XSI] User ID of the file */</span><br>	<span class="hljs-type">gid_t</span>           st_gid;         <span class="hljs-comment">/* [XSI] Group ID of the file */</span><br>	<span class="hljs-type">dev_t</span>           st_rdev;        <span class="hljs-comment">/* [XSI] Device ID */</span><br><span class="hljs-meta">#<span class="hljs-keyword">if</span> !defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span>  <span class="hljs-title">timespec</span> <span class="hljs-title">st_atimespec</span>;</span>  <span class="hljs-comment">/* time of last access */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span>  <span class="hljs-title">timespec</span> <span class="hljs-title">st_mtimespec</span>;</span>  <span class="hljs-comment">/* time of last data modification */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span>  <span class="hljs-title">timespec</span> <span class="hljs-title">st_ctimespec</span>;</span>  <span class="hljs-comment">/* time of last status change */</span><br><span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br>	<span class="hljs-type">time_t</span>          st_atime;       <span class="hljs-comment">/* [XSI] Time of last access */</span><br>	<span class="hljs-type">long</span>            st_atimensec;   <span class="hljs-comment">/* nsec of last access */</span><br>	<span class="hljs-type">time_t</span>          st_mtime;       <span class="hljs-comment">/* [XSI] Last data modification time */</span><br>	<span class="hljs-type">long</span>            st_mtimensec;   <span class="hljs-comment">/* last data modification nsec */</span><br>	<span class="hljs-type">time_t</span>          st_ctime;       <span class="hljs-comment">/* [XSI] Time of last status change */</span><br>	<span class="hljs-type">long</span>            st_ctimensec;   <span class="hljs-comment">/* nsec of last status change */</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>	<span class="hljs-type">off_t</span>           st_size;        <span class="hljs-comment">/* [XSI] file size, in bytes */</span><br>	<span class="hljs-type">blkcnt_t</span>        st_blocks;      <span class="hljs-comment">/* [XSI] blocks allocated for file */</span><br>	<span class="hljs-type">blksize_t</span>       st_blksize;     <span class="hljs-comment">/* [XSI] optimal blocksize for I/O */</span><br>	<span class="hljs-type">__uint32_t</span>      st_flags;       <span class="hljs-comment">/* user defined flags for file */</span><br>	<span class="hljs-type">__uint32_t</span>      st_gen;         <span class="hljs-comment">/* file generation number */</span><br>	<span class="hljs-type">__int32_t</span>       st_lspare;      <span class="hljs-comment">/* RESERVED: DO NOT USE! */</span><br>	<span class="hljs-type">__int64_t</span>       st_qspare[<span class="hljs-number">2</span>];   <span class="hljs-comment">/* RESERVED: DO NOT USE! */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>先小试牛刀一下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/stat.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">info</span>;</span><br>    <span class="hljs-type">int</span> ans = stat(argv[<span class="hljs-number">1</span>], &amp;info);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;    mode : %o\n&quot;</span>, info.st_mode);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;    links: %d\n&quot;</span>, info.st_nlink);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;    user : %d\n&quot;</span>, info.st_uid);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;    group: %d\n&quot;</span>, info.st_gid);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;    size : %d\n&quot;</span>, info.st_size);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;    blocks: %d\n&quot;</span>, info.st_blocks);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>编译并传入一个测试的参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">luliang@shenjian Test % gcc plan4.c -o <span class="hljs-built_in">ls</span><br>luliang@shenjian Test % ./ls plan3.c<br>    mode : 100644<br>    links: 1<br>    user : 501<br>    group: 20<br>    size : 1136<br>    blocks: 8<br></code></pre></td></tr></table></figure>
+<p>可以看到达到了预期效果。<br>但是，刚获得到的一些信息，比如 <code>mode</code>、<code>user</code> 、<code>group</code>，为了方便阅读，还需要将它们转化成字符。</p>
+<h3 id="（一）对-st-mode进行转化"><a href="#（一）对-st-mode进行转化" class="headerlink" title="（一）对 st_mode进行转化"></a>（一）对 st_mode进行转化</h3><p>我们想要的信息需要从成员<code>st_mode</code>中获取，其类型<code>mode_t</code>在我的系统中定义就是<code>unsigned int</code>。但在命令<code>ls -l</code>的输出应该是类似<code>-rw-rw-rw-</code>的10个字符的字符串。其实这些信息是以位图的方式放进了这个16位（2B）整数类型中。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce573cf49dce4edd92a9506cd303b07a_1720253841019.png?token=ANB4BCKZRHG6E3ADNZTS53TGRD65I" alt="在这里插入图片描述"></p>
+<ul>
+<li>其中前4位用作文件类型。</li>
+<li>接下来3位是文件特殊属性，分别是<code>set-user-ID</code>，<code>set-group-ID</code>和<code>sticky</code>位，1表示具有该属性，0表示没有。</li>
+<li>最后9位就是我们想找的许可权限了，分为3组，分别对应文件所有者、同组用户、其他用户的读、写、执行权限。同样有的话为1，没有的话为0。</li>
+</ul>
+<p>既然是位图，那么必然可以通过掩码来取得其信息。如关于文件类型，在<code>&lt;sys/stat.h&gt;</code>中定义了<code>掩码S_IFMT</code>来取得文件类型信息，用法如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">switch</span> (sb.st_mode &amp; S_IFMT) &#123;<br>	<span class="hljs-keyword">case</span> S_IFBLK:  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;block device\n&quot;</span>);            <span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> S_IFCHR:  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;character device\n&quot;</span>);        <span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> S_IFDIR:  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;directory\n&quot;</span>);               <span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> S_IFIFO:  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;FIFO/pipe\n&quot;</span>);               <span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> S_IFLNK:  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;symlink\n&quot;</span>);                 <span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> S_IFREG:  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;regular file\n&quot;</span>);            <span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> S_IFSOCK: <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;socket\n&quot;</span>);                  <span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">default</span>:       <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;unknown?\n&quot;</span>);                <span class="hljs-keyword">break</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>而掩码<code>S_IFMT</code>以及表示相应文件类型的<code>S_IFBLK</code>等实际上是一些<strong>八进制数</strong>的宏。<br>因此，可以自然而然地用一个字符数组，将<strong>翻译</strong>得到的信息储存起来：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">mode_to_letters</span><span class="hljs-params">(<span class="hljs-type">int</span> mode, <span class="hljs-type">char</span> str[])</span> &#123;<br>    <span class="hljs-built_in">strcpy</span>(str, <span class="hljs-string">&quot;----------&quot;</span>);<br>    <span class="hljs-keyword">if</span> (S_ISDIR(mode))<br>        str[<span class="hljs-number">0</span>] = <span class="hljs-string">&#x27;d&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (S_ISCHR(mode))<br>        str[<span class="hljs-number">0</span>] = <span class="hljs-string">&#x27;c&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (S_ISBLK(mode))<br>        str[<span class="hljs-number">0</span>] = <span class="hljs-string">&#x27;b&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IRUSR)<br>        str[<span class="hljs-number">1</span>] = <span class="hljs-string">&#x27;r&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IWUSR)<br>        str[<span class="hljs-number">2</span>] = <span class="hljs-string">&#x27;w&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IXUSR)<br>        str[<span class="hljs-number">3</span>] = <span class="hljs-string">&#x27;x&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IRGRP)<br>        str[<span class="hljs-number">4</span>] = <span class="hljs-string">&#x27;r&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IWGRP)<br>        str[<span class="hljs-number">5</span>] = <span class="hljs-string">&#x27;w&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IXGRP)<br>        str[<span class="hljs-number">6</span>] = <span class="hljs-string">&#x27;x&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IROTH)<br>        str[<span class="hljs-number">7</span>] = <span class="hljs-string">&#x27;r&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IWOTH)<br>        str[<span class="hljs-number">8</span>] = <span class="hljs-string">&#x27;w&#x27;</span>;<br>    <span class="hljs-keyword">if</span> (mode &amp; S_IXOTH)<br>        str[<span class="hljs-number">9</span>] = <span class="hljs-string">&#x27;x&#x27;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="（二）获取链接数、文件大小和时间信息"><a href="#（二）获取链接数、文件大小和时间信息" class="headerlink" title="（二）获取链接数、文件大小和时间信息"></a>（二）获取链接数、文件大小和时间信息</h3><p>1、链接信息即保存在成员<code>st_nlinks</code>里，直接打印即可。</p>
+<p>2、文件大小信息即保存在成员<code>st_size</code>里，同样直接打印即可。</p>
+<p>3、时间信息即保存在成员<code>st_mtime</code>里，需要注意的是这里需要使用<code>ctime()</code>函数来将其转换成要求的格式来打印。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;time.h&gt;</span></span><br><span class="hljs-comment">// 返回的是类似&quot;Wed Jun 30 21:49:08 1993\n&quot;一个字符串</span><br><span class="hljs-type">char</span> *<span class="hljs-title function_">ctime</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">time_t</span> *timep)</span>;<br></code></pre></td></tr></table></figure>
+<h3 id="（三）获取所有者和组名信息"><a href="#（三）获取所有者和组名信息" class="headerlink" title="（三）获取所有者和组名信息"></a>（三）获取所有者和组名信息</h3><p>首先需要知道Linux系统的用户信息保存在<code>/etc/passwd</code>中，但这个文件又没有包括所有的用户，在一些网络计算机系统中，所有主机通过<code>NIS</code>来进行身份验证，本地只保存所有用户的一个自己以备离线操作。</p>
+<p>这里可以通过<code>getwuid()</code>来获取完整的用户列表，该调用会自动选择从<code>/etc/passwd</code>还是<code>NIS</code>中获取信息，提高了程序的可移植性。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pwd.h&gt;</span></span><br><span class="hljs-comment">// 接受用户的uid作为参数，返回指针指向的结构体中包含了用户信息</span><br><span class="hljs-keyword">struct</span> passwd *<span class="hljs-title function_">getpwuid</span><span class="hljs-params">(<span class="hljs-type">uid_t</span> uid)</span>;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">passwd</span> &#123;</span><br>	<span class="hljs-type">char</span>   *pw_name;       <span class="hljs-comment">/* username */</span><br>	<span class="hljs-type">char</span>   *pw_passwd;     <span class="hljs-comment">/* user password */</span><br>	<span class="hljs-type">uid_t</span>   pw_uid;        <span class="hljs-comment">/* user ID */</span><br>	<span class="hljs-type">gid_t</span>   pw_gid;        <span class="hljs-comment">/* group ID */</span><br>	<span class="hljs-type">char</span>   *pw_gecos;      <span class="hljs-comment">/* user information */</span><br>	<span class="hljs-type">char</span>   *pw_dir;        <span class="hljs-comment">/* home directory */</span><br>	<span class="hljs-type">char</span>   *pw_shell;      <span class="hljs-comment">/* shell program */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>所以可以调用<code>getpwuid()</code>来获取用户信息，打印用户名称。另外还有一种可能是，文件所有者已经搬走了，账号被删除，但这个文件还在，此时该函数将返回NULL。所以这里还需要检查返回值，而不能直接读取，否则可能出现段错误。</p>
+<p>类似的使用<code>getgrgid()</code>来获取组列表，用法大同小异:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;grp.h&gt;</span></span><br><span class="hljs-keyword">struct</span> group *<span class="hljs-title function_">getgrgid</span><span class="hljs-params">(<span class="hljs-type">gid_t</span> gid)</span>;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">group</span> &#123;</span><br>	<span class="hljs-type">char</span>   *gr_name;        <span class="hljs-comment">/* group name */</span><br>	<span class="hljs-type">char</span>   *gr_passwd;      <span class="hljs-comment">/* group password */</span><br>	<span class="hljs-type">gid_t</span>   gr_gid;         <span class="hljs-comment">/* group ID */</span><br>	<span class="hljs-type">char</span>  **gr_mem;         <span class="hljs-comment">/* NULL-terminated array of pointers</span><br><span class="hljs-comment">                                to names of group members */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>需要注意的是，该函数也是有可能返回NULL的，就不细说了。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#开发语言</a>
+      
+        <a href="/tags/C/" class="print-no-link">#C</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>简单的 ls 命令的实现（二）</div>
+      <div>http://blog.luliang.online/2023/02/17/简单的 ls 命令的实现（二）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/02/17/%E7%AE%80%E5%8D%95%E7%9A%84%20ls%20%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%B8%89%EF%BC%89/" title="简单的 ls 命令的实现（三）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">简单的 ls 命令的实现（三）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/15/%E7%AE%80%E5%8D%95%E7%9A%84%20ls%20%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="简单的 ls 命令的实现（一）">
+                        <span class="hidden-mobile">简单的 ls 命令的实现（一）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

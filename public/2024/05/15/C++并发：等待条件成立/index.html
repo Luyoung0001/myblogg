@@ -1,0 +1,739 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、用std::condition_variable等待处理数据伪代码如下： 123456789101112131415161718192021222324252627282930std::mutex mut;std::queue&lt;data_chunk&gt; data_queue;    ⇽---  ①std::condition_variable data_cond;void dat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++并发：等待条件成立">
+<meta property="og:url" content="http://blog.luliang.online/2024/05/15/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E7%AD%89%E5%BE%85%E6%9D%A1%E4%BB%B6%E6%88%90%E7%AB%8B/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一、用std::condition_variable等待处理数据伪代码如下： 123456789101112131415161718192021222324252627282930std::mutex mut;std::queue&lt;data_chunk&gt; data_queue;    ⇽---  ①std::condition_variable data_cond;void dat">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-15T08:10:02.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.768Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>C++并发：等待条件成立 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C++并发：等待条件成立"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-15 16:10" pubdate>
+          2024年5月15日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">C++并发：等待条件成立</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一、用std-condition-variable等待处理数据"><a href="#一、用std-condition-variable等待处理数据" class="headerlink" title="一、用std::condition_variable等待处理数据"></a>一、用std::condition_variable等待处理数据</h2><p>伪代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp">std::mutex mut;<br>std::queue&lt;data_chunk&gt; data_queue;    ⇽---  ①<br>std::condition_variable data_cond;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">data_preparation_thread</span><span class="hljs-params">()</span>            <span class="hljs-comment">// 由线程乙运行</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">while</span>(<span class="hljs-built_in">more_data_to_prepare</span>())<br>    &#123;<br>        data_chunk <span class="hljs-type">const</span> data=<span class="hljs-built_in">prepare_data</span>();<br>        &#123;<br>            <span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lk</span><span class="hljs-params">(mut)</span></span>;<br>            data_queue.<span class="hljs-built_in">push</span>(data);    ⇽---  ②<br>        &#125;<br>        data_cond.<span class="hljs-built_in">notify_one</span>();    ⇽---  ③<br>    &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">data_processing_thread</span><span class="hljs-params">()</span>           <span class="hljs-comment">// 由线程甲运行</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)<br>    &#123;<br>        <span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lk</span><span class="hljs-params">(mut)</span></span>;    ⇽---  ④<br>        data_cond.<span class="hljs-built_in">wait</span>(<br>            lk,[]&#123;<span class="hljs-keyword">return</span> !data_queue.<span class="hljs-built_in">empty</span>();&#125;);    ⇽---  ⑤<br>        data_chunk data=data_queue.<span class="hljs-built_in">front</span>();<br>        data_queue.<span class="hljs-built_in">pop</span>();<br>        lk.<span class="hljs-built_in">unlock</span>();    ⇽---  ⑥<br>        <span class="hljs-built_in">process</span>(data);<br>        <span class="hljs-keyword">if</span>(<span class="hljs-built_in">is_last_chunk</span>(data))<br>            <span class="hljs-keyword">break</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在C++中，使用<code>std::condition_variable</code>与互斥锁（如<code>std::mutex</code>）结合时，其行为如下，特别是关于锁的处理：</p>
+<ol>
+<li><p><strong>锁的获取与释放</strong>：</p>
+<ul>
+<li><code>std::unique_lock&lt;std::mutex&gt;</code>对象<code>lk</code>在创建时获取<code>mut</code>互斥锁。</li>
+<li>当调用<code>data_cond.wait(lk, ...)</code>时，这个函数会自动释放<code>lk</code>所持有的互斥锁，并使当前线程（在这里是数据处理线程）进入等待状态。</li>
+<li>等待期间，线程会阻塞在<code>wait</code>调用上，直到被唤醒（通常是由另一线程调用<code>notify_one()</code>或<code>notify_all()</code>）。</li>
+</ul>
+</li>
+<li><p><strong>条件变量检查</strong>：</p>
+<ul>
+<li>当线程被唤醒（如由<code>notify_one()</code>），<code>data_cond.wait()</code>自动重新获取互斥锁<code>lk</code>。</li>
+<li>一旦重新获得互斥锁，<code>wait()</code>将执行传入的<strong>lambda</strong>函数（在这里是<code>[]&#123;return !data_queue.empty();&#125;</code>）以检查等待条件是否满足。</li>
+<li>如果<strong>lambda</strong>函数返回<code>true</code>（即队列不为空），<code>wait()</code>结束，线程继续执行。</li>
+<li>如果<strong>lambda</strong>函数返回<code>false</code>，<code>wait()</code>会再次释放锁，并将线程置回等待状态。</li>
+</ul>
+</li>
+<li><p><strong>循环等待和锁的管理</strong>：</p>
+<ul>
+<li>这种等待和检查的过程可能会发生多次，直到条件最终满足。每次在检查条件之前，线程必须重新获得互斥锁。</li>
+<li>一旦条件成立，线程将继续持有互斥锁并从<code>wait()</code>返回，执行后续代码。</li>
+</ul>
+</li>
+<li><p><strong>锁的释放</strong>：</p>
+<ul>
+<li>在示例中，线程在从队列中取出数据后，手动调用<code>lk.unlock()</code>来释放互斥锁，然后处理数据。</li>
+<li>这是为了避免在执行可能耗时的<code>process(data)</code>操作时持有互斥锁，从而增加其他线程操作共享资源的机会。</li>
+</ul>
+</li>
+</ol>
+<h3 id="简单总结"><a href="#简单总结" class="headerlink" title="简单总结"></a>简单总结</h3><p><code>std::condition_variable::wait()</code>的工作方式如下：</p>
+<ul>
+<li>在调用<code>wait()</code>时，线程会释放其持有的互斥锁，并进入阻塞状态。</li>
+<li>线程被唤醒后，<code>wait()</code>自动重新获取互斥锁，并检查指定的条件。</li>
+<li>如果条件不满足，线程再次释放互斥锁并进入阻塞状态。</li>
+<li>如果条件满足，<code>wait()</code>返回，线程继续执行并持有互斥锁。</li>
+</ul>
+<p>这种机制确保了资源的安全访问和高效管理，使得多线程编程更为可靠和易于维护。</p>
+<h2 id="二、使用-std-unique-lock-而非-std-lock-guard"><a href="#二、使用-std-unique-lock-而非-std-lock-guard" class="headerlink" title="二、使用 std::unique_lock&lt;std::mutex&gt; 而非 std::lock_guard&lt;std::mutex&gt;"></a>二、使用 <code>std::unique_lock&lt;std::mutex&gt;</code> 而非 <code>std::lock_guard&lt;std::mutex&gt;</code></h2><p>在这个示例中，选择使用 <code>std::unique_lock&lt;std::mutex&gt;</code> 而非 <code>std::lock_guard&lt;std::mutex&gt;</code> 是因为 <code>std::unique_lock</code> 提供了更多的灵活性，尤其是在与条件变量结合使用时。以下是详细的原因和对两者差异的解释：</p>
+<h3 id="1-锁的可解锁性"><a href="#1-锁的可解锁性" class="headerlink" title="1. 锁的可解锁性"></a>1. <strong>锁的可解锁性</strong></h3><p><code>std::unique_lock</code> 允许显式地锁定和解锁操作。这一特性在使用条件变量时非常关键，因为：</p>
+<ul>
+<li><code>std::condition_variable::wait()</code> 函数需要在等待过程中释放锁，并在条件满足、线程被唤醒后重新获取锁。<code>std::unique_lock</code> 可以自动处理这些操作。</li>
+</ul>
+<h3 id="2-与条件变量的兼容性"><a href="#2-与条件变量的兼容性" class="headerlink" title="2. 与条件变量的兼容性"></a>2. <strong>与条件变量的兼容性</strong></h3><p><code>std::condition_variable</code> 只能与 <code>std::unique_lock</code> 一起使用，<strong>因为它依赖于 <code>std::unique_lock</code> 的能力来：</strong></p>
+<ul>
+<li>在进入 <code>wait()</code> 时释放锁。</li>
+<li>在从 <code>wait()</code> 返回时重新获得锁。</li>
+</ul>
+<p><code>std::lock_guard</code> 不具备这种灵活性，因为它仅在构造时获取锁，并在析构时释放锁，没有提供中间释放和重新获得锁的机制。</p>
+<h3 id="3-灵活的锁管理"><a href="#3-灵活的锁管理" class="headerlink" title="3. 灵活的锁管理"></a>3. <strong>灵活的锁管理</strong></h3><p><code>std::unique_lock</code> 同时支持延迟锁定（不在构造时立即锁定），尝试锁定，以及在某个作用域中手动控制锁的释放和再次锁定。这为编程提供了更高的灵活性，可以根据需要进行精细的锁控制，这在处理复杂的多线程逻辑时非常有用。</p>
+<h3 id="4-性能考量"><a href="#4-性能考量" class="headerlink" title="4. 性能考量"></a>4. <strong>性能考量</strong></h3><p>尽管 <code>std::unique_lock</code> 相比 <code>std::lock_guard</code> 在灵活性上有优势，它可能在性能上略逊一筹，因为它需要处理更多的状态和潜在的操作。但在需要使用条件变量或复杂锁管理的场景中，这种性能损失通常是可以接受的。</p>
+<h2 id="三、伪唤醒"><a href="#三、伪唤醒" class="headerlink" title="三、伪唤醒"></a>三、伪唤醒</h2><p>伪唤醒（spurious wakeups）是多线程编程中一个已知的现象，它可以在使用条件变量时发生。伪唤醒指的是线程在没有接收到显式通知的情况下，从等待状态（如 <code>std::condition_variable</code> 的 <code>wait()</code> 方法）中意外醒来。这种情况在C++标准中被允许发生，而且发生的频率和数量都是不确定的。</p>
+<h3 id="伪唤醒的产生原因"><a href="#伪唤醒的产生原因" class="headerlink" title="伪唤醒的产生原因"></a>伪唤醒的产生原因</h3><p>伪唤醒的具体内部机制依赖于操作系统的线程调度和管理策略，它<strong>可能与操作系统如何实现线程间的信号传递和等待&#x2F;通知机制有关</strong>。通常，这些理由包括但不限于：</p>
+<ol>
+<li><p><strong>优化和性能</strong>：在某些操作系统实现中，允许伪唤醒可以使得内核的等待&#x2F;通知机制实现更加简单和高效。避免在唤醒时处理复杂的条件检查可以减少线程切换的开销。</p>
+</li>
+<li><p><strong>资源竞争</strong>：在高负载的系统中，处理信号可能涉及竞争和复杂的状态同步，伪唤醒可能是系统尝试在高并发状态下减少锁的使用或避免死锁的副作用。</p>
+</li>
+<li><p><strong>中断和信号处理</strong>：有时系统中断或外部信号可能导致线程提前从等待状态返回。</p>
+</li>
+</ol>
+<h3 id="应对伪唤醒的策略"><a href="#应对伪唤醒的策略" class="headerlink" title="应对伪唤醒的策略"></a>应对伪唤醒的策略</h3><p>由于伪唤醒是允许发生的，C++标准库设计了 <code>std::condition_variable</code> 的 <code>wait()</code> 函数，允许它接受一个谓词（predicate）。这个设计确保即使在伪唤醒发生后，只有当谓词为真时，等待循环才会停止。这就是为什么在使用条件变量时，通常推荐使用如下模式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">std::unique_lock&lt;std::mutex&gt; <span class="hljs-title">lk</span><span class="hljs-params">(mut)</span></span>;<br>data_cond.<span class="hljs-built_in">wait</span>(lk, []&#123; <span class="hljs-keyword">return</span> !data_queue.<span class="hljs-built_in">empty</span>(); &#125;);  <span class="hljs-comment">// 谓词检查队列非空</span><br></code></pre></td></tr></table></figure>
+
+<p>在这个模式中，即使发生了伪唤醒，谓词函数将检查条件是否真正满足，如果不满足，线程将会再次进入等待状态。</p>
+<p><strong>故此，若判定函数有副作用，则不建议选取它来查验条件。</strong> 倘若真的要这么做，就有可能多次产生副作用，所以必须准备好应对方法。譬如，每次被调用时，判定函数就顺带提高所属线程的优先级，该提升动作即产生的副作用。结果，多次伪唤醒可“意外地”令线程优先级变得非常高。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C++并发：等待条件成立</div>
+      <div>http://blog.luliang.online/2024/05/15/C++并发：等待条件成立/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/05/15/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E6%9E%84%E5%BB%BA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%98%9F%E5%88%97/" title="C++并发：构建线程安全的队列">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">C++并发：构建线程安全的队列</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/14/C++%EF%BC%9A%E5%B9%B6%E5%8F%91%E4%BF%9D%E6%8A%A4/" title="C++：并发保护">
+                        <span class="hidden-mobile">C++：并发保护</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

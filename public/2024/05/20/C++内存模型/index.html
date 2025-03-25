@@ -1,0 +1,1048 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文将会讨论：Linux 下 C、C++的内存模型。 一、C以下是一个示例，通过打印地址的值以及借助 nm 工具，来判断内存区域： 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566#incl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++内存模型">
+<meta property="og:url" content="http://blog.luliang.online/2024/05/20/C++%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文将会讨论：Linux 下 C、C++的内存模型。 一、C以下是一个示例，通过打印地址的值以及借助 nm 工具，来判断内存区域： 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566#incl">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/93aa44359ba942fcabbf50c03b8f004a_1720253671766.png?token=ANB4BCIWR6S5CECRDSLV4CDGRD6SW">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ab6b61a46b554d9d9ea81b9930829204_1720253679644.png?token=ANB4BCPWLLOQJAMFBWNBT4LGRD6S2">
+<meta property="article:published_time" content="2024-05-20T05:01:08.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.768Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/93aa44359ba942fcabbf50c03b8f004a_1720253671766.png?token=ANB4BCIWR6S5CECRDSLV4CDGRD6SW">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>C++内存模型 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C++内存模型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-20 13:01" pubdate>
+          2024年5月20日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">C++内存模型</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文将会讨论：Linux 下 C、C++的内存模型。</p>
+<h2 id="一、C"><a href="#一、C" class="headerlink" title="一、C"></a>一、C</h2><p>以下是一个示例，通过打印地址的值以及借助 <code>nm</code> 工具，来判断内存区域：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> A;            <span class="hljs-comment">// 全局未初始化的变量</span><br><span class="hljs-type">int</span> B = <span class="hljs-number">0</span>;        <span class="hljs-comment">// 全局已初始化为0的变量</span><br><span class="hljs-type">int</span> C = <span class="hljs-number">2</span>;        <span class="hljs-comment">// 全局初始化变量</span><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> D;     <span class="hljs-comment">// 全局静态未初始化变量</span><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> E = <span class="hljs-number">0</span>; <span class="hljs-comment">// 全局静态初始化为0变量</span><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> F = <span class="hljs-number">4</span>; <span class="hljs-comment">// 全局静态已初始化变量</span><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> G = <span class="hljs-number">5</span>;  <span class="hljs-comment">// 全局常量</span><br><span class="hljs-type">const</span> <span class="hljs-type">char</span> H = <span class="hljs-number">6</span>;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>    <span class="hljs-type">int</span> a;        <span class="hljs-comment">// 局部未初始化变量</span><br>    <span class="hljs-type">int</span> b = <span class="hljs-number">0</span>;    <span class="hljs-comment">// 局部已初始化变量</span><br>    <span class="hljs-type">int</span> c = <span class="hljs-number">2</span>;    <span class="hljs-comment">// 局部初始化变量</span><br>    <span class="hljs-type">static</span> <span class="hljs-type">int</span> d; <span class="hljs-comment">// 局部静态未初始化变量</span><br>    <span class="hljs-type">static</span> <span class="hljs-type">int</span> e = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">static</span> <span class="hljs-type">int</span> f = <span class="hljs-number">4</span>; <span class="hljs-comment">// 局部静态已初始化变量</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">int</span> g = <span class="hljs-number">5</span>;  <span class="hljs-comment">// 局部静态常量</span><br><br>    <span class="hljs-type">char</span> char1[] = <span class="hljs-string">&quot;abcde&quot;</span>; <span class="hljs-comment">// 局部字符数组变量</span><br>    <span class="hljs-type">char</span> *cptr = <span class="hljs-string">&quot;123456&quot;</span>;  <span class="hljs-comment">// 指向字符串常量</span><br><br>    <span class="hljs-type">int</span> *heap = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>) * <span class="hljs-number">4</span>); <span class="hljs-comment">// 堆</span><br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;PID is %d\n\n&quot;</span>, getpid());<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Int A         A_addr = %p\n&quot;</span>, &amp;A);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Int B = 0     B_addr = %p\n&quot;</span>, &amp;B);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Int C = 2     C_addr = %p\n&quot;</span>, &amp;C);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Static int D  D_addr = %p\n&quot;</span>, &amp;D);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Static int E = 0 E_addr = %p\n&quot;</span>, &amp;E);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Static int F = 4 F_addr = %p\n&quot;</span>, &amp;F);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Const int G = 5 G_addr = %p\n&quot;</span>, &amp;G);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Const char H = 6 H_addr = %p\n&quot;</span>, &amp;H);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;int a               a_addr = %p\n&quot;</span>, &amp;a);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;int b = 0           b_addr = %p\n&quot;</span>, &amp;b);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;int c = 2           c_addr = %p\n&quot;</span>, &amp;c);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;static int d        d_addr = %p\n&quot;</span>, &amp;d);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;static int e = 0    e_addr = %p\n&quot;</span>, &amp;e);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;static int f = 4    f_addr = %p\n&quot;</span>, &amp;f);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;const int g = 5     g_addr = %p\n&quot;</span>, &amp;g);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Char array char1[] = \&quot;abcde\&quot;\tAddress = %p\n&quot;</span>, (<span class="hljs-type">void</span> *)char1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Address of char1[]\t\t= %p\n&quot;</span>, (<span class="hljs-type">void</span> *)&amp;char1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Char pointer *cptr = &#x27;123456&#x27;\tAddress = %p\n&quot;</span>, (<span class="hljs-type">void</span> *)&amp;cptr);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Value pointed by cptr\t\t= %c\n&quot;</span>, *cptr);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Cptr points to\t\t\t= %p\n&quot;</span>, cptr);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Heap has space of sizeof(int)*4\tAddress = %p\n&quot;</span>, (<span class="hljs-type">void</span> *)heap);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Address of heap pointer\t\t= %p\n&quot;</span>, (<span class="hljs-type">void</span> *)&amp;heap);<br><br>    pause(); <span class="hljs-comment">// 程序暂停在这里直到收到信号才继续，方便观察进程地址空间</span><br><br>    <span class="hljs-comment">// 分配的堆内存应该在使用完毕后释放</span><br>    <span class="hljs-built_in">free</span>(heap);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs bash">./mainc<br>PID is 227353<br><br>Int A         A_addr = 0x55fd24d58020<br>Int B = 0     B_addr = 0x55fd24d58024<br>Int C = 2     C_addr = 0x55fd24d58010<br>Static int D  D_addr = 0x55fd24d58028<br>Static int E = 0 E_addr = 0x55fd24d5802c<br>Static int F = 4 F_addr = 0x55fd24d58014<br>Const int G = 5 G_addr = 0x55fd24d56008<br>Const char H = 6 H_addr = 0x55fd24d5600c<br><br>int a               a_addr = 0x7ffe78385890<br>int b = 0           b_addr = 0x7ffe78385894<br>int c = 2           c_addr = 0x7ffe78385898<br>static int d        d_addr = 0x55fd24d58030<br>static int e = 0    e_addr = 0x55fd24d58034<br>static int f = 4    f_addr = 0x55fd24d58018<br>const int g = 5     g_addr = 0x7ffe7838589c<br><br>Char array char1[] = <span class="hljs-string">&quot;abcde&quot;</span>    Address = 0x7ffe783858b2<br>Address of char1[]              = 0x7ffe783858b2<br>Char pointer *cptr = <span class="hljs-string">&#x27;123456&#x27;</span>   Address = 0x7ffe783858a0<br>Value pointed by cptr           = 1<br>Cptr points to                  = 0x55fd24d5600d<br>Heap has space of sizeof(int)*4 Address = 0x55fd259972a0<br>Address of heap pointer         = 0x7ffe783858a8<br></code></pre></td></tr></table></figure>
+<p>再看看符号地址：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs bash">nm -n ./mainc<br>...<br>0000000000001000 t _init<br>0000000000001120 T _start<br>0000000000001150 t deregister_tm_clones<br>0000000000001180 t register_tm_clones<br>00000000000011c0 t __do_global_dtors_aux<br>0000000000001200 t frame_dummy<br>0000000000001209 T main<br>00000000000014d0 T __libc_csu_init<br>0000000000001540 T __libc_csu_fini<br>0000000000001548 T _fini<br>0000000000002000 R _IO_stdin_used<br>0000000000002008 R G<br>000000000000200c R H<br>0000000000002318 r __GNU_EH_FRAME_HDR<br>0000000000002464 r __FRAME_END__<br>0000000000003d88 d __frame_dummy_init_array_entry<br>0000000000003d88 d __init_array_start<br>0000000000003d90 d __do_global_dtors_aux_fini_array_entry<br>0000000000003d90 d __init_array_end<br>0000000000003d98 d _DYNAMIC<br>0000000000003f88 d _GLOBAL_OFFSET_TABLE_<br>0000000000004000 D __data_start<br>0000000000004000 W data_start<br>0000000000004008 D __dso_handle<br>0000000000004010 D C<br>0000000000004014 d F<br>0000000000004018 d f.0<br>000000000000401c B __bss_start<br>000000000000401c b completed.0<br>000000000000401c D _edata<br>0000000000004020 B A<br>0000000000004020 D __TMC_END__<br>0000000000004024 B B<br>0000000000004028 b D<br>000000000000402c b E<br>0000000000004030 b d.2<br>0000000000004034 b e.1<br>0000000000004038 B _end<br></code></pre></td></tr></table></figure>
+
+
+<p>先从地址最低的变量开始分析:</p>
+<table>
+<thead>
+<tr>
+<th align="center">变量</th>
+<th align="center">类型</th>
+<th align="center">地址</th>
+<th align="center">区段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">G</td>
+<td align="center">global const int G &#x3D; 5</td>
+<td align="center">0x55fd24d56008</td>
+<td align="center">R</td>
+</tr>
+<tr>
+<td align="center">H</td>
+<td align="center">global const char H &#x3D; 6</td>
+<td align="center">0x55fd24d5600c</td>
+<td align="center">R</td>
+</tr>
+<tr>
+<td align="center">Cptr</td>
+<td align="center">‘’123456’’</td>
+<td align="center">0x55fd24d5600d</td>
+<td align="center">R</td>
+</tr>
+<tr>
+<td align="center">C</td>
+<td align="center">global int C &#x3D; 2</td>
+<td align="center">0x55fd24d58010</td>
+<td align="center">D</td>
+</tr>
+<tr>
+<td align="center">F</td>
+<td align="center">global static int F &#x3D; 4</td>
+<td align="center">0x55fd24d58014</td>
+<td align="center">d</td>
+</tr>
+<tr>
+<td align="center">f</td>
+<td align="center">static int f &#x3D; 4</td>
+<td align="center">0x55fd24d58018</td>
+<td align="center">d</td>
+</tr>
+<tr>
+<td align="center">A</td>
+<td align="center">global int A</td>
+<td align="center">0x55fd24d58020</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center">B</td>
+<td align="center">global int B &#x3D; 0</td>
+<td align="center">0x55fd24d58024</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center">D</td>
+<td align="center">global static int D</td>
+<td align="center">0x55fd24d58028</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">E</td>
+<td align="center">global static int E &#x3D; 0</td>
+<td align="center">0x55fd24d5802c</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">d</td>
+<td align="center">static int d</td>
+<td align="center">0x55fd24d58030</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">e</td>
+<td align="center">static int e &#x3D; 0</td>
+<td align="center">0x55fd24d58034</td>
+<td align="center">b</td>
+</tr>
+</tbody></table>
+<h3 id="变量分析"><a href="#变量分析" class="headerlink" title="变量分析"></a>变量分析</h3><ol>
+<li><p><strong>G</strong> (global const int G &#x3D; 5)</p>
+<ul>
+<li><strong>类型</strong>: <code>R</code> (只读数据段)</li>
+<li><strong>原因</strong>: 因为 <code>G</code> 是一个全局的 <code>const</code> 变量，其值在编译时就已确定，且不可变，因此放在只读数据段。</li>
+</ul>
+</li>
+<li><p><strong>H</strong> (global const char H &#x3D; 6)</p>
+<ul>
+<li><strong>类型</strong>: <code>R</code> (只读数据段)</li>
+<li><strong>原因</strong>: 与 <code>G</code> 相似，<code>H</code> 也是一个全局的 <code>const</code> 变量，不可变。</li>
+</ul>
+</li>
+<li><p><strong>Cptr</strong> (‘123456’)</p>
+<ul>
+<li><strong>类型</strong>: <code>R</code> (只读数据段)</li>
+<li><strong>原因</strong>: <code>Cptr</code> 指向的是一个字符串字面量，字符串字面量通常存储在只读数据段中，以防止被修改。</li>
+</ul>
+</li>
+<li><p><strong>C</strong> (global int C &#x3D; 2)</p>
+<ul>
+<li><strong>类型</strong>: <code>D</code> (已初始化的数据段)</li>
+<li><strong>原因</strong>: <code>C</code> 是一个已初始化的全局变量，存储在数据段中。</li>
+</ul>
+</li>
+<li><p><strong>F</strong> (global static int F &#x3D; 4)</p>
+<ul>
+<li><strong>类型</strong>: <code>d</code> (局部数据段，但这里应理解为私有初始化数据)</li>
+<li><strong>原因</strong>: <code>F</code> 是一个静态全局变量，已初始化，并且它是私有的，因此与全局非静态变量相比，存取权限有所不同。</li>
+</ul>
+</li>
+<li><p><strong>f</strong> (static int f &#x3D; 4)</p>
+<ul>
+<li><strong>类型</strong>: <code>d</code> (局部数据段，或私有初始化数据)</li>
+<li><strong>原因</strong>: 类似于 <code>F</code>，<code>f</code> 是静态的，已初始化，通常不会被程序的其他部分直接访问。</li>
+</ul>
+</li>
+<li><p><strong>A</strong> (global int A)</p>
+<ul>
+<li><strong>类型</strong>: <code>B</code> (未初始化的全局数据段，bss)</li>
+<li><strong>原因</strong>: <code>A</code> 是一个全局未初始化的变量，默认为 0，放在 bss 段以节约空间。</li>
+</ul>
+</li>
+<li><p><strong>B</strong> (global int B &#x3D; 0)</p>
+<ul>
+<li><strong>类型</strong>: <code>B</code> (bss)</li>
+<li><strong>原因</strong>: 虽然 <code>B</code> 被显式初始化为 0，但通常未执行任何操作的全局静态数据（即初始化为默认值）也会放在 bss 段。</li>
+</ul>
+</li>
+<li><p><strong>D</strong> (global static int D)</p>
+<ul>
+<li><strong>类型</strong>: <code>b</code> (私有未初始化数据)</li>
+<li><strong>原因</strong>: <code>D</code> 是一个全局静态未初始化变量，通常存储在专门的静态数据段中，但私有。</li>
+</ul>
+</li>
+<li><p><strong>E</strong> (global static int E &#x3D; 0)</p>
+<ul>
+<li><strong>类型</strong>: <code>b</code> (私有未初始化数据)</li>
+<li><strong>原因</strong>: 类似于 <code>D</code>，尽管 <code>E</code> 显式初始化为 0，但它是静态的且私有。</li>
+</ul>
+</li>
+<li><p><strong>d</strong> (static int d)</p>
+<ul>
+<li><strong>类型</strong>: <code>b</code> (私有未初始化数据)</li>
+<li><strong>原因</strong>: <code>d</code> 作为静态变量，未初始化，私有存储。</li>
+</ul>
+</li>
+<li><p><strong>e</strong> (static int e &#x3D; 0)</p>
+<ul>
+<li><strong>类型</strong>: <code>b</code> (私有未初始化数据)</li>
+<li><strong>原因</strong>: 尽管初始化为 0，<code>e</code> 作为静态私有变量，其处理方式与其他未初始化静态变量相同。</li>
+</ul>
+</li>
+</ol>
+<p>至于局部变量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> a;        <span class="hljs-comment">// 局部未初始化变量</span><br><span class="hljs-type">int</span> b = <span class="hljs-number">0</span>;    <span class="hljs-comment">// 局部已初始化变量</span><br><span class="hljs-type">int</span> c = <span class="hljs-number">2</span>;    <span class="hljs-comment">// 局部初始化变量</span><br>...<br><span class="hljs-type">const</span> <span class="hljs-type">int</span> g = <span class="hljs-number">5</span>;  <span class="hljs-comment">// 局部静态常量</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，它们都位于栈区（地址很高）：</p>
+<table>
+<thead>
+<tr>
+<th align="center">变量</th>
+<th align="center">类型</th>
+<th align="center">地址</th>
+<th align="center">区段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">a</td>
+<td align="center">int a</td>
+<td align="center">0x7ffe78385890</td>
+<td align="center">stack</td>
+</tr>
+<tr>
+<td align="center">b</td>
+<td align="center">int b &#x3D; 0</td>
+<td align="center">0x7ffe78385894</td>
+<td align="center">stack</td>
+</tr>
+<tr>
+<td align="center">c</td>
+<td align="center">int c &#x3D; 2</td>
+<td align="center">0x7ffe78385898</td>
+<td align="center">stack</td>
+</tr>
+<tr>
+<td align="center">g</td>
+<td align="center">const int g &#x3D; 5</td>
+<td align="center">0x7ffe7838589c</td>
+<td align="center">stack</td>
+</tr>
+</tbody></table>
+<h2 id="二、C"><a href="#二、C" class="headerlink" title="二、C++"></a>二、C++</h2><p>我们稍微对上一个程序进行修改，增加了一些变量：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> A;            <span class="hljs-comment">// 全局未初始化的变量</span><br><span class="hljs-type">int</span> B = <span class="hljs-number">0</span>;        <span class="hljs-comment">// 全局已初始化为0的变量</span><br><span class="hljs-type">int</span> C = <span class="hljs-number">2</span>;        <span class="hljs-comment">// 全局初始化变量</span><br><span class="hljs-type">long</span> W ;<br><span class="hljs-type">long</span> X = <span class="hljs-number">0</span>;<br><span class="hljs-type">long</span> Y = <span class="hljs-number">1</span>;<br><span class="hljs-type">static</span> <span class="hljs-type">int</span> D;     <span class="hljs-comment">// 全局静态未初始化变量</span><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> E = <span class="hljs-number">0</span>; <span class="hljs-comment">// 全局静态初始化为0变量</span><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> F = <span class="hljs-number">4</span>; <span class="hljs-comment">// 全局静态已初始化变量</span><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> G = <span class="hljs-number">5</span>;  <span class="hljs-comment">// 全局常量</span><br><span class="hljs-type">const</span> <span class="hljs-type">char</span> H = <span class="hljs-number">6</span>;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> </span>&#123;<br>    <span class="hljs-type">int</span> a;        <span class="hljs-comment">// 局部未初始化变量</span><br>    <span class="hljs-type">int</span> b = <span class="hljs-number">0</span>;    <span class="hljs-comment">// 局部已初始化变量</span><br>    <span class="hljs-type">int</span> c = <span class="hljs-number">2</span>;    <span class="hljs-comment">// 局部初始化变量</span><br>    <span class="hljs-type">static</span> <span class="hljs-type">int</span> d; <span class="hljs-comment">// 局部静态未初始化变量</span><br>    <span class="hljs-type">static</span> <span class="hljs-type">int</span> e = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">static</span> <span class="hljs-type">int</span> f = <span class="hljs-number">4</span>; <span class="hljs-comment">// 局部静态已初始化变量</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">int</span> g = <span class="hljs-number">5</span>;  <span class="hljs-comment">// 局部静态常量</span><br><br>    <span class="hljs-type">char</span> char1[] = <span class="hljs-string">&quot;abcde&quot;</span>; <span class="hljs-comment">// 局部字符数组变量</span><br>    <span class="hljs-type">char</span> *cptr = <span class="hljs-string">&quot;123456&quot;</span>;  <span class="hljs-comment">// 指向字符串常量</span><br><br>    <span class="hljs-comment">//int *heap = malloc(sizeof(int) * 4); // 堆</span><br>    <span class="hljs-type">int</span> *heap = <span class="hljs-keyword">new</span> <span class="hljs-type">int</span>[<span class="hljs-number">4</span>];<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;PID is %d\n\n&quot;</span>, <span class="hljs-built_in">getpid</span>());<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Int A         A_addr = %p\n&quot;</span>, &amp;A);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Int B = 0     B_addr = %p\n&quot;</span>, &amp;B);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Int C = 2     C_addr = %p\n&quot;</span>, &amp;C);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;long W        W_addr = %p\n&quot;</span>, &amp;W);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;long X = 0    X_addr = %p\n&quot;</span>, &amp;X);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;long Y = 1    Y_addr = %p\n&quot;</span>, &amp;Y);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Static int D  D_addr = %p\n&quot;</span>, &amp;D);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Static int E = 0 E_addr = %p\n&quot;</span>, &amp;E);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Static int F = 4 F_addr = %p\n&quot;</span>, &amp;F);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Const int G = 5 G_addr = %p\n&quot;</span>, &amp;G);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Const char H = 6 H_addr = %p\n&quot;</span>, &amp;H);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;int a               a_addr = %p\n&quot;</span>, &amp;a);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;int b = 0           b_addr = %p\n&quot;</span>, &amp;b);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;int c = 2           c_addr = %p\n&quot;</span>, &amp;c);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;static int d        d_addr = %p\n&quot;</span>, &amp;d);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;static int e = 0    e_addr = %p\n&quot;</span>, &amp;e);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;static int f = 4    f_addr = %p\n&quot;</span>, &amp;f);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;const int g = 5     g_addr = %p\n&quot;</span>, &amp;g);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Char array char1[] = \&quot;abcde\&quot;\tAddress = %p\n&quot;</span>, (<span class="hljs-type">void</span> *)char1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Address of char1[]\t\t= %p\n&quot;</span>, (<span class="hljs-type">void</span> *)&amp;char1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Char pointer *cptr = &#x27;123456&#x27;\tAddress = %p\n&quot;</span>, (<span class="hljs-type">void</span> *)&amp;cptr);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Value pointed by cptr\t\t= %c\n&quot;</span>, *cptr);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Cptr points to\t\t\t= %p\n&quot;</span>, cptr);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Heap has space of sizeof(int)*4\tAddress = %p\n&quot;</span>, (<span class="hljs-type">void</span> *)heap);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Address of heap pointer\t\t= %p\n&quot;</span>, (<span class="hljs-type">void</span> *)&amp;heap);<br><br>    <span class="hljs-built_in">pause</span>(); <span class="hljs-comment">// 程序暂停在这里直到收到信号才继续，方便观察进程地址空间</span><br><br>    <span class="hljs-comment">// 分配的堆内存应该在使用完毕后释放</span><br>    <span class="hljs-built_in">free</span>(heap);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs bash">./maincpp <br>PID is 227730<br><br>Int A         A_addr = 0x5651e3311030<br>Int B = 0     B_addr = 0x5651e3311034<br>Int C = 2     C_addr = 0x5651e3311010<br>long W        W_addr = 0x5651e3311038<br>long X = 0    X_addr = 0x5651e3311040<br>long Y = 1    Y_addr = 0x5651e3311018<br>Static int D  D_addr = 0x5651e3311048<br>Static int E = 0 E_addr = 0x5651e331104c<br>Static int F = 4 F_addr = 0x5651e3311020<br>Const int G = 5 G_addr = 0x5651e330f008<br>Const char H = 6 H_addr = 0x5651e330f00c<br><br>int a               a_addr = 0x7ffc06dd9ab0<br>int b = 0           b_addr = 0x7ffc06dd9ab4<br>int c = 2           c_addr = 0x7ffc06dd9ab8<br>static int d        d_addr = 0x5651e3311050<br>static int e = 0    e_addr = 0x5651e3311054<br>static int f = 4    f_addr = 0x5651e3311024<br>const int g = 5     g_addr = 0x7ffc06dd9abc<br><br>Char array char1[] = <span class="hljs-string">&quot;abcde&quot;</span>    Address = 0x7ffc06dd9ad2<br>Address of char1[]              = 0x7ffc06dd9ad2<br>Char pointer *cptr = <span class="hljs-string">&#x27;123456&#x27;</span>   Address = 0x7ffc06dd9ac0<br>Value pointed by cptr           = 1<br>Cptr points to                  = 0x5651e330f00d<br>Heap has space of sizeof(int)*4 Address = 0x5651e4a3deb0<br>Address of heap pointer         = 0x7ffc06dd9ac8<br></code></pre></td></tr></table></figure>
+
+<p>打印一下符号表：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs bash">nm -n ./maincpp<br>...<br>0000000000001000 t _init<br>0000000000001120 T _start<br>0000000000001150 t deregister_tm_clones<br>0000000000001180 t register_tm_clones<br>00000000000011c0 t __do_global_dtors_aux<br>0000000000001200 t frame_dummy<br>0000000000001209 T main<br>0000000000001560 T __libc_csu_init<br>00000000000015d0 T __libc_csu_fini<br>00000000000015d8 T _fini<br>0000000000002000 R _IO_stdin_used<br>0000000000002008 r _ZL1G<br>000000000000200c r _ZL1H<br>0000000000002368 r __GNU_EH_FRAME_HDR<br>00000000000024b4 r __FRAME_END__<br>0000000000003d78 d __frame_dummy_init_array_entry<br>0000000000003d78 d __init_array_start<br>0000000000003d80 d __do_global_dtors_aux_fini_array_entry<br>0000000000003d80 d __init_array_end<br>0000000000003d88 d _DYNAMIC<br>0000000000003f88 d _GLOBAL_OFFSET_TABLE_<br>0000000000004000 D __data_start<br>0000000000004000 W data_start<br>0000000000004008 D __dso_handle<br>0000000000004010 D C<br>0000000000004018 D Y<br>0000000000004020 d _ZL1F<br>0000000000004024 d _ZZ4mainE1f<br>0000000000004028 B __bss_start<br>0000000000004028 b completed.0<br>0000000000004028 D _edata<br>0000000000004028 D __TMC_END__<br>0000000000004030 B A<br>0000000000004034 B B<br>0000000000004038 B W<br>0000000000004040 B X<br>0000000000004048 b _ZL1D<br>000000000000404c b _ZL1E<br>0000000000004050 b _ZZ4mainE1d<br>0000000000004054 b _ZZ4mainE1e<br>0000000000004058 B _end<br></code></pre></td></tr></table></figure>
+
+<p>先从地址最低的变量开始分析:</p>
+<table>
+<thead>
+<tr>
+<th align="center">变量</th>
+<th align="center">类型</th>
+<th align="center">地址</th>
+<th align="center">区段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">G</td>
+<td align="center">global const int G &#x3D; 5</td>
+<td align="center">0x5651e330f008</td>
+<td align="center">r</td>
+</tr>
+<tr>
+<td align="center">H</td>
+<td align="center">global const char H &#x3D; 6</td>
+<td align="center">0x5651e330f00c</td>
+<td align="center">r</td>
+</tr>
+<tr>
+<td align="center">Cptr</td>
+<td align="center">‘’123456’’</td>
+<td align="center">0x5651e330f00d</td>
+<td align="center">R</td>
+</tr>
+<tr>
+<td align="center">C</td>
+<td align="center">global int C &#x3D; 2</td>
+<td align="center">0x5651e3311010</td>
+<td align="center">D</td>
+</tr>
+<tr>
+<td align="center">Y</td>
+<td align="center">global long Y &#x3D; 1</td>
+<td align="center">0x5651e3311018</td>
+<td align="center">D</td>
+</tr>
+<tr>
+<td align="center">F</td>
+<td align="center">global static int F &#x3D; 4</td>
+<td align="center">0x5651e3311020</td>
+<td align="center">d</td>
+</tr>
+<tr>
+<td align="center">f</td>
+<td align="center">static int f &#x3D; 4</td>
+<td align="center">0x5651e3311024</td>
+<td align="center">d</td>
+</tr>
+<tr>
+<td align="center">A</td>
+<td align="center">global int A</td>
+<td align="center">0x5651e3311030</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center">B</td>
+<td align="center">global int B &#x3D; 0</td>
+<td align="center">0x5651e3311034</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center">W</td>
+<td align="center">global long W</td>
+<td align="center">0x5651e3311038</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center">X</td>
+<td align="center">global long X &#x3D; 0</td>
+<td align="center">0x5651e3311040</td>
+<td align="center">B</td>
+</tr>
+<tr>
+<td align="center">D</td>
+<td align="center">global static int D</td>
+<td align="center">0x5651e3311048</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">E</td>
+<td align="center">global static int E &#x3D; 0</td>
+<td align="center">0x5651e331104c</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">d</td>
+<td align="center">static int d</td>
+<td align="center">0x5651e3311050</td>
+<td align="center">b</td>
+</tr>
+<tr>
+<td align="center">e</td>
+<td align="center">static int e &#x3D; 0</td>
+<td align="center">0x5651e3311054</td>
+<td align="center">b</td>
+</tr>
+</tbody></table>
+<p>可以看到，C&#x2F;C++中，<code>.data</code> 和 <code>.bss</code> 的距离非常近。但是 C++对 .rodata 做出了 R、r 的区分。还可以看到内存对齐，比如：</p>
+<table>
+<thead>
+<tr>
+<th align="center">变量</th>
+<th align="center">类型</th>
+<th align="center">地址</th>
+<th align="center">区段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">C</td>
+<td align="center">global int C &#x3D; 2</td>
+<td align="center">0x5651e3311010</td>
+<td align="center">D</td>
+</tr>
+<tr>
+<td align="center">Y</td>
+<td align="center">global long Y &#x3D; 1</td>
+<td align="center">0x5651e3311018</td>
+<td align="center">D</td>
+</tr>
+<tr>
+<td align="center">F</td>
+<td align="center">global static int F &#x3D; 4</td>
+<td align="center">0x5651e3311020</td>
+<td align="center">d</td>
+</tr>
+</tbody></table>
+<p><code>C</code> 的地址为 <code>0x5651e3311010</code>，而 <code>Y</code> 的地址为 <code>0x5651e3311018</code>。从 <code>C</code> 到 <code>Y</code> 的间隔是 <code>8</code> 个字节，而非 <code>4</code> 个字节。这表明编译器在 <code>C</code> 和 <code>Y</code> 之间插入了填充（padding），以确保 <code>Y</code> 能够在 8 字节边界上对齐。</p>
+<h2 id="三、总结"><a href="#三、总结" class="headerlink" title="三、总结"></a>三、总结</h2><p>我们可以看到可执行程序内部都是分段进行存储的：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/93aa44359ba942fcabbf50c03b8f004a_1720253671766.png?token=ANB4BCIWR6S5CECRDSLV4CDGRD6SW" alt="在这里插入图片描述"></p>
+<ul>
+<li><p><code>.text section</code>：代码段。通常存放已编译程序的机器代码，一般操作系统加载后，这部分是只读的。</p>
+</li>
+<li><p><code>.rodatasection</code>：只读数据段。此段的数据不可修改，存放程序中会使用的<strong>常量</strong>。比如程序中的常量字符串 “aasdasdaaasdasd”。</p>
+</li>
+<li><p><code>.datasection</code>：数据段。主要用于存放<strong>已初始化的不为 0 全局变量、静态变量</strong>。</p>
+</li>
+<li><p><code>.bsssection</code>:  <code>bss</code> 段。该段主要存储<strong>未初始化或者初始化为 0 的全局变量、未初始化以及初始化为 0 的全局静态变量、未初始化以及初始化为 0 的静态局部变量。</strong></p>
+</li>
+</ul>
+<p>操作系统在加载 ELF 文件时会将按照标准依次读取每个段中的内容，并将其加载到内存中，同时为该进程分配栈空间，并将 <code>pc</code> 寄存器指向代码段的起始位置，然后启动进程。</p>
+<p>从操作系统的本身来讲，以上存储区在该程序内存中的虚拟地址分布是如下形式（虚拟地址从低地址到高地址，实际的物理地址可能是随机的）：<code>.text→.data→.bss→heap→unused→stack→...</code>：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ab6b61a46b554d9d9ea81b9930829204_1720253679644.png?token=ANB4BCPWLLOQJAMFBWNBT4LGRD6S2" alt="在这里插入图片描述"></p>
+<p><strong>C++ 程序在运行时也会按照不同的功能划分不同的段</strong>，C++ 程序使用的内存分区一般包括：<strong>栈、堆、全局&#x2F;静态存储区、常量存储区、代码区。</strong></p>
+<ul>
+<li><p>栈：目前绝大部分 </p>
+</li>
+<li><p>CPU 体系都是基于栈来运行程序，栈中主要存放函数的局部变量、函数参数、返回地址等，栈空间一般由操作系统进行默认分配或者程序指定分配，栈空间在进程生存周期一直都存在，当进程退出时，操作系统才会对栈空间进行回收。</p>
+</li>
+<li><p>堆：动态申请的内存空间，就是由 <code>malloc</code> 函数或者 <code>new</code> 函数分配的内存块，由程序控制它的分配和释放，可以在程序运行周期内随时进行申请和释放，如果进程结束后还没有释放，操作系统会自动回收。我们可以利用</p>
+</li>
+<li><p>全局区&#x2F;静态存储区：主要为 <code>.bss</code> 段和 <code>.data</code> 段，存放全局变量和静态变量，程序运行结束操作系统自动释放，在 C 中，未初始化的放在 <code>.bss</code> 段中，初始化的放在 <code>.data</code> 段中，C++ 中不再区分了。</p>
+</li>
+<li><p>常量存储区：<code>.rodata</code> 段，存放的是常量，不允许修改，程序运行结束自动释放。</p>
+</li>
+<li><p>代码区：<code>.text</code> 段，存放代码，不允许修改，但可以执行。编译后的二进制文件存放在这里。</p>
+</li>
+</ul>
+<p><strong>参考</strong>：</p>
+<blockquote>
+<p>作者：LeetCode<br>链接：<a target="_blank" rel="noopener" href="https://leetcode.cn/leetbook/read/cmian-shi-tu-po/vv6a76/">https://leetcode.cn/leetbook/read/cmian-shi-tu-po/vv6a76/</a></p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C++内存模型</div>
+      <div>http://blog.luliang.online/2024/05/20/C++内存模型/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/05/25/debugger%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%89%93%E6%96%AD%E7%82%B9%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/" title="debugger（一）：打断点的实现以及案例分析">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">debugger（一）：打断点的实现以及案例分析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/18/C++%EF%BC%9A%E5%86%8D%E8%B0%88%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" title="C++：再谈智能指针">
+                        <span class="hidden-mobile">C++：再谈智能指针</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

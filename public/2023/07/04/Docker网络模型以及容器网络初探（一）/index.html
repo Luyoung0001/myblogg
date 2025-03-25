@@ -1,0 +1,767 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言安装Docker时，它会自动创建三个网络，默认bridge网桥（创建容器默认连接到此网络）、 none 、host。各个方式有各自的特点，它们有着特定的差距，比如网络性能等，一般按照实际应用方式手动指定（或者选用默认）一个网络，或者使用命令自己添加一个自己定义的网络。 一、关于Docker0Docker0 是 Docker 引擎创建的默认网络接口。当 Docker 引擎安装和启动时，它">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker网络模型以及容器网络初探（一）">
+<meta property="og:url" content="http://blog.luliang.online/2023/07/04/Docker%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言安装Docker时，它会自动创建三个网络，默认bridge网桥（创建容器默认连接到此网络）、 none 、host。各个方式有各自的特点，它们有着特定的差距，比如网络性能等，一般按照实际应用方式手动指定（或者选用默认）一个网络，或者使用命令自己添加一个自己定义的网络。 一、关于Docker0Docker0 是 Docker 引擎创建的默认网络接口。当 Docker 引擎安装和启动时，它">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3ef0f50bbeff41279852706101fa273a_1720253746882.png?token=ANB4BCKDN6AXTOJXMEV2JF3GRD6XC">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/8bb4cafcf70b41018793d0fc80f3fa11_1720253746882.png?token=ANB4BCKER4WYBYWSZETJLZ3GRD6XG">
+<meta property="article:published_time" content="2023-07-04T07:51:59.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.770Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="容器">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3ef0f50bbeff41279852706101fa273a_1720253746882.png?token=ANB4BCKDN6AXTOJXMEV2JF3GRD6XC">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Docker网络模型以及容器网络初探（一） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Docker网络模型以及容器网络初探（一）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-04 15:51" pubdate>
+          2023年7月4日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Docker网络模型以及容器网络初探（一）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>安装Docker时，它会自动创建三个网络，默认<code>bridge网桥</code>（创建容器默认连接到此网络）、 <code>none</code> 、<code>host</code>。各个方式有各自的特点，它们有着特定的差距，比如网络性能等，一般按照实际应用方式手动指定（或者选用默认）一个网络，或者使用命令自己添加一个自己定义的网络。</p>
+<h2 id="一、关于Docker0"><a href="#一、关于Docker0" class="headerlink" title="一、关于Docker0"></a>一、关于Docker0</h2><p>Docker0 是 Docker 引擎创建的默认网络接口。当 Docker 引擎安装和启动时，它会自动创建一个名为 docker0 的<strong>虚拟网络接口</strong>，本质上是一个虚拟网桥。</p>
+<p>Docker0 接口用于连接 <strong>Docker 容器</strong>和<strong>宿主机</strong>之间的通信。它是一个虚拟以太网桥接口，用于在 Docker 主机和容器之间进行数据传输。</p>
+<p>Docker0 接口有以下特点：</p>
+<ul>
+<li><p>IP 地址：默认情况下，Docker0 接口会<strong>自动</strong>分配一个 IP 地址，通常是 172.17.0.1。这个 IP 地址用作 Docker 主机上运行的容器的<strong>网关地址</strong>。</p>
+</li>
+<li><p>网络连接：Docker0 接口会与宿主机的物理网卡（通常是 eth0）进行连接，通过桥接的方式实现容器和宿主机之间的通信。</p>
+</li>
+<li><p>网络转发：Docker0 接口负责将从容器发出的网络流量转发到宿主机的物理网卡，以及将从宿主机发出的网络流量转发给容器。</p>
+</li>
+<li><p>网络配置：Docker0 接口的网络配置可以通过 Docker 引擎的配置文件进行调整，如修改 IP 地址范围、子网掩码等。</p>
+</li>
+</ul>
+<p>需要注意的是，Docker0 接口是与宿主机网络环境紧密相关的，每个 Docker 主机只有一个 Docker0 接口。在 Docker 容器之间通信时，可以通过 Docker0 接口进行转发，但如果需要与外部网络通信，<strong>还需要进行端口映射或使用其他网络模式</strong>。</p>
+<p><em><strong>罗素说过，我们不管听到多么复杂的概念和事物，我们应该及时的问自己，这个概念或事物真正说了些什么，或者事实究竟是什么。</strong></em></p>
+<p>那么 Docker0 到底是什么呢？</p>
+<p>启动两个容器看看。</p>
+<h2 id="二、容器网络分析"><a href="#二、容器网络分析" class="headerlink" title="二、容器网络分析"></a>二、容器网络分析</h2><h3 id="1、获取两个镜像"><a href="#1、获取两个镜像" class="headerlink" title="1、获取两个镜像"></a>1、获取两个镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull archlinux<br>docker pull ubuntu<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、以默认方式启动镜像"><a href="#2、以默认方式启动镜像" class="headerlink" title="2、以默认方式启动镜像"></a>2、以默认方式启动镜像</h3><p>以下命令以<strong>默认方式</strong>（bridge网络）创建并启动以及运行了容器里面的bash 程序（最好打开多个终端窗口，每个窗口运行不同的容器，不用来回切换），这样能直接进入容器里面：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -it --name=arch2 archlinux /bin/bash<br>docker run -it --name=ubuntu2 ubuntu /bin/bash<br></code></pre></td></tr></table></figure>
+<p>在另一个终端（宿主机）上看看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@**********:~<span class="hljs-comment"># docker ps</span><br>CONTAINER ID   IMAGE       COMMAND       CREATED        STATUS          PORTS     NAMES<br>30f913d8e3ff   ubuntu      <span class="hljs-string">&quot;/bin/bash&quot;</span>   14 hours ago   Up 35 minutes             ubuntu2<br>ec0ca9aedc9f   archlinux   <span class="hljs-string">&quot;/bin/bash&quot;</span>   14 hours ago   Up 36 minutes             arch2<br></code></pre></td></tr></table></figure>
+<p>可以看到确实有两个容器正在运行。</p>
+<h3 id="3、查看容器网络"><a href="#3、查看容器网络" class="headerlink" title="3、查看容器网络"></a>3、查看容器网络</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@********:~<span class="hljs-comment"># docker network ls</span><br>NETWORK ID     NAME           DRIVER    SCOPE<br>da149ecc5bf3   bridge         bridge    <span class="hljs-built_in">local</span><br>5c60928659e8   host           host      <span class="hljs-built_in">local</span><br>1c8eeab72508   none           null      <span class="hljs-built_in">local</span><br></code></pre></td></tr></table></figure>
+<p>可以看到本地确实有 3 个网络，因为这是以默认方式启动的，直接查看 <strong>bridge</strong> 网络信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@*******:~<span class="hljs-comment"># docker network inspect bridge</span><br>[<br>    &#123;<br>        <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;bridge&quot;</span>,<br>        <span class="hljs-string">&quot;Id&quot;</span>: <span class="hljs-string">&quot;da149ecc5bf3de9eef56945b6061cc512e78e909cde4c53b8a80cc6fb0ad3015&quot;</span>,<br>        <span class="hljs-string">&quot;Created&quot;</span>: <span class="hljs-string">&quot;2023-07-03T23:29:11.078138805+08:00&quot;</span>,<br>        <span class="hljs-string">&quot;Scope&quot;</span>: <span class="hljs-string">&quot;local&quot;</span>,<br>        <span class="hljs-string">&quot;Driver&quot;</span>: <span class="hljs-string">&quot;bridge&quot;</span>,<br>        <span class="hljs-string">&quot;EnableIPv6&quot;</span>: <span class="hljs-literal">false</span>,<br>        <span class="hljs-string">&quot;IPAM&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;Driver&quot;</span>: <span class="hljs-string">&quot;default&quot;</span>,<br>            <span class="hljs-string">&quot;Options&quot;</span>: null,<br>            <span class="hljs-string">&quot;Config&quot;</span>: [<br>                &#123;<br>                    <span class="hljs-string">&quot;Subnet&quot;</span>: <span class="hljs-string">&quot;172.18.0.0/16&quot;</span>,<br>                    <span class="hljs-string">&quot;Gateway&quot;</span>: <span class="hljs-string">&quot;172.18.0.1&quot;</span><br>                &#125;<br>            ]<br>        &#125;,<br>        <span class="hljs-string">&quot;Internal&quot;</span>: <span class="hljs-literal">false</span>,<br>        <span class="hljs-string">&quot;Attachable&quot;</span>: <span class="hljs-literal">false</span>,<br>        <span class="hljs-string">&quot;Ingress&quot;</span>: <span class="hljs-literal">false</span>,<br>        <span class="hljs-string">&quot;ConfigFrom&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;Network&quot;</span>: <span class="hljs-string">&quot;&quot;</span><br>        &#125;,<br>        <span class="hljs-string">&quot;ConfigOnly&quot;</span>: <span class="hljs-literal">false</span>,<br>        <span class="hljs-string">&quot;Containers&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;30f913d8e3fffbc5e03df7be0e99c7d43dc52c5f761638e8deae6da30933ab06&quot;</span>: &#123;<br>                <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;ubuntu2&quot;</span>,<br>                <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;b51799e6235505d0c571595cc210a004933822ab7d0c164353b6ceab562e1eb4&quot;</span>,<br>                <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:12:00:03&quot;</span>,<br>                <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.18.0.3/16&quot;</span>,<br>                <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span><br>            &#125;,<br>            <span class="hljs-string">&quot;ec0ca9aedc9fff82688a5590d8b3243cb60b33bd745962cb94ea5848bc170525&quot;</span>: &#123;<br>                <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;arch2&quot;</span>,<br>                <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;e4bdf03a6363a2b7aa80af73aba71f6f5c775025d61164dccc4474376520663f&quot;</span>,<br>                <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:12:00:02&quot;</span>,<br>                <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.18.0.2/16&quot;</span>,<br>                <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span><br>            &#125;<br>        &#125;,<br>        <span class="hljs-string">&quot;Options&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;com.docker.network.bridge.default_bridge&quot;</span>: <span class="hljs-string">&quot;true&quot;</span>,<br>            <span class="hljs-string">&quot;com.docker.network.bridge.enable_icc&quot;</span>: <span class="hljs-string">&quot;true&quot;</span>,<br>            <span class="hljs-string">&quot;com.docker.network.bridge.enable_ip_masquerade&quot;</span>: <span class="hljs-string">&quot;true&quot;</span>,<br>            <span class="hljs-string">&quot;com.docker.network.bridge.host_binding_ipv4&quot;</span>: <span class="hljs-string">&quot;0.0.0.0&quot;</span>,<br>            <span class="hljs-string">&quot;com.docker.network.bridge.name&quot;</span>: <span class="hljs-string">&quot;docker0&quot;</span>,<br>            <span class="hljs-string">&quot;com.docker.network.driver.mtu&quot;</span>: <span class="hljs-string">&quot;1500&quot;</span><br>        &#125;,<br>        <span class="hljs-string">&quot;Labels&quot;</span>: &#123;&#125;<br>    &#125;<br>]<br></code></pre></td></tr></table></figure>
+
+<p>只需要把目光放到关于 <code>bridge</code>、<code>containers</code> 的信息上来：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-string">&quot;IPAM&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;Driver&quot;</span>: <span class="hljs-string">&quot;default&quot;</span>,<br>            <span class="hljs-string">&quot;Options&quot;</span>: null,<br>            <span class="hljs-string">&quot;Config&quot;</span>: [<br>                &#123;<br>                    <span class="hljs-string">&quot;Subnet&quot;</span>: <span class="hljs-string">&quot;172.18.0.0/16&quot;</span>,<br>                    <span class="hljs-string">&quot;Gateway&quot;</span>: <span class="hljs-string">&quot;172.18.0.1&quot;</span><br>                &#125;<br>            ]<br>        &#125;,<br></code></pre></td></tr></table></figure>
+<p>可以看到 bridge 网关为 <code>172.18.0.1</code>，子网掩码为<code>172.18.0.0/16</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-string">&quot;Containers&quot;</span>: &#123;<br>           <span class="hljs-string">&quot;30f913d8e3fffbc5e03df7be0e99c7d43dc52c5f761638e8deae6da30933ab06&quot;</span>: &#123;<br>               <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;ubuntu2&quot;</span>,<br>               <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;b51799e6235505d0c571595cc210a004933822ab7d0c164353b6ceab562e1eb4&quot;</span>,<br>               <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:12:00:03&quot;</span>,<br>               <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.18.0.3/16&quot;</span>,<br>               <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span><br>           &#125;,<br>           <span class="hljs-string">&quot;ec0ca9aedc9fff82688a5590d8b3243cb60b33bd745962cb94ea5848bc170525&quot;</span>: &#123;<br>               <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;arch2&quot;</span>,<br>               <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;e4bdf03a6363a2b7aa80af73aba71f6f5c775025d61164dccc4474376520663f&quot;</span>,<br>               <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:12:00:02&quot;</span>,<br>               <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.18.0.2/16&quot;</span>,<br>               <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span><br>           &#125;<br>       &#125;,<br></code></pre></td></tr></table></figure>
+<p>对于 <code>ubuntu2</code>，它的 Mac 地址为：<code>02:42:ac:12:00:03</code>，ipv4为：<code>172.18.0.3/16</code>；<br>对于 <code>arch2</code>，它的 Mac 地址为：<code>02:42:ac:12:00:02</code>，ipv4 为：<code>172.18.0.2/16</code>。</p>
+<p><em><strong>这两项信息非常重要，因为一会儿要验证。</strong></em></p>
+<h3 id="4、宿主机网络配置"><a href="#4、宿主机网络配置" class="headerlink" title="4、宿主机网络配置"></a>4、宿主机网络配置</h3><p>我们通过以下命令查看本机网络(这里夹杂了一个自定义的网络，可以忽略)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@********:~<span class="hljs-comment"># ip addr</span><br>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000<br>    <span class="hljs-built_in">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00<br>    inet 127.0.0.1/8 scope host lo<br>       valid_lft forever preferred_lft forever<br>    inet6 ::1/128 scope host<br>       valid_lft forever preferred_lft forever<br>2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000<br>    <span class="hljs-built_in">link</span>/ether 00:16:3e:00:7c:2d brd ff:ff:ff:ff:ff:ff<br>    inet 172.17.9.165/18 brd 172.17.63.255 scope global dynamic eth0<br>       valid_lft 314697479sec preferred_lft 314697479sec<br>    inet6 fe80::216:3eff:fe00:7c2d/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br>3: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default<br>    <span class="hljs-built_in">link</span>/ether 02:42:2c:62:19:d9 brd ff:ff:ff:ff:ff:ff<br>    inet 172.18.0.1/16 brd 172.18.255.255 scope global docker0<br>       valid_lft forever preferred_lft forever<br>    inet6 fe80::42:2cff:fe62:19d9/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br>4: br-b1e26274afd7: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default<br>    <span class="hljs-built_in">link</span>/ether 02:42:8e:59:43:24 brd ff:ff:ff:ff:ff:ff<br>    inet 172.19.0.1/16 brd 172.19.255.255 scope global br-b1e26274afd7<br>       valid_lft forever preferred_lft forever<br>    inet6 fe80::42:8eff:fe59:4324/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br>14: veth7958290@if13: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default<br>    <span class="hljs-built_in">link</span>/ether 5e:67:bd:18:47:4d brd ff:ff:ff:ff:ff:ff link-netnsid 0<br>    inet6 fe80::5c67:bdff:fe18:474d/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br>16: vetha2319a1@if15: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master br-b1e26274afd7 state UP group default<br>    <span class="hljs-built_in">link</span>/ether 0e:28:d3:40:1e:97 brd ff:ff:ff:ff:ff:ff link-netnsid 0<br>    inet6 fe80::c28:d3ff:fe40:1e97/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br>18: veth23c3fd5@if17: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default<br>    <span class="hljs-built_in">link</span>/ether 56:a1:a5:02:37:0b brd ff:ff:ff:ff:ff:ff link-netnsid 1<br>    inet6 fe80::54a1:a5ff:fe02:370b/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br>20: veth952254a@if19: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master br-b1e26274afd7 state UP group default<br>    <span class="hljs-built_in">link</span>/ether 42:83:4d:c3:7d:f8 brd ff:ff:ff:ff:ff:ff link-netnsid 1<br>    inet6 fe80::4083:4dff:fec3:7df8/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br></code></pre></td></tr></table></figure>
+
+<p>重点关注 <code>docker0</code> 上的信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash">3: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default<br>    <span class="hljs-built_in">link</span>/ether 02:42:2c:62:19:d9 brd ff:ff:ff:ff:ff:ff<br>    inet 172.18.0.1/16 brd 172.18.255.255 scope global docker0<br>       valid_lft forever preferred_lft forever<br>    inet6 fe80::42:2cff:fe62:19d9/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br>     valid_lft forever preferred_lft forever<br><br>14: veth7958290@if13: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default<br>    <span class="hljs-built_in">link</span>/ether 5e:67:bd:18:47:4d brd ff:ff:ff:ff:ff:ff link-netnsid 0<br>    inet6 fe80::5c67:bdff:fe18:474d/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br><br>18: veth23c3fd5@if17: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP group default<br>    <span class="hljs-built_in">link</span>/ether 56:a1:a5:02:37:0b brd ff:ff:ff:ff:ff:ff link-netnsid 1<br>    inet6 fe80::54a1:a5ff:fe02:370b/64 scope <span class="hljs-built_in">link</span><br>       valid_lft forever preferred_lft forever<br><br></code></pre></td></tr></table></figure>
+
+<p>解释一下就是：</p>
+<ul>
+<li><code> docker0</code>：这是 Docker 默认创建的虚拟网桥接口，用于连接 Docker 主机和容器。它的状态为 UP，表示已启用。它的 IP 地址是 <strong>172.18.0.1</strong>，子网掩码为 16。它的 MAC 地址是 02:42:2c:62:19:d9。这个接口的主要作用是实现 Docker 主机和容器之间的网络通信。</li>
+<li><code>veth7958290@if13</code>：这是一个虚拟以太网设备，与 <strong>docker0 网桥</strong>相连。它的状态为 UP，表示已启用。它的 MAC 地址是 5e:67:bd:18:47:4d。它的 IPv6 地址是 fe80::5c67:bdff:fe18:474d。这个接口是连接到 docker0 网桥的容器的一部分。</li>
+<li><code>veth23c3fd5@if17</code>：这是另一个虚拟以太网设备，与 <strong>docker0 网桥</strong>相连。它的状态为 UP，表示已启用。它的 MAC 地址是 56:a1:a5:02:37:0b。它的 IPv6 地址是 fe80::54a1:a5ff:fe02:370b。这个接口也是连接到 docker0 网桥的容器的一部分。</li>
+</ul>
+<p>这些接口是 Docker 在创建和管理容器时自动创建的虚拟网络设备，用于容器之间和容器与主机之间的通信。每个容器都有自己的虚拟网络接口，并且通过网桥与主机和其他容器连接起来。这样，容器之间可以进行网络通信。</p>
+<p>现在一个清晰的图景被描述出来了：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3ef0f50bbeff41279852706101fa273a_1720253746882.png?token=ANB4BCKDN6AXTOJXMEV2JF3GRD6XC" alt="在这里插入图片描述"></p>
+<p>为了获得一个完整的图景，进入容器再研究研究。</p>
+<h3 id="5、ubuntu2、arch2网络配置"><a href="#5、ubuntu2、arch2网络配置" class="headerlink" title="5、ubuntu2、arch2网络配置"></a>5、ubuntu2、arch2网络配置</h3><p><code>ubuntu2</code> 网络信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@*******:/<span class="hljs-comment"># ip addr</span><br>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000<br>    <span class="hljs-built_in">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00<br>    inet 127.0.0.1/8 scope host lo<br>       valid_lft forever preferred_lft forever<br>17: eth0@if18: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default<br>    <span class="hljs-built_in">link</span>/ether 02:42:ac:12:00:03 brd ff:ff:ff:ff:ff:ff link-netnsid 0<br>    inet 172.18.0.3/16 brd 172.18.255.255 scope global eth0<br>       valid_lft forever preferred_lft forever<br><br></code></pre></td></tr></table></figure>
+<p>解释一下就是：</p>
+<ul>
+<li><p>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000<br>这是回环接口（loopback interface），用于本地主机内部通信。<br>&lt;LOOPBACK,UP,LOWER_UP&gt; 表示接口是一个回环接口，并且处于启用状态。<br>mtu 65536 表示最大传输单元的大小。<br>qdisc noqueue 表示没有队列机制，即无需排队即可传输数据。<br>eth0@if18: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default</p>
+</li>
+<li><p>这是第一个以太网接口（Ethernet interface），标记为 eth0。<br>&lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; 表示接口支持广播和多播，并且处于启用状态。<br>mtu 1500 表示最大传输单元的大小为1500字节。<br>qdisc noqueue 表示没有队列机制，即无需排队即可传输数据。<br>state UP 表示接口处于启用状态。<br>link&#x2F;ether 02:42:ac:12:00:03 表示接口的物理地址（MAC 地址）为 02:42:ac:12:00:03。<br>inet 172.18.0.3&#x2F;16 表示接口的 IPv4 地址为 172.18.0.3，子网掩码为 &#x2F;16。<br>brd 172.18.255.255 表示广播地址。<br>scope global 表示接口的地址在全局范围内可达。</p>
+</li>
+</ul>
+<p><code>arch2</code> 网络信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">[root@******* /]<span class="hljs-comment"># ip addr</span><br>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000<br>    <span class="hljs-built_in">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00<br>    inet 127.0.0.1/8 scope host lo<br>       valid_lft forever preferred_lft forever<br>13: eth0@if14: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default<br>    <span class="hljs-built_in">link</span>/ether 02:42:ac:12:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0<br>    inet 172.18.0.2/16 brd 172.18.255.255 scope global eth0<br>       valid_lft forever preferred_lft forever<br></code></pre></td></tr></table></figure>
+
+<h3 id="6、完整的网络拓扑图景"><a href="#6、完整的网络拓扑图景" class="headerlink" title="6、完整的网络拓扑图景"></a>6、完整的网络拓扑图景</h3><p>通过以上的分析，就能轻而易举地得到这个图：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/8bb4cafcf70b41018793d0fc80f3fa11_1720253746882.png?token=ANB4BCKER4WYBYWSZETJLZ3GRD6XG" alt="在这里插入图片描述"></p>
+<h2 id="三、结论"><a href="#三、结论" class="headerlink" title="三、结论"></a>三、结论</h2><p>1、ubuntu2、arch2是共用的一个路由器（网桥）：<code>docker0</code>；</p>
+<p>2、所有的容器启动时，如果不指定网络的情况下，都是<code>docker0</code>路由的；</p>
+<p>3、<code>docker0</code> 通过 NAT 穿透连到 host 主机的物理网卡上（补充）。</p>
+<h2 id="四、测试"><a href="#四、测试" class="headerlink" title="四、测试"></a>四、测试</h2><p>通过 arch2 去 ping ubuntu1:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@******** /]<span class="hljs-comment"># ping 172.18.0.3</span><br>PING 172.18.0.3 (172.18.0.3) 56(84) bytes of data.<br>64 bytes from 172.18.0.3: icmp_seq=1 ttl=64 time=0.095 ms<br>64 bytes from 172.18.0.3: icmp_seq=2 ttl=64 time=0.123 ms<br>64 bytes from 172.18.0.3: icmp_seq=3 ttl=64 time=0.160 ms<br>......<br></code></pre></td></tr></table></figure>
+<p>这是没问题的，因为它们位于同一个内网，当然 ping 的通。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">[root@******** /]<span class="hljs-comment"># ping baidu.com</span><br>PING baidu.com (110.242.68.66) 56(84) bytes of data.<br>64 bytes from 110.242.68.66 (110.242.68.66): icmp_seq=1 ttl=48 time=28.2 ms<br>64 bytes from 110.242.68.66 (110.242.68.66): icmp_seq=2 ttl=48 time=28.2 ms<br>64 bytes from 110.242.68.66 (110.242.68.66): icmp_seq=3 ttl=48 time=28.2 ms<br>......<br></code></pre></td></tr></table></figure>
+<p>这是 ping 互联网的服务器，当然也 ping 的通，就像你手机连接 wifi，肯定可以上网。</p>
+<p><em>本节完，感谢你的阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NetWork/" class="category-chain-item">NetWork</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/NetWork/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/NetWork/OS/Web/" class="category-chain-item">Web</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%BD%91%E7%BB%9C/" class="print-no-link">#网络</a>
+      
+        <a href="/tags/docker/" class="print-no-link">#docker</a>
+      
+        <a href="/tags/%E5%AE%B9%E5%99%A8/" class="print-no-link">#容器</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Docker网络模型以及容器网络初探（一）</div>
+      <div>http://blog.luliang.online/2023/07/04/Docker网络模型以及容器网络初探（一）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/27/Hackintosh%20%E5%85%A5%E9%97%A8/" title="Hackintosh 入门">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hackintosh 入门</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/29/Ubuntu%20%E5%8D%87%E7%BA%A7%20golang%20%E7%89%88%E6%9C%AC%E5%AE%8C%E7%BE%8E%E6%AD%A5%E9%AA%A4/" title="Ubuntu 升级 golang 版本完美步骤">
+                        <span class="hidden-mobile">Ubuntu 升级 golang 版本完美步骤</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

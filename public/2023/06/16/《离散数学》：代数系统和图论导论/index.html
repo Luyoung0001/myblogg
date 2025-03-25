@@ -1,0 +1,836 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、代数系统代数系统是数学中的一个重要概念，它涉及一组对象以及定义在这些对象上的运算规则。代数系统可以是抽象的，也可以是具体的。 在抽象代数中，代数系统通常由一组元素和一组操作（或称为运算）组成。这些操作可以是二元的（例如加法和乘法）或一元的（例如取负）。代数系统的运算必须符合一定的性质，例如结合律、交换律、单位元和逆元等。常见的抽象代数系统包括群、环、域和向量空间等。 本文中关于代数系统的讨">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《离散数学》：代数系统和图论导论">
+<meta property="og:url" content="http://blog.luliang.online/2023/06/16/%E3%80%8A%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6%E3%80%8B%EF%BC%9A%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F%E5%92%8C%E5%9B%BE%E8%AE%BA%E5%AF%BC%E8%AE%BA/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一、代数系统代数系统是数学中的一个重要概念，它涉及一组对象以及定义在这些对象上的运算规则。代数系统可以是抽象的，也可以是具体的。 在抽象代数中，代数系统通常由一组元素和一组操作（或称为运算）组成。这些操作可以是二元的（例如加法和乘法）或一元的（例如取负）。代数系统的运算必须符合一定的性质，例如结合律、交换律、单位元和逆元等。常见的抽象代数系统包括群、环、域和向量空间等。 本文中关于代数系统的讨">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/9f1e096ef6b242a58204fe8a66782ce4_1720253767570.png?token=ANB4BCJXQWVWUX3VTQKW5QTGRD6YK">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ac0c90db0df9458b94e5bce62a37d644_1720253767570.png?token=ANB4BCMG635GVP3PR6MBRF3GRD6YM">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cc8deb31b0004b189218a42fcf208d0e_1720253767570.png?token=ANB4BCMFN5YJYSCOBXIKXSTGRD6YO">
+<meta property="article:published_time" content="2023-06-16T13:13:19.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.776Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="图论">
+<meta property="article:tag" content="离散数学">
+<meta property="article:tag" content="代数系统">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/9f1e096ef6b242a58204fe8a66782ce4_1720253767570.png?token=ANB4BCJXQWVWUX3VTQKW5QTGRD6YK">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>《离散数学》：代数系统和图论导论 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《离散数学》：代数系统和图论导论"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-16 21:13" pubdate>
+          2023年6月16日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《离散数学》：代数系统和图论导论</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一、代数系统"><a href="#一、代数系统" class="headerlink" title="一、代数系统"></a>一、代数系统</h2><p>代数系统是数学中的一个重要概念，它涉及一组对象以及定义在这些对象上的运算规则。代数系统可以是抽象的，也可以是具体的。</p>
+<p>在抽象代数中，代数系统通常由一组元素和一组操作（或称为运算）组成。这些操作可以是二元的（例如加法和乘法）或一元的（例如取负）。代数系统的运算必须符合一定的性质，例如结合律、交换律、单位元和逆元等。常见的抽象代数系统包括群、环、域和向量空间等。</p>
+<p><em><strong>本文中关于代数系统的讨论部分和前文<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_73651896/article/details/130990546?spm=1001.2014.3001.5501">《代数入门》</a>很相似，主要做了一些拓展和案例补充。</strong></em></p>
+<h3 id="（〇）代数系统"><a href="#（〇）代数系统" class="headerlink" title="（〇）代数系统"></a>（〇）代数系统</h3><p>只要满足两个条件就是一个<strong>代数系统</strong>：</p>
+<ul>
+<li>集合非空</li>
+<li>运算封闭</li>
+</ul>
+<h3 id="（一）广群"><a href="#（一）广群" class="headerlink" title="（一）广群"></a>（一）广群</h3><p>满足最低要求的<strong>代数系统</strong>，就是广群。</p>
+<h3 id="（二）半群"><a href="#（二）半群" class="headerlink" title="（二）半群"></a>（二）半群</h3><p>满足结合律的<strong>广群</strong>就是半群。</p>
+<p>半群的性质：</p>
+<ul>
+<li>如果 S 是一个有限半群，那么 S 中一定有等幂元；</li>
+<li>如果 S 是一个含幺半群（独异点），则运算表中没有两行或者两列是相同的；</li>
+</ul>
+<h3 id="（三）含幺半群"><a href="#（三）含幺半群" class="headerlink" title="（三）含幺半群"></a>（三）含幺半群</h3><p>集合中对于运算*存在幺元 e 的<strong>半群</strong>就是含幺半群，也叫独异点。</p>
+<h3 id="（四）群"><a href="#（四）群" class="headerlink" title="（四）群"></a>（四）群</h3><p>对于每一个元素都存在逆元的<strong>含幺半群</strong>，就是群。</p>
+<p>可以看到，群是具有最严格的定义：</p>
+<ul>
+<li>封闭性</li>
+<li>结合性</li>
+<li>含有幺元</li>
+<li>含有逆元</li>
+</ul>
+<p>常见的一个群为：<code>&lt;P(S)，对称差&gt;</code>是一个群，幺元为空集，每个元素的逆元都是自己。</p>
+<p>群的性质：</p>
+<ul>
+<li>群<strong>无零元</strong>；</li>
+<li>群G 中，a<em>x&#x3D;b的<strong>解是唯一</strong>的，因为每个元素都有逆元，x &#x3D; a^-1</em>b；</li>
+<li>群的计算<strong>满足消去律</strong>，或者群中的元素都是可约的；</li>
+<li>如果一个<strong>有限</strong>含幺半群，满足可约，那么一定是一个群。（可约去就暗示了该群含有幺元，那么自然就是一个群了）；</li>
+<li>群众的等幂元素一定是幺元。证明： <strong>x<em>x&#x3D;x&#x3D;x</em>e，则 x &#x3D; e</strong>；</li>
+<li>有限群运算表中每一行或每一列都是群 G 中的元素一个<strong>置换</strong>；（两行元素如果双射，就是一个置换）</li>
+<li>如果 S 是 G 的子集，<strong>且 S 是有限的</strong>，只要运算*在 S 中<strong>封闭</strong>，那么 S 一定是一个子群；</li>
+<li>如果 S 是 G 的子集，S中的任意两个元素a、b，只要满足 <strong>a*b^-1</strong>也属于 S，那么 S 就是一个子群。注意这里<strong>没有对集合 S 是否有限</strong>作出限制。</li>
+</ul>
+<p>这就是最基本的群的部分性质，底下的讨论相较于群，<strong>增加了部分性质</strong>。</p>
+<h3 id="（五）阿贝尔群"><a href="#（五）阿贝尔群" class="headerlink" title="（五）阿贝尔群"></a>（五）阿贝尔群</h3><p>如果<strong>群</strong>中的元素对于操作*是可交换的，就称为阿贝尔群或者<strong>交换群</strong>，也叫<strong>加法群</strong>。</p>
+<h3 id="（六）循环群"><a href="#（六）循环群" class="headerlink" title="（六）循环群"></a>（六）循环群</h3><p><strong>群</strong>中的所有的元素都可由一个元素 x 通过不断地*运算生成，则称为循环群，x 被称为<strong>生成元</strong>，事实上生成元往往不止一个。</p>
+<p>这里有几个重要的结论：</p>
+<ul>
+<li>由拉格朗日定理，n 阶群的子群，其<strong>阶数一定是 n 的因数</strong>；</li>
+<li><strong>素数阶的群一定是循环群</strong>，由拉格朗日定理，素数阶的群一定只有两个平凡子群；</li>
+<li>四阶群按照分类，只能分为<strong>克莱因四元群</strong>和<strong>四阶循环群</strong>；</li>
+<li>循环群是加法群；</li>
+<li>对于n 阶循环群 G，如果 a 是一个生成元，则：a^n&#x3D;e；</li>
+<li>对于无限循环群 G，如果 a 是一个生成元，那么另一个唯一一个生成元为 a^-1；</li>
+</ul>
+<h3 id="（七）置换群"><a href="#（七）置换群" class="headerlink" title="（七）置换群"></a>（七）置换群</h3><p><strong>任何一个有限群，事实上都可由一个置换群表示</strong>。</p>
+<p>置换群（Permutation Group）是群论中的一个重要概念，它研究的是一组对象的排列及其上的运算。在置换群中，对象的排列通过置换操作来描述，而置换群则是由这些置换构成的群。</p>
+<p>具体来说，给定一个有限集合X，一个置换是对X中元素的重新排列。每个置换可以表示为一个映射，将集合X中的元素映射到另一个元素上。这种映射可以用一个有序的元素列表来表示，其中列表中的第i个元素表示将原始集合中的第i个元素映射到的新位置。</p>
+<p>置换群是由<strong>所有可能的置换组成的群</strong>，它的运算是置换的复合。换句话说，对于两个置换，可以将它们按照给定的顺序，依次执行，得到一个新的置换。这个复合运算满足<strong>结合律</strong>、<strong>单位元</strong>和<strong>逆元</strong>的群性质。</p>
+<h3 id="（八）环"><a href="#（八）环" class="headerlink" title="（八）环"></a>（八）环</h3><p><strong>环（Ring）是抽象代数中的一个重要的代数结构</strong>。它由一个非空集合R和两个二元运算（加法和乘法）组成，分别记作”+”和”·”。</p>
+<p>可以看到，对于乘法运算（·）并没有要求交换律和逆元。因此，环（Ring）可以定义为：</p>
+<ul>
+<li>加法运算（+）是交换群；</li>
+<li>乘法运算（·），可结合，也是含幺半群</li>
+<li>后者对前者满足分配率。</li>
+</ul>
+<p>一个经典的例子就是<code>&lt;A，+，· &gt;</code>，其中 A 是矩阵。显然矩阵（方阵）加法是一个<code>交换群</code>，矩阵乘法是一个<code>半群</code>（可结合，有幺元，也是含幺半群），，乘法对加法满足分配率。因此**&lt;A，+，· &gt;就是一个经典的环**。</p>
+<p>事实上，<strong>矩阵运算还是一个含幺环</strong>，因为乘法具有幺元 E。</p>
+<h2 id="环有以下分类：-如果乘法存在幺元，则为含幺环；-如果乘法满足交换律，则为交换环；-对于任意的-a-b-0，一定有-a-0或者-b-0，则为无零因子环；-如果都满足上面三个条件，则是整环！"><a href="#环有以下分类：-如果乘法存在幺元，则为含幺环；-如果乘法满足交换律，则为交换环；-对于任意的-a-b-0，一定有-a-0或者-b-0，则为无零因子环；-如果都满足上面三个条件，则是整环！" class="headerlink" title="环有以下分类：- 如果乘法存在幺元，则为含幺环；- 如果乘法满足交换律，则为交换环；- 对于任意的 a*b&#x3D;0，一定有 a&#x3D;0或者 b&#x3D;0，则为无零因子环；- 如果都满足上面三个条件，则是整环！"></a>环有以下<strong>分类</strong>：<br>- 如果乘法存在幺元，则为<strong>含幺环</strong>；<br>- 如果乘法满足交换律，则为<strong>交换环</strong>；<br>- 对于任意的 a*b&#x3D;0，一定有 a&#x3D;0或者 b&#x3D;0，则为<strong>无零因子环</strong>；<br>- 如果都满足上面三个条件，则是<strong>整环</strong>！</h2><h3 id="（九）域"><a href="#（九）域" class="headerlink" title="（九）域"></a>（九）域</h3><p>域的定义比环更加严格，可定义为：</p>
+<ul>
+<li>加法运算&lt;F，+ &gt; 是交换群；</li>
+<li>乘法运算&lt;F-{0}，· &gt; 是交换群；</li>
+<li>后者对前者满足分配率。</li>
+</ul>
+<p>比如**&lt;R, +, * &gt;<strong>就是一个经典的域。它满足加法交换群，去除0后，也是交换群，同时后者对于前者满足分配率。</strong>域一定是环，且是整环**。</p>
+<h2 id="二、图论导论"><a href="#二、图论导论" class="headerlink" title="二、图论导论"></a>二、图论导论</h2><h3 id="（一）图的分类"><a href="#（一）图的分类" class="headerlink" title="（一）图的分类"></a>（一）图的分类</h3><p>图是由结点和边构成，又分为有向图、无向图、带权图、无权图、混合图等等，这些概念很简单，不再赘述。</p>
+<p><strong>完全图</strong>：任意两个节（结）点之间都有边，记为 Kn图，n 为节点数目；<br><strong>节点的度</strong>：连接的边的个数，细分为出度、入度；</p>
+<h4 id="1、结点的度"><a href="#1、结点的度" class="headerlink" title="1、结点的度"></a>1、结点的度</h4><p>一些<strong>定理</strong>：</p>
+<ul>
+<li>握手定理，结点的度的和等于边的<strong>两倍</strong>；</li>
+<li>对于有向图：度数之和为 0；</li>
+<li>奇数度的结点的个数一定为偶数个。</li>
+</ul>
+<h4 id="2、子图与生成子图"><a href="#2、子图与生成子图" class="headerlink" title="2、子图与生成子图"></a>2、子图与生成子图</h4><p>生成子图结点构成的集合不变，子图没有要求，真子图结点会少一些。</p>
+<h4 id="3、图的同构"><a href="#3、图的同构" class="headerlink" title="3、图的同构"></a>3、图的同构</h4><p>拓扑结构不变的图，就是互为同构。<br>目前没有一个通用的方法来判断两个图是否同构，只能得到同构的图的一些必要的性质：</p>
+<ul>
+<li>同构的图的结点数目相同；</li>
+<li>同构的图的边的数目相同；</li>
+<li>同构的图度数相同的结点的数目相同。</li>
+</ul>
+<p>这些必要条件都是简单的易于理解的，但是<strong>没有一个充分条件</strong>能用来判断两个图是否同构。这里给出一个尝试，就是<strong>按照顺序</strong>分别算出两个图的<strong>矩阵表示</strong>，然后判断两个矩阵是否相等，如果相等就同构。但是这个过程的难点在于无法按照顺序算出矩阵表示，尤其当结点数目很大时。</p>
+<h3 id="（二）图的连通性"><a href="#（二）图的连通性" class="headerlink" title="（二）图的连通性"></a>（二）图的连通性</h3><h4 id="1、路与回路"><a href="#1、路与回路" class="headerlink" title="1、路与回路"></a>1、路与回路</h4><p>有以下基本概念：</p>
+<ul>
+<li>如果<strong>边没有重复</strong>，就是<strong>简单路径</strong>，（简单回路），称为<strong>迹</strong>；</li>
+<li>如果<strong>点没有重复</strong>，就是<strong>基本路径</strong>，（基本回路），称为<strong>通路</strong>；</li>
+</ul>
+<p>路的性质和推论：</p>
+<ul>
+<li>如果n个节点的图存在一条通路，那么这条通路最长不会超过 n-1；</li>
+<li>图中任何一个圈的长度都不会超过 n；</li>
+</ul>
+<h4 id="2、无向图的连通性"><a href="#2、无向图的连通性" class="headerlink" title="2、无向图的连通性"></a>2、无向图的连通性</h4><p>这里牵扯到一点割集、割点、边割集、割边或者桥的概念，很简单。<br>常见的结论有：</p>
+<ul>
+<li>如果 v 是连通图G 的一个割点，那么 <code>G-&#123;v&#125;</code>是一个非连通图；</li>
+<li>完全图没有<strong>点割集</strong>，也没有<strong>割边</strong>（有边割集，注意区别）；</li>
+<li><strong>非连通图的点割集和边割集都是空集</strong>，这是人为规定。</li>
+</ul>
+<h4 id="3、有向图的可达性"><a href="#3、有向图的可达性" class="headerlink" title="3、有向图的可达性"></a>3、有向图的可达性</h4><p>对于有向图的可达性，有以下定义：</p>
+<ul>
+<li>如果任意两个点，至少从一个点到另一个点可达，那么 G 就是<strong>单侧连通</strong>的；</li>
+<li>如果任意两个节点之间都是可达的，则是<strong>强连通图</strong>；</li>
+<li>如果略去所有方向后，有向图成为了一个连通无向图，则有向图 G 是<strong>弱连通</strong>的；</li>
+</ul>
+<p>一些性质：</p>
+<ul>
+<li>如果强连通图只有一条回路，那么这个回路至少包含每个节点一次；</li>
+<li>如果 P是 G 的一个子图，并且 P 是强连通的，且不存在包含 P 的更大强连通子图，那么 P就是 G 的强分图。</li>
+<li><strong>在有向图 G 中，每个节点只能存在于一个强分图中</strong>。如果存在于两个，那么这个这个节点就是两个强分图的枢纽，那么这两个图就成为一个图，因此矛盾。</li>
+</ul>
+<h3 id="（三）图的矩阵表示"><a href="#（三）图的矩阵表示" class="headerlink" title="（三）图的矩阵表示"></a>（三）图的矩阵表示</h3><p>矩阵表示的图，具有诸多的特点，能更简单的存储在计算机中，被各种算法计算，也更简洁，可以压缩。</p>
+<h4 id="1、邻接矩阵"><a href="#1、邻接矩阵" class="headerlink" title="1、邻接矩阵"></a>1、邻接矩阵</h4><p>对于一个无向图：</p>
+<ul>
+<li>邻接矩阵一定是<strong>对阵</strong>的；</li>
+<li>邻接矩阵主对角线元素为 0，因为<strong>自己与自己不邻接</strong>；</li>
+<li>某行（列） 1 的个数为<strong>该结点的度</strong></li>
+</ul>
+<p>对于一个<strong>有向图</strong>，则有<strong>出度和入度</strong>概念。</p>
+<h4 id="2、计算两个节点之间的路的数目"><a href="#2、计算两个节点之间的路的数目" class="headerlink" title="2、计算两个节点之间的路的数目"></a>2、计算两个节点之间的路的数目</h4><p>定理：设图 G 的邻接矩阵为 A，则结点$v_i$、$v_j$ 之间长度为 k 的路的数量为矩阵 $A^{k}$ 的$a_i,_j$。这个定理的证明很有意思，比较简单，不再赘述。</p>
+<p>这个定理有以下几个简单推论：</p>
+<ul>
+<li>如果对于 <code>m = 1,2,3,...,n-1</code>都有 $A^{m}$ 中 $a_i,_j$ &#x3D; 0，则说明结点$v_i$、$v_j$之间没有路，它们必定位于不同的连通分支；</li>
+<li>结点$v_i$、$v_j$之间的最小距离就是使得 $A^{m}$ 中 $a_i,_j$ &#x3D; 1 成立的最小值 <code>m</code>；</li>
+<li>$A^{m}$ 的元素$a_i,_i$就是开始并结束于$v_i$的长度为<code>m</code> 的回路的数量。</li>
+</ul>
+<h4 id="3、可达性矩阵"><a href="#3、可达性矩阵" class="headerlink" title="3、可达性矩阵"></a>3、可达性矩阵</h4><p>可达矩阵研究的是结点$v_i$、$v_j$之间有没有路的问题，这个问题很好解决。</p>
+<ul>
+<li>方法一：我们只需要把上面的$A^{m}$进行逻辑求和，不等于 0 的元素置为 1，就得到了可达性矩阵。$a_i,_j$ &#x3D; 1 就意味着结点 $v_i$、$v_j$之间可达。</li>
+<li>方法二：假设关系&lt;$v_i$、$v_j$&gt; 意味着可达，我们很容易得到一个矩阵 A ，矩阵中$a_i,_j$ &#x3D; 1 就意味着两点距离为 1，可达。但是有时候，存在两个节点之间没有长度为 1 的路，但是有长度等于 m 的路，因此我们需要对 A 进行不断的复合，得到长度为 <code>2、3、... 、m</code> 的路，之后再进行逻辑加。仔细一想，这就是再求传递闭包！因此，<strong>整个过程本质上就是在求传递闭包</strong>。</li>
+</ul>
+<p>因此，最简单的方法就是<strong>利用 Warshall 算法</strong>进行求解！</p>
+<h5 id="怎么判断一个关系矩阵A是否具有对称性？"><a href="#怎么判断一个关系矩阵A是否具有对称性？" class="headerlink" title="怎么判断一个关系矩阵A是否具有对称性？"></a>怎么判断一个关系矩阵A是否具有对称性？</h5><ul>
+<li>计算对称闭包，如果等于 A 就具有对称性</li>
+</ul>
+<h5 id="怎么判断一个关系矩阵-A-是否具有传递性？"><a href="#怎么判断一个关系矩阵-A-是否具有传递性？" class="headerlink" title="怎么判断一个关系矩阵 A 是否具有传递性？"></a>怎么判断一个关系矩阵 A 是否具有传递性？</h5><ul>
+<li>计算传递闭包，如果等于 A 就具有传递性</li>
+</ul>
+<h5 id="计算传递闭包本质上是在干什么？"><a href="#计算传递闭包本质上是在干什么？" class="headerlink" title="计算传递闭包本质上是在干什么？"></a>计算传递闭包本质上是在干什么？</h5><ul>
+<li>计算关系 A 中所有元素的关系，直接的间接的。<strong>这点与可达矩阵如出一辙，因为图描述的本来就是结点之间的拓扑关系！</strong></li>
+</ul>
+<h4 id="4、有向图的可达矩阵"><a href="#4、有向图的可达矩阵" class="headerlink" title="4、有向图的可达矩阵"></a>4、有向图的可达矩阵</h4><p>有向图和无向图的可达性矩阵计算方式一模一样。但是有向图的强分图怎么算呢？</p>
+<p><strong>定理：  有向图 G 是强连通的当且仅当其可达性矩阵 P 的所有元素均为１</strong>。</p>
+<p>是这么理解的：<em><strong>设 P 是图 G 的可达性矩阵，其元素为$p_i,_j$，$P^{T}$是 P 的转置矩阵。则图G的强分图可由P∧$P^{T}$求得。因为从$v_i$到$v_j$可达，则$p_i,_j$&#x3D;1；从$v_j$到$v_i$可达，则$p_i,_j$&#x3D;1。于是当且仅当vi与vj相互可达时，P∧$P^{T}$的第(i，j)元素的值为1</strong></em>。</p>
+<p>例1：求出下图所示图的强分图。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/9f1e096ef6b242a58204fe8a66782ce4_1720253767570.png?token=ANB4BCJXQWVWUX3VTQKW5QTGRD6YK" alt="在这里插入图片描述"><br>求出它的可达矩阵与可达矩阵的转置，然后进行逻辑乘：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ac0c90db0df9458b94e5bce62a37d644_1720253767570.png?token=ANB4BCMG635GVP3PR6MBRF3GRD6YM" alt="在这里插入图片描述"><br> 例2：设 t 时刻的相关资源集为<code>R=&#123;r1, r2, r3, r4&#125;</code>，进程集为<code>P=&#123;p1, p2, p3, p4&#125;</code>，进程占据资源的情况为：</p>
+<ul>
+<li>p1占据资源r4且请求资源r1；</li>
+<li>p2占据资源r1且请求资源r2和r3；</li>
+<li>p3占据资源r2且请求资源r3；</li>
+<li>p4占据资源r3且请求资源r1和r4。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cc8deb31b0004b189218a42fcf208d0e_1720253767570.png?token=ANB4BCMFN5YJYSCOBXIKXSTGRD6YO" alt="在这里插入图片描述"></li>
+</ul>
+<p>对应的资源分布图如上图所示。这样我们就能根据这个有向图得到一个矩阵 A，再求出它的可达矩阵，得到强分图。<strong>只要这个强分图不是 E(大于 E)，那么就是死锁的</strong>。解决办法就是挂掉某些进程，使得可达矩阵某些元素为 0，这就会导致强分图为 E（<strong>自己到自己默认可达</strong>），从而解决死锁。</p>
+<p><em><strong>全文完，感谢阅读！</strong></em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/" class="category-chain-item">离散数学</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%9B%BE%E8%AE%BA/" class="print-no-link">#图论</a>
+      
+        <a href="/tags/%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6/" class="print-no-link">#离散数学</a>
+      
+        <a href="/tags/%E4%BB%A3%E6%95%B0%E7%B3%BB%E7%BB%9F/" class="print-no-link">#代数系统</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《离散数学》：代数系统和图论导论</div>
+      <div>http://blog.luliang.online/2023/06/16/《离散数学》：代数系统和图论导论/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/06/17/%E3%80%8A%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6%E3%80%8B%EF%BC%9A%E7%89%B9%E6%AE%8A%E7%9A%84%E5%9B%BE/" title="《离散数学》：特殊的图">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《离散数学》：特殊的图</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/15/%E3%80%8A%E7%A6%BB%E6%95%A3%E6%95%B0%E5%AD%A6%E3%80%8B%EF%BC%9A%E9%9B%86%E5%90%88%E3%80%81%E5%85%B3%E7%B3%BB%E5%92%8C%E5%87%BD%E6%95%B0/" title="《离散数学》：集合、关系和函数">
+                        <span class="hidden-mobile">《离散数学》：集合、关系和函数</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

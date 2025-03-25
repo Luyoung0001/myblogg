@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="题目 1：设计链表 你可以选择使用单链表或者双链表，设计并实现自己的链表。单链表中的节点应该具备两个属性：val 和 next 。val 是当前节点的值，next 是指向下一个节点的指针&#x2F;引用。如果是双向链表，则还需要属性 prev 以指示链表中的上一个节点。假设链表中的所有节点下标从 0 开始。实现 MyLinkedList 类：MyLinkedList() 初始化 MyLinke">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【day08】移除与插入链表元素">
+<meta property="og:url" content="http://blog.luliang.online/2023/03/20/%E3%80%90day08%E3%80%91%E7%A7%BB%E9%99%A4%E4%B8%8E%E6%8F%92%E5%85%A5%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="题目 1：设计链表 你可以选择使用单链表或者双链表，设计并实现自己的链表。单链表中的节点应该具备两个属性：val 和 next 。val 是当前节点的值，next 是指向下一个节点的指针&#x2F;引用。如果是双向链表，则还需要属性 prev 以指示链表中的上一个节点。假设链表中的所有节点下标从 0 开始。实现 MyLinkedList 类：MyLinkedList() 初始化 MyLinke">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-20T14:37:14.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.777Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="leetcode">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>【day08】移除与插入链表元素 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【day08】移除与插入链表元素"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-03-20 22:37" pubdate>
+          2023年3月20日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">【day08】移除与插入链表元素</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="题目-1：设计链表"><a href="#题目-1：设计链表" class="headerlink" title="题目 1：设计链表"></a>题目 1：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/design-linked-list/">设计链表</a></h2><blockquote>
+<p>你可以选择使用单链表或者双链表，设计并实现自己的链表。<br>单链表中的节点应该具备两个属性：val 和 next 。val 是当前节点的值，next 是指向下一个节点的指针&#x2F;引用。<br>如果是双向链表，则还需要属性 prev 以指示链表中的上一个节点。假设链表中的所有节点下标从 0 开始。<br>实现 MyLinkedList 类：<br>MyLinkedList() 初始化 MyLinkedList 对象。<br>int get(int index) 获取链表中下标为 index 的节点的值。如果下标无效，则返回 -1 。<br>void addAtHead(int val) 将一个值为 val 的节点插入到链表中第一个元素之前。在插入完成后，新节点会成为链表的第一个节点。<br>void addAtTail(int val) 将一个值为 val 的节点追加到链表中作为链表的最后一个元素。<br>void addAtIndex(int index, int val) 将一个值为 val 的节点插入到链表中下标为 index 的节点之前。如果 index 等于链表的长度，那么该节点会被追加到链表的末尾。如果 index 比长度更大，该节点将 不会插入 到链表中。<br>void deleteAtIndex(int index) 如果下标有效，则删除链表中下标为 index 的节点。</p>
+</blockquote>
+<p>思路：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">MyLinkedList_t</span> &#123;</span><br>    <span class="hljs-type">int</span> val;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">MyLinkedList_t</span> *<span class="hljs-title">next</span>;</span><br>&#125; MyLinkedList;<br><br><br><br>MyLinkedList* <span class="hljs-title function_">myLinkedListCreate</span><span class="hljs-params">()</span> &#123;<br> MyLinkedList *obj = (MyLinkedList *)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(MyLinkedList));<br>	obj-&gt;val = <span class="hljs-number">0</span>;<br>	obj-&gt;next = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-keyword">return</span> obj;<br><br><br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">myLinkedListGet</span><span class="hljs-params">(MyLinkedList* obj, <span class="hljs-type">int</span> index)</span> &#123;<br><br>    <span class="hljs-type">int</span> target;<br>    MyLinkedList* ob = obj;<br>        <span class="hljs-keyword">while</span> (index--&amp;&amp;ob-&gt;next!=<span class="hljs-literal">NULL</span>)<br>        &#123;<br>            ob = ob-&gt;next;<br>    &#125;<br>    <span class="hljs-keyword">if</span>(ob-&gt;next!=<span class="hljs-literal">NULL</span>)<br>        <span class="hljs-keyword">return</span> target = ob -&gt;next-&gt;val;<br>     <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>&#125;<br><span class="hljs-comment">// 这是有头结点的链表</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">myLinkedListAddAtHead</span><span class="hljs-params">(MyLinkedList* obj, <span class="hljs-type">int</span> val)</span> &#123;<br>MyLinkedList* p = (MyLinkedList*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(MyLinkedList));<br><br>        p-&gt;val = val;<br>        p-&gt;next = obj-&gt;next;<br>        obj-&gt;next = p;<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">myLinkedListAddAtTail</span><span class="hljs-params">(MyLinkedList* obj, <span class="hljs-type">int</span> val)</span> &#123;<br>MyLinkedList* cur = obj;<br><br>    <span class="hljs-keyword">while</span> (cur-&gt;next!=<span class="hljs-literal">NULL</span>)<br>    &#123;<br>        cur=cur-&gt;next;<br>    &#125;<br>       MyLinkedList* p = (MyLinkedList*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(MyLinkedList));<br>        p-&gt;next = <span class="hljs-literal">NULL</span>;<br>        p-&gt;val = val;<br>        cur-&gt;next = p;<br><br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">myLinkedListAddAtIndex</span><span class="hljs-params">(MyLinkedList* obj, <span class="hljs-type">int</span> index, <span class="hljs-type">int</span> val)</span> &#123;<br><br>    <span class="hljs-keyword">if</span> (index &lt;= <span class="hljs-number">0</span>)<br>    &#123;<br>        MyLinkedList* p = (MyLinkedList*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(MyLinkedList));<br>        p-&gt;next = <span class="hljs-literal">NULL</span>;<br>        p-&gt;val = val;<br>        p-&gt;next = obj-&gt;next;<br>        obj-&gt;next=p;<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    MyLinkedList* ob = obj;<br>    <span class="hljs-keyword">while</span> (index--&amp;&amp; ob != <span class="hljs-literal">NULL</span>)<br>    &#123;<br>        ob= ob-&gt;next;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (ob == <span class="hljs-literal">NULL</span>)<br>        <span class="hljs-keyword">return</span>;<br>    MyLinkedList* p = (MyLinkedList*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(MyLinkedList));<br>    p-&gt;next = ob-&gt;next;<br>    p-&gt;val= val;<br>    ob-&gt;next=p;<br><br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">myLinkedListDeleteAtIndex</span><span class="hljs-params">(MyLinkedList* obj, <span class="hljs-type">int</span> index)</span> &#123;<br><br><br>    <span class="hljs-keyword">if</span> (index &lt; <span class="hljs-number">0</span>||obj-&gt;next == <span class="hljs-literal">NULL</span>)<br>        <span class="hljs-keyword">return</span>;<br>    MyLinkedList*  ob = obj;<br>    MyLinkedList*  cur;<br>    <span class="hljs-keyword">while</span> (index-- &amp;&amp; ob-&gt;next != <span class="hljs-literal">NULL</span>)<br>    &#123;<br>        ob = ob-&gt;next;<br>    &#125;<br>    <span class="hljs-keyword">if</span>(ob-&gt;next==<span class="hljs-literal">NULL</span>)<br>        <span class="hljs-keyword">return</span> ;<br>    cur= ob-&gt;next;<br>    ob-&gt;next = cur-&gt;next;<br>    <span class="hljs-built_in">free</span>(cur);<br><br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">myNodeFree</span><span class="hljs-params">(MyLinkedList* Node)</span> &#123;<br>	<span class="hljs-keyword">if</span> (Node-&gt;next != <span class="hljs-literal">NULL</span>) &#123;<br>		myNodeFree(Node-&gt;next);<br>		<span class="hljs-comment">//Node-&gt;next = NULL;</span><br>	&#125;<br>	<span class="hljs-built_in">free</span>(Node);<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">myLinkedListFree</span><span class="hljs-params">(MyLinkedList* obj)</span> &#123;<br>    myNodeFree(obj);<br>&#125;<br><br><br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Your MyLinkedList struct will be instantiated and called as such:</span><br><span class="hljs-comment"> * MyLinkedList* obj = myLinkedListCreate();</span><br><span class="hljs-comment"> * int param_1 = myLinkedListGet(obj, index);</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"> * myLinkedListAddAtHead(obj, val);</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"> * myLinkedListAddAtTail(obj, val);</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"> * myLinkedListAddAtIndex(obj, index, val);</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"> * myLinkedListDeleteAtIndex(obj, index);</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"> * myLinkedListFree(obj);</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="题目-2：移除链表元素"><a href="#题目-2：移除链表元素" class="headerlink" title="题目 2：移除链表元素"></a>题目 2：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/remove-linked-list-elements/">移除链表元素</a></h2><blockquote>
+<p>给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val &#x3D;&#x3D; val 的节点，并返回 新的头节点 。</p>
+</blockquote>
+<p>示例 1：</p>
+<blockquote>
+<p>输入：head &#x3D; [1,2,6,3,4,5,6], val &#x3D; 6<br>输出：[1,2,3,4,5]</p>
+</blockquote>
+<p>思路：递归</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br>    <span class="hljs-keyword">public</span> ListNode <span class="hljs-title function_">removeElements</span><span class="hljs-params">(ListNode head, <span class="hljs-type">int</span> val)</span> &#123;<br>       <span class="hljs-keyword">if</span>(head==<span class="hljs-literal">null</span>)<br>           <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        head.next=removeElements(head.next,val);<br>        <span class="hljs-keyword">if</span>(head.val==val)&#123;<br>            <span class="hljs-keyword">return</span> head.next;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-keyword">return</span> head;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="题目-3：-删除链表中的节点"><a href="#题目-3：-删除链表中的节点" class="headerlink" title="题目 3： 删除链表中的节点"></a>题目 3： <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/delete-node-in-a-linked-list/">删除链表中的节点</a></h2><blockquote>
+<p>有一个单链表的 head，我们想删除它其中的一个节点 node。<br>给你一个需要删除的节点 node 。你将 无法访问 第一个节点  head。<br>链表的所有值都是 唯一的，并且保证给定的节点 node 不是链表中的最后一个节点。</p>
+</blockquote>
+<p>示例 1：</p>
+<blockquote>
+<p>输入：head &#x3D; [4,5,1,9], node &#x3D; 5<br>输出：[4,1,9]<br>解释：指定链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -&gt; 1 -&gt; 9</p>
+</blockquote>
+<p>思路：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteNode</span><span class="hljs-params">(ListNode node)</span> &#123;<br>        <span class="hljs-type">ListNode</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> node;<br>        <span class="hljs-type">ListNode</span> <span class="hljs-variable">q</span> <span class="hljs-operator">=</span> p.next;<br>        <span class="hljs-keyword">while</span>(q.next != <span class="hljs-literal">null</span>)&#123;<br>            p.val = q.val;<br>            p = p.next;<br>            q = q.next;<br>        &#125;<br>        p.val = q.val;<br>        p.next = <span class="hljs-literal">null</span>;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="题目-4：删除链表的倒数第-N-个结点"><a href="#题目-4：删除链表的倒数第-N-个结点" class="headerlink" title="题目 4：删除链表的倒数第 N 个结点"></a>题目 4：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/remove-nth-node-from-end-of-list/">删除链表的倒数第 N 个结点</a></h2><blockquote>
+<p>给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。</p>
+</blockquote>
+<p>示例 1：</p>
+<blockquote>
+<p>输入：head &#x3D; [1,2,3,4,5], n &#x3D; 2<br>输出：[1,2,3,5]</p>
+</blockquote>
+<p>思路：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br>    <span class="hljs-keyword">public</span> ListNode <span class="hljs-title function_">removeNthFromEnd</span><span class="hljs-params">(ListNode head, <span class="hljs-type">int</span> n)</span> &#123;<br>        <span class="hljs-comment">// 计算长度</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">len</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">ListNode</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> head;<br>        <span class="hljs-keyword">while</span>(t != <span class="hljs-literal">null</span>)&#123;<br>            ++len;<br>            t = t.next;<br>        &#125;<br>        <span class="hljs-comment">// 设置头结点，可以删除头结点</span><br>        <span class="hljs-type">ListNode</span> <span class="hljs-variable">d</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ListNode</span>(<span class="hljs-number">0</span>, head);<br>        <span class="hljs-type">ListNode</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> d;<br>        <span class="hljs-comment">// 指向删除结点前的一个</span><br>        <span class="hljs-comment">// 输入：head = [1,2,3,4,5], n = 2</span><br>        <span class="hljs-comment">// 输出：[1,2,3,5]</span><br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; len-n; i++)&#123;<br>            p = p.next;<br>        &#125;<br>        <span class="hljs-comment">// 删除结点</span><br>        p.next = p.next.next;<br>        <span class="hljs-keyword">return</span> d.next;<br><br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="题目-5：删除排序链表中的重复元素"><a href="#题目-5：删除排序链表中的重复元素" class="headerlink" title="题目 5：删除排序链表中的重复元素"></a>题目 5：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/remove-duplicates-from-sorted-list/">删除排序链表中的重复元素</a></h2><blockquote>
+<p>给定一个已排序的链表的头 head ， 删除所有重复的元素，使每个元素只出现一次 。返回 已排序的链表 。</p>
+</blockquote>
+<p>示例 1：</p>
+<blockquote>
+<p>输入：head &#x3D; [1,1,2]<br>输出：[1,2]</p>
+</blockquote>
+<p>思路 1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br>    <span class="hljs-keyword">public</span> ListNode <span class="hljs-title function_">deleteDuplicates</span><span class="hljs-params">(ListNode head)</span> &#123;<br>        <span class="hljs-keyword">if</span>(head == <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-type">ListNode</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> head;<br>        <span class="hljs-comment">// 1,1,1,2,2,3,3</span><br>        <span class="hljs-keyword">while</span>(p.next!= <span class="hljs-literal">null</span>)&#123;<br>            <span class="hljs-keyword">while</span>(p.val == p.next.val)&#123;<br>                p.next = p.next.next;<br>                <span class="hljs-keyword">if</span>(p.next == <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> head;<br>            &#125;<br>            p = p.next;<br>        &#125;<br>        <span class="hljs-keyword">return</span> head;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="题目-6：删除排序链表中的重复元素-II"><a href="#题目-6：删除排序链表中的重复元素-II" class="headerlink" title="题目 6：删除排序链表中的重复元素 II"></a>题目 6：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/remove-duplicates-from-sorted-list-ii/">删除排序链表中的重复元素 II</a></h2><blockquote>
+<p>给定一个已排序的链表的头 head ， 删除原始链表中所有重复数字的节点，只留下不同的数字 。返回 已排序的链表 。</p>
+</blockquote>
+<p>示例 1：</p>
+<blockquote>
+<p>输入：head &#x3D; [1,2,3,3,4,4,5]<br>输出：[1,2,5]</p>
+</blockquote>
+<p>思路 1：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">struct</span> ListNode* <span class="hljs-title function_">deleteDuplicates</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> ListNode* head)</span>&#123;<br>    <span class="hljs-keyword">if</span>(head == <span class="hljs-literal">NULL</span>)&#123;<br>        <span class="hljs-keyword">return</span> head;<br>    &#125;<br>    <span class="hljs-keyword">if</span>(head-&gt;next != <span class="hljs-literal">NULL</span> &amp;&amp; head-&gt;val == head-&gt;next-&gt;val)&#123;<br>        <span class="hljs-keyword">while</span>(head-&gt;next != <span class="hljs-literal">NULL</span> &amp;&amp; head-&gt;val == head-&gt;next-&gt;val)&#123;<br>            head = head-&gt;next;<span class="hljs-comment">//删除最后一个相同的元素之前所有相同的元素</span><br>        &#125;<br>        <span class="hljs-keyword">return</span> deleteDuplicates(head-&gt;next);<span class="hljs-comment">//删除最后一个相同的元素</span><br>    &#125;<br>    head-&gt;next = deleteDuplicates(head-&gt;next);<br>    <span class="hljs-keyword">return</span> head;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/LeetCode/" class="category-chain-item">LeetCode</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AE%97%E6%B3%95/" class="print-no-link">#算法</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="print-no-link">#数据结构</a>
+      
+        <a href="/tags/leetcode/" class="print-no-link">#leetcode</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【day08】移除与插入链表元素</div>
+      <div>http://blog.luliang.online/2023/03/20/【day08】移除与插入链表元素/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年3月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/21/%E3%80%90day09%E3%80%91%E9%93%BE%E8%A1%A8%E7%9A%84%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%8F%8D%E8%BD%AC/" title="【day09】链表的旋转与反转">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【day09】链表的旋转与反转</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/19/%E3%80%90day07%E3%80%91%E4%BA%8C%E7%BB%B4%E6%95%B0%E7%BB%84%E5%8F%8A%E6%BB%9A%E5%8A%A8%E6%95%B0%E7%BB%84/" title="【day07】二维数组及滚动数组">
+                        <span class="hidden-mobile">【day07】二维数组及滚动数组</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

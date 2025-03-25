@@ -1,0 +1,810 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="预处理123456789101112#include &lt;stdio.h&gt;#define MSG \    &quot;Hello \World!\n&quot;int main() &#123;    printf(MSG &#x2F;* &quot;hi!\n&quot; *&#x2F;);#ifdef __riscv    printf(&quot;Hello RISC-V!\n&quot;);#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从C语言到二进制程序">
+<meta property="og:url" content="http://blog.luliang.online/2024/08/08/%E4%BB%8E%20C%E8%AF%AD%E8%A8%80%E5%88%B0%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="预处理123456789101112#include &lt;stdio.h&gt;#define MSG \    &quot;Hello \World!\n&quot;int main() &#123;    printf(MSG &#x2F;* &quot;hi!\n&quot; *&#x2F;);#ifdef __riscv    printf(&quot;Hello RISC-V!\n&quot;);#">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-08T09:22:33.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.777Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="C 语言">
+<meta property="article:tag" content="二进制程序">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>从C语言到二进制程序 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="从C语言到二进制程序"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-08 17:22" pubdate>
+          2024年8月8日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">从C语言到二进制程序</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MSG \</span><br><span class="hljs-meta">    <span class="hljs-string">&quot;Hello \</span></span><br><span class="hljs-string"><span class="hljs-meta">World!\n&quot;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">printf</span>(MSG <span class="hljs-comment">/* &quot;hi!\n&quot; */</span>);<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __riscv</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello RISC-V!\n&quot;</span>);<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>可以通过 gcc -E a.c 来查看预处理结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>extern int __uflow (FILE *);<br>extern int __overflow (FILE *, int);<br><span class="hljs-comment"># 902 &quot;/usr/include/stdio.h&quot; 3 4</span><br><br><span class="hljs-comment"># 2 &quot;a.c&quot; 2</span><br><br><br><br><br><span class="hljs-comment"># 5 &quot;a.c&quot;</span><br>int <span class="hljs-function"><span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello World!\n&quot;</span> );<br><br><br><br>    <span class="hljs-built_in">return</span> 0;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个预处理结果非常多，就是因为 include 了一个头文件，它展开之后就会非常大。因此可以说，预处理本质上就是文本替换，包括上面定义的宏 MSG。</p>
+<h2 id="头文件怎么查找"><a href="#头文件怎么查找" class="headerlink" title="头文件怎么查找"></a>头文件怎么查找</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">gcc -E a.c --verbose &gt; /dev/null<br>Using built-in specs.<br>COLLECT_GCC=/usr/bin/gcc<br>OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa<br>OFFLOAD_TARGET_DEFAULT=1<br>Target: x86_64-linux-gnu<br>Configured with: ../src/configure -v --with-pkgversion=<span class="hljs-string">&#x27;Ubuntu 11.4.0-1ubuntu1~22.04&#x27;</span> --with-bugurl=file:///usr/share/doc/gcc-11/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=<span class="hljs-built_in">yes</span> --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --enable-cet --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-11-XeT9lY/gcc-11-11.4.0/debian/tmp-nvptx/usr,amdgcn-amdhsa=/build/gcc-11-XeT9lY/gcc-11-11.4.0/debian/tmp-gcn/usr --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-serialization=2<br>Thread model: posix<br>Supported LTO compression algorithms: zlib zstd<br>gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)<br>COLLECT_GCC_OPTIONS=<span class="hljs-string">&#x27;-E&#x27;</span> <span class="hljs-string">&#x27;-v&#x27;</span> <span class="hljs-string">&#x27;-mtune=generic&#x27;</span> <span class="hljs-string">&#x27;-march=x86-64&#x27;</span><br> /usr/lib/gcc/x86_64-linux-gnu/11/cc1 -E -quiet -v -imultiarch x86_64-linux-gnu a.c -mtune=generic -march=x86-64 -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -dumpbase a.c -dumpbase-ext .c<br>ignoring nonexistent directory <span class="hljs-string">&quot;/usr/local/include/x86_64-linux-gnu&quot;</span><br>ignoring nonexistent directory <span class="hljs-string">&quot;/usr/lib/gcc/x86_64-linux-gnu/11/include-fixed&quot;</span><br>ignoring nonexistent directory <span class="hljs-string">&quot;/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include&quot;</span><br><span class="hljs-comment">#include &quot;...&quot; search starts here:</span><br><span class="hljs-comment">#include &lt;...&gt; search starts here:</span><br> /usr/lib/gcc/x86_64-linux-gnu/11/include<br> /usr/local/include<br> /usr/include/x86_64-linux-gnu<br> /usr/include<br>End of search list.<br>COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/<br>LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/<br>COLLECT_GCC_OPTIONS=<span class="hljs-string">&#x27;-E&#x27;</span> <span class="hljs-string">&#x27;-v&#x27;</span> <span class="hljs-string">&#x27;-mtune=generic&#x27;</span> <span class="hljs-string">&#x27;-march=x86-64&#x27;</span><br><br></code></pre></td></tr></table></figure>
+
+<p>这段信息非常详细，比如它优先搜索include “…” 路径，其次才是include &lt;&gt;。以下是详细解释：</p>
+<ol>
+<li><p><strong>Using built-in specs, COLLECT_GCC, OFFLOAD_TARGET_NAMES, etc.:</strong></p>
+<ul>
+<li>这些信息描述了编译器的配置和环境。</li>
+<li><code>COLLECT_GCC=/usr/bin/gcc</code> 表示 gcc 的执行路径。</li>
+<li><code>OFFLOAD_TARGET_NAMES</code> 和 <code>OFFLOAD_TARGET_DEFAULT</code> 涉及到目标设备，用于代码卸载至特定的加速器（如 GPU）。</li>
+<li><code>Target: x86_64-linux-gnu</code> 指明目标平台是 x86_64 架构的 Linux 系统。</li>
+</ul>
+</li>
+<li><p><strong>Configured with:</strong></p>
+<ul>
+<li>这一行列出了编译 GCC 时的配置选项。它包括支持的语言（如 C, C++），目标架构，优化选项等。</li>
+</ul>
+</li>
+<li><p><strong>Thread model, Supported LTO compression algorithms, gcc version:</strong></p>
+<ul>
+<li><code>Thread model: posix</code> 表明 GCC 使用 POSIX 线程模型。</li>
+<li><code>Supported LTO compression algorithms: zlib zstd</code> 列出了链接时优化（LTO）支持的压缩算法。</li>
+<li><code>gcc version 11.4.0</code> 显示 GCC 的版本。</li>
+</ul>
+</li>
+<li><p><strong>COLLECT_GCC_OPTIONS:</strong></p>
+<ul>
+<li>列出了传递给 gcc 的选项，如 <code>-E</code>（只进行预处理），<code>-v</code>（详细输出），以及与目标机器有关的优化设置。</li>
+</ul>
+</li>
+<li><p><strong>&#x2F;usr&#x2F;lib&#x2F;gcc&#x2F;x86_64-linux-gnu&#x2F;11&#x2F;cc1:</strong></p>
+<ul>
+<li>这是实际执行预处理的程序路径。<code>cc1</code> 是 GCC 的一个内部组件，用于处理 C 语言文件。</li>
+</ul>
+</li>
+<li><p><strong>ignoring nonexistent directory:</strong></p>
+<ul>
+<li>这些行显示编译器在查找头文件时跳过了不存在的目录。</li>
+</ul>
+</li>
+<li><p><strong>#include “&lt;…&gt;” search starts here:</strong></p>
+<ul>
+<li>列出了编译器在处理包含文件时搜索的目录。这对于解决包含文件的依赖关系非常重要。</li>
+</ul>
+</li>
+<li><p><strong>COMPILER_PATH, LIBRARY_PATH:</strong></p>
+<ul>
+<li><code>COMPILER_PATH</code> 显示了编译器相关工具链的位置。</li>
+<li><code>LIBRARY_PATH</code> 列出了链接器搜索库文件的路径。</li>
+</ul>
+</li>
+</ol>
+<p>怎么验证呢？重新写一下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;stdio.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MSG \</span><br><span class="hljs-meta">    <span class="hljs-string">&quot;Hello \</span></span><br><span class="hljs-string"><span class="hljs-meta">World!\n&quot;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">printf</span>(MSG <span class="hljs-comment">/* &quot;hi!\n&quot; */</span>);<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __riscv</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello RISC-V!\n&quot;</span>);<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后，在文件下创建一个 aaa 目录并创建一个 stdin.h，然后预编译并查看预处理信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">gcc -E a.c -Iaaa -v &gt; /dev/null<br>Using built-in specs.<br>COLLECT_GCC=/usr/bin/gcc<br>OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa<br>OFFLOAD_TARGET_DEFAULT=1<br>Target: x86_64-linux-gnu<br>Configured with: ../src/configure -v --with-pkgversion=<span class="hljs-string">&#x27;Ubuntu 11.4.0-1ubuntu1~22.04&#x27;</span> --with-bugurl=file:///usr/share/doc/gcc-11/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=<span class="hljs-built_in">yes</span> --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --enable-cet --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-11-XeT9lY/gcc-11-11.4.0/debian/tmp-nvptx/usr,amdgcn-amdhsa=/build/gcc-11-XeT9lY/gcc-11-11.4.0/debian/tmp-gcn/usr --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-serialization=2<br>Thread model: posix<br>Supported LTO compression algorithms: zlib zstd<br>gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)<br>COLLECT_GCC_OPTIONS=<span class="hljs-string">&#x27;-E&#x27;</span> <span class="hljs-string">&#x27;-I&#x27;</span> <span class="hljs-string">&#x27;aaa&#x27;</span> <span class="hljs-string">&#x27;-v&#x27;</span> <span class="hljs-string">&#x27;-mtune=generic&#x27;</span> <span class="hljs-string">&#x27;-march=x86-64&#x27;</span><br> /usr/lib/gcc/x86_64-linux-gnu/11/cc1 -E -quiet -v -I aaa -imultiarch x86_64-linux-gnu a.c -mtune=generic -march=x86-64 -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -dumpbase a.c -dumpbase-ext .c<br>ignoring nonexistent directory <span class="hljs-string">&quot;/usr/local/include/x86_64-linux-gnu&quot;</span><br>ignoring nonexistent directory <span class="hljs-string">&quot;/usr/lib/gcc/x86_64-linux-gnu/11/include-fixed&quot;</span><br>ignoring nonexistent directory <span class="hljs-string">&quot;/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include&quot;</span><br><span class="hljs-comment">#include &quot;...&quot; search starts here:</span><br><span class="hljs-comment">#include &lt;...&gt; search starts here:</span><br> aaa<br> /usr/lib/gcc/x86_64-linux-gnu/11/include<br> /usr/local/include<br> /usr/include/x86_64-linux-gnu<br> /usr/include<br>End of search list.<br>In file included from a.c:1:<br>aaa/stdio.h:1:10: error: <span class="hljs-comment">#include expects &quot;FILENAME&quot; or &lt;FILENAME&gt;</span><br>    1 | <span class="hljs-comment">#include printf(...)</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到它确实在本目录下搜索，并且报错。</p>
+<p>预处理的其他工作：</p>
+<ul>
+<li>去掉注释;</li>
+<li>连接因断行符(行尾的)而拆分的字符串;</li>
+<li>处理条件编译 #ifdef&#x2F;#else&#x2F;#endif;</li>
+<li>字符串化 #</li>
+<li>标识符连接 ##</li>
+</ul>
+<p>如果用<code>riscv64-linux-gnu-gcc -E a.c</code> 来处理：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>extern int __uflow (FILE *);<br>extern int __overflow (FILE *, int);<br><span class="hljs-comment"># 902 &quot;/usr/riscv64-linux-gnu/include/stdio.h&quot; 3</span><br><br><span class="hljs-comment"># 2 &quot;a.c&quot; 2</span><br><br><br><br><br><span class="hljs-comment"># 5 &quot;a.c&quot;</span><br>int <span class="hljs-function"><span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello World!\n&quot;</span> );<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello RISC-V!\n&quot;</span>);<br><br>    <span class="hljs-built_in">return</span> 0;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><h3 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h3><p>对于示例代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;  <span class="hljs-comment">// compute 1 + 2</span><br>    <span class="hljs-type">int</span> x = <span class="hljs-number">1</span>, y = <span class="hljs-number">2</span>;<br>    <span class="hljs-type">int</span> z = x + y;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;z = %d\n&quot;</span>, z);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><code>clang -fsyntax-only -Xclang -dump-tokens b.c</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>equal <span class="hljs-string">&#x27;=&#x27;</span>        [LeadingSpace] Loc=&lt;b.c:3:18&gt;<br>numeric_constant <span class="hljs-string">&#x27;2&#x27;</span>     [LeadingSpace] Loc=&lt;b.c:3:20&gt;<br>semi <span class="hljs-string">&#x27;;&#x27;</span>                Loc=&lt;b.c:3:21&gt;<br>int <span class="hljs-string">&#x27;int&#x27;</span>        [StartOfLine] [LeadingSpace]   Loc=&lt;b.c:4:5&gt;<br>identifier <span class="hljs-string">&#x27;z&#x27;</span>   [LeadingSpace] Loc=&lt;b.c:4:9&gt;<br>equal <span class="hljs-string">&#x27;=&#x27;</span>        [LeadingSpace] Loc=&lt;b.c:4:11&gt;<br>identifier <span class="hljs-string">&#x27;x&#x27;</span>   [LeadingSpace] Loc=&lt;b.c:4:13&gt;<br>plus <span class="hljs-string">&#x27;+&#x27;</span>         [LeadingSpace] Loc=&lt;b.c:4:15&gt;<br>identifier <span class="hljs-string">&#x27;y&#x27;</span>   [LeadingSpace] Loc=&lt;b.c:4:17&gt;<br>semi <span class="hljs-string">&#x27;;&#x27;</span>                Loc=&lt;b.c:4:18&gt;<br>identifier <span class="hljs-string">&#x27;printf&#x27;</span>      [StartOfLine] [LeadingSpace]   Loc=&lt;b.c:5:5&gt;<br>l_paren <span class="hljs-string">&#x27;(&#x27;</span>             Loc=&lt;b.c:5:11&gt;<br>string_literal <span class="hljs-string">&#x27;&quot;z = %d\n&quot;&#x27;</span>             Loc=&lt;b.c:5:12&gt;<br>comma <span class="hljs-string">&#x27;,&#x27;</span>               Loc=&lt;b.c:5:22&gt;<br>identifier <span class="hljs-string">&#x27;z&#x27;</span>   [LeadingSpace] Loc=&lt;b.c:5:24&gt;<br>r_paren <span class="hljs-string">&#x27;)&#x27;</span>             Loc=&lt;b.c:5:25&gt;<br>semi <span class="hljs-string">&#x27;;&#x27;</span>                Loc=&lt;b.c:5:26&gt;<br><span class="hljs-built_in">return</span> <span class="hljs-string">&#x27;return&#x27;</span>  [StartOfLine] [LeadingSpace]   Loc=&lt;b.c:6:5&gt;<br>numeric_constant <span class="hljs-string">&#x27;0&#x27;</span>     [LeadingSpace] Loc=&lt;b.c:6:12&gt;<br>semi <span class="hljs-string">&#x27;;&#x27;</span>                Loc=&lt;b.c:6:13&gt;<br>r_brace <span class="hljs-string">&#x27;&#125;&#x27;</span>      [StartOfLine]  Loc=&lt;b.c:7:1&gt;<br>eof <span class="hljs-string">&#x27;&#x27;</span>          Loc=&lt;b.c:7:2&gt;<br></code></pre></td></tr></table></figure>
+<p>可以看到，词法分析本质上就是识别并记录源文件中的每一个token：</p>
+<ul>
+<li>标识符, 关键字, 常数, 字符串, 运算符, 大括号, 分号…；</li>
+<li>还记录了token的位置(文件名:行号:列号)。</li>
+</ul>
+<p>词法分析器本质上是一个字符串匹配程序。</p>
+<h3 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h3><p><code>clang -fsyntax-only -Xclang -ast-dump a.c</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>| |-ParmVarDecl 0x11a0378 &lt;col:24, col:29&gt; col:30 <span class="hljs-string">&#x27;FILE *&#x27;</span><br>| `-ParmVarDecl 0x11a03f8 &lt;col:32&gt; col:35 <span class="hljs-string">&#x27;int&#x27;</span><br>`-FunctionDecl 0x11a0610 &lt;b.c:2:1, line:7:1&gt; line:2:5 main <span class="hljs-string">&#x27;int ()&#x27;</span><br>  `-CompoundStmt 0x11a0ae8 &lt;col:12, line:7:1&gt;<br>    |-DeclStmt 0x11a0808 &lt;line:3:5, col:21&gt;<br>    | |-VarDecl 0x11a06c8 &lt;col:5, col:13&gt; col:9 used x <span class="hljs-string">&#x27;int&#x27;</span> cinit<br>    | | `-IntegerLiteral 0x11a0730 &lt;col:13&gt; <span class="hljs-string">&#x27;int&#x27;</span> 1<br>    | `-VarDecl 0x11a0768 &lt;col:5, col:20&gt; col:16 used y <span class="hljs-string">&#x27;int&#x27;</span> cinit<br>    |   `-IntegerLiteral 0x11a07d0 &lt;col:20&gt; <span class="hljs-string">&#x27;int&#x27;</span> 2<br>    |-DeclStmt 0x11a0930 &lt;line:4:5, col:18&gt;<br>    | `-VarDecl 0x11a0838 &lt;col:5, col:17&gt; col:9 used z <span class="hljs-string">&#x27;int&#x27;</span> cinit<br>    |   `-BinaryOperator 0x11a0910 &lt;col:13, col:17&gt; <span class="hljs-string">&#x27;int&#x27;</span> <span class="hljs-string">&#x27;+&#x27;</span><br>    |     |-ImplicitCastExpr 0x11a08e0 &lt;col:13&gt; <span class="hljs-string">&#x27;int&#x27;</span> &lt;LValueToRValue&gt;<br>    |     | `-DeclRefExpr 0x11a08a0 &lt;col:13&gt; <span class="hljs-string">&#x27;int&#x27;</span> lvalue Var 0x11a06c8 <span class="hljs-string">&#x27;x&#x27;</span> <span class="hljs-string">&#x27;int&#x27;</span><br>    |     `-ImplicitCastExpr 0x11a08f8 &lt;col:17&gt; <span class="hljs-string">&#x27;int&#x27;</span> &lt;LValueToRValue&gt;<br>    |       `-DeclRefExpr 0x11a08c0 &lt;col:17&gt; <span class="hljs-string">&#x27;int&#x27;</span> lvalue Var 0x11a0768 <span class="hljs-string">&#x27;y&#x27;</span> <span class="hljs-string">&#x27;int&#x27;</span><br>    |-CallExpr 0x11a0a40 &lt;line:5:5, col:25&gt; <span class="hljs-string">&#x27;int&#x27;</span><br>    | |-ImplicitCastExpr 0x11a0a28 &lt;col:5&gt; <span class="hljs-string">&#x27;int (*)(const char *, ...)&#x27;</span> &lt;FunctionToPointerDecay&gt;<br>    | | `-DeclRefExpr 0x11a0948 &lt;col:5&gt; <span class="hljs-string">&#x27;int (const char *, ...)&#x27;</span> Function 0x1185648 <span class="hljs-string">&#x27;printf&#x27;</span> <span class="hljs-string">&#x27;int (const char *, ...)&#x27;</span><br>    | |-ImplicitCastExpr 0x11a0a88 &lt;col:12&gt; <span class="hljs-string">&#x27;const char *&#x27;</span> &lt;NoOp&gt;<br>    | | `-ImplicitCastExpr 0x11a0a70 &lt;col:12&gt; <span class="hljs-string">&#x27;char *&#x27;</span> &lt;ArrayToPointerDecay&gt;<br>    | |   `-StringLiteral 0x11a09a8 &lt;col:12&gt; <span class="hljs-string">&#x27;char[8]&#x27;</span> lvalue <span class="hljs-string">&quot;z = %d\n&quot;</span><br>    | `-ImplicitCastExpr 0x11a0aa0 &lt;col:24&gt; <span class="hljs-string">&#x27;int&#x27;</span> &lt;LValueToRValue&gt;<br>    |   `-DeclRefExpr 0x11a09c8 &lt;col:24&gt; <span class="hljs-string">&#x27;int&#x27;</span> lvalue Var 0x11a0838 <span class="hljs-string">&#x27;z&#x27;</span> <span class="hljs-string">&#x27;int&#x27;</span><br>    `-ReturnStmt 0x11a0ad8 &lt;line:6:5, col:12&gt;<br>      `-IntegerLiteral 0x11a0ab8 &lt;col:12&gt; <span class="hljs-string">&#x27;int&#x27;</span> 0<br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，语法分析就是将 token 组织成树形结构，AST(Abstract Syntax Tree), 可以反映出源程序的层次结构，还报告语法错误, 例如漏了分号。</p>
+<h3 id="语义分析"><a href="#语义分析" class="headerlink" title="语义分析"></a>语义分析</h3><p>按照C语言的语义确定AST中每个表达式的类型：</p>
+<ul>
+<li>相容的类型将根据C语言标准规范进行类型转换<ul>
+<li>算术类型转换</li>
+</ul>
+</li>
+<li>报告语义错误<ul>
+<li>未定义的引用</li>
+<li>运算符的操作数类型不匹配(如struct + int)</li>
+<li>函数调用参数的类型和数量不匹配</li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<h3 id="静态程序分析"><a href="#静态程序分析" class="headerlink" title="静态程序分析"></a>静态程序分析</h3><p>本质上就是分析 AST 的信息，比如语法错误、代码风格、规范、性能、漏洞、逻辑错误等等等等。</p>
+<h3 id="中间代码生成"><a href="#中间代码生成" class="headerlink" title="中间代码生成"></a>中间代码生成</h3><p><code>clang -S -emit-llvm a.c</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash">; Function Attrs: noinline nounwind optnone uwtable<br>define dso_local i32 @main() <span class="hljs-comment">#0 &#123;</span><br>  %1 = alloca i32, align 4<br>  %2 = alloca i32, align 4<br>  %3 = alloca i32, align 4<br>  %4 = alloca i32, align 4<br>  store i32 0, i32* %1, align 4<br>  store i32 1, i32* %2, align 4<br>  store i32 2, i32* %3, align 4<br>  %5 = load i32, i32* %2, align 4<br>  %6 = load i32, i32* %3, align 4<br>  %7 = add nsw i32 %5, %6<br>  store i32 %7, i32* %4, align 4<br>  %8 = load i32, i32* %4, align 4<br>  %9 = call i32 (i8*, ...) @<span class="hljs-built_in">printf</span>(i8* noundef getelementptr inbounds ([8 x i8], [8 x i8]* @.str, i64 0, i64 0), i32 noundef %8)<br>  ret i32 0<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>中间代码很关键，它是编译器定义的，它可以面向不同的平台、不同的指令集等等。它作为代码抽象层，可以支持多种源语言和目标语言(硬件指令集)。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs bash"> gcc -c b.c<br>$ objdump -d b.o<br><br>b.o:     file format elf64-x86-64<br><br><br>Disassembly of section .text:<br><br>0000000000000000 &lt;main&gt;:<br>   0:   f3 0f 1e fa             endbr64<br>   4:   55                      push   %rbp<br>   5:   48 89 e5                mov    %rsp,%rbp<br>   8:   48 83 ec 10             sub    <span class="hljs-variable">$0x10</span>,%rsp<br>   c:   c7 45 f4 01 00 00 00    movl   <span class="hljs-variable">$0x1</span>,-0xc(%rbp)<br>  13:   c7 45 f8 02 00 00 00    movl   <span class="hljs-variable">$0x2</span>,-0x8(%rbp)<br>  1a:   8b 55 f4                mov    -0xc(%rbp),%edx<br>  1d:   8b 45 f8                mov    -0x8(%rbp),%eax<br>  20:   01 d0                   add    %edx,%eax<br>  22:   89 45 <span class="hljs-built_in">fc</span>                mov    %eax,-0x4(%rbp)<br>  25:   8b 45 <span class="hljs-built_in">fc</span>                mov    -0x4(%rbp),%eax<br>  28:   89 c6                   mov    %eax,%esi<br>  2a:   48 8d 05 00 00 00 00    lea    0x0(%rip),%rax        <span class="hljs-comment"># 31 &lt;main+0x31&gt;</span><br>  31:   48 89 c7                mov    %rax,%rdi<br>  34:   b8 00 00 00 00          mov    <span class="hljs-variable">$0x0</span>,%eax<br>  39:   e8 00 00 00 00          call   3e &lt;main+0x3e&gt;<br>  3e:   b8 00 00 00 00          mov    <span class="hljs-variable">$0x0</span>,%eax<br>  43:   c9                      leave<br>  44:   c3                      ret<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="未指定行为、未定义行为、ABI"><a href="#未指定行为、未定义行为、ABI" class="headerlink" title="未指定行为、未定义行为、ABI"></a>未指定行为、未定义行为、ABI</h3><p>C语言标准并没有明确定义类型的长度, 而是全部交给具体实现来定义，不过定义了类型的最小范围：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 假设1字节 = 8比特</span><br><span class="hljs-keyword">sizeof</span>(  <span class="hljs-type">signed</span> <span class="hljs-type">char</span>     ) &gt;= <span class="hljs-number">1</span><br><span class="hljs-keyword">sizeof</span>(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span>     ) &gt;= <span class="hljs-number">1</span><br><span class="hljs-keyword">sizeof</span>(  <span class="hljs-type">signed</span> <span class="hljs-type">short</span>    ) &gt;= <span class="hljs-number">2</span><br><span class="hljs-keyword">sizeof</span>(<span class="hljs-type">unsigned</span> <span class="hljs-type">short</span>    ) &gt;= <span class="hljs-number">2</span><br><span class="hljs-keyword">sizeof</span>(         <span class="hljs-type">int</span>      ) &gt;= <span class="hljs-number">2</span><br><span class="hljs-keyword">sizeof</span>(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>      ) &gt;= <span class="hljs-number">2</span><br><span class="hljs-keyword">sizeof</span>(         <span class="hljs-type">long</span>     ) &gt;= <span class="hljs-number">4</span><br><span class="hljs-keyword">sizeof</span>(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>     ) &gt;= <span class="hljs-number">4</span><br><span class="hljs-keyword">sizeof</span>(         <span class="hljs-type">long</span> <span class="hljs-type">long</span>) &gt;= <span class="hljs-number">8</span><br><span class="hljs-keyword">sizeof</span>(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span>) &gt;= <span class="hljs-number">8</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，事实上C 标准连 1 个字节是多少都没有定义，历史上 1~48bit 都用过。</p>
+<ul>
+<li>3.6 byte<ul>
+<li>NOTE 2   A byte is composed of a contiguous sequence of bits, the number of which is<br>implementation-defined</li>
+</ul>
+</li>
+</ul>
+<p>函数调用时参数求值顺序是unspecified B。</p>
+<p>实现定义行为(Implementation-defined Behavior)：一类特殊的未指定行为, 具体实现需要将选择写到文档里。</p>
+<p>未定义行为：不确定的、错误的行为。比如有符号数溢出，比如 uint8_t a &#x3D; 128 经常被错误的理解为 -1，事实上，这是 UB，没有这样定义，这也是为什么 PA1中为什么要用无符号数，不产生超范围的 UB。</p>
+<p>ABI: 在真实的系统中, 这相当于编译器+(处理器+操作系统+运行库)。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C-%E8%AF%AD%E8%A8%80/" class="category-chain-item">C 语言</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C-%E8%AF%AD%E8%A8%80/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C-%E8%AF%AD%E8%A8%80/OS/RISCV/" class="category-chain-item">RISCV</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C-%E8%AF%AD%E8%A8%80/" class="print-no-link">#C 语言</a>
+      
+        <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/" class="print-no-link">#二进制程序</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>从C语言到二进制程序</div>
+      <div>http://blog.luliang.online/2024/08/08/从 C语言到二进制程序/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/09/%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E5%92%8C%E6%A8%A1%E6%8B%9F%E5%99%A8/" title="程序的执行和模拟器">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">程序的执行和模拟器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/07/Linux101/" title="Linux101:最好的Linux 入门资料">
+                        <span class="hidden-mobile">Linux101:最好的Linux 入门资料</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

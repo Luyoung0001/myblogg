@@ -1,0 +1,788 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、Verilator什么是 VerilatorVerilator 是一个开源的 Verilog HDL（硬件描述语言）仿真和转换工具，它将 Verilog 代码转换为高性能的 C++ 或 SystemC 代码。Verilator 主要用于对 RTL（寄存器传输级）设计进行仿真，尤其擅长处理大型的复杂数字电路。以下是 Verilator 的一些关键特性和用途： 特性 高性能：  Verilat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建verilator仿真环境（双控开关）">
+<meta property="og:url" content="http://blog.luliang.online/2024/07/12/%E6%90%AD%E5%BB%BAverilator%E4%BB%BF%E7%9C%9F%E7%8E%AF%E5%A2%83%EF%BC%88%E5%8F%8C%E6%8E%A7%E5%BC%80%E5%85%B3%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一、Verilator什么是 VerilatorVerilator 是一个开源的 Verilog HDL（硬件描述语言）仿真和转换工具，它将 Verilog 代码转换为高性能的 C++ 或 SystemC 代码。Verilator 主要用于对 RTL（寄存器传输级）设计进行仿真，尤其擅长处理大型的复杂数字电路。以下是 Verilator 的一些关键特性和用途： 特性 高性能：  Verilat">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/err_code.png">
+<meta property="article:published_time" content="2024-07-12T13:57:40.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.778Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="ysyx">
+<meta property="article:tag" content="verilator">
+<meta property="article:tag" content="双控开关">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/err_code.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>搭建verilator仿真环境（双控开关） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="搭建verilator仿真环境（双控开关）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-12 21:57" pubdate>
+          2024年7月12日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">搭建verilator仿真环境（双控开关）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一、Verilator"><a href="#一、Verilator" class="headerlink" title="一、Verilator"></a>一、Verilator</h2><h3 id="什么是-Verilator"><a href="#什么是-Verilator" class="headerlink" title="什么是 Verilator"></a>什么是 Verilator</h3><p>Verilator 是一个开源的 Verilog HDL（硬件描述语言）仿真和转换工具，它将 Verilog 代码转换为高性能的 C++ 或 SystemC 代码。Verilator 主要用于对 RTL（寄存器传输级）设计进行仿真，尤其擅长处理大型的复杂数字电路。以下是 Verilator 的一些关键特性和用途：</p>
+<h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><ol>
+<li><p><strong>高性能</strong>：</p>
+<ul>
+<li>Verilator 生成的是编译型的 C++&#x2F;SystemC 代码，相比其他解释型或事件驱动的仿真器（如 ModelSim 或 VCS）通常能提供更高的仿真效率。</li>
+</ul>
+</li>
+<li><p><strong>开源</strong>：</p>
+<ul>
+<li>Verilator 是完全开源的，遵循 Perl Artistic License，可以免费使用和修改。这使得它在学术界和工业界得到广泛的应用和社区支持。</li>
+</ul>
+</li>
+<li><p><strong>专注于合成后的代码</strong>：</p>
+<ul>
+<li>它更多地用于对可合成的 Verilog 代码进行仿真，尤其是那些旨在实际硅片上实现的设计。</li>
+</ul>
+</li>
+<li><p><strong>广泛的语言支持</strong>：</p>
+<ul>
+<li>虽然 Verilator 不完全支持 Verilog 2001 的所有构造，它仍然支持大多数常用的 RTL 设计功能，包括但不限于模块、基本门级逻辑、寄存器、始终边缘触发等。</li>
+</ul>
+</li>
+</ol>
+<h3 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h3><ol>
+<li><p><strong>快速仿真</strong>：</p>
+<ul>
+<li>Verilator 被广泛用于开发周期中的快速仿真，帮助设计师快速验证他们的 Verilog 或 SystemVerilog RTL 设计。</li>
+</ul>
+</li>
+<li><p><strong>集成测试</strong>：</p>
+<ul>
+<li>生成的 C++ 或 SystemC 代码可以很容易地与其他测试框架（如 Google Test）集成，使其非常适合自动化测试和持续集成环境。</li>
+</ul>
+</li>
+<li><p><strong>学术和教学</strong>：</p>
+<ul>
+<li>在学术环境中，Verilator 由于其无成本和开源的特性，常用于教学和研究项目，使学生能够理解和实现复杂的数字逻辑设计。</li>
+</ul>
+</li>
+<li><p><strong>硬件验证</strong>：</p>
+<ul>
+<li>通过与 SystemC 的集成，Verilator 也用于硬件与系统级模型（如处理器、总线和复杂外设）的联合仿真和验证。</li>
+</ul>
+</li>
+</ol>
+<p>说得简单点，Verilator 可以将 Verilog 代码转化为高性能的 C++ 或者 SystemC 代码，然后编译成二进制可执行文件，高效验证 RTL 代码。需要注意的是，SystemC 可不是 C语言，而是用于系统级建模、设计和验证的C++库。</p>
+<h2 id="二、双控开关"><a href="#二、双控开关" class="headerlink" title="二、双控开关"></a>二、双控开关</h2><h3 id="程序"><a href="#程序" class="headerlink" title="程序"></a>程序</h3><p>双控开关就是用两个输入表示两个开关，一个输出表示一个灯泡的亮灭，Verilog 代码如下：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">module</span> our_OnOff(<br>    <span class="hljs-keyword">input</span> a,<br>    <span class="hljs-keyword">input</span> b,<br>    <span class="hljs-keyword">output</span> f<br>);<br>  <span class="hljs-keyword">assign</span> f = a ^ b;<br><span class="hljs-keyword">endmodule</span><br></code></pre></td></tr></table></figure>
+<p>有了这个代码之后，就可以利用下面的命令将其转化为 C++代码模型：</p>
+<figure class="highlight v"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs v">verilator -Wall --cc --trace our_OnOff<span class="hljs-variable">.v</span><br></code></pre></td></tr></table></figure>
+<p>这样就在默认目录 obj_dir 下面生成了如下的代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> -l<br>total 56<br>-rw-rw-r-- 1 luyoung luyoung 5278 Jul 11 18:55 Vour_OnOff___024root__DepSet_hd6714a0a__0.cpp<br>-rw-rw-r-- 1 luyoung luyoung 5566 Jul 11 18:55 Vour_OnOff___024root__DepSet_hd6714a0a__0__Slow.cpp<br>-rw-rw-r-- 1 luyoung luyoung 1459 Jul 11 18:55 Vour_OnOff___024root__DepSet_he4849518__0.cpp<br>-rw-rw-r-- 1 luyoung luyoung  893 Jul 11 18:55 Vour_OnOff___024root__DepSet_he4849518__0__Slow.cpp<br>-rw-rw-r-- 1 luyoung luyoung 1068 Jul 11 18:55 Vour_OnOff___024root.h<br>-rw-rw-r-- 1 luyoung luyoung  686 Jul 11 18:55 Vour_OnOff___024root__Slow.cpp<br>-rw-rw-r-- 1 luyoung luyoung 1669 Jul 11 18:55 Vour_OnOff_classes.mk<br>-rw-rw-r-- 1 luyoung luyoung 3228 Jul 11 18:55 Vour_OnOff.cpp<br>-rw-rw-r-- 1 luyoung luyoung 2769 Jul 11 18:55 Vour_OnOff.h<br>-rw-rw-r-- 1 luyoung luyoung 1507 Jul 11 18:55 Vour_OnOff.mk<br>-rw-rw-r-- 1 luyoung luyoung  786 Jul 11 18:55 Vour_OnOff__Syms.cpp<br>-rw-rw-r-- 1 luyoung luyoung  975 Jul 11 18:55 Vour_OnOff__Syms.h<br></code></pre></td></tr></table></figure>
+
+<p>但是生成了模型之后，我们还要利用它做些别的事，比如使用它生成的接口来测试或者使用，这时候就得再写一个 C&#x2F;C++程序：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;assert.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;./obj_dir/Vour_OnOff.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;verilated_vcd_c.h&quot;</span></span><br><br><span class="hljs-type">vluint64_t</span> main_time = <span class="hljs-number">0</span>;  <span class="hljs-comment">// initial 仿真时间</span><br><br><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">sc_time_stamp</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> main_time;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> </span>&#123;<br>    Verilated::<span class="hljs-built_in">commandArgs</span>(argc, argv);<br>    Verilated::<span class="hljs-built_in">traceEverOn</span>(<span class="hljs-literal">true</span>);  <span class="hljs-comment">//导出vcd波形需要加此语句</span><br><br>    VerilatedVcdC* tfp = <span class="hljs-keyword">new</span> <span class="hljs-built_in">VerilatedVcdC</span>();  <span class="hljs-comment">//导出vcd波形需要加此语句</span><br><br>    Vour_OnOff* top = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Vour_OnOff</span>(<span class="hljs-string">&quot;top&quot;</span>);<br>    top-&gt;<span class="hljs-built_in">trace</span>(tfp, <span class="hljs-number">0</span>);<br>    tfp-&gt;<span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;wave.vcd&quot;</span>);  <span class="hljs-comment">//打开vcd</span><br><br>    <span class="hljs-keyword">while</span> (<span class="hljs-built_in">sc_time_stamp</span>() &lt; <span class="hljs-number">20</span> &amp;&amp; !Verilated::<span class="hljs-built_in">gotFinish</span>()) &#123;<br>        <span class="hljs-type">int</span> a = <span class="hljs-built_in">rand</span>() &amp; <span class="hljs-number">1</span>;<br>        <span class="hljs-type">int</span> b = <span class="hljs-built_in">rand</span>() &amp; <span class="hljs-number">1</span>;<br>        top-&gt;a = a;<br>        top-&gt;b = b;<br>        top-&gt;<span class="hljs-built_in">eval</span>();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a = %d, b = %d, f = %d\n&quot;</span>, a, b, top-&gt;f);<br>        tfp-&gt;<span class="hljs-built_in">dump</span>(main_time);  <span class="hljs-comment">// dump wave</span><br>        main_time++;           <span class="hljs-comment">//推动仿真时间</span><br>    &#125;<br>    top-&gt;<span class="hljs-built_in">final</span>();<br>    tfp-&gt;<span class="hljs-built_in">close</span>();<br>    <span class="hljs-keyword">delete</span> top;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上述代码是一个用于测试 Verilator 生成的 C++ 模型的测试台（testbench）示例。它模拟了 <code>Vour_OnOff</code> 模块的操作，同时生成 VCD (Value Change Dump) 波形文件用于后续的波形查看。以下是代码的详细解释：</p>
+<h3 id="包含头文件和全局变量"><a href="#包含头文件和全局变量" class="headerlink" title="包含头文件和全局变量"></a>包含头文件和全局变量</h3><ul>
+<li><code>#include</code> 语句包括了必要的标准库文件和 Verilator 生成的模块头文件。</li>
+<li><code>vluint64_t main_time</code> 是仿真的全局时间计数器，用于跟踪仿真进度。</li>
+</ul>
+<h3 id="时间戳函数"><a href="#时间戳函数" class="headerlink" title="时间戳函数"></a>时间戳函数</h3><ul>
+<li><code>sc_time_stamp()</code>：这个函数返回当前的仿真时间。Verilator 在生成 VCD 波形时会调用此函数以获取时间戳。</li>
+</ul>
+<h3 id="主函数-main"><a href="#主函数-main" class="headerlink" title="主函数 main"></a>主函数 <code>main</code></h3><ul>
+<li><code>Verilated::commandArgs(argc, argv);</code>：处理命令行参数，使得 Verilator 能识别如 <code>--vcd</code> 等仿真特定的参数。</li>
+<li><code>Verilated::traceEverOn(true);</code>：开启波形跟踪功能。这对于生成 VCD 文件是必须的。</li>
+<li><code>VerilatedVcdC* tfp = new VerilatedVcdC();</code>：创建一个 VCD 文件生成器对象。</li>
+<li><code>top-&gt;trace(tfp, 0);</code>：将 VCD 生成器与顶层模块关联，并设置跟踪的层级。</li>
+<li><code>tfp-&gt;open(&quot;wave.vcd&quot;);</code>：打开一个名为 “wave.vcd” 的文件用于写入波形数据。</li>
+</ul>
+<h3 id="仿真循环"><a href="#仿真循环" class="headerlink" title="仿真循环"></a>仿真循环</h3><ul>
+<li><code>while (sc_time_stamp() &lt; 20 &amp;&amp; !Verilated::gotFinish())</code>。循环直到达到20个时间单位或接收到结束信号。</li>
+<li><code>int a = rand() &amp; 1; int b = rand() &amp; 1;</code>：为模块的输入 <code>a</code> 和 <code>b</code> 生成随机的二进制值。</li>
+<li><code>top-&gt;a = a; top-&gt;b = b;</code>：设置顶层模块的输入端口。</li>
+<li><code>top-&gt;eval();</code>：评估模块逻辑。这是在每个仿真步骤中调用，用于更新输出。</li>
+<li><code>printf(&quot;a = %d, b = %d, f = %d\n&quot;, a, b, top-&gt;f);</code>：在控制台输出当前的输入和输出状态。</li>
+<li><code>tfp-&gt;dump(main_time);</code>：将当前时刻的所有信号状态写入 VCD 文件。</li>
+<li><code>main_time++;</code>：时间前进。</li>
+</ul>
+<h3 id="清理和结束仿真"><a href="#清理和结束仿真" class="headerlink" title="清理和结束仿真"></a>清理和结束仿真</h3><ul>
+<li><code>top-&gt;final();</code>：在仿真结束时调用，执行任何必要的清理操作。</li>
+<li><code>tfp-&gt;close();</code>：关闭 VCD 文件。</li>
+<li><code>delete top;</code>：释放顶层模块所占用的内存。</li>
+</ul>
+<p>此时，就可以利用上述程序运行和测试这个模型了：</p>
+<figure class="highlight v"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs v">verilator -Wall --cc --exe --build --trace our_OnOff<span class="hljs-variable">.v</span> main<span class="hljs-variable">.cpp</span><br></code></pre></td></tr></table></figure>
+
+<p>这里事实上，和上面第一个命令的工作重复了，但是有一个好处，那就是能在写 main.cpp 的时候vscode 不会报语法错误，像下面这样：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/err_code.png"></p>
+<p>因此为了在写代码的过程中能有一个良好的体验，还是建议写好 Verilog 代码后首先将其转化为 c++ 代码。</p>
+<h3 id="仿真"><a href="#仿真" class="headerlink" title="仿真"></a>仿真</h3><p>接下来就是编译工作了，很简单，直接一个make 命令就可以了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">make -C obj_dir -f Vour_OnOff.mk Vour_OnOff<br></code></pre></td></tr></table></figure>
+
+<p>编译好后，就可以执行了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash">./obj_dir/Vour_OnOff<br>a = 1, b = 0, f = 1<br>a = 1, b = 1, f = 0<br>a = 1, b = 1, f = 0<br>a = 0, b = 0, f = 0<br>a = 1, b = 1, f = 0<br>a = 0, b = 1, f = 1<br>a = 0, b = 1, f = 1<br>a = 1, b = 0, f = 1<br>a = 0, b = 0, f = 0<br>a = 0, b = 0, f = 0<br>a = 1, b = 0, f = 1<br>a = 1, b = 1, f = 0<br>a = 0, b = 0, f = 0<br>a = 0, b = 1, f = 1<br>a = 1, b = 1, f = 0<br>a = 1, b = 0, f = 1<br>a = 0, b = 0, f = 0<br>a = 1, b = 1, f = 0<br>a = 1, b = 0, f = 1<br>a = 1, b = 0, f = 1<br></code></pre></td></tr></table></figure>
+
+<p>以上，就是双控开关的仿真。</p>
+<h2 id="三、总结"><a href="#三、总结" class="headerlink" title="三、总结"></a>三、总结</h2><h3 id="1-Verilog-模型转换"><a href="#1-Verilog-模型转换" class="headerlink" title="1. Verilog 模型转换"></a>1. <strong>Verilog 模型转换</strong></h3><p>首先，使用 Verilator 将 Verilog 设计 (<code>our_OnOff.v</code>) 转换成 C++ 代码。这是通过以下命令完成的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">verilator -Wall --cc --trace our_OnOff.v<br></code></pre></td></tr></table></figure>
+<p>这个命令生成了 C++ 代码和一些必要的 makefile 文件 (<code>Vour_OnOff.mk</code>) 放在 <code>obj_dir</code> 目录下，同时开启了波形跟踪功能。</p>
+<h3 id="2-编写测试程序"><a href="#2-编写测试程序" class="headerlink" title="2. 编写测试程序"></a>2. <strong>编写测试程序</strong></h3><p>为了测试生成的模型，编写了一个 C++ 程序 (<code>main.cpp</code>)。这个程序包括了模拟输入和输出的代码，以及生成 VCD 波形文件的功能，帮助验证模型的行为。</p>
+<h3 id="3-编译和链接"><a href="#3-编译和链接" class="headerlink" title="3. 编译和链接"></a>3. <strong>编译和链接</strong></h3><p>使用 Verilator 生成的 makefile (<code>Vour_OnOff.mk</code>)，你编译并链接了 C++ 模型和测试程序。这通过以下命令实现：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">make -C obj_dir -f Vour_OnOff.mk Vour_OnOff<br></code></pre></td></tr></table></figure>
+<p>这个命令确保了所有由 Verilator 生成的 C++ 文件和你的 <code>main.cpp</code> 被正确编译和链接。</p>
+<h3 id="4-运行仿真"><a href="#4-运行仿真" class="headerlink" title="4. 运行仿真"></a>4. <strong>运行仿真</strong></h3><p>最后，运行编译后的程序，观察和验证输出。程序在每个仿真周期随机生成输入，根据设计的 Verilog 逻辑计算输出，并将结果打印到控制台。同时，波形数据被记录到 VCD 文件中，方便后续波形分析。</p>
+<h3 id="5-环境和工具配置"><a href="#5-环境和工具配置" class="headerlink" title="5. 环境和工具配置"></a>5. <strong>环境和工具配置</strong></h3><p>我还提到了在 VSCode 中写代码时遇到的问题和解决方案，包括确保 IDE 能够正确识别和索引 Verilator 生成的头文件，以提升代码编写和调试的体验。</p>
+<h3 id="6-改进的可能性"><a href="#6-改进的可能性" class="headerlink" title="6. 改进的可能性"></a>6. <strong>改进的可能性</strong></h3><p>虽然已经使用了一系列命令来处理编译和运行过程，有一点改进的空间是将这些步骤合并，使用更简洁的命令或脚本来自动化整个过程。例如，可以创建一个脚本来一键执行从转换、编译到运行的所有步骤，减少手动输入命令的需要。</p>
+<p>通过这个过程，不仅验证了我的 Verilog 设计，还练习了使用 Verilator 工具链、编写和调试 C++ 代码，并通过仿真检验了设计的正确性。这是一个很好的实践，帮助深入理解数字逻辑设计和仿真验证的整个工作流程。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/ysyx/" class="category-chain-item">ysyx</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ysyx/" class="print-no-link">#ysyx</a>
+      
+        <a href="/tags/verilator/" class="print-no-link">#verilator</a>
+      
+        <a href="/tags/%E5%8F%8C%E6%8E%A7%E5%BC%80%E5%85%B3/" class="print-no-link">#双控开关</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>搭建verilator仿真环境（双控开关）</div>
+      <div>http://blog.luliang.online/2024/07/12/搭建verilator仿真环境（双控开关）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年7月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/07/13/%E6%90%AD%E5%BB%BAverilator%E4%BB%BF%E7%9C%9F%E7%8E%AF%E5%A2%83%EF%BC%88%E5%AE%8C%E7%BB%93%EF%BC%89/" title="搭建verilator仿真环境（完结）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">搭建verilator仿真环境（完结）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/06/%E5%88%A9%E7%94%A8%20Hexo%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="利用 Hexo 搭建个人博客">
+                        <span class="hidden-mobile">利用 Hexo 搭建个人博客</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

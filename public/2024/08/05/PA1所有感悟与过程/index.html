@@ -1,0 +1,816 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、单步执行单步执行就是传入 1，让它执行一个指令就好。 12345678static int cmd_si(char* args) &#123;    if (args &#x3D;&#x3D; NULL)        cpu_exec(1);    else        cpu_exec((uint64_t)(atoi(args)));    return 0;&#125; 其中源码这里接受的是一个 ui">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PA1 感悟与过程">
+<meta property="og:url" content="http://blog.luliang.online/2024/08/05/PA1%E6%89%80%E6%9C%89%E6%84%9F%E6%82%9F%E4%B8%8E%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一、单步执行单步执行就是传入 1，让它执行一个指令就好。 12345678static int cmd_si(char* args) &#123;    if (args &#x3D;&#x3D; NULL)        cpu_exec(1);    else        cpu_exec((uint64_t)(atoi(args)));    return 0;&#125; 其中源码这里接受的是一个 ui">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-05T08:57:40.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.772Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="ysyx">
+<meta property="article:tag" content="PA1">
+<meta property="article:tag" content="sbd">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>PA1 感悟与过程 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PA1 感悟与过程"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-05 16:57" pubdate>
+          2024年8月5日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          60 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">PA1 感悟与过程</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一、单步执行"><a href="#一、单步执行" class="headerlink" title="一、单步执行"></a>一、单步执行</h2><p>单步执行就是传入 1，让它执行一个指令就好。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">cmd_si</span><span class="hljs-params">(<span class="hljs-type">char</span>* args)</span> &#123;<br>    <span class="hljs-keyword">if</span> (args == <span class="hljs-literal">NULL</span>)<br>        cpu_exec(<span class="hljs-number">1</span>);<br>    <span class="hljs-keyword">else</span><br>        cpu_exec((<span class="hljs-type">uint64_t</span>)(atoi(args)));<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>其中源码这里接受的是一个 uint64_t 的一个类型：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">(<span class="hljs-type">uint64_t</span> n)</span> &#123;<br>    Decode s;<br>    <span class="hljs-keyword">for</span> (; n &gt; <span class="hljs-number">0</span>; n--) &#123;<br>        exec_once(&amp;s, cpu.pc);<br>        g_nr_guest_inst++;<br>        trace_and_difftest(&amp;s, cpu.pc);<br>        <span class="hljs-keyword">if</span> (nemu_state.state != NEMU_RUNNING)<br>            <span class="hljs-keyword">break</span>;<br>        IFDEF(CONFIG_DEVICE, device_update());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>但是我们写的时候，可以不用强转 64 位的数据，它会自己转化且安全。</p>
+<h2 id="二、打印寄存器"><a href="#二、打印寄存器" class="headerlink" title="二、打印寄存器"></a>二、打印寄存器</h2><p>这里就直接打印就好了，系统提供了半成品接口，我们首先完善它：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">isa_reg_display</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> len = <span class="hljs-keyword">sizeof</span>(regs) / <span class="hljs-keyword">sizeof</span>(regs[<span class="hljs-number">0</span>]);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; len; i++) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;reg:%s----&gt;0x%x\n&quot;</span>, regs[i], cpu.gpr[i]);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后我们实现打印：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">cmd_info</span><span class="hljs-params">(<span class="hljs-type">char</span>* args)</span> &#123;<br>    <span class="hljs-keyword">if</span> (args == <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-comment">// 打印所有信息</span><br>        isa_reg_display();<br>        sdb_watchpoint_display();<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(args, <span class="hljs-string">&quot;r&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 打印寄存器</span><br>        isa_reg_display();<br><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(args, <span class="hljs-string">&quot;w&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-comment">// 打印监视点</span><br>        sdb_watchpoint_display();<br><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Wrong args.\n&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面还实现了打印监测点，后面补充。</p>
+<h2 id="三、扫描内存"><a href="#三、扫描内存" class="headerlink" title="三、扫描内存"></a>三、扫描内存</h2><p>这里系统提供了一个非常好的调用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">word_t</span> <span class="hljs-title function_">paddr_read</span><span class="hljs-params">(<span class="hljs-type">paddr_t</span> addr, <span class="hljs-type">int</span> len)</span> &#123;<br>  <span class="hljs-keyword">if</span> (likely(in_pmem(addr))) <span class="hljs-keyword">return</span> pmem_read(addr, len);<br>  IFDEF(CONFIG_DEVICE, <span class="hljs-keyword">return</span> mmio_read(addr, len));<br>  out_of_bound(addr);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个调用接口的作用是打印以 addr 开始的内存，长度为 len。因此，扫描内存应该这样写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">cmd_x</span><span class="hljs-params">(<span class="hljs-type">char</span>* args)</span> &#123;<br>    <span class="hljs-type">char</span>* n = strtok(args, <span class="hljs-string">&quot; &quot;</span>);<br>    <span class="hljs-type">char</span>* baseaddr = strtok(<span class="hljs-literal">NULL</span>, <span class="hljs-string">&quot; &quot;</span>);<br>    <span class="hljs-type">int</span> len = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">paddr_t</span> addr = <span class="hljs-number">0</span>;<br>    <span class="hljs-built_in">sscanf</span>(n, <span class="hljs-string">&quot;%d&quot;</span>, &amp;len);<br>    <span class="hljs-built_in">sscanf</span>(baseaddr, <span class="hljs-string">&quot;%x&quot;</span>, &amp;addr);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; len; i++) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;addr:0x%x----&gt;0x%x\n&quot;</span>, addr, paddr_read(addr, <span class="hljs-number">4</span>));<br>        addr = addr + <span class="hljs-number">4</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="四、表达式求值"><a href="#四、表达式求值" class="headerlink" title="四、表达式求值"></a>四、表达式求值</h2><p>这是重头戏，几乎是 PA1 的 80%的内容，因此这里得详细的记录一下。</p>
+<h3 id="1、词法分析"><a href="#1、词法分析" class="headerlink" title="1、词法分析"></a>1、词法分析</h3><p>对于一个中缀表达式 expr，我们先将它分解成一个一个 token。具体操作是，首先定义正则规则，然后遍历expr，然后遍历正则规则，进行匹配：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">enum</span> &#123;</span><br>    TK_NOTYPE = <span class="hljs-number">256</span>,<br>    TK_EQ = <span class="hljs-number">1</span>,<br>    TK_NOTEQ = <span class="hljs-number">2</span>,<br>    TK_NUM = <span class="hljs-number">3</span>,<br>    TK_REGISTER = <span class="hljs-number">4</span>,<br>    TK_HEX = <span class="hljs-number">5</span>,<br>    TK_OR = <span class="hljs-number">6</span>,<br>    TK_AND = <span class="hljs-number">7</span>,<br>    TK_LEFT = <span class="hljs-number">8</span>,<br>    TK_RIGHT = <span class="hljs-number">9</span>,<br>    TK_LEQ = <span class="hljs-number">10</span>,<br>    TK_MEQ = <span class="hljs-number">11</span><br><br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">rule</span> &#123;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>* regex;<br>    <span class="hljs-type">int</span> token_type;<br>&#125; rules[] = &#123;<br><br>    <span class="hljs-comment">/* <span class="hljs-doctag">TODO:</span> Add more rules.</span><br><span class="hljs-comment">     * Pay attention to the precedence level of different rules.</span><br><span class="hljs-comment">     */</span><br><br>    &#123;<span class="hljs-string">&quot; +&quot;</span>, TK_NOTYPE&#125;,  <span class="hljs-comment">// spaces</span><br>    &#123;<span class="hljs-string">&quot;\\+&quot;</span>, <span class="hljs-string">&#x27;+&#x27;</span>&#125;,       <span class="hljs-comment">// plus</span><br>    &#123;<span class="hljs-string">&quot;\\-&quot;</span>, <span class="hljs-string">&#x27;-&#x27;</span>&#125;,       <span class="hljs-comment">// sub</span><br>    &#123;<span class="hljs-string">&quot;\\*&quot;</span>, <span class="hljs-string">&#x27;*&#x27;</span>&#125;,       <span class="hljs-comment">// multi</span><br>    &#123;<span class="hljs-string">&quot;\\/&quot;</span>, <span class="hljs-string">&#x27;/&#x27;</span>&#125;,       <span class="hljs-comment">// div</span><br><br>    &#123;<span class="hljs-string">&quot;\\(&quot;</span>, TK_LEFT&#125;,   <span class="hljs-comment">// (</span><br>    &#123;<span class="hljs-string">&quot;\\)&quot;</span>, TK_RIGHT&#125;,  <span class="hljs-comment">// )</span><br><br>    &#123;<span class="hljs-string">&quot;==&quot;</span>, TK_EQ&#125;,     <span class="hljs-comment">// equal</span><br>    &#123;<span class="hljs-string">&quot;&lt;=&quot;</span>, TK_LEQ&#125;,    <span class="hljs-comment">// less or equal</span><br>    &#123;<span class="hljs-string">&quot;&gt;=&quot;</span>, TK_MEQ&#125;,    <span class="hljs-comment">// more or equal</span><br>    &#123;<span class="hljs-string">&quot;!=&quot;</span>, TK_NOTEQ&#125;,  <span class="hljs-comment">// !=</span><br><br>    &#123;<span class="hljs-string">&quot;\\|\\|&quot;</span>, TK_OR&#125;,<br>    &#123;<span class="hljs-string">&quot;\\&amp;\\&amp;&quot;</span>, TK_AND&#125;,<br>    &#123;<span class="hljs-string">&quot;\\!&quot;</span>, <span class="hljs-string">&#x27;!&#x27;</span>&#125;,<br><br>    &#123;<span class="hljs-string">&quot;\\$(ra|sp|gp|tp|t[0-6]|s[0-9]|a[0-7])&quot;</span>, TK_REGISTER&#125;,  <span class="hljs-comment">// register</span><br><br>    &#123;<span class="hljs-string">&quot;0[xX][0-9a-fA-F]+&quot;</span>, TK_HEX&#125;,  <span class="hljs-comment">// 0xX</span><br>    &#123;<span class="hljs-string">&quot;[0-9]*&quot;</span>, TK_NUM&#125;,             <span class="hljs-comment">// num</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>我们要识别的是表达式中常见的字符，比如’(‘、”&#x3D;&#x3D;”、”!&#x3D;”、”&gt;&#x3D;” 等等。有的字符在正则表达式中有特殊的含义，因此我们必须进行转义。</p>
+<p>接着进行正则编译、匹配：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> NR_REGEX ARRLEN(rules)</span><br><br><span class="hljs-type">static</span> <span class="hljs-type">regex_t</span> re[NR_REGEX] = &#123;&#125;;<br><br><span class="hljs-comment">/* Rules are used for many times.</span><br><span class="hljs-comment"> * Therefore we compile them only once before any usage.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">init_regex</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> i;<br>    <span class="hljs-type">char</span> error_msg[<span class="hljs-number">128</span>];<br>    <span class="hljs-type">int</span> ret;<br><br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; NR_REGEX; i++) &#123;<br>        ret = regcomp(&amp;re[i], rules[i].regex, REG_EXTENDED);<br>        <span class="hljs-keyword">if</span> (ret != <span class="hljs-number">0</span>) &#123;<br>            regerror(ret, &amp;re[i], error_msg, <span class="hljs-number">128</span>);<br>            panic(<span class="hljs-string">&quot;regex compilation failed: %s\n%s&quot;</span>, error_msg,<br>                  rules[i].regex);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>编译是为了加快匹配速度，正则表达式的编译过程包括：<br>解析：正则表达式库会解析提供的模式字符串，检查其语法正确性，并理解其中的各种元字符和构造（如字符类、量词、分组等）。<br>构建：基于解析结果，构建一个内部表示，通常是一种状态机，例如确定性有限自动机（DFA）或非确定性有限自动机（NFA）。这个内部表示用于实际执行模式匹配。<br>优化：在某些情况下，正则表达式引擎可能会对生成的内部结构进行优化，以提高匹配性能。</p>
+<h3 id="2、make-token"><a href="#2、make-token" class="headerlink" title="2、make_token()"></a>2、make_token()</h3><p>接着进行匹配、以及生成 tokens。生成 tokens 的过程中，我们需要做很多事情，首先就是普通的符号，比如运算符、括号等等。剩下的还有 hex、register、pointer 等。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">bool</span> <span class="hljs-title function_">make_token</span><span class="hljs-params">(<span class="hljs-type">char</span>* e)</span> &#123;<br>    <span class="hljs-type">int</span> position = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">int</span> i;<br>    <span class="hljs-type">regmatch_t</span> pmatch;<br><br>    nr_token = <span class="hljs-number">0</span>;<br><br>    <span class="hljs-keyword">while</span> (e[position] != <span class="hljs-string">&#x27;\0&#x27;</span>) &#123;<br>        <span class="hljs-comment">/* Try all rules one by one. */</span><br>        <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; NR_REGEX; i++) &#123;<br>            <span class="hljs-keyword">if</span> (regexec(&amp;re[i], e + position, <span class="hljs-number">1</span>, &amp;pmatch, <span class="hljs-number">0</span>) == <span class="hljs-number">0</span> &amp;&amp;<br>                pmatch.rm_so == <span class="hljs-number">0</span>) &#123;  <span class="hljs-comment">// 匹配成功</span><br>                <span class="hljs-comment">// char* substr_start = e + position;</span><br>                <span class="hljs-type">int</span> substr_len = pmatch.rm_eo;<br><br>                <span class="hljs-comment">// Log(&quot;match rules[%d] = \&quot;%s\&quot; at position %d with len %d:</span><br>                <span class="hljs-comment">// %.*s&quot;,</span><br>                <span class="hljs-comment">//     i, rules[i].regex, position, substr_len, substr_len,</span><br>                <span class="hljs-comment">//     substr_start);</span><br><br>                position += substr_len;<br><br>                <span class="hljs-comment">/* <span class="hljs-doctag">TODO:</span> Now a new token is recognized with rules[i]. Add codes</span><br><span class="hljs-comment">                 * to record the token in the array `tokens&#x27;. For certain types</span><br><span class="hljs-comment">                 * of tokens, some extra actions should be performed.</span><br><span class="hljs-comment">                 */</span><br><br>                <span class="hljs-comment">// 匹配</span><br>                Token temp_token;<br>                <span class="hljs-keyword">switch</span> (rules[i].token_type) &#123;<br>                    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;+&#x27;</span>:<br>                        temp_token.type = <span class="hljs-string">&#x27;+&#x27;</span>;<br>                        tokens[nr_token++] = temp_token;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;-&#x27;</span>:<br>                        temp_token.type = <span class="hljs-string">&#x27;-&#x27;</span>;<br>                        tokens[nr_token++] = temp_token;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;*&#x27;</span>:<br>                        temp_token.type = <span class="hljs-string">&#x27;*&#x27;</span>;<br>                        tokens[nr_token++] = temp_token;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;/&#x27;</span>:<br>                        temp_token.type = <span class="hljs-string">&#x27;/&#x27;</span>;<br>                        tokens[nr_token++] = temp_token;<br>                        <span class="hljs-keyword">break</span>;<br><br>                    <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;!&#x27;</span>:<br>                        temp_token.type = <span class="hljs-string">&#x27;!&#x27;</span>;<br>                        tokens[nr_token++] = temp_token;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_LEFT:<br>                        temp_token.type = TK_LEFT;<br>                        tokens[nr_token++] = temp_token;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_RIGHT:<br>                        temp_token.type = TK_RIGHT;<br>                        tokens[nr_token++] = temp_token;<br>                        <span class="hljs-keyword">break</span>;<br><br>                    <span class="hljs-keyword">case</span> TK_NUM:<br>                        tokens[nr_token].type = TK_NUM;<br>                        <span class="hljs-built_in">strncpy</span>(tokens[nr_token].str, &amp;e[position - substr_len],<br>                                substr_len);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_REGISTER:<br>                        tokens[nr_token].type = TK_REGISTER;<br>                        <span class="hljs-built_in">strncpy</span>(tokens[nr_token].str, &amp;e[position - substr_len],<br>                                substr_len);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_HEX:  <span class="hljs-comment">// hex</span><br>                        tokens[nr_token].type = TK_HEX;<br>                        <span class="hljs-built_in">strncpy</span>(tokens[nr_token].str, &amp;e[position - substr_len],<br>                                substr_len);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br><br>                    <span class="hljs-keyword">case</span> TK_EQ:<br>                        tokens[nr_token].type = TK_EQ;<br>                        <span class="hljs-built_in">strcpy</span>(tokens[nr_token].str, <span class="hljs-string">&quot;==&quot;</span>);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_NOTEQ:<br>                        tokens[nr_token].type = TK_NOTEQ;<br>                        <span class="hljs-built_in">strcpy</span>(tokens[nr_token].str, <span class="hljs-string">&quot;!=&quot;</span>);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_OR:  <span class="hljs-comment">// or</span><br>                        tokens[nr_token].type = TK_OR;<br>                        <span class="hljs-built_in">strcpy</span>(tokens[nr_token].str, <span class="hljs-string">&quot;||&quot;</span>);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_AND:  <span class="hljs-comment">// and</span><br>                        tokens[nr_token].type = TK_AND;<br>                        <span class="hljs-built_in">strcpy</span>(tokens[nr_token].str, <span class="hljs-string">&quot;&amp;&amp;&quot;</span>);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_LEQ:  <span class="hljs-comment">// &lt;=</span><br>                        tokens[nr_token].type = TK_LEQ;<br>                        <span class="hljs-built_in">strcpy</span>(tokens[nr_token].str, <span class="hljs-string">&quot;&lt;=&quot;</span>);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_MEQ:  <span class="hljs-comment">// &gt;=</span><br>                        tokens[nr_token].type = TK_MEQ;<br>                        <span class="hljs-built_in">strcpy</span>(tokens[nr_token].str, <span class="hljs-string">&quot;&gt;=&quot;</span>);<br>                        nr_token++;<br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">case</span> TK_NOTYPE:  <span class="hljs-comment">// 空格跳过</span><br>                        <span class="hljs-keyword">break</span>;<br>                    <span class="hljs-keyword">default</span>:  <span class="hljs-comment">// 待处理其他情况</span><br>                        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;i = %d and No rules is com.\n&quot;</span>, i);<br>                        <span class="hljs-keyword">break</span>;<br>                &#125;<br><br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (i == NR_REGEX) &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;no match at position %d\n%s\n%*.s^\n&quot;</span>, position, e,<br>                   position, <span class="hljs-string">&quot;&quot;</span>);<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">// 继续处理，将寄存器、hex、引用等预处理，将所有的数全部转化为 10 进制字符串</span><br><br>    <span class="hljs-comment">// 寄存器</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; nr_token; i++) &#123;<br>        <span class="hljs-keyword">if</span> (tokens[i].type == TK_REGISTER) &#123;<br>            <span class="hljs-type">bool</span> flag = <span class="hljs-literal">false</span>;<br>            <span class="hljs-type">int</span> tmp = isa_reg_str2val(tokens[i].str, &amp;flag);<br>            <span class="hljs-keyword">if</span> (flag) &#123;<br>                <span class="hljs-built_in">sprintf</span>(tokens[i].str, <span class="hljs-string">&quot;%u&quot;</span>, tmp);<br>                tokens[i].type = TK_NUM;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Transfrom error. \n&quot;</span>);<br>                assert(<span class="hljs-number">0</span>);<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 16进制</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; nr_token; i++) &#123;<br>        <span class="hljs-keyword">if</span> (tokens[i].type == TK_HEX) &#123;<br>            <span class="hljs-type">int</span> value = strtol(tokens[i].str, <span class="hljs-literal">NULL</span>, <span class="hljs-number">16</span>);<br>            <span class="hljs-built_in">sprintf</span>(tokens[i].str, <span class="hljs-string">&quot;%u&quot;</span>, value);<br>            tokens[i].type = TK_NUM;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 处理负值</span><br>    <span class="hljs-type">int</span> tokens_len = nr_token;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; nr_token; i++) &#123;<br>        <span class="hljs-comment">// 解决 --1 == 1</span><br>        <span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span> &amp;&amp; i + <span class="hljs-number">2</span> &lt; nr_token &amp;&amp; tokens[i].type == <span class="hljs-string">&#x27;-&#x27;</span> &amp;&amp;<br>            tokens[i + <span class="hljs-number">1</span>].type == <span class="hljs-string">&#x27;-&#x27;</span> &amp;&amp; tokens[i + <span class="hljs-number">2</span>].type == TK_NUM) &#123;<br>            tokens[i].type = TK_NOTYPE;<br>            tokens[i + <span class="hljs-number">1</span>].type = TK_NOTYPE;<br>        &#125;<br>        <span class="hljs-comment">//  每次产生新的 TK_NOTYPE，及时去掉它</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; nr_token; j++) &#123;<br>            <span class="hljs-keyword">if</span> (tokens[j].type == TK_NOTYPE) &#123;<br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = j + <span class="hljs-number">1</span>; k &lt; nr_token; k++) &#123;<br>                    tokens[k - <span class="hljs-number">1</span>] = tokens[k];<br>                &#125;<br>                tokens_len--;<br>            &#125;<br>        &#125;<br>        <span class="hljs-comment">// 5---1 ==&gt; 5-1，也就是 op -- ==&gt; op</span><br>        <span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">0</span> &amp;&amp; i + <span class="hljs-number">1</span> &lt; nr_token &amp;&amp; isType(tokens[i - <span class="hljs-number">1</span>].type) == <span class="hljs-number">1</span> &amp;&amp;<br>            tokens[i].type == <span class="hljs-string">&#x27;-&#x27;</span> &amp;&amp; tokens[i + <span class="hljs-number">1</span>].type == <span class="hljs-string">&#x27;-&#x27;</span>) &#123;<br>            tokens[i].type = TK_NOTYPE;<br>            tokens[i + <span class="hljs-number">1</span>].type = TK_NOTYPE;<br>        &#125;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; nr_token; j++) &#123;<br>            <span class="hljs-keyword">if</span> (tokens[j].type == TK_NOTYPE) &#123;<br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = j + <span class="hljs-number">1</span>; k &lt; nr_token; k++) &#123;<br>                    tokens[k - <span class="hljs-number">1</span>] = tokens[k];<br>                &#125;<br>                tokens_len--;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> ((tokens[i].type == <span class="hljs-string">&#x27;-&#x27;</span> &amp;&amp; i &gt; <span class="hljs-number">0</span> &amp;&amp; tokens[i - <span class="hljs-number">1</span>].type != TK_NUM &amp;&amp;<br>             tokens[i - <span class="hljs-number">1</span>].type != TK_RIGHT &amp;&amp; tokens[i + <span class="hljs-number">1</span>].type == TK_NUM) ||<br>            (tokens[i].type == <span class="hljs-string">&#x27;-&#x27;</span> &amp;&amp; i == <span class="hljs-number">0</span>)) &#123;<br>            tokens[i].type =<br>                TK_NOTYPE;  <span class="hljs-comment">//虽然这是一个负数标志，但是后面必须要忽略它，因此将它定义为空格类型</span><br><br>            <span class="hljs-comment">// 右移一位，加上&#x27;-&#x27;</span><br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">31</span>; j &gt; <span class="hljs-number">0</span>; j--) &#123;<br>                tokens[i + <span class="hljs-number">1</span>].str[j] = tokens[i + <span class="hljs-number">1</span>].str[j - <span class="hljs-number">1</span>];<br>            &#125;<br>            tokens[i + <span class="hljs-number">1</span>].str[<span class="hljs-number">0</span>] = <span class="hljs-string">&#x27;-&#x27;</span>;<br><br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; nr_token; j++) &#123;<br>                <span class="hljs-keyword">if</span> (tokens[j].type == TK_NOTYPE) &#123;<br>                    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = j + <span class="hljs-number">1</span>; k &lt; nr_token; k++) &#123;<br>                        tokens[k - <span class="hljs-number">1</span>] = tokens[k];<br>                    &#125;<br>                    tokens_len--;<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    nr_token = tokens_len;  <span class="hljs-comment">// 恢复</span><br>    <span class="hljs-comment">// 非运算</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; nr_token; i++) &#123;<br>        <span class="hljs-keyword">if</span> (tokens[i].type == <span class="hljs-string">&#x27;!&#x27;</span>) &#123;<br>            tokens[i].type = TK_NOTYPE;<br>            <span class="hljs-type">int</span> tmp = atoi(tokens[i + <span class="hljs-number">1</span>].str);<br>            <span class="hljs-keyword">if</span> (tmp == <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-built_in">memset</span>(tokens[i + <span class="hljs-number">1</span>].str, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(tokens[i + <span class="hljs-number">1</span>].str));<br>                tokens[i + <span class="hljs-number">1</span>].str[<span class="hljs-number">0</span>] = <span class="hljs-string">&#x27;1&#x27;</span>;<br>                tokens[i + <span class="hljs-number">1</span>].type = TK_NUM;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-built_in">memset</span>(tokens[i + <span class="hljs-number">1</span>].str, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(tokens[i + <span class="hljs-number">1</span>].str));<br>            &#125;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; nr_token; j++) &#123;<br>                <span class="hljs-keyword">if</span> (tokens[j].type == TK_NOTYPE) &#123;<br>                    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = j + <span class="hljs-number">1</span>; k &lt; tokens_len; k++) &#123;<br>                        tokens[k - <span class="hljs-number">1</span>] = tokens[k];<br>                    &#125;<br>                    tokens_len--;<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    nr_token = tokens_len;  <span class="hljs-comment">// 恢复</span><br><br>    <span class="hljs-comment">// 解引用</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; nr_token; i++) &#123;<br>        <span class="hljs-comment">// 如何判断它是一个引用？在表达式语法正确的情况下：</span><br>        <span class="hljs-comment">// 类似于 *123；3**123；(2)**3</span><br>        <span class="hljs-comment">// 引用前面的 token 一定是一个操作符,后面一定是一个数；</span><br>        <span class="hljs-comment">// i=0 &amp;&amp; tokens[i].type == &#x27;*&#x27;</span><br>        <span class="hljs-keyword">if</span> ((tokens[i].type == <span class="hljs-string">&#x27;*&#x27;</span> &amp;&amp; i &gt; <span class="hljs-number">0</span> &amp;&amp;<br>             isType(tokens[i - <span class="hljs-number">1</span>].type) == <span class="hljs-number">1</span> &amp;&amp; tokens[i + <span class="hljs-number">1</span>].type == TK_NUM) ||<br>            (tokens[i].type == <span class="hljs-string">&#x27;*&#x27;</span> &amp;&amp; i == <span class="hljs-number">0</span>)) &#123;<br>            tokens[i].type = TK_NOTYPE;<br><br>            <span class="hljs-comment">// 转化</span><br>            <span class="hljs-type">int</span> temp = <span class="hljs-number">0</span>;<br>            <span class="hljs-keyword">if</span> (tokens[i + <span class="hljs-number">1</span>].type == TK_HEX) &#123;<br>                temp = strtol(tokens[i + <span class="hljs-number">1</span>].str, <span class="hljs-literal">NULL</span>, <span class="hljs-number">16</span>);<br>            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (tokens[i + <span class="hljs-number">1</span>].type == TK_NUM) &#123;<br>                temp = atoi(tokens[i + <span class="hljs-number">1</span>].str);<br>            &#125;<br><br>            <span class="hljs-comment">// 解引用</span><br>            <span class="hljs-type">uintptr_t</span> a = (<span class="hljs-type">uintptr_t</span>)temp;<br>            <span class="hljs-type">int</span> value = *((<span class="hljs-type">int</span>*)a);<br>            <span class="hljs-built_in">sprintf</span>(tokens[i + <span class="hljs-number">1</span>].str, <span class="hljs-string">&quot;%u&quot;</span>, value);<br>            tokens[i + <span class="hljs-number">1</span>].type = TK_NUM;<br><br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; tokens_len; j++) &#123;<br>                <span class="hljs-keyword">if</span> (tokens[j].type == TK_NOTYPE) &#123;<br>                    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = j + <span class="hljs-number">1</span>; k &lt; tokens_len; k++) &#123;<br>                        tokens[k - <span class="hljs-number">1</span>] = tokens[k];<br>                    &#125;<br>                    tokens_len--;<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    nr_token = tokens_len;  <span class="hljs-comment">// 恢复</span><br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+<p>现在有了处理好后的中缀表达式 tokens，比如从 <code>1+2*((2+3))-*0x9734982+--6</code> 到 <code>1+2*((2+3))-10+6</code>，可以看到，预处理把 16 进制、寄存器、引用等都做了处理，甚至还!运算。</p>
+<h3 id="3、计算"><a href="#3、计算" class="headerlink" title="3、计算"></a>3、计算</h3><p>首先得创建栈以及栈的运操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> &#123;</span><br>    Token data[<span class="hljs-number">100</span>];<br>    <span class="hljs-type">int</span> top;<br>&#125; Stack;<br><br><span class="hljs-comment">// 栈操作</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">push</span><span class="hljs-params">(Stack* s, Token token)</span> &#123;<br>    s-&gt;data[++s-&gt;top] = token;<br>&#125;<br><br>Token <span class="hljs-title function_">pop</span><span class="hljs-params">(Stack* s)</span> &#123;<br>    <span class="hljs-keyword">return</span> s-&gt;data[s-&gt;top--];<br>&#125;<br><br>Token <span class="hljs-title function_">peek</span><span class="hljs-params">(Stack* s)</span> &#123;<br>    <span class="hljs-keyword">return</span> s-&gt;data[s-&gt;top];<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">isEmpty</span><span class="hljs-params">(Stack* s)</span> &#123;<br>    <span class="hljs-keyword">return</span> s-&gt;top == <span class="hljs-number">-1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>然后再做一些辅助函数，来辅助后面的计算判断过程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 0:number</span><br><span class="hljs-comment">// 1:op</span><br><span class="hljs-comment">// 2:()</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">isType</span><span class="hljs-params">(<span class="hljs-type">int</span> type)</span> &#123;<br>    <span class="hljs-keyword">switch</span> (type) &#123;<br>        <span class="hljs-keyword">case</span> TK_NUM:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;/&#x27;</span>:<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;-&#x27;</span>:<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;*&#x27;</span>:<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;+&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;(&#x27;</span>:<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;)&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>;<br>        <span class="hljs-keyword">default</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 比较优先级</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">priority</span><span class="hljs-params">(<span class="hljs-type">int</span> type)</span> &#123;<br>    <span class="hljs-keyword">switch</span> (type) &#123;<br>        <span class="hljs-keyword">case</span> TK_OR:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-4</span>;<br>        <span class="hljs-keyword">case</span> TK_AND:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-3</span>;<br>        <span class="hljs-keyword">case</span> TK_NOTEQ:<br>        <span class="hljs-keyword">case</span> TK_EQ:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-2</span>;<br>        <span class="hljs-keyword">case</span> TK_LEQ:<br>        <span class="hljs-keyword">case</span> TK_MEQ:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br><br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;+&#x27;</span>:<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;-&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;*&#x27;</span>:<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;/&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">default</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-5</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>中缀转后缀，这个算法难以理解，主要就是判断当前 token 的优先级以及栈顶元素的优先级：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 中缀转化为后缀表达式</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">midToPost</span><span class="hljs-params">(Token* mid, Token* post, <span class="hljs-type">int</span> token_len, <span class="hljs-type">int</span>* new_len)</span> &#123;<br>    Stack ops;<br>    ops.top = <span class="hljs-number">-1</span>;<br>    <span class="hljs-type">int</span> j = <span class="hljs-number">0</span>;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; token_len; i++) &#123;<br>        Token token = mid[i];<br>        <span class="hljs-keyword">if</span> (token.type == TK_NUM) &#123;<br>            post[j++] = token;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (token.type == TK_LEFT || isEmpty(&amp;ops)) &#123;<br>            push(&amp;ops, token);<br><br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (token.type == TK_RIGHT) &#123;<br>            <span class="hljs-keyword">while</span> (!isEmpty(&amp;ops) &amp;&amp; (peek(&amp;ops).type != TK_LEFT)) &#123;<br>                post[j++] = pop(&amp;ops);<br>            &#125;<br>            pop(&amp;ops);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">while</span> (!isEmpty(&amp;ops) &amp;&amp;<br>                   (priority(peek(&amp;ops).type) &gt;= priority(token.type))) &#123;<br>                post[j++] = pop(&amp;ops);<br>            &#125;<br>            push(&amp;ops, token);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">while</span> (!isEmpty(&amp;ops)) &#123;<br>        post[j++] = pop(&amp;ops);<br>    &#125;<br>    *new_len = j;  <span class="hljs-comment">// 长度</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>计算后缀表达式，这很简单：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 计算后缀表达式</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">evalRPN</span><span class="hljs-params">(Token* tokens, <span class="hljs-type">int</span> len)</span> &#123;<br>    Stack nums;<br>    nums.top = <span class="hljs-number">-1</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; len; i++) &#123;<br>        <span class="hljs-keyword">if</span> (tokens[i].type == TK_NUM) &#123;<br>            push(&amp;nums, tokens[i]);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-type">int</span> num2 = atoi(peek(&amp;nums).str);<br>            pop(&amp;nums);<br>            <span class="hljs-type">int</span> num1 = atoi(peek(&amp;nums).str);<br>            pop(&amp;nums);<br><br>            Token temp = &#123;<span class="hljs-number">0</span>&#125;;<br><br>            <span class="hljs-keyword">if</span> (tokens[i].type == <span class="hljs-string">&#x27;+&#x27;</span>) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 + num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == <span class="hljs-string">&#x27;-&#x27;</span>) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 - num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == <span class="hljs-string">&#x27;*&#x27;</span>) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 * num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == <span class="hljs-string">&#x27;/&#x27;</span>) &#123;<br>                <span class="hljs-keyword">if</span> (num2 == <span class="hljs-number">0</span>)<br>                    <span class="hljs-keyword">goto</span> EXCEPTZION;<br>                <span class="hljs-keyword">else</span><br>                    <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 / num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == TK_EQ) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 == num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == TK_NOTEQ) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 != num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == TK_LEQ) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%d&quot;</span>, num1 &lt;= num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == TK_MEQ) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%d&quot;</span>, num1 &gt;= num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br><br>            <span class="hljs-keyword">if</span> (tokens[i].type == TK_AND) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 &amp;&amp; num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (tokens[i].type == TK_OR) &#123;<br>                <span class="hljs-built_in">sprintf</span>(temp.str, <span class="hljs-string">&quot;%u&quot;</span>, num1 || num2);<br>                temp.type = TK_NUM;<br>                push(&amp;nums, temp);<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> atoi(peek(&amp;nums).str);<br>EXCEPTZION:<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">10086</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>我使用了 goto 语句，当一个表达式中有除 0 操作时，直接返回特定的值比如 10086来标记除0 异常。<br>然后是计算：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c">Token post[<span class="hljs-number">1024</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br><span class="hljs-type">word_t</span> <span class="hljs-title function_">expr</span><span class="hljs-params">(<span class="hljs-type">char</span>* e, <span class="hljs-type">bool</span>* success)</span> &#123;<br>    <span class="hljs-comment">// 清空 tokens</span><br>    <span class="hljs-built_in">memset</span>(tokens, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(tokens));<br>    <span class="hljs-built_in">memset</span>(post, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(post));<br>    <span class="hljs-keyword">if</span> (!make_token(e)) &#123;<br>        *success = <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    <span class="hljs-type">int</span> len = <span class="hljs-number">0</span>;<br>    *success = <span class="hljs-literal">true</span>;<br>    midToPost(tokens, post, nr_token, &amp;len);<br>    <span class="hljs-keyword">return</span> evalRPN(post, len);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接着在我们的 sdb 中写上接口：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">cmd_p</span><span class="hljs-params">(<span class="hljs-type">char</span>* args)</span> &#123;<br>    <span class="hljs-keyword">if</span> (args == <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;No args\n&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    <span class="hljs-type">bool</span> flag = <span class="hljs-literal">false</span>;<br>    <span class="hljs-type">int</span> ans = expr(args, &amp;flag);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%u&quot;</span>, ans);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="4、测试"><a href="#4、测试" class="headerlink" title="4、测试"></a>4、测试</h3><p>这里我采用的处理方式一样，如果有除 0 操作，那么表达式的 result 未定义，但是我可以规定他为 10086，这样以便于通过测试点。其它没什么好说的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><code class="hljs c"><br><span class="hljs-comment">// this should be enough</span><br><span class="hljs-type">static</span> <span class="hljs-type">char</span> buf[<span class="hljs-number">65536</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br><span class="hljs-type">static</span> <span class="hljs-type">char</span> code_buf[<span class="hljs-number">65536</span> + <span class="hljs-number">128</span>] = &#123;&#125;;  <span class="hljs-comment">// a little larger than `buf`</span><br><span class="hljs-type">static</span> <span class="hljs-type">char</span>* code_format =<br>    <span class="hljs-string">&quot;#include &lt;stdio.h&gt;\n&quot;</span><br>    <span class="hljs-string">&quot;int main() &#123; &quot;</span><br>    <span class="hljs-string">&quot;  int result = %s;&quot;</span><br>    <span class="hljs-string">&quot;  printf(\&quot;%%u\&quot;, result); &quot;</span><br>    <span class="hljs-string">&quot;  return 0; &quot;</span><br>    <span class="hljs-string">&quot;&#125;\n&quot;</span>;<br><br><span class="hljs-type">int</span> pos = <span class="hljs-number">0</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">choose</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> &#123;<br>    <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> rand() % n;<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">gen_num</span><span class="hljs-params">()</span> &#123;<br>    buf[pos++] = choose(<span class="hljs-number">5</span>) + <span class="hljs-string">&#x27;3&#x27;</span>;  <span class="hljs-comment">// 3~7</span><br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">gen</span><span class="hljs-params">(<span class="hljs-type">char</span> c)</span> &#123;<br>    buf[pos++] = c;<br>    <span class="hljs-keyword">if</span> (choose(<span class="hljs-number">2</span>) == <span class="hljs-number">1</span>) &#123;  <span class="hljs-comment">// 有一半的概率插入空格</span><br>        buf[pos++] = <span class="hljs-string">&#x27; &#x27;</span>;<br>    &#125;<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">gen_rand_op</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> n = choose(<span class="hljs-number">7</span>);<br>    <span class="hljs-keyword">switch</span> (n) &#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;+&#x27;</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;-&#x27;</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;*&#x27;</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">3</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;=&#x27;</span>;<br>            buf[pos++] = <span class="hljs-string">&#x27;=&#x27;</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">4</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;!&#x27;</span>;<br>            buf[pos++] = <span class="hljs-string">&#x27;=&#x27;</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">5</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;&lt;&#x27;</span>;<br>            buf[pos++] = <span class="hljs-string">&#x27;=&#x27;</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">6</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;&gt;&#x27;</span>;<br>            buf[pos++] = <span class="hljs-string">&#x27;=&#x27;</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">default</span>:<br>            buf[pos++] = <span class="hljs-string">&#x27;/&#x27;</span>;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (choose(<span class="hljs-number">2</span>) == <span class="hljs-number">1</span>) &#123;  <span class="hljs-comment">// 有一半的概率插入空格</span><br>        buf[pos++] = <span class="hljs-string">&#x27; &#x27;</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">gen_rand_expr</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> &#123;<br>    <span class="hljs-keyword">if</span> (n == <span class="hljs-number">0</span>) &#123;<br>        gen_num();<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    <span class="hljs-keyword">switch</span> (choose(<span class="hljs-number">3</span>)) &#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<br>            gen_num();<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br>            gen(<span class="hljs-string">&#x27;(&#x27;</span>);<br>            gen_rand_expr(n - <span class="hljs-number">1</span>);<br>            gen(<span class="hljs-string">&#x27;)&#x27;</span>);<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">default</span>:<br>            gen_rand_expr(n - <span class="hljs-number">1</span>);<br>            gen_rand_op();<br>            gen_rand_expr(n - <span class="hljs-number">1</span>);<br>            <span class="hljs-keyword">break</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    <span class="hljs-type">int</span> seed = time(<span class="hljs-number">0</span>);<br>    srand(seed);<br>    <span class="hljs-type">int</span> loop = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">if</span> (argc &gt; <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">sscanf</span>(argv[<span class="hljs-number">1</span>], <span class="hljs-string">&quot;%d&quot;</span>, &amp;loop);<br>    &#125;<br>    <span class="hljs-type">int</span> i;<br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; loop; i++) &#123;<br>        pos = <span class="hljs-number">0</span>;<br>        <span class="hljs-built_in">memset</span>(buf, <span class="hljs-number">0</span>, <span class="hljs-built_in">strlen</span>(buf));<br>        gen_rand_expr(<span class="hljs-number">10</span>);<br><br>        <span class="hljs-built_in">sprintf</span>(code_buf, code_format, buf);<br><br>        FILE* fp = fopen(<span class="hljs-string">&quot;/tmp/.code.c&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>);<br>        assert(fp != <span class="hljs-literal">NULL</span>);<br>        <span class="hljs-built_in">fputs</span>(code_buf, fp);<br>        fclose(fp);<br><br>        <span class="hljs-type">int</span> ret = system(<span class="hljs-string">&quot;gcc /tmp/.code.c -o /tmp/.expr&quot;</span>);<br>        <span class="hljs-keyword">if</span> (ret != <span class="hljs-number">0</span>)<br>            <span class="hljs-keyword">continue</span>;<br><br>        fp = popen(<span class="hljs-string">&quot;/tmp/.expr&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>);<br>        assert(fp != <span class="hljs-literal">NULL</span>);<br><br>        <span class="hljs-type">int</span> result;<br>        ret = <span class="hljs-built_in">fscanf</span>(fp, <span class="hljs-string">&quot;%d&quot;</span>, &amp;result);<br>        <span class="hljs-keyword">if</span> (ret != <span class="hljs-number">1</span>) &#123;      <span class="hljs-comment">// 读取失败，除0 行为</span><br>            result = <span class="hljs-number">10086</span>;  <span class="hljs-comment">// 10086 定义为 除0行为</span><br>        &#125;<br>        pclose(fp);<br><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%u %s\n&quot;</span>, result, buf);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>为了防止生成的表达式太深，我加了参数，来递归生成的时候，可以控制深度。生成的表达式类似如下：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs txt">0 ( 3)!= 7&lt;= ( ( 6)) !=( ( 3))-( 3)!= 5*5&gt;=6- ( ((7)&gt;= 3* 7) )+3<br>0 ( ((( 3)) *4&lt;=4+ 3))<br>7 7<br>4 4<br>6 6<br>4 4<br>4 ( 4)<br>0 4== 3== 6<br>3 3<br>1 7&lt;= 5!= ( 7&gt;=7)&gt;= 3&lt;=7*( 5) * ( 3)&gt;= 7&lt;=4+7<br>3 3<br>3 3<br>4 ( 4)<br>1 5&lt;= 4!=5!=6&lt;= 6!=((5))&lt;=( ( (7&lt;=6))) == 4== 3*( (( 7))) !=7!= 4<br>11 3+ 6-3+ 5<br>4 4<br>4 4<br>0 ( ( (5)==7-5&lt;= (( (4) ))!= ( (4) - 4- 5) &lt;= 6== 5==(( 7+( (5)&gt;=( 5)- 4) ) )) )<br>1 3!=7&gt;=7==5!=((3) )==3!= ((7&lt;=4&lt;=6==7*7))&gt;=5- 3&gt;=6- ((5)&gt;= ( 7) &lt;=7&lt;=6&lt;= 4*3) &lt;=( 4-5*( 4))!=(5)<br>14 (5== ((7)) )+ 7+ 7<br>...<br><br></code></pre></td></tr></table></figure>
+<p>测试结果如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">test <span class="hljs-number">1</span> passed!<br>test <span class="hljs-number">2</span> passed!<br>test <span class="hljs-number">3</span> passed!<br>test <span class="hljs-number">4</span> passed!<br>test <span class="hljs-number">5</span> passed!<br>...<br>test <span class="hljs-number">197</span> passed!<br>test <span class="hljs-number">198</span> passed!<br>test <span class="hljs-number">199</span> passed!<br>test <span class="hljs-number">200</span> passed!<br></code></pre></td></tr></table></figure>
+
+<p>全部通过测试点！</p>
+<h2 id="五、检测点"><a href="#五、检测点" class="headerlink" title="五、检测点"></a>五、检测点</h2><p>监测点就是检测一个寄存器或者引用，比如地址的值，将表达式设置成监测点是没有任何意义的。</p>
+<p>这里我取消了框架提供的 head，我认为所有的监测点都可以使用 free_ 来进行管理，而且这种管理没有任何增删链表节点的行为。速度快，稳定，不易出错、编程难度小。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// free 上是潜在的空 wp，它的状态不应该发生改变</span><br>WP* <span class="hljs-title function_">new_wp</span><span class="hljs-params">()</span> &#123;<br>    WP* p = free_;<br>    <span class="hljs-keyword">while</span> (p != <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-keyword">if</span> (p-&gt;tag == <span class="hljs-literal">false</span>) &#123;<br>            p-&gt;tag = <span class="hljs-literal">true</span>;<br>            <span class="hljs-keyword">return</span> p;<br>        &#125;<br>        p = p-&gt;next;<br>    &#125;<br><br>    assert(<span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在 new 一个监测点的时候，我们只需要在 free_上找到一个false节点，然后修改它的 tag 为true，并返回就行了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 只需要将free_wp 的状态改为 false，然后清空一些值</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">free_wp</span><span class="hljs-params">(WP* wp)</span> &#123;<br>    WP* p = free_;<br>    <span class="hljs-keyword">while</span> (p != <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-keyword">if</span> (wp-&gt;NO == p-&gt;NO) &#123;<br>            p-&gt;NO = <span class="hljs-number">0</span>;<br>            <span class="hljs-built_in">memset</span>(p-&gt;expr, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(p-&gt;expr));<br>            p-&gt;old_value = <span class="hljs-number">0</span>;<br>            p-&gt;new_value = <span class="hljs-number">0</span>;<br>            p-&gt;tag = <span class="hljs-literal">false</span>;<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>        p = p-&gt;next;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>free_wp 就更简单了，只需要清空它的值，并将 tag 设置为 false。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// wp 打印</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">sdb_watchpoint_display</span><span class="hljs-params">()</span> &#123;<br>    WP* p = free_;<br>    <span class="hljs-type">int</span> flag = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span> (p != <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-keyword">if</span> (p-&gt;tag == <span class="hljs-literal">true</span>) &#123;<br>            flag = <span class="hljs-number">1</span>;<br>            <span class="hljs-built_in">printf</span>(<br>                <span class="hljs-string">&quot;Watchpoint.No: %d, expr = %s, old_value = %d, new_value = &quot;</span><br>                <span class="hljs-string">&quot;%d\n&quot;</span>,<br>                p-&gt;NO, p-&gt;expr, p-&gt;old_value, p-&gt;new_value);<br>        &#125;<br>        p = p-&gt;next;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (flag == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;No Watch Points.\n&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>打印的话，就在 free_ 中进行遍历，如果没有找到，输出响应的信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// wp_delete 直接 free 掉</span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">delete_wp</span><span class="hljs-params">(<span class="hljs-type">int</span> No)</span> &#123;<br>    WP* p = free_;<br>    <span class="hljs-keyword">while</span> (p != <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-keyword">if</span> (p-&gt;NO == No) &#123;<br>            free_wp(p);<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        &#125;<br>        p = p-&gt;next;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;  <span class="hljs-comment">// 删除行为错误</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>删除就直接 free 掉。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">create_wp</span><span class="hljs-params">(<span class="hljs-type">char</span>* args)</span> &#123;<br>    WP* temp = new_wp();<br>    <span class="hljs-built_in">strcpy</span>(temp-&gt;expr, args);<br>    <span class="hljs-type">bool</span> success = <span class="hljs-literal">false</span>;<br>    <span class="hljs-type">int</span> v = expr(temp-&gt;expr, &amp;success);<br>    <span class="hljs-keyword">if</span> (success == <span class="hljs-literal">true</span>) &#123;<br>        temp-&gt;old_value = v;<br>        temp-&gt;tag = <span class="hljs-literal">true</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;wrong expr() process.\n&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Watch Point created success.\n&quot;</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>至于创建，那就更简单了，首先 new 一个，然后设置它的值就好了。</p>
+<p>按照文档提示，我们还需要比较观测点的新值和旧值:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">trace_and_difftest</span><span class="hljs-params">(Decode* _this, <span class="hljs-type">vaddr_t</span> dnpc)</span> &#123;<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> CONFIG_ITRACE_COND</span><br>    <span class="hljs-keyword">if</span> (ITRACE_COND) &#123;<br>        log_write(<span class="hljs-string">&quot;%s\n&quot;</span>, _this-&gt;logbuf);<br>    &#125;<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>    <span class="hljs-keyword">if</span> (g_print_step) &#123;<br>        IFDEF(CONFIG_ITRACE, <span class="hljs-built_in">puts</span>(_this-&gt;logbuf));<br>    &#125;<br>    IFDEF(CONFIG_DIFFTEST, difftest_step(_this-&gt;pc, dnpc));<br><br>    <span class="hljs-comment">// 扫描监视点</span><br>    WP* p = free_;<br>    <span class="hljs-keyword">while</span> (p != <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-keyword">if</span> (p-&gt;tag == <span class="hljs-literal">true</span>) &#123;<br>            <span class="hljs-type">bool</span> success = <span class="hljs-literal">false</span>;<br>            <span class="hljs-type">int</span> tmp = expr(p-&gt;expr, &amp;success);<br>            <span class="hljs-keyword">if</span> (success) &#123;<br>                <span class="hljs-keyword">if</span> (tmp != p-&gt;old_value) &#123;<br>                    p-&gt;new_value = tmp;<br>                    nemu_state.state = NEMU_STOP;<br>                    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Not EQ: old_value:%u--&gt;current_value:%u\n&quot;</span>,<br>                           p-&gt;old_value, p-&gt;new_value);<br>                    <span class="hljs-keyword">return</span>;<br>                &#125;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;expr error.\n&quot;</span>);<br>                assert(<span class="hljs-number">0</span>);<br>            &#125;<br>        &#125;<br>        p = p-&gt;next;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的细节是，我们必须在 new_v 和old_v 不等的时候，对这个值的 new_v 进行更新。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c">(nemu) w $t0 == <span class="hljs-number">0</span><br>Watch Point created success.<br>(nemu) si<br><span class="hljs-number">0x80000000</span>: <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">02</span> <span class="hljs-number">97</span> auipc   t0, <span class="hljs-number">0</span><br><span class="hljs-number">0x80000000</span>: <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">02</span> <span class="hljs-number">97</span> auipc   t0, <span class="hljs-number">0</span><br>Not EQ: old_value:<span class="hljs-number">1</span>--&gt;current_value:<span class="hljs-number">0</span><br>(nemu) info w<br>Watchpoint.No: <span class="hljs-number">0</span>, expr = $t0 == <span class="hljs-number">0</span>, old_value = <span class="hljs-number">1</span>, new_value = <span class="hljs-number">0</span><br>(nemu)<br></code></pre></td></tr></table></figure>
+<p>可以看到，监测点的值确实发生了改变。</p>
+<h2 id="六、Q-A"><a href="#六、Q-A" class="headerlink" title="六、Q &amp; A"></a>六、Q &amp; A</h2><h2 id="1、计算机可以没有寄存器吗"><a href="#1、计算机可以没有寄存器吗" class="headerlink" title="1、计算机可以没有寄存器吗?"></a>1、计算机可以没有寄存器吗?</h2><p>如果没有寄存器，计算机理论上仍然可以工作，但它将极大地影响硬件的性能、设计和提供的编程模型。这种设计需要重大的架构调整和对程序设计方法的根本改变。</p>
+<h3 id="计算机的工作方式"><a href="#计算机的工作方式" class="headerlink" title="计算机的工作方式"></a><strong>计算机的工作方式</strong></h3><ol>
+<li><p><strong>基于存储器的处理器</strong>：在没有寄存器的设计中，一个概念是完全基于存储器的处理器，如一些早期的计算机和少数现代的特殊架构，例如堆栈机。在这种设计中，所有操作（包括算术运算和逻辑运算）直接在内存上进行，而不是首先将数据加载到寄存器中。</p>
+</li>
+<li><p><strong>性能影响</strong>：由于内存访问速度远慢于寄存器，这种设计显著降低了数据处理的速度。内存操作的延迟和带宽限制成为性能的主要瓶颈。</p>
+</li>
+<li><p><strong>简化的硬件设计</strong>：从某种角度看，没有寄存器的处理器可能有更简单的硬件设计。例如，指令集可能更简单，因为所有指令都直接作用于内存地址。</p>
+</li>
+</ol>
+<h3 id="对硬件提供的编程模型的影响"><a href="#对硬件提供的编程模型的影响" class="headerlink" title="对硬件提供的编程模型的影响"></a><strong>对硬件提供的编程模型的影响</strong></h3><ol>
+<li><p><strong>编程复杂性增加</strong>：开发者需要编写更多的代码来处理常见任务，因为常用的数据和中间结果不能简单地存储在快速访问的寄存器中。这可能导致代码更加冗长且难以维护。</p>
+</li>
+<li><p><strong>优化挑战</strong>：在没有寄存器的系统中，编译器和开发者面临更大的挑战，以优化程序性能，因为传统的优化策略，如寄存器分配和调度，不再适用。相反，他们可能需要依赖于优化内存访问模式和减少内存带宽需求。</p>
+</li>
+<li><p><strong>指令集的改变</strong>：没有寄存器的架构可能需要一个完全不同的指令集，这些指令集直接操作内存而不是通过寄存器。这可能使得指令执行更直接，但每个指令的成本更高。</p>
+</li>
+<li><p><strong>并行处理限制</strong>：寄存器在现代多核和多线程处理器中扮演着关键角色，它们允许快速上下文切换和独立的线程执行。没有寄存器，实现有效的并行处理会更加困难。</p>
+</li>
+</ol>
+<h2 id="2、从状态机视角理解程序运行"><a href="#2、从状态机视角理解程序运行" class="headerlink" title="2、从状态机视角理解程序运行"></a>2、从状态机视角理解程序运行</h2><p>以上一小节中1+2+…+100的指令序列为例, 尝试画出这个程序的状态机.</p>
+<p>这个程序比较简单, 需要更新的状态只包括PC和r1, r2这两个寄存器, 因此我们用一个三元组(PC, r1, r2)就可以表示程序的所有状态, 而无需画出内存的具体状态. 初始状态是(0, x, x), 此处的x表示未初始化. 程序PC&#x3D;0处的指令是mov r1, 0, 执行完之后PC会指向下一条指令, 因此下一个状态是(1, 0, x). 如此类推, 我们可以画出执行前3条指令的状态转移过程:</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs txt">​ (0,x ,x )-&gt;(1,0 ,x )-&gt;(2,0 ,0 )-&gt;(3,0 ,1 )-&gt;(4,1 ,1 )-&gt;(5,1 ,2 )-&gt;(6,3 ,2 )-&gt;(7,3 ,3 )-&gt;(8,6 ,3 )-&gt;(9,6 ,4 )-&gt;(10,10 ,4 )…依次类推（两次一循环，r2+1,r1+=r2）<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="3、为什么printf-的输出要换行"><a href="#3、为什么printf-的输出要换行" class="headerlink" title="3、为什么printf()的输出要换行?"></a>3、为什么printf()的输出要换行?</h2><p>输出延迟：由于行缓冲的特性，输出可能会在缓冲区中停留，直到程序结束或缓冲区满，这可能会导致用户界面上的显示延迟。</p>
+<h2 id="4、表达式生成器如何获得C程序的打印结果"><a href="#4、表达式生成器如何获得C程序的打印结果" class="headerlink" title="4、表达式生成器如何获得C程序的打印结果?"></a>4、表达式生成器如何获得C程序的打印结果?</h2><p><code>popen()</code> 函数是一个在 POSIX 系统上常用的标准库函数，它允许你从一个普通的 C 程序中执行另一个程序，并且可以捕获被执行程序的输出或向其输入数据。该函数执行一个命令，并创建一个进程，并通过一个管道（pipe）读取或写入该进程的标准输入&#x2F;输出。</p>
+<h3 id="函数原型和行为"><a href="#函数原型和行为" class="headerlink" title="函数原型和行为"></a>函数原型和行为</h3><p><code>popen()</code> 的原型如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">FILE *<span class="hljs-title function_">popen</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *command, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *type)</span>;<br></code></pre></td></tr></table></figure>
+<ul>
+<li><strong>command</strong>：一个 C 字符串，包含要执行的 shell 命令。</li>
+<li><strong>type</strong>：一个 C 字符串，通常是 <code>&quot;r&quot;</code> 或 <code>&quot;w&quot;</code>。当 <code>type</code> 是 <code>&quot;r&quot;</code> 时，你可以从返回的 <code>FILE</code> 指针读取执行命令的输出；当 <code>type</code> 是 <code>&quot;w&quot;</code> 时，你可以向执行命令的输入写入数据。</li>
+</ul>
+<p><code>popen()</code> 返回一个 <code>FILE</code> 指针，就像 <code>fopen()</code> 一样，这允许你使用标准的 I&#x2F;O 函数如 <code>fread()</code>, <code>fwrite()</code>, <code>fgets()</code>, <code>fputs()</code>, <code>fscanf()</code> 等来读写数据。</p>
+<h3 id="使用-popen-读取命令输出的例子"><a href="#使用-popen-读取命令输出的例子" class="headerlink" title="使用 popen() 读取命令输出的例子"></a>使用 <code>popen()</code> 读取命令输出的例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c">fp = popen(<span class="hljs-string">&quot;/tmp/.expr&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>);<br>assert(fp != <span class="hljs-literal">NULL</span>);<br><br><span class="hljs-type">int</span> result;<br>ret = <span class="hljs-built_in">fscanf</span>(fp, <span class="hljs-string">&quot;%d&quot;</span>, &amp;result);<br><span class="hljs-keyword">if</span> (ret != <span class="hljs-number">1</span>) &#123;      <span class="hljs-comment">// 读取失败，除0 行为</span><br>    result = <span class="hljs-number">10086</span>;  <span class="hljs-comment">// 10086 定义为 除0行为</span><br>&#125;<br>pclose(fp);<br></code></pre></td></tr></table></figure>
+<p>这段代码执行了以下操作：</p>
+<ol>
+<li>使用 <code>popen()</code> 执行位于 <code>/tmp/.expr</code> 的程序，并打开一个管道来读取它的输出。</li>
+<li>检查 <code>fp</code> 是否为 <code>NULL</code>，以确保命令成功启动。</li>
+<li>尝试从命令的输出中读取一个整数值。</li>
+<li>如果 <code>fscanf()</code> 返回值不是 <code>1</code>，意味着没有成功读取一个整数，这可能是因为程序没有输出，或输出了非数字内容，或程序可能因错误（如除以零）而未输出任何内容。</li>
+<li>最后，使用 <code>pclose()</code> 关闭与这个管道相关联的文件指针，<code>pclose()</code> 还会等待命令终止并返回命令的终止状态。</li>
+</ol>
+<h2 id="5、选择无符号类型进行运算有几个优点："><a href="#5、选择无符号类型进行运算有几个优点：" class="headerlink" title="5、选择无符号类型进行运算有几个优点："></a>5、选择无符号类型进行运算有几个优点：</h2><p>确定性：无符号类型的行为是确定和可预测的，这使得它们在需要精确控制数据运算时非常有用，特别是在嵌入式编程或低级编程中。<br>有效利用范围：无符号类型可以有效地使用所有的位来表示数据，提供了比相同位宽的有符号类型更大的正数范围。<br>简化逻辑：在某些应用中，如计数器、数组索引等，负数是没有意义的。使用无符号类型可以自然地避免负数，简化错误处理，还有就是在除0判断时能够省略正无穷和负无穷。</p>
+<h2 id="6、除0的确切行为"><a href="#6、除0的确切行为" class="headerlink" title="6、除0的确切行为"></a>6、除0的确切行为</h2><p>如果生成的表达式有除0行为, 你编写的表达式生成器的行为又会怎么样呢?<br>无所谓，我会特殊处理。</p>
+<h2 id="7、框架代码中定义wp-pool等变量的时候使用了关键字static-static在此处的含义是什么-为什么要在此处使用它"><a href="#7、框架代码中定义wp-pool等变量的时候使用了关键字static-static在此处的含义是什么-为什么要在此处使用它" class="headerlink" title="7、框架代码中定义wp_pool等变量的时候使用了关键字static, static在此处的含义是什么? 为什么要在此处使用它?"></a>7、框架代码中定义wp_pool等变量的时候使用了关键字static, static在此处的含义是什么? 为什么要在此处使用它?</h2><p>在 C 语言中，<code>static</code> 关键字用于变量和函数具有多种用途，其中一种用途是控制变量的作用域和存储期。具体来说，在框架代码中使用 <code>static</code> 关键字定义 <code>wp_pool</code> 等变量时，其目的和效果包括：</p>
+<h3 id="1-局部化作用域"><a href="#1-局部化作用域" class="headerlink" title="1. 局部化作用域"></a>1. <strong>局部化作用域</strong></h3><p>当 <code>static</code> 关键字用于全局变量时，它限制了变量的作用域只在定义它的文件中。这意味着 <code>static</code> 全局变量虽然在程序的整个运行期间都存在，但只能被同一个源文件内的函数访问。这有助于避免在其他文件中不小心使用同名变量引起的命名冲突。</p>
+<h3 id="2-保持持久存储"><a href="#2-保持持久存储" class="headerlink" title="2. 保持持久存储"></a>2. <strong>保持持久存储</strong></h3><p><code>static</code> 关键字还保证变量在程序启动时初始化（通常初始化为零，除非另有指定），并在程序结束前一直保持其值。这与自动变量（如局部变量）不同，自动变量只在函数调用期间存在。</p>
+<h3 id="为什么在此处使用它？"><a href="#为什么在此处使用它？" class="headerlink" title="为什么在此处使用它？"></a>为什么在此处使用它？</h3><ol>
+<li><p><strong>封装</strong>：在模块化编程中，封装是一个重要概念。通过使用 <code>static</code> 关键字，<code>wp_pool</code> 变量被封装在其定义的源文件中，其他源文件无法直接访问它。这有助于隐藏实现细节，使得模块的接口与实现分离，从而降低模块间的耦合。</p>
+</li>
+<li><p><strong>避免命名冲突</strong>：在大型项目中，尤其是涉及多个开发者的项目中，全局变量如果没有适当的命名空间控制，很容易造成命名冲突。<code>static</code> 提供了一种简单的命名空间控制方法，确保全局变量不会与其他源文件中的变量冲突。</p>
+</li>
+<li><p><strong>控制访问</strong>：使用 <code>static</code> 关键字可以控制变量的访问级别，仅允许定义它们的源文件内部的代码访问这些变量。这不仅有助于封装，也增加了代码的安全性，因为其他部分的代码无法意外地修改这些变量的状态。</p>
+</li>
+</ol>
+<p>但是，由于要在 cpu-exec.c中要使用watchpoint.c中定义的 static 类型数据，这是不可能的，因此我取消了 static，换做 extern 来共享。</p>
+<h2 id="8、x86的int3指令不带任何操作数-操作码为1个字节-因此指令的长度是1个字节-这是必须的吗"><a href="#8、x86的int3指令不带任何操作数-操作码为1个字节-因此指令的长度是1个字节-这是必须的吗" class="headerlink" title="8、x86的int3指令不带任何操作数, 操作码为1个字节, 因此指令的长度是1个字节. 这是必须的吗?"></a>8、x86的int3指令不带任何操作数, 操作码为1个字节, 因此指令的长度是1个字节. 这是必须的吗?</h2><p>是的，这是必须的，因为它可以修改任何长度的指令。如果 int3 是两字节，显然对于 1 字节的指令束手无策，若要换，会覆盖后面的指令。</p>
+<h2 id="9、-假设有一种x86体系结构的变种my-x86-除了int3指令的长度变成了2个字节之外-其余指令和x86相同-在my-x86中-上述文章中的断点机制还可以正常工作吗-为什么"><a href="#9、-假设有一种x86体系结构的变种my-x86-除了int3指令的长度变成了2个字节之外-其余指令和x86相同-在my-x86中-上述文章中的断点机制还可以正常工作吗-为什么" class="headerlink" title="9、 假设有一种x86体系结构的变种my-x86, 除了int3指令的长度变成了2个字节之外, 其余指令和x86相同. 在my-x86中, 上述文章中的断点机制还可以正常工作吗? 为什么?"></a>9、 假设有一种x86体系结构的变种my-x86, 除了int3指令的长度变成了2个字节之外, 其余指令和x86相同. 在my-x86中, 上述文章中的断点机制还可以正常工作吗? 为什么?</h2><p>不能，正如上述所说，对于 1 字节指令打断点时，会覆盖后面的指令。因此 int3 必须设计为单指令。</p>
+<h2 id="10、模拟器-Emulator-和调试器-Debugger-有什么不同-更具体地-和NEMU相比-GDB到底是如何调试程序的"><a href="#10、模拟器-Emulator-和调试器-Debugger-有什么不同-更具体地-和NEMU相比-GDB到底是如何调试程序的" class="headerlink" title="10、模拟器(Emulator)和调试器(Debugger)有什么不同? 更具体地, 和NEMU相比, GDB到底是如何调试程序的?"></a>10、模拟器(Emulator)和调试器(Debugger)有什么不同? 更具体地, 和NEMU相比, GDB到底是如何调试程序的?</h2><p>这两个几乎是两个概念，调试器是主进程控制子进程，给子进程发送一些命令，比如通过控制 ptrace()中的一些参数来控制子进程的行为。模拟器则是让原本设计运行在一个系统上的程序能够在另一个系统上执行。</p>
+<p>我之前看到过一个小项目，然后重构了它，是关于一个 C++ 版本的 mini dubugger，这是我的项目地址：<a target="_blank" rel="noopener" href="https://github.com/Luyoung0001/mydebugger">mydebugger</a>。</p>
+<p>事实上，GDB的原理比较复杂，但最重要的还是 ptrace()以及 dwarf 文件解析。通过这些信息，来生成有用的调试信息以及控制子进程（被调试的程序）的行为。比如关于中断int3 的处理：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">BreakPoint::enable</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> data = <span class="hljs-built_in">ptrace</span>(PT_READ_I, m_pid, <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">caddr_t</span>&gt;(m_addr), <span class="hljs-number">0</span>);<br>    m_saved_data =<br>        <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">uint8_t</span>&gt;(data &amp; <span class="hljs-number">0xff</span>);  <span class="hljs-comment">// 拿到最低的一个字节（指令）</span><br>    <span class="hljs-type">uint64_t</span> int3 = <span class="hljs-number">0xcc</span>;<br>    <span class="hljs-type">uint64_t</span> data_with_int3 =<br>        ((data &amp; ~<span class="hljs-number">0xff</span>) | int3);  <span class="hljs-comment">// 得到被修改的最低的一个字节（指令）</span><br>    <span class="hljs-built_in">ptrace</span>(PT_WRITE_I, m_pid, <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">caddr_t</span>&gt;(m_addr),<br>           data_with_int3);  <span class="hljs-comment">// 修改</span><br><br>    m_enabled = <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">BreakPoint::disable</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> data = <span class="hljs-built_in">ptrace</span>(PT_READ_I, m_pid, <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">caddr_t</span>&gt;(m_addr), <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">auto</span> restored_data = ((data &amp; ~<span class="hljs-number">0xff</span>) | m_saved_data);<br>    <span class="hljs-built_in">ptrace</span>(PT_WRITE_I, m_pid, <span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">caddr_t</span>&gt;(m_addr), restored_data);<br>    m_enabled = <span class="hljs-literal">false</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这里之所以要拿最低字节，是因为 int3 指令必须替换为每一条指令的起始一个字节，但是 ptrace()取出来的指令的字节是逆序的。低地址的内存单元数据放在了数组的最低位，这是小端字节序。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/ysyx/" class="category-chain-item">ysyx</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/ysyx/PA1/" class="category-chain-item">PA1</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ysyx/" class="print-no-link">#ysyx</a>
+      
+        <a href="/tags/PA1/" class="print-no-link">#PA1</a>
+      
+        <a href="/tags/sbd/" class="print-no-link">#sbd</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PA1 感悟与过程</div>
+      <div>http://blog.luliang.online/2024/08/05/PA1所有感悟与过程/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/07/Linux101/" title="Linux101:最好的Linux 入门资料">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux101:最好的Linux 入门资料</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/22/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC/" title="表达式求值(随心所欲版)">
+                        <span class="hidden-mobile">表达式求值(随心所欲版)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

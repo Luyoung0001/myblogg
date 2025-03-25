@@ -1,0 +1,732 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言在C++中，STL（标准模板库）提供了一组强大的数据结构和算法，其中使用了迭代器来实现数据访问和操作的通用接口。 迭代器是一种行为类似指针的对象，它允许对容器中的元素进行迭代（遍历）。STL定义了几种迭代器类型，包括输入迭代器、输出迭代器、前向迭代器、双向迭代器和随机访问迭代器。这些迭代器类型具有不同的功能和约束条件，使得它们适用于不同类型的数据结构和操作。 关于概念，它在C++中是一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++：迭代器">
+<meta property="og:url" content="http://blog.luliang.online/2024/04/23/C++%EF%BC%9A%E8%BF%AD%E4%BB%A3%E5%99%A8/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言在C++中，STL（标准模板库）提供了一组强大的数据结构和算法，其中使用了迭代器来实现数据访问和操作的通用接口。 迭代器是一种行为类似指针的对象，它允许对容器中的元素进行迭代（遍历）。STL定义了几种迭代器类型，包括输入迭代器、输出迭代器、前向迭代器、双向迭代器和随机访问迭代器。这些迭代器类型具有不同的功能和约束条件，使得它们适用于不同类型的数据结构和操作。 关于概念，它在C++中是一">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-23T13:45:57.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.769Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="开发语言">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>C++：迭代器 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C++：迭代器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-23 21:45" pubdate>
+          2024年4月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">C++：迭代器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>在C++中，STL（标准模板库）提供了一组强大的数据结构和算法，其中使用了迭代器来实现数据访问和操作的通用接口。</p>
+<p>迭代器是一种行为类似指针的对象，它允许对容器中的元素进行迭代（遍历）。STL定义了几种迭代器类型，包括输入迭代器、输出迭代器、前向迭代器、双向迭代器和随机访问迭代器。这些迭代器类型具有不同的功能和约束条件，使得它们适用于不同类型的数据结构和操作。</p>
+<p>关于概念，它在C++中是一种抽象的约束，描述了一组类型所必须满足的要求。例如，输入迭代器概念描述了可以用于读取数据的迭代器的要求，而正向迭代器概念描述了可以向前遍历数据的迭代器的要求。这些概念允许编写通用的算法，这些算法可以适用于满足特定概念的任何类型。</p>
+<p>对C++而言，这种双向迭代器是一种内置类型，不能从类派生而来。然而，从概念上看，它确实能够继承。有些STL文献使用术语改进（refinement）来表示这种概念上的继承，因此，双向迭代器是对正向迭代器概念的一种改进。</p>
+<p>关于改进，它描述了一个概念可以是另一个概念的特殊情况。例如，双向迭代器是对正向迭代器的改进，因为它具有正向迭代器的所有功能，并且还可以向后遍历数据。</p>
+<p>概念的具体实现被称为模型（model）。因此，指向 int 的常规指针是一个随机访问迭代器模型，也是一个正向迭代器模型，因为它满足该概念的所有要求。</p>
+<p><strong>需要注意的是，各种迭代器的类型并不是确定的，而只是一种概念性描述。</strong> 正如前面指出的，每个容器类都定义了一个类级 <code>typedef 名称——iterator</code>，因此 <code>vector&lt;int&gt;</code> 类的迭代器类型为<code>vector&lt;int&gt; ::interator</code>。然而，该类的文档将指出，矢量迭代器是随机访问迭代器，它允许使用基于任何迭代器类型的算法，因为随机访问迭代器具有所有迭代器的功能。</p>
+<h2 id="一、将指针用作迭代器"><a href="#一、将指针用作迭代器" class="headerlink" title="一、将指针用作迭代器"></a>一、将指针用作迭代器</h2><p>迭代器是广义指针，而指针满足所有的迭代器要求。迭代器是STL算法的接口，而指针是迭代器，<strong>因此STL算法可以使用指针来对基于指针的非STL容器进行操作</strong>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;algorithm&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;random&gt;</span></span><br><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> SIZE = <span class="hljs-number">10</span>;<br><span class="hljs-type">double</span> Receipts[SIZE];<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-comment">// 为数组添加随机值</span><br>    std::random_device rd;<br>    <span class="hljs-function">std::mt19937 <span class="hljs-title">gen</span><span class="hljs-params">(rd())</span></span>;<br>    <span class="hljs-function">std::uniform_real_distribution&lt;<span class="hljs-type">double</span>&gt; <span class="hljs-title">dis</span><span class="hljs-params">(<span class="hljs-number">0.0</span>, <span class="hljs-number">1000.0</span>)</span></span>;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; SIZE; i++) &#123;<br>        Receipts[i] = <span class="hljs-built_in">dis</span>(gen);<br>    &#125;<br><br>    <span class="hljs-comment">// 对数组进行排序</span><br>    std::<span class="hljs-built_in">sort</span>(Receipts, Receipts + SIZE);<br><br>    <span class="hljs-comment">// 输出排序后的数组</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; SIZE; i++) &#123;<br>        std::cout &lt;&lt; Receipts[i] &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">./main<br>63.9171 140.985 420.269 484.506 572.606 612.998 765.69 826.382 834.355 937.741<br></code></pre></td></tr></table></figure>
+
+
+<p>以上例子，<code>Receipts + n</code> 表达式是被定义的，只要 <code>n</code> 的值确保不超过数组的大小。这样就可以将 <code>Receipts + n</code> 作为迭代器传递给 STL 算法，从而对数组进行操作。</p>
+<p>这种灵活性使得 STL 算法可以适用于各种不同类型的数据结构，而不仅仅局限于标准库中提供的容器。</p>
+<p>有一种算法 <code>copy()</code> 可以将数据从一个容器复制到另一个容器中。这种算法是以迭代器方式实现的，所以它可以从一种容器到另一种容器进行复制，甚至可以在数组之间复制，因为可以将指向数组的指针用作迭代器。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;algorithm&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">int</span> casts[<span class="hljs-number">10</span>] = &#123;<span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">2</span>, <span class="hljs-number">9</span>, <span class="hljs-number">4</span>, <span class="hljs-number">11</span>, <span class="hljs-number">8</span>, <span class="hljs-number">7</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>&#125;;<br>    <span class="hljs-function">std::vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">dice</span><span class="hljs-params">(<span class="hljs-number">10</span>)</span></span>;<br>    std::<span class="hljs-built_in">copy</span>(casts, casts + <span class="hljs-number">10</span>, dice.<span class="hljs-built_in">begin</span>());<br><br>    <span class="hljs-comment">// 打印复制后的vector内容</span><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Copied array to vector: &quot;</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> value : dice) &#123;<br>        std::cout &lt;&lt; value &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>    &#125;<br>    std::cout &lt;&lt; std::endl;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>前两个参数必须是（或最好是）输入迭代器，最后一个参数必须是（或最好是）输出迭代器。<code>copy()</code> 函数将<strong>覆盖目标容器中已有的数据，同时目标容器必须足够大，以便能够容纳被复制的元素。</strong></p>
+<p>现在要将信息复制到显示器上，<strong>那么显示器就必须被当做一个容器，我们还要保证有一个指向这个容器的迭代器。</strong></p>
+<p>如果有一个表示输出流的迭代器，则可以使用<code>copy( )</code>。好消息是，STL为这种迭代器提供了<code>ostream_iterator</code> 模板。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iterator&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-function">std::ostream_iterator&lt;<span class="hljs-type">int</span>, <span class="hljs-type">char</span>&gt; <span class="hljs-title">out_iter</span><span class="hljs-params">(cout, <span class="hljs-string">&quot; &quot;</span>)</span></span>;<br><br>    <span class="hljs-comment">// 对 out_iter 进行操作，类似于 cout &lt;&lt; 15 &lt;&lt; &quot; &quot;;</span><br>    *out_iter++ = <span class="hljs-number">15</span>;<br>    ...<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>第一个模板参数（这里为int）指出了被发送给输出流的数据类型；第二个模板参数（这里为char）指出了输出流使用的字符类型。构造函数的第一个参数（这里为cout）指出了要使用的输出流；<strong>最后一个字符串参数是在发送给输出流的每个数据项后显示的分隔符</strong>。</p>
+<p>对于常规指针，这意味着将15赋给指针指向的位置，然后将指针加1。但对于该<code>ostream_iterator</code>，这意味着将15和由空格组成的字符串发送到cout管理的输出流中，<strong>并为下一个输出操作做好了准备（op++）</strong>。可以将<code>copy()</code>用于迭代器：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;algorithm&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iterator&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">using</span> std::cout;<br>    <span class="hljs-type">int</span> casts[<span class="hljs-number">10</span>] = &#123;<span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">2</span>, <span class="hljs-number">9</span>, <span class="hljs-number">4</span>, <span class="hljs-number">11</span>, <span class="hljs-number">8</span>, <span class="hljs-number">7</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>&#125;;<br>    <span class="hljs-function">std::vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">dice</span><span class="hljs-params">(<span class="hljs-number">10</span>)</span></span>;<br>    std::<span class="hljs-built_in">copy</span>(casts, casts + <span class="hljs-number">10</span>, dice.<span class="hljs-built_in">begin</span>());<br><br>    <span class="hljs-comment">// 打印复制后的vector内容</span><br>    cout &lt;&lt; <span class="hljs-string">&quot;Copied array to vector: &quot;</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> value : dice) &#123;<br>        cout &lt;&lt; value &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>    &#125;<br>    cout &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">// 声明迭代器</span><br>    <span class="hljs-function">std::ostream_iterator&lt;<span class="hljs-type">int</span>, <span class="hljs-type">char</span>&gt; <span class="hljs-title">out_iter</span><span class="hljs-params">(cout, <span class="hljs-string">&quot; &quot;</span>)</span></span>;<br>    *out_iter++ = <span class="hljs-number">15</span>; <span class="hljs-comment">// 对 out_iter 进行操作，类似于 cout &lt;&lt; 15 &lt;&lt; &quot; &quot;;</span><br><br> 	<span class="hljs-comment">// 这意味着将dice容器的整个区间复制到输出流中，即显示容器的内容</span><br>    std::<span class="hljs-built_in">copy</span>(dice.<span class="hljs-built_in">begin</span>(), dice.<span class="hljs-built_in">end</span>(), out_iter);<br><br>    cout &lt;&lt; std::endl;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>这意味着将<code>dice容器</code>的整个区间复制到输出流中，即显示容器的内容。<br>输出结构：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">./main<br>Copied array to vector: 6 7 2 9 4 11 8 7 10 5<br>15 6 7 2 9 4 11 8 7 10 5<br></code></pre></td></tr></table></figure>
+
+<h2 id="二、其它迭代器"><a href="#二、其它迭代器" class="headerlink" title="二、其它迭代器"></a>二、其它迭代器</h2><p>假设要用反向打印这个容器中的内容，可以考虑反向迭代器：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;algorithm&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iterator&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">using</span> std::cout;<br>    <span class="hljs-type">int</span> casts[<span class="hljs-number">10</span>] = &#123;<span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">2</span>, <span class="hljs-number">9</span>, <span class="hljs-number">4</span>, <span class="hljs-number">11</span>, <span class="hljs-number">8</span>, <span class="hljs-number">7</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>&#125;;<br>    <span class="hljs-function">std::vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">dice</span><span class="hljs-params">(<span class="hljs-number">10</span>)</span></span>;<br>    std::<span class="hljs-built_in">copy</span>(casts, casts + <span class="hljs-number">10</span>, dice.<span class="hljs-built_in">begin</span>());<br><br>    <span class="hljs-comment">// 打印复制后的vector内容</span><br>    cout &lt;&lt; <span class="hljs-string">&quot;Copied array to vector: &quot;</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> value : dice) &#123;<br>        cout &lt;&lt; value &lt;&lt; <span class="hljs-string">&quot; &quot;</span>;<br>    &#125;<br>    cout &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">// 声明迭代器</span><br>    <span class="hljs-function">std::ostream_iterator&lt;<span class="hljs-type">int</span>, <span class="hljs-type">char</span>&gt; <span class="hljs-title">out_iter</span><span class="hljs-params">(cout, <span class="hljs-string">&quot; &quot;</span>)</span></span>;<br>    *out_iter++ = <span class="hljs-number">15</span>; <span class="hljs-comment">// 对 out_iter 进行操作，类似于 cout &lt;&lt; 15 &lt;&lt; &quot; &quot;;</span><br><br>    std::<span class="hljs-built_in">copy</span>(dice.<span class="hljs-built_in">begin</span>(), dice.<span class="hljs-built_in">end</span>(), out_iter);<br>    cout &lt;&lt; std::endl;<br><br>    <span class="hljs-comment">// 使用反向迭代器逆序输出 dice 中的元素</span><br>    std::<span class="hljs-built_in">copy</span>(dice.<span class="hljs-built_in">rbegin</span>(), dice.<span class="hljs-built_in">rend</span>(), out_iter);<br>    cout &lt;&lt; std::endl;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">./main<br>Copied array to vector: 6 7 2 9 4 11 8 7 10 5<br>15 6 7 2 9 4 11 8 7 10 5<br>5 10 7 8 11 4 9 2 7 6<br></code></pre></td></tr></table></figure>
+<p><code>rbegin()</code>和<code>end()</code>返回相同的值（超尾），但类型不同（<code>reverse_iterator</code>和<code>iterator</code>）。同样，<code>rend()</code>和<code>begin()</code>也返回相同的值（指向第一个元素的迭代器），但类型不同。</p>
+<p>这里可能就有疑问，假设 rp 指向了 <code>rbegin()</code>，对 rp 进行解引用将会发生什么？因为 <code>rbegin() </code>返回超尾，因此不能对该地址进行解除引用。同样，如果 <code>rend()</code> 是第一个元素的位置，则 <code>copy()</code> 必须提早一个位置停止，因为区间的结尾处不包括在区间中。</p>
+<p><strong>反向指针通过先递减，再解除引用解决了这两个问题。即<em>rp将在</em>rp的当前值之前对迭代器执行解除引用。</strong> 这是一个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iterator&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br>    <span class="hljs-type">int</span> casts[<span class="hljs-number">10</span>] = &#123;<span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">2</span>, <span class="hljs-number">9</span>, <span class="hljs-number">4</span>, <span class="hljs-number">11</span>, <span class="hljs-number">8</span>, <span class="hljs-number">7</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>&#125;;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">dice</span><span class="hljs-params">(<span class="hljs-number">10</span>)</span></span>;<br><br>    <span class="hljs-comment">// 从数组复制到向量</span><br>    <span class="hljs-built_in">copy</span>(casts, casts + <span class="hljs-number">10</span>, dice.<span class="hljs-built_in">begin</span>());<br>    cout &lt;&lt; <span class="hljs-string">&quot;Let the dice be cast!\n&quot;</span>;<br><br>    <span class="hljs-comment">// 创建一个 ostream 迭代器</span><br>    <span class="hljs-function">ostream_iterator&lt;<span class="hljs-type">int</span>, <span class="hljs-type">char</span>&gt; <span class="hljs-title">out_iter</span><span class="hljs-params">(cout, <span class="hljs-string">&quot; &quot;</span>)</span></span>;<br><br>    <span class="hljs-comment">// 从 vector 复制到输出</span><br>    <span class="hljs-built_in">copy</span>(dice.<span class="hljs-built_in">begin</span>(), dice.<span class="hljs-built_in">end</span>(), out_iter);<br>    cout &lt;&lt; endl;<br><br>    <span class="hljs-comment">// 隐式使用反向迭代器</span><br>    cout &lt;&lt; <span class="hljs-string">&quot;Implicit use of reverse iterator.\n&quot;</span>;<br>    <span class="hljs-built_in">copy</span>(dice.<span class="hljs-built_in">rbegin</span>(), dice.<span class="hljs-built_in">rend</span>(), out_iter);<br>    cout &lt;&lt; endl;<br><br>    <span class="hljs-comment">// 显式使用反向迭代器</span><br>    cout &lt;&lt; <span class="hljs-string">&quot;Explicit use of reverse iterator.\n&quot;</span>;<br>    vector&lt;<span class="hljs-type">int</span>&gt;::reverse_iterator ri;<br>    <span class="hljs-keyword">for</span> (ri = dice.<span class="hljs-built_in">rbegin</span>(); ri != dice.<span class="hljs-built_in">rend</span>(); ++ri) &#123;<br>        cout &lt;&lt; *ri &lt;&lt; <span class="hljs-string">&#x27; &#x27;</span>;<br>    &#125;<br>    cout &lt;&lt; endl;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">./main<br>Let the dice be cast!<br>6 7 2 9 4 11 8 7 10 5<br>Implicit use of reverse iterator.<br>5 10 7 8 11 4 9 2 7 6<br>Explicit use of reverse iterator.<br>5 10 7 8 11 4 9 2 7 6<br></code></pre></td></tr></table></figure>
+
+<p>另外三种迭代器（<code>back_insert_iterator</code>、<code>front_insert_iterator</code> 和 <code>insert_iterator</code>）也将提高 STL 算法的通用性。很多STL函数都与 <code>copy()</code> 相似，将结果发送到输出迭代器指示的位置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-built_in">copy</span>(casts, casts + <span class="hljs-number">10</span>, dice.<span class="hljs-built_in">begin</span>());<br></code></pre></td></tr></table></figure>
+<p>这些值将覆盖 <code>dice</code> 中以前的内容，且该函数假设 <code>dice</code> 有足够的空间，能够容纳这些值，即&#96;copy()&#96;&#96;不能自动根据发送值调整目标容器的长度。</p>
+<p>上面的例子考虑到了这种情况，将 <code>dice</code> 声明为包含10个元素。然而，如果<strong>预先并不知道dice的长度</strong>，该如何办呢？<strong>或者要将元素添加到dice中，而不是覆盖已有的内容</strong>，又该如何办呢？</p>
+<p>三种插入迭代器通过<strong>将复制转换为插入</strong>解决了这些问题。插入将添加新的元素，而不会覆盖已有的数据，并<strong>使用自动内存分配来确保能够容纳新的信息</strong>。<code>back_insert_iterator</code> 将元素插入到容器尾部，而 <code>front_insert_iterator</code> 将元素插入到容器的前端。最后，<code>insert_iterator</code>将元素插入到&#96;&#96;insert_iterator&#96; 构造函数的参数指定的位置前面。<strong>这三个插入迭代器都是输出容器概念的模型。</strong></p>
+<p>这里存在一些限制：</p>
+<ul>
+<li><code>back_insert_iterator</code> 只能用于允许在尾部快速插入的容器，vector类符合这种要求。</li>
+<li><code>front_insert_iterator</code> 只能用于允许在起始位置做时间固定插入的容器类型，vector类不能满足这种要求，但queue满足。</li>
+<li><code>insert_iterator</code> 没有这些限制，因此可以用它把信息插入到 vector 的前端。然而，front_insert_iterator对于那些支持它的容器来说，完成任务的速度更快。</li>
+</ul>
+<p>以上这些要求很重要，总之，迭代器对象要适配容器类型，就像要为不同的设备提供不同的螺丝刀以拆解它们。以下是一个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;algorithm&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iterator&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">output</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string &amp;s)</span> </span>&#123; std::cout &lt;&lt; s &lt;&lt; <span class="hljs-string">&quot; &quot;</span>; &#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br>    string s1[<span class="hljs-number">4</span>] = &#123;<span class="hljs-string">&quot;fine&quot;</span>, <span class="hljs-string">&quot;fish&quot;</span>, <span class="hljs-string">&quot;fashion&quot;</span>, <span class="hljs-string">&quot;fate&quot;</span>&#125;;<br>    string s2[<span class="hljs-number">2</span>] = &#123;<span class="hljs-string">&quot;busy&quot;</span>, <span class="hljs-string">&quot;bats&quot;</span>&#125;;<br>    string s3[<span class="hljs-number">2</span>] = &#123;<span class="hljs-string">&quot;silly&quot;</span>, <span class="hljs-string">&quot;singers&quot;</span>&#125;;<br>    <span class="hljs-function">vector&lt;string&gt; <span class="hljs-title">words</span><span class="hljs-params">(<span class="hljs-number">4</span>)</span></span>;<br><br>    <span class="hljs-comment">// 复制 s1 到 words</span><br>    <span class="hljs-built_in">copy</span>(s1, s1 + <span class="hljs-number">4</span>, words.<span class="hljs-built_in">begin</span>());<br>    for_each(words.<span class="hljs-built_in">begin</span>(), words.<span class="hljs-built_in">end</span>(), output);<br>    cout &lt;&lt; endl;<br><br>    <span class="hljs-comment">// 构造匿名的 back_insert_iterator 对象</span><br>    <span class="hljs-built_in">copy</span>(s2, s2 + <span class="hljs-number">2</span>, back_insert_iterator&lt;vector&lt;string&gt; &gt;(words));<br>    for_each(words.<span class="hljs-built_in">begin</span>(), words.<span class="hljs-built_in">end</span>(), output);<br>    cout &lt;&lt; endl;<br><br>    <span class="hljs-comment">// 构造匿名的 insert_iterator 对象</span><br>    <span class="hljs-built_in">copy</span>(s3, s3 + <span class="hljs-number">2</span>, insert_iterator&lt;vector&lt;string&gt; &gt;(words, words.<span class="hljs-built_in">begin</span>()));<br>    for_each(words.<span class="hljs-built_in">begin</span>(), words.<span class="hljs-built_in">end</span>(), output);<br>    cout &lt;&lt; endl;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">./main<br>fine fish fashion fate<br>fine fish fashion fate busy bats<br>silly singers fine fish fashion fate busy bats<br></code></pre></td></tr></table></figure>
+
+<p>如果程序试图使用<code>words.end( )</code>（尾插）和 <code>words.begin( )</code>（头插）作为迭代器，将 s2 和 s3 复制到<strong>words</strong> 中，<strong>words</strong> 将没有空间来存储新数据，程序可能会由于内存违规而异常终止。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#开发语言</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C++：迭代器</div>
+      <div>http://blog.luliang.online/2024/04/23/C++：迭代器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/04/24/C++%EF%BC%9A%E9%80%82%E9%85%8D%E5%99%A8/" title="C++：适配器">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">C++：适配器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/04/21/C++%EF%BC%9A%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%BA%8C%EF%BC%89/" title="C++：智能指针（二）">
+                        <span class="hidden-mobile">C++：智能指针（二）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

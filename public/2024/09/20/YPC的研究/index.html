@@ -1,0 +1,792 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、前言本文尝试去分析 YSYX 中的一个实例 YPC,YPC 使用 Chisel 来实现基本的指令执行过程：定义指令结构、取指、解码（操作码、操作数）、执行、更新 PC。 二、写被执行的程序这个程序主要使用内嵌汇编的方法来执行一些汇编代码，我们可以确认它仅仅包含这些指令，应为 YPC 被设计为只能执行 I类指令的两种指令，addi 和 ebreak。 1234567891011121314s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YPC的研究">
+<meta property="og:url" content="http://blog.luliang.online/2024/09/20/YPC%E7%9A%84%E7%A0%94%E7%A9%B6/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一、前言本文尝试去分析 YSYX 中的一个实例 YPC,YPC 使用 Chisel 来实现基本的指令执行过程：定义指令结构、取指、解码（操作码、操作数）、执行、更新 PC。 二、写被执行的程序这个程序主要使用内嵌汇编的方法来执行一些汇编代码，我们可以确认它仅仅包含这些指令，应为 YPC 被设计为只能执行 I类指令的两种指令，addi 和 ebreak。 1234567891011121314s">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-20T10:20:40.000Z">
+<meta property="article:modified_time" content="2024-09-22T05:36:28.970Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="模拟器">
+<meta property="article:tag" content="YPC">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>YPC的研究 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="YPC的研究"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-20 18:20" pubdate>
+          2024年9月20日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          16 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">YPC的研究</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本文尝试去分析 YSYX 中的一个实例 <a target="_blank" rel="noopener" href="https://ysyx.oscc.cc/slides/2306/06.html#/%E7%94%A8%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF%E5%AE%9E%E7%8E%B0%E6%8C%87%E4%BB%A4%E7%9A%84%E8%AF%AD%E4%B9%89">YPC</a>,YPC 使用 Chisel 来实现基本的指令执行过程：定义指令结构、取指、解码（操作码、操作数）、执行、更新 PC。</p>
+<h2 id="二、写被执行的程序"><a href="#二、写被执行的程序" class="headerlink" title="二、写被执行的程序"></a>二、写被执行的程序</h2><p>这个程序主要使用内嵌汇编的方法来执行一些汇编代码，我们可以确认它仅仅包含这些指令，应为 <code>YPC</code> 被设计为只能执行 <code>I类指令</code>的两种指令，<code>addi</code> 和 <code>ebreak</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">ebreak</span><span class="hljs-params">(<span class="hljs-type">long</span> arg0, <span class="hljs-type">long</span> arg1)</span> &#123;<br>  <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;addi a0, x0, %0;&quot;</span></span><br><span class="hljs-params">               <span class="hljs-string">&quot;addi a1, x0, %1;&quot;</span></span><br><span class="hljs-params">               <span class="hljs-string">&quot;ebreak&quot;</span> : : <span class="hljs-string">&quot;i&quot;</span>(arg0), <span class="hljs-string">&quot;i&quot;</span>(arg1))</span>;<br>&#125;<br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">putch</span><span class="hljs-params">(<span class="hljs-type">char</span> ch)</span> &#123; ebreak(<span class="hljs-number">0</span>, ch); &#125;<br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">halt</span><span class="hljs-params">(<span class="hljs-type">int</span> code)</span> &#123; ebreak(<span class="hljs-number">1</span>, code); <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>); &#125;<br><br><span class="hljs-type">void</span> _start() &#123;<br>  putch(<span class="hljs-string">&#x27;H&#x27;</span>); putch(<span class="hljs-string">&#x27;e&#x27;</span>); putch(<span class="hljs-string">&#x27;l&#x27;</span>); putch(<span class="hljs-string">&#x27;l&#x27;</span>); putch(<span class="hljs-string">&#x27;o&#x27;</span>); putch(<span class="hljs-string">&#x27;,&#x27;</span>); putch(<span class="hljs-string">&#x27; &#x27;</span>);<br>  putch(<span class="hljs-string">&#x27;R&#x27;</span>); putch(<span class="hljs-string">&#x27;I&#x27;</span>); putch(<span class="hljs-string">&#x27;S&#x27;</span>); putch(<span class="hljs-string">&#x27;C&#x27;</span>); putch(<span class="hljs-string">&#x27;-&#x27;</span>); putch(<span class="hljs-string">&#x27;V&#x27;</span>); putch(<span class="hljs-string">&#x27;!&#x27;</span>);<br>  putch(<span class="hljs-string">&#x27;\n&#x27;</span>);<br>  halt(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个程序很简单，不管是 <code>putch</code> 还是 <code>halt</code>，它都会自己调用函数 <code>ebreak()</code>，其对应着 3 条指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">addi a0, x0, %0<br>addi a1, x0, %1<br>ebreak : : &quot;i&quot;(arg0), &quot;i&quot;(arg1) ; arg0 传给寄存器 a0(10号寄存器)，arg1 传给寄存器a1(11号寄存器)<br></code></pre></td></tr></table></figure>
+<p>这里需要澄清的是，这是一个程序，它会在riscv 上自己执行， 它不会做额外的事情。</p>
+<p>我们可以把这个程序编译一下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><code class="hljs bash">rv32gcc -ffreestanding -nostdlib -static -Wl,-Ttext=0 -O2 -o prog a.c<br>rvobjdump -M no-aliases -d prog <span class="hljs-comment"># 查看反汇编</span><br><br>prog:     file format elf32-littleriscv<br><br><br>Disassembly of section .text:<br><br>00000000 &lt;_start&gt;:<br>   0:   00000513                addi    a0,zero,0<br>   4:   04800593                addi    a1,zero,72<br>   8:   00100073                ebreak<br>   c:   00000513                addi    a0,zero,0<br>  10:   06500593                addi    a1,zero,101<br>  14:   00100073                ebreak<br>  18:   00000513                addi    a0,zero,0<br>  1c:   06c00593                addi    a1,zero,108<br>  20:   00100073                ebreak<br>  24:   00000513                addi    a0,zero,0<br>  28:   06c00593                addi    a1,zero,108<br>  2c:   00100073                ebreak<br>  30:   00000513                addi    a0,zero,0<br>  34:   06f00593                addi    a1,zero,111<br>  38:   00100073                ebreak<br>  3c:   00000513                addi    a0,zero,0<br>  40:   02c00593                addi    a1,zero,44<br>  44:   00100073                ebreak<br>  48:   00000513                addi    a0,zero,0<br>  4c:   02000593                addi    a1,zero,32<br>  50:   00100073                ebreak<br>  54:   00000513                addi    a0,zero,0<br>  58:   05200593                addi    a1,zero,82<br>  5c:   00100073                ebreak<br>  60:   00000513                addi    a0,zero,0<br>  64:   04900593                addi    a1,zero,73<br>  68:   00100073                ebreak<br>  6c:   00000513                addi    a0,zero,0<br>  70:   05300593                addi    a1,zero,83<br>  74:   00100073                ebreak<br>  78:   00000513                addi    a0,zero,0<br>  7c:   04300593                addi    a1,zero,67<br>  80:   00100073                ebreak<br>  84:   00000513                addi    a0,zero,0<br>  88:   02d00593                addi    a1,zero,45<br>  8c:   00100073                ebreak<br>  90:   00000513                addi    a0,zero,0<br>  94:   05600593                addi    a1,zero,86<br>  98:   00100073                ebreak<br>  9c:   00000513                addi    a0,zero,0<br>  a0:   02100593                addi    a1,zero,33<br>  a4:   00100073                ebreak<br>  a8:   00000513                addi    a0,zero,0<br>  ac:   00a00593                addi    a1,zero,10<br>  b0:   00100073                ebreak<br>  b4:   00100513                addi    a0,zero,1<br>  b8:   00000593                addi    a1,zero,0<br>  bc:   00100073                ebreak<br>  c0:   0000006f                jal     zero,c0 &lt;_start+0xc0&gt;<br><br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到这个程序真的只含有两条指令（最后一条 jal 指令是跳转指令，目的是制造死循环，不用管）。</p>
+<p>但是我们可以手动写一个解释器，它可以用来<code>执行</code> riscv 代码，甚至我们可以根据 ebreak 的参数来确定接下来的行为。比如，当调用函数 <code>ebreak( 0,ch)</code>的时候，这时候 a0 就是 0，a11 就是 ch，我们可以定义它为输出字符；当调用函数 <code>ebreak( 1,code)</code>的时候，这时候 a0 就是 1，a11 就是 code，我们甚至可以根据不同的 code 来触发不同的行为。</p>
+<p>由于我只需要二进制程序 prog 中的汇编指令，因此我们可以利用命令将一个可执行二进制文件中的汇编指令抽离出来：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">riscv64-linux-gnu-objcopy -j .text -O binary prog prog.bin<br></code></pre></td></tr></table></figure>
+
+<p>这样里面就仅仅包含了我们想要的二进制指令，然后就可以放在解释器上执行它了。</p>
+<p>在 PYC 中，我们定义了两种有限的行为：</p>
+<ul>
+<li>打印 ch</li>
+<li>停机</li>
+</ul>
+<h2 id="YPC"><a href="#YPC" class="headerlink" title="YPC"></a>YPC</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs Scala"><span class="hljs-keyword">import</span> chisel3._<br><span class="hljs-keyword">import</span> chisel3.util._<br><span class="hljs-keyword">import</span> chisel3.util.experimental.loadMemoryFromFileInline<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">YPC</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Module</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> io = <span class="hljs-type">IO</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">Bundle</span> &#123; <span class="hljs-keyword">val</span> halt = <span class="hljs-type">Output</span>(<span class="hljs-type">Bool</span>()) &#125;)<br>  <span class="hljs-keyword">val</span> <span class="hljs-type">R</span> = <span class="hljs-type">Mem</span>(<span class="hljs-number">32</span>, <span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>  <span class="hljs-keyword">val</span> <span class="hljs-type">PC</span> = <span class="hljs-type">RegInit</span>(<span class="hljs-number">0.</span><span class="hljs-type">U</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>  <span class="hljs-keyword">val</span> <span class="hljs-type">M</span> = <span class="hljs-type">Mem</span>(<span class="hljs-number">1024</span> / <span class="hljs-number">4</span>, <span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Rread</span></span>(idx: <span class="hljs-type">UInt</span>) = <span class="hljs-type">Mux</span>(idx === <span class="hljs-number">0.</span><span class="hljs-type">U</span>, <span class="hljs-number">0.</span><span class="hljs-type">U</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>), <span class="hljs-type">R</span>(idx))<br><br>  <span class="hljs-keyword">val</span> <span class="hljs-type">Ibundle</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Bundle</span> &#123;<br>    <span class="hljs-keyword">val</span> imm11_0 = <span class="hljs-type">UInt</span>(<span class="hljs-number">12.</span><span class="hljs-type">W</span>)<br>    <span class="hljs-keyword">val</span> rs1 = <span class="hljs-type">UInt</span>(<span class="hljs-number">5.</span><span class="hljs-type">W</span>)<br>    <span class="hljs-keyword">val</span> funct3 = <span class="hljs-type">UInt</span>(<span class="hljs-number">3.</span><span class="hljs-type">W</span>)<br>    <span class="hljs-keyword">val</span> rd = <span class="hljs-type">UInt</span>(<span class="hljs-number">5.</span><span class="hljs-type">W</span>)<br>    <span class="hljs-keyword">val</span> opcode = <span class="hljs-type">UInt</span>(<span class="hljs-number">7.</span><span class="hljs-type">W</span>)<br>  &#125;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">SignEXT</span></span>(imm11_0: <span class="hljs-type">UInt</span>) = <span class="hljs-type">Cat</span>(<span class="hljs-type">Fill</span>(<span class="hljs-number">20</span>, imm11_0(<span class="hljs-number">11</span>)), imm11_0)<br><br>  <span class="hljs-keyword">val</span> inst = <span class="hljs-type">M</span>(<span class="hljs-type">PC</span>(<span class="hljs-number">31</span>, <span class="hljs-number">2</span>)).asTypeOf(<span class="hljs-type">Ibundle</span>)<br>  <span class="hljs-keyword">val</span> isAddi = (inst.opcode === <span class="hljs-string">&quot;b0010011&quot;</span>.<span class="hljs-type">U</span>) &amp;&amp; (inst.funct3 === <span class="hljs-string">&quot;b000&quot;</span>.<span class="hljs-type">U</span>)<br>  <span class="hljs-keyword">val</span> isEbreak = inst.asUInt === <span class="hljs-string">&quot;x00100073&quot;</span>.<span class="hljs-type">U</span><br>  assert(isAddi || isEbreak, <span class="hljs-string">&quot;Invalid instruction 0x%x&quot;</span>, inst.asUInt)<br><br>  <span class="hljs-keyword">val</span> rs1Val = <span class="hljs-type">Rread</span>(<span class="hljs-type">Mux</span>(isEbreak, <span class="hljs-number">10.</span><span class="hljs-type">U</span>(<span class="hljs-number">5.</span><span class="hljs-type">W</span>), inst.rs1))<br>  <span class="hljs-keyword">val</span> rs2Val = <span class="hljs-type">Rread</span>(<span class="hljs-type">Mux</span>(isEbreak, <span class="hljs-number">11.</span><span class="hljs-type">U</span>(<span class="hljs-number">5.</span><span class="hljs-type">W</span>), <span class="hljs-number">0.</span><span class="hljs-type">U</span>(<span class="hljs-number">5.</span><span class="hljs-type">W</span>)))<br>  when(isAddi) &#123; <span class="hljs-type">R</span>(inst.rd) := rs1Val + <span class="hljs-type">SignEXT</span>(inst.imm11_0) &#125;<br>  when(isEbreak &amp;&amp; (rs1Val === <span class="hljs-number">0.</span><span class="hljs-type">U</span>)) &#123; printf(<span class="hljs-string">&quot;%c&quot;</span>, rs2Val(<span class="hljs-number">7</span>, <span class="hljs-number">0</span>)) &#125;<br>  io.halt := isEbreak &amp;&amp; (rs1Val === <span class="hljs-number">1.</span><span class="hljs-type">U</span>)<br>  <span class="hljs-type">PC</span> := <span class="hljs-type">PC</span> + <span class="hljs-number">4.</span><span class="hljs-type">U</span><br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">YPC</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>  (<span class="hljs-keyword">new</span> chisel3.stage.<span class="hljs-type">ChiselStage</span>).emitVerilog(<span class="hljs-keyword">new</span> <span class="hljs-type">YPC</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这个程序定一个了 YPC 模块，它有 4 个组件，分别是：</p>
+<ul>
+<li><p>io.halt: 这是一个输出，它会输出是否停机的信号；</p>
+</li>
+<li><p>R: 这是寄存器，一共 32 个，每一个 32 位；</p>
+</li>
+<li><p>M: 内存单元，每个单元都是 32 位，换句话说，这些单元的下标对应着的地址是 4 字节对齐的；</p>
+</li>
+<li><p>PC: 初始化为 0，标记着指令在 M 中的地址；</p>
+</li>
+<li><p>Ibundle: 这是一个 I 型指令的bundle；</p>
+</li>
+<li><p>inst: 指令；</p>
+</li>
+<li><p>isAddi、isEbreak: 指令判断，bool 类型；</p>
+</li>
+</ul>
+<p>接下来的操作是YPC 的核心：</p>
+<ul>
+<li><p>如果是 ebreak 类型的指令，分别读取 a0、a1，根据 a0、a1 来赋予指令语义，比如是输出字符还是终止；</p>
+</li>
+<li><p>如果是 addi 类型的指令，分别读取 源寄存器、零寄存器，它们会被当做两个源寄存器，以便后面进行加法操作；</p>
+</li>
+<li><p>当是 ebreak 指令的时候， R(inst.rd) :&#x3D; rs1Val + SignEXT(inst.imm11_0)；</p>
+</li>
+<li><p>当是 ebreak &amp;&amp; a0 是 0，就输出字符 a1中的值，也就是传给的 ch；</p>
+</li>
+<li><p>当是 ebreak &amp;&amp; a0 是 1，就标记输出 io.halt 为 1。这个输出在运行时环境中会被用来判断是否停机。</p>
+</li>
+<li><p>最后更新 pc。</p>
+</li>
+</ul>
+<h2 id="Chisel-到-Verilog-再到C-仿真"><a href="#Chisel-到-Verilog-再到C-仿真" class="headerlink" title="Chisel 到 Verilog 再到C++仿真"></a>Chisel 到 Verilog 再到C++仿真</h2><p>写好了 Chsel，想要利用 C++ 进行仿真，还得将它翻译成 Verilog，然后借助 verilator 将 HDL 翻译成 C++ 代码，然后我们可以写一个运行时环境，给它装载程序、控制停机、执行等：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;VYPC.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;VYPC___024root.h&quot;</span></span><br><span class="hljs-type">static</span> VYPC* top = <span class="hljs-literal">NULL</span>;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">step</span><span class="hljs-params">()</span> </span>&#123;<br>    top-&gt;clock = <span class="hljs-number">0</span>;<br>    top-&gt;<span class="hljs-built_in">eval</span>();<br>    top-&gt;clock = <span class="hljs-number">1</span>;<br>    top-&gt;<span class="hljs-built_in">eval</span>();<br>&#125;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">reset</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>&#123;<br>    top-&gt;reset = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">while</span> (n--) &#123;<br>        <span class="hljs-built_in">step</span>();<br>    &#125;<br>    top-&gt;reset = <span class="hljs-number">0</span>;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">load_prog</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>* bin)</span> </span>&#123;<br>    FILE* fp = <span class="hljs-built_in">fopen</span>(bin, <span class="hljs-string">&quot;r&quot;</span>);<br>    <span class="hljs-built_in">fread</span>(&amp;top-&gt;rootp-&gt;YPC__DOT__M, <span class="hljs-number">1</span>, <span class="hljs-number">1024</span>, fp);<br>    <span class="hljs-built_in">fclose</span>(fp);<br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> </span>&#123;<br>    top = <span class="hljs-keyword">new</span> VYPC;<br>    <span class="hljs-built_in">load_prog</span>(argv[<span class="hljs-number">1</span>]);<br>    <span class="hljs-built_in">reset</span>(<span class="hljs-number">20</span>);<br>    <span class="hljs-keyword">while</span> (!top-&gt;io_halt) &#123;<br>        <span class="hljs-built_in">step</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>假设已经生成了 HDL ，也就是 YPC.v，现在我们将它翻译成 C++。为了方便操作，可以写一个简单的 Makefile 来简化操作：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs Makefile">VERILATOR = verilator<br>SRC = main.cpp YPC.v<br>OBJ_SRC = hello.c<br>OBJ_BIN = prog.bin<br>OBJ_TARGET = prog<br>OBJ_DIR = obj_dir<br>RV32GCC = riscv64-linux-gnu-gcc -march=rv32g -mabi=ilp32<br>CFLAGS = -ffreestanding -nostdlib -static -Wl,-Ttext=0 -O2<br><br>RV64OBJCOPY = riscv64-linux-gnu-objcopy<br>RV64CP_FLAGS = -j .text -O binary<br><br>EXE = <span class="hljs-variable">$(OBJ_DIR)</span>/VYPC<br><br><span class="hljs-section">build: <span class="hljs-variable">$(EXE)</span></span><br><br><span class="hljs-variable">$(EXE)</span>: <span class="hljs-variable">$(SRC)</span><br>	bear -- <span class="hljs-variable">$(VERILATOR)</span> --cc --trace --exe --build <span class="hljs-variable">$^</span><br>	make -C <span class="hljs-variable">$(OBJ_DIR)</span> -f VYPC.mk<br><br><span class="hljs-section">run: <span class="hljs-variable">$(EXE)</span> <span class="hljs-variable">$(OBJ_BIN)</span></span><br>	@<span class="hljs-variable">$(EXE)</span> <span class="hljs-variable">$(OBJ_BIN)</span><br><br><span class="hljs-variable">$(OBJ_TARGET)</span>: <span class="hljs-variable">$(OBJ_SRC)</span><br>	<span class="hljs-variable">$(RV32GCC)</span> <span class="hljs-variable">$(CFLAGS)</span> -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$^</span><br><br><span class="hljs-variable">$(OBJ_BIN)</span>: <span class="hljs-variable">$(OBJ_TARGET)</span><br>	<span class="hljs-variable">$(RV64OBJCOPY)</span> <span class="hljs-variable">$(RV64CP_FLAGS)</span> <span class="hljs-variable">$^</span> <span class="hljs-variable">$@</span><br><span class="hljs-section">clean:</span><br>	@rm -rf <span class="hljs-variable">$(OBJ_DIR)</span> prog*<br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: build run clean</span><br><br></code></pre></td></tr></table></figure>
+
+<p>然后直接make run：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make run<br>Hello, RISC-V!<br><br></code></pre></td></tr></table></figure>
+
+<p>看来，YPC 已经达到了预期效果。</p>
+<p>事实上，这个 YPC 可以很强大，只要实现所有的命令，它就可以运行所有的 riscv 程序！</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>第一个问题：注意到 <code>YPC.scala</code> 中的一些调用，比如 <code>assert、printf</code>，这其实是 <code>Scala</code> 的函数调用，当然它依然会被 <code>sbt</code> 转化为 <code>HDL</code>:</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Verilog"><span class="hljs-built_in">$fwrite</span>(<span class="hljs-number">32&#x27;h80000002</span>,<br>            <span class="hljs-string">&quot;Assertion failed: Invalid instruction 0x%x\n    at YPC.scala:25 assert(isAddi || isEbreak, \&quot;Invalid instruction 0x%%x\&quot;, inst.asUInt)\n&quot;</span><br>            ,_isEbreak_T); <span class="hljs-comment">// @[YPC.scala 25:9]</span><br><span class="hljs-built_in">$fwrite</span>(<span class="hljs-number">32&#x27;h80000002</span>,<span class="hljs-string">&quot;%c&quot;</span>,rs2Val[<span class="hljs-number">7</span>:<span class="hljs-number">0</span>]); <span class="hljs-comment">// @[YPC.scala 30:46]</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，这并不是真正的 HDL，他依然是函数调用，需要借助于仿真环境，它这次就会被 verilator 转化为 C++ 的系统调用（in verilated.h）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-built_in">VL_FWRITEF</span>(<span class="hljs-number">0x80000002</span>U,<span class="hljs-string">&quot;%c&quot;</span>,<span class="hljs-number">8</span>,((<span class="hljs-number">0U</span> == ((<span class="hljs-number">0x100073</span>U<br>                                                == vlSelf-&gt;YPC__DOT__M_inst_MPORT_data)<br>                                                ? <span class="hljs-number">0xb</span>U<br>                                                : <span class="hljs-number">0U</span>))<br>                                        ? <span class="hljs-number">0U</span> : (<span class="hljs-number">0xff</span>U<br>                                                &amp; vlSelf-&gt;YPC__DOT__R<br>                                                [((<span class="hljs-number">0x100073</span>U<br>                                                   == vlSelf-&gt;YPC__DOT__M_inst_MPORT_data)<br>                                                   ? <span class="hljs-number">0xb</span>U<br>                                                   : <span class="hljs-number">0U</span>)])));<br><br><span class="hljs-built_in">VL_FWRITEF</span>(<span class="hljs-number">0x80000002</span>U,<span class="hljs-string">&quot;Assertion failed: Invalid instruction 0x%x\n    at YPC.scala:25 assert(isAddi || isEbreak, \&quot;Invalid instruction 0x%%x\&quot;, inst.asUInt)\n&quot;</span>,<br>                   <span class="hljs-number">32</span>,vlSelf-&gt;YPC__DOT__M_inst_MPORT_data);<br></code></pre></td></tr></table></figure>
+
+<p>第二个问题：程序中有 jal 指令，按理说会打印出 <code>Assertion failed: Invalid instruction...</code>，因为我并没有实现 jal 指令，但是并没有注意到这个信息，为什么？</p>
+<p>答案很简答，因为这个调用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">halt</span><span class="hljs-params">(<span class="hljs-type">int</span> code)</span> &#123; ebreak(<span class="hljs-number">1</span>, code); <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>); &#125;<br></code></pre></td></tr></table></figure>
+<p>首先是 halt 了，然后才死循环调用 jal 了，事实上当：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Scala">io.halt := isEbreak &amp;&amp; (rs1Val === <span class="hljs-number">1.</span><span class="hljs-type">U</span>)<br><span class="hljs-type">PC</span> := <span class="hljs-type">PC</span> + <span class="hljs-number">4.</span><span class="hljs-type">U</span><br></code></pre></td></tr></table></figure>
+<p>的时候，运行时环境已经结束了二进制程序的继续推进：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> </span>&#123;<br>    top = <span class="hljs-keyword">new</span> VYPC;<br>    <span class="hljs-built_in">load_prog</span>(argv[<span class="hljs-number">1</span>]);<br>    <span class="hljs-built_in">reset</span>(<span class="hljs-number">20</span>);<br>    <span class="hljs-keyword">while</span> (!top-&gt;io_halt) &#123;<br>        <span class="hljs-built_in">step</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PA2/" class="category-chain-item">PA2</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PA2/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="category-chain-item">模拟器</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="print-no-link">#模拟器</a>
+      
+        <a href="/tags/YPC/" class="print-no-link">#YPC</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>YPC的研究</div>
+      <div>http://blog.luliang.online/2024/09/20/YPC的研究/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/09/24/Chisel_BlackBox/" title="Chisel 中的 BlackBox 机制">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Chisel 中的 BlackBox 机制</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/19/Chisel%E7%9A%84%E6%B5%8B%E8%AF%95%E6%A8%A1%E5%9D%97/" title="Chisel 测试模块">
+                        <span class="hidden-mobile">Chisel 测试模块</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

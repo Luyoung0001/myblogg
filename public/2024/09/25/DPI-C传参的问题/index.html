@@ -1,0 +1,936 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言DPI-C 是 Verilator 提供的一种机制，可以在 Verilog 代码中调用 C&#x2F;C++ 中定义的 C 语言函数。这为 Verilog 与仿真环境（C&#x2F;C++）的交互提供了方便。  DPI-C 的基本使用步骤 在 Verilog 中声明 C 函数 使用 import &quot;DPI-C&quot; 语句在 Verilog 中声明要调用的 C 函数。语法如下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DPI-C 传递参数的问题">
+<meta property="og:url" content="http://blog.luliang.online/2024/09/25/DPI-C%E4%BC%A0%E5%8F%82%E7%9A%84%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="前言DPI-C 是 Verilator 提供的一种机制，可以在 Verilog 代码中调用 C&#x2F;C++ 中定义的 C 语言函数。这为 Verilog 与仿真环境（C&#x2F;C++）的交互提供了方便。  DPI-C 的基本使用步骤 在 Verilog 中声明 C 函数 使用 import &quot;DPI-C&quot; 语句在 Verilog 中声明要调用的 C 函数。语法如下">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-25T12:20:40.000Z">
+<meta property="article:modified_time" content="2024-09-25T14:04:05.914Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="DPI-C">
+<meta property="article:tag" content="Verilog">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>DPI-C 传递参数的问题 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="DPI-C 传递参数的问题"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-25 20:20" pubdate>
+          2024年9月25日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">DPI-C 传递参数的问题</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>DPI-C 是 Verilator 提供的一种机制，可以在 Verilog 代码中调用 C&#x2F;C++ 中定义的 C 语言函数。这为 Verilog 与仿真环境（C&#x2F;C++）的交互提供了方便。</p>
+<hr>
+<h2 id="DPI-C-的基本使用步骤"><a href="#DPI-C-的基本使用步骤" class="headerlink" title="DPI-C 的基本使用步骤"></a>DPI-C 的基本使用步骤</h2><ol>
+<li><p><strong>在 Verilog 中声明 C 函数</strong></p>
+<p>使用 <code>import &quot;DPI-C&quot;</code> 语句在 Verilog 中声明要调用的 C 函数。语法如下：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;DPI-C&quot;</span> <span class="hljs-keyword">function</span> &lt;返回类型&gt; &lt;函数名&gt;(&lt;参数列表&gt;);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>&lt;返回类型&gt;</code>：函数的返回类型，可以是 <code>void</code> 或基本数据类型。</li>
+<li><code>&lt;函数名&gt;</code>：C 函数的名称。</li>
+<li><code>&lt;参数列表&gt;</code>：函数的参数，包括 <code>input</code>、<code>output</code>、<code>inout</code>，以及对应的类型。</li>
+</ul>
+</li>
+<li><p><strong>在 Verilog 中调用 C 函数</strong></p>
+<p>在需要的位置，直接调用已声明的 C 函数：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs verilog">&lt;函数名&gt;(&lt;参数列表&gt;);<br></code></pre></td></tr></table></figure>
+
+</li>
+<li><p><strong>在 C&#x2F;C++ 中实现该函数</strong></p>
+<p>在 C 或 C++ 文件中，按照声明的参数和返回类型，实现对应的函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> &lt;返回类型&gt; &lt;函数名&gt;(&lt;参数列表&gt;) &#123;<br>    <span class="hljs-comment">// 函数实现</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>extern &quot;C&quot;</code>：防止 C++ 编译器对函数名进行重整（Name Mangling），确保函数名在链接时与 Verilog 中的声明一致。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="示例：call-c-function-函数的应用"><a href="#示例：call-c-function-函数的应用" class="headerlink" title="示例：call_c_function 函数的应用"></a>示例：<code>call_c_function</code> 函数的应用</h2><h3 id="1-在-Verilog-中声明-call-c-function"><a href="#1-在-Verilog-中声明-call-c-function" class="headerlink" title="1. 在 Verilog 中声明 call_c_function"></a>1. 在 Verilog 中声明 <code>call_c_function</code></h3><p>在文件声明一个名为 <code>call_c_function</code> 的 C 函数：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">module</span> MyBlackBox(<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] input1,<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span>        clock,<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span>        reset,<br>    <span class="hljs-keyword">output</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] output1<br>);<br>    <span class="hljs-keyword">import</span> <span class="hljs-string">&quot;DPI-C&quot;</span> <span class="hljs-keyword">function</span> <span class="hljs-keyword">void</span> call_c_function(<span class="hljs-keyword">input</span> <span class="hljs-keyword">int</span> in, <span class="hljs-keyword">output</span> <span class="hljs-keyword">int</span> out);<br><span class="hljs-keyword">endmodule</span><br><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-在-Verilog-中调用-call-c-function"><a href="#2-在-Verilog-中调用-call-c-function" class="headerlink" title="2. 在 Verilog 中调用 call_c_function"></a>2. 在 Verilog 中调用 <code>call_c_function</code></h3><p>在同一文件中，通过以下方式调用该函数：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">always_ff</span> @(<span class="hljs-keyword">posedge</span> clock <span class="hljs-keyword">or</span> <span class="hljs-keyword">posedge</span> reset) <span class="hljs-keyword">begin</span><br>        <span class="hljs-keyword">if</span> (reset) <span class="hljs-keyword">begin</span><br>            output1 &lt;= <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">end</span> <span class="hljs-keyword">else</span> <span class="hljs-keyword">begin</span><br>            <span class="hljs-keyword">int</span> temp;<br>            call_c_function(input1, temp);<br>            output1 &lt;= temp;<br>        <span class="hljs-keyword">end</span><br>    <span class="hljs-keyword">end</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>说明</strong>：<ul>
+<li>在组合逻辑块中，每当输入信号位非 reset 时调用 <code>call_c_function</code>。</li>
+<li>input1、temp 都是参数，其中 temp 类似于 C++ 中的引用 ，在函数中对temp修改，它的值就会改变，这点非常关键，一定要注意。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-在-C-中实现-call-c-function"><a href="#3-在-C-中实现-call-c-function" class="headerlink" title="3. 在 C++ 中实现 call_c_function"></a>3. 在 C++ 中实现 <code>call_c_function</code></h3><p>在文件 <code>main.cpp</code> 中，实现该函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">call_c_function</span><span class="hljs-params">(<span class="hljs-type">uint32_t</span> input1, <span class="hljs-type">uint32_t</span>* output1)</span> </span>&#123;<br>    <span class="hljs-type">uint32_t</span> out_val = input1 + <span class="hljs-number">1</span>; <span class="hljs-comment">// 示例处理</span><br>    *output1 = out_val;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;output1 in func:%u\n&quot;</span>,out_val);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>函数逻辑</strong>：<ul>
+<li>可以看到，这里的形参和声明这个函数的时候，参数并不一样，这是什么现象呢？后面会讨论；</li>
+<li>将 input+1 赋值给 out_val；</li>
+<li>再将 output 修改为 outval；</li>
+<li>打印一些信息。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-仿真过程中的调用"><a href="#4-仿真过程中的调用" class="headerlink" title="4. 仿真过程中的调用"></a>4. 仿真过程中的调用</h3><p>在仿真过程中，每次调用 <code>eval()</code> 方法评估 Verilog 设计时，如果 <code>call_c_function</code> 被触发，就会调用对应的 C++ 函数。这实现了 Verilog 代码对 C 函数的调用，使得硬件仿真能够与软件逻辑进行交互。</p>
+<hr>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>这里需要准备：<br><code>./main.cpp</code>:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;VMyModule.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;verilated.h&quot;</span></span><br><br><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">call_c_function</span><span class="hljs-params">(<span class="hljs-type">uint32_t</span> input1, <span class="hljs-type">uint32_t</span>* output1)</span> </span>&#123;<br>    <span class="hljs-type">uint32_t</span> out_val = input1 + <span class="hljs-number">1</span>; <span class="hljs-comment">// 示例处理</span><br>    *output1 = out_val;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;output1 in func:%u\n&quot;</span>,out_val);<br>&#125;<br><br><span class="hljs-type">static</span> VMyModule* top = <span class="hljs-literal">NULL</span>;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">step</span><span class="hljs-params">()</span> </span>&#123;<br>    top-&gt;clock = <span class="hljs-number">0</span>;<br>    top-&gt;<span class="hljs-built_in">eval</span>();<br>    top-&gt;clock = <span class="hljs-number">1</span>;<br>    top-&gt;<span class="hljs-built_in">eval</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">reset</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>&#123;<br>    top-&gt;reset = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">while</span> (n--) &#123;<br>        <span class="hljs-built_in">step</span>();<br>    &#125;<br>    top-&gt;reset = <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> </span>&#123;<br>    Verilated::<span class="hljs-built_in">commandArgs</span>(argc, argv);<br>    top = <span class="hljs-keyword">new</span> VMyModule;<br><br>    <span class="hljs-built_in">reset</span>(<span class="hljs-number">1</span>);  <span class="hljs-comment">// 初始化</span><br><br>    <span class="hljs-comment">// 设置输入信号</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; ++i) &#123;<br>        top-&gt;io_in = i; <span class="hljs-comment">// 更新输入信号</span><br>        <span class="hljs-built_in">step</span>(); <span class="hljs-comment">// 进行一步仿真</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Input: %u, Output: %u\n&quot;</span>, top-&gt;io_in, top-&gt;io_out);<br><br>    &#125;<br><br>    <span class="hljs-keyword">delete</span> top; <span class="hljs-comment">// 释放资源</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><code>./MyModule.scala</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs Scala"><span class="hljs-keyword">import</span> chisel3._<br><br><span class="hljs-comment">// 定义的模块可以直接在里面引入黑盒</span><br><span class="hljs-comment">// 这个也算是顶层模块</span><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Module</span> </span>&#123;<br>    <span class="hljs-keyword">val</span> io = <span class="hljs-type">IO</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">Bundle</span> &#123;<br>    <span class="hljs-keyword">val</span> in = <span class="hljs-type">Input</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>    <span class="hljs-keyword">val</span> out = <span class="hljs-type">Output</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>  &#125;)<br><br>  <span class="hljs-keyword">val</span> blackBox = <span class="hljs-type">Module</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">MyBlackBox</span>)<br><br>  <span class="hljs-comment">// 在这里引入我们刚包装好的黑盒，连接好引脚即可</span><br>  blackBox.io.clock := clock<br>  blackBox.io.reset := reset<br>  blackBox.io.input1 := io.in<br>  io.out := blackBox.io.output1<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">MyModule</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>  (<span class="hljs-keyword">new</span> chisel3.stage.<span class="hljs-type">ChiselStage</span>).emitVerilog(<span class="hljs-keyword">new</span> <span class="hljs-type">MyModule</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><code>./MyBlackBox.scala</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Scala"><span class="hljs-keyword">import</span> chisel3._<br><span class="hljs-keyword">import</span> chisel3.util._<br><span class="hljs-keyword">import</span> chisel3.experimental._<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyBlackBox</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BlackBox</span> <span class="hljs-keyword">with</span> <span class="hljs-title">HasBlackBoxPath</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> io = <span class="hljs-type">IO</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">Bundle</span> &#123;<br>    <span class="hljs-keyword">val</span> clock = <span class="hljs-type">Input</span>(<span class="hljs-type">Clock</span>())<br>    <span class="hljs-keyword">val</span> reset = <span class="hljs-type">Input</span>(<span class="hljs-type">Bool</span>())<br>    <span class="hljs-keyword">val</span> input1 = <span class="hljs-type">Input</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>    <span class="hljs-keyword">val</span> output1 = <span class="hljs-type">Output</span>(<span class="hljs-type">UInt</span>(<span class="hljs-number">32.</span><span class="hljs-type">W</span>))<br>  &#125;)<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><code>./aaa/MyBlackBox.sc</code>:</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs Verilog"><span class="hljs-keyword">module</span> MyBlackBox(<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] input1,<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span>        clock,<br>    <span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span>        reset,<br>    <span class="hljs-keyword">output</span> <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] output1<br>);<br>    <span class="hljs-keyword">import</span> <span class="hljs-string">&quot;DPI-C&quot;</span> <span class="hljs-keyword">function</span> <span class="hljs-keyword">void</span> call_c_function(<span class="hljs-keyword">input</span> <span class="hljs-keyword">int</span> in, <span class="hljs-keyword">output</span> <span class="hljs-keyword">int</span> out);<br><br>    <span class="hljs-keyword">always_ff</span> @(<span class="hljs-keyword">posedge</span> clock <span class="hljs-keyword">or</span> <span class="hljs-keyword">posedge</span> reset) <span class="hljs-keyword">begin</span><br>        <span class="hljs-keyword">if</span> (reset) <span class="hljs-keyword">begin</span><br>            output1 &lt;= <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">end</span> <span class="hljs-keyword">else</span> <span class="hljs-keyword">begin</span><br>            <span class="hljs-keyword">int</span> temp;<br>            call_c_function(input1, temp);<br>            output1 &lt;= temp;<br>        <span class="hljs-keyword">end</span><br>    <span class="hljs-keyword">end</span><br><span class="hljs-keyword">endmodule</span><br><br></code></pre></td></tr></table></figure>
+
+<p>最后一个就是 <code>./Makefile</code> 了：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">hdl:</span><br>	@sbt clean<br>	@sbt run<br><br><span class="hljs-section">build:</span><br>	bear -- verilator --cc MyModule.v --exe --build main.cpp -I/home/luyoung/Test/BlackBox/aaa<br><br><span class="hljs-section">clean:</span><br>	@rm -rf obj_dir project target<br><br><span class="hljs-section">run:</span><br>	./obj_dir/VMyModule<br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: hdl build clean</span><br><br></code></pre></td></tr></table></figure>
+
+<p>直接运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make hdl<br>[info] welcome to sbt 1.10.2 (Private Build Java 1.8.0_422)<br>[info] loading project definition from /home/luyoung/Test/BlackBox/project<br>[info] loading settings <span class="hljs-keyword">for</span> project blackbox from build.sbt ...<br>[info] <span class="hljs-built_in">set</span> current project to blackbox (<span class="hljs-keyword">in</span> build file:/home/luyoung/Test/BlackBox/)<br>[success] Total time: 0 s, completed Sep 25, 2024 9:28:55 PM<br>[info] welcome to sbt 1.10.2 (Private Build Java 1.8.0_422)<br>[info] loading project definition from /home/luyoung/Test/BlackBox/project<br>[info] loading settings <span class="hljs-keyword">for</span> project blackbox from build.sbt ...<br>[info] <span class="hljs-built_in">set</span> current project to blackbox (<span class="hljs-keyword">in</span> build file:/home/luyoung/Test/BlackBox/)<br>[info] compiling 2 Scala sources to /home/luyoung/Test/BlackBox/target/scala-2.12/classes ...<br>[info] running MyModule<br>[success] Total time: 6 s, completed Sep 25, 2024 9:29:04 PM<br><br>luyoung at luyoung-desktop <span class="hljs-keyword">in</span> ~/Test/BlackBox<br>$ make build<br>bear -- verilator --cc MyModule.v --exe --build main.cpp -I/home/luyoung/Test/BlackBox/aaa<br>make[1]: Entering directory <span class="hljs-string">&#x27;/home/luyoung/Test/BlackBox/obj_dir&#x27;</span><br>ccache g++  -I.  -MMD -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow       -Os -c -o main.o ../main.cpp<br>ccache g++  -I.  -MMD -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow       -Os -c -o verilated.o /usr/local/share/verilator/include/verilated.cpp<br>ccache g++  -I.  -MMD -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow       -Os -c -o verilated_dpi.o /usr/local/share/verilator/include/verilated_dpi.cpp<br>ccache g++  -I.  -MMD -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow       -Os -c -o verilated_threads.o /usr/local/share/verilator/include/verilated_threads.cpp<br>/usr/bin/python3 /usr/local/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include VMyModule.cpp VMyModule___024root__DepSet_h95824ea7__0.cpp VMyModule___024root__DepSet_hba0a4a14__0.cpp VMyModule__Dpi.cpp VMyModule___024root__Slow.cpp VMyModule___024root__DepSet_h95824ea7__0__Slow.cpp VMyModule___024root__DepSet_hba0a4a14__0__Slow.cpp VMyModule__Syms.cpp &gt; VMyModule__ALL.cpp<br>ccache g++  -I.  -MMD -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow       -Os -c -o VMyModule__ALL.o VMyModule__ALL.cpp<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;&quot;</span> &gt; VMyModule__ALL.verilator_deplist.tmp<br>Archive ar -rcs VMyModule__ALL.a VMyModule__ALL.o<br>g++    main.o verilated.o verilated_dpi.o verilated_threads.o VMyModule__ALL.a    -pthread -lpthread -latomic   -o VMyModule<br><span class="hljs-built_in">rm</span> VMyModule__ALL.verilator_deplist.tmp<br>make[1]: Leaving directory <span class="hljs-string">&#x27;/home/luyoung/Test/BlackBox/obj_dir&#x27;</span><br><br>luyoung at luyoung-desktop <span class="hljs-keyword">in</span> ~/Test/BlackBox<br>$ make run<br>./obj_dir/VMyModule<br>output1 <span class="hljs-keyword">in</span> func:1<br>Input: 0, Output: 1<br>output1 <span class="hljs-keyword">in</span> func:2<br>Input: 1, Output: 2<br>output1 <span class="hljs-keyword">in</span> func:3<br>Input: 2, Output: 3<br>output1 <span class="hljs-keyword">in</span> func:4<br>Input: 3, Output: 4<br>output1 <span class="hljs-keyword">in</span> func:5<br>Input: 4, Output: 5<br>output1 <span class="hljs-keyword">in</span> func:6<br>Input: 5, Output: 6<br>output1 <span class="hljs-keyword">in</span> func:7<br>Input: 6, Output: 7<br>output1 <span class="hljs-keyword">in</span> func:8<br>Input: 7, Output: 8<br>output1 <span class="hljs-keyword">in</span> func:9<br>Input: 8, Output: 9<br>output1 <span class="hljs-keyword">in</span> func:10<br>Input: 9, Output: 10<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，顺利得传递了参数，并且类似于引用一样，修改了黑盒子处的值 <code>temp</code>，它影响了 <code>output1</code>:</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Verilog"><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;DPI-C&quot;</span> <span class="hljs-keyword">function</span> <span class="hljs-keyword">void</span> call_c_function(<span class="hljs-keyword">input</span> <span class="hljs-keyword">int</span> in, <span class="hljs-keyword">output</span> <span class="hljs-keyword">int</span> out);<br><br>    <span class="hljs-keyword">always_ff</span> @(<span class="hljs-keyword">posedge</span> clock <span class="hljs-keyword">or</span> <span class="hljs-keyword">posedge</span> reset) <span class="hljs-keyword">begin</span><br>        <span class="hljs-keyword">if</span> (reset) <span class="hljs-keyword">begin</span><br>            output1 &lt;= <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">end</span> <span class="hljs-keyword">else</span> <span class="hljs-keyword">begin</span><br>            <span class="hljs-keyword">int</span> temp;<br>            call_c_function(input1, temp);<br>            output1 &lt;= temp;<br>        <span class="hljs-keyword">end</span><br>    <span class="hljs-keyword">end</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="讨论类似于引用一样的传值"><a href="#讨论类似于引用一样的传值" class="headerlink" title="讨论类似于引用一样的传值"></a>讨论类似于引用一样的传值</h2><p>这是一件很少见的事情，考虑到这是 C++，我试图用类型隐式转换来解释。</p>
+<p>这里的函数声明有什么不对吗：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Verilog">...<br><span class="hljs-keyword">input</span>  <span class="hljs-keyword">logic</span> [<span class="hljs-number">31</span>:<span class="hljs-number">0</span>] input1,<br>...<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;DPI-C&quot;</span> <span class="hljs-keyword">function</span> <span class="hljs-keyword">void</span> call_c_function(<span class="hljs-keyword">input</span> <span class="hljs-keyword">int</span> in, <span class="hljs-keyword">output</span> <span class="hljs-keyword">int</span> out);<br><br>...<br>        <span class="hljs-keyword">int</span> temp;<br>        call_c_function(input1, temp);<br>...<br></code></pre></td></tr></table></figure>
+
+<p>这里都声明为 int 类型，但是调用的时候，很明显往里面传送了一个 32 位的 input 类型。</p>
+<p>另外，函数的定义更为奇怪：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">call_c_function</span><span class="hljs-params">(<span class="hljs-type">uint32_t</span> input1, <span class="hljs-type">uint32_t</span>* output1)</span> </span>&#123;<br>    <span class="hljs-type">uint32_t</span> out_val = input1 + <span class="hljs-number">1</span>; <span class="hljs-comment">// 示例处理</span><br>    *output1 = out_val;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;output1 in func:%u\n&quot;</span>,out_val);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>函数的定义，形参直接变成 <code>uint32_t</code>、<code>uint32_t*</code> 了。</p>
+<p>怎么理解这件事呢？</p>
+<p>经过查阅手册，SystemVerilog 和 Verilog 数据类型：</p>
+<table>
+<thead>
+<tr>
+<th><strong>数据类型</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>位宽</strong></th>
+<th><strong>有符号&#x2F;无符号</strong></th>
+<th><strong>两态&#x2F;四态</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shortint</code></td>
+<td>16 位有符号整数</td>
+<td>16 位</td>
+<td>有符号</td>
+<td>两态</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>32 位有符号整数</td>
+<td>32 位</td>
+<td>有符号</td>
+<td>两态</td>
+</tr>
+<tr>
+<td><code>longint</code></td>
+<td>64 位有符号整数</td>
+<td>64 位</td>
+<td>有符号</td>
+<td>两态</td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td>8 位有符号整数或 ASCII 码字符</td>
+<td>8 位</td>
+<td>有符号</td>
+<td>两态</td>
+</tr>
+<tr>
+<td><code>bit</code></td>
+<td>用户定义的向量尺寸</td>
+<td>用户定义</td>
+<td>无符号</td>
+<td>两态</td>
+</tr>
+<tr>
+<td><code>logic</code></td>
+<td>用户定义的向量尺寸</td>
+<td>用户定义</td>
+<td>无符号</td>
+<td>四态</td>
+</tr>
+<tr>
+<td><code>reg</code></td>
+<td>Verilog-2001 用户定义的向量尺寸</td>
+<td>用户定义</td>
+<td>无符号</td>
+<td>四态</td>
+</tr>
+<tr>
+<td><code>integer</code></td>
+<td>Verilog-2001 32 位有符号整数</td>
+<td>32 位</td>
+<td>有符号</td>
+<td>四态</td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td>Verilog-2001 64 位无符号整数</td>
+<td>64 位</td>
+<td>无符号</td>
+<td>四态</td>
+</tr>
+</tbody></table>
+<p>可以看到，在 Verilog 中声明的 <code>int</code> 类型是 32 位的，这就很好理解了。</p>
+<p>看到的类型不匹配实际上在位宽和内存布局上是兼容的。 Verilog 的 int 和 C 的 uint32_t 在 DPI 传递过程中能够正确映射。使用固定宽度的整数类型（如 uint32_t）是确保跨平台兼容性的良好实践。</p>
+<p>也就是说，只要宽度一样，就可以做良好的映射。另外这里的指针操作很奇怪，明明传送的是一个变量，怎么就修改了呢？</p>
+<p>在 Verilog 中调用 <code>call_c_function(input1, temp);</code> 时，<code>temp</code> 是一个普通的 <code>int</code> 变量，看起来是按值传递的。但是在 C 函数中，参数是 <code>uint32_t* output1</code>，即一个指针，并且在函数中通过这个指针修改了 <code>output1</code> 的值。困惑的是，为什么在 Verilog 中传递一个值，C 函数却能通过指针修改它，<code>temp</code> 的值也因此被改变。</p>
+<p><strong>这是因为在 SystemVerilog DPI 中，参数的传递方式取决于参数的方向（<code>input</code>、<code>output</code>）。</strong></p>
+<hr>
+<p><strong>详细解释如下：</strong></p>
+<ol>
+<li><p><strong>Verilog 中的函数声明和调用：</strong></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;DPI-C&quot;</span> <span class="hljs-keyword">function</span> <span class="hljs-keyword">void</span> call_c_function(<span class="hljs-keyword">input</span> <span class="hljs-keyword">int</span> in, <span class="hljs-keyword">output</span> <span class="hljs-keyword">int</span> out);<br><br>...<br><br><span class="hljs-keyword">int</span> temp;<br>call_c_function(input1, temp);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>input1</code>：作为 <code>input</code> 参数，按值传递。</li>
+<li><code>temp</code>：作为 <code>output</code> 参数，虽然在代码中看起来是按值传递，但实际上是按引用传递。</li>
+</ul>
+</li>
+<li><p><strong>参数传递方式：</strong></p>
+<ul>
+<li><strong><code>input</code> 参数：</strong> 按值传递，C 函数<strong>接收的是该参数的副本</strong>，无法修改调用者的变量。</li>
+<li><strong><code>output</code> 参数：</strong> 按引用传递，C 函数接收的是<strong>一个指向调用者变量的指针</strong>，可以修改该变量的值。</li>
+</ul>
+</li>
+<li><p><strong>在 C 函数中的定义：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">extern</span> <span class="hljs-string">&quot;C&quot;</span> <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">call_c_function</span><span class="hljs-params">(<span class="hljs-type">uint32_t</span> input1, <span class="hljs-type">uint32_t</span>* output1)</span> </span>&#123;<br>    <span class="hljs-type">uint32_t</span> out_val = input1 + <span class="hljs-number">1</span>; <span class="hljs-comment">// 示例处理</span><br>    *output1 = out_val;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;output1 in func:%u\n&quot;</span>, out_val);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>input1</code>：接收 <code>input</code> 参数的值。</li>
+<li><code>output1</code>：接收 <code>output</code> 参数的指针，允许修改调用者的变量。</li>
+</ul>
+</li>
+<li><p><strong>为什么 <code>temp</code> 的值会被修改：</strong></p>
+<ul>
+<li>在 Verilog 中，传递了变量 <code>temp</code>，对应于 <code>output</code> 参数。</li>
+<li>SystemVerilog 编译器在编译时，知道 <code>out</code> 是一个 <code>output</code> 参数，会自动将 <code>temp</code> 的地址传递给 C 函数。</li>
+<li>因此，C 函数中的 <code>uint32_t* output1</code> 实际上指向 Verilog 中的变量 <code>temp</code>。</li>
+<li>当 C 函数通过 <code>*output1 = out_val;</code> 修改了 <code>output1</code> 指向的值，<code>temp</code> 的值也随之改变。</li>
+</ul>
+</li>
+<li><p><strong>编译器的角色：</strong></p>
+<ul>
+<li>SystemVerilog 编译器负责参数传递的处理，对于 <code>output</code> 和 <code>inout</code> 参数，会自动传递变量的地址（指针）。</li>
+<li>这使得在 Verilog 代码中调用函数时，<strong>无需显式地取地址</strong>，代码更简洁。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>总结：</strong></p>
+<ul>
+<li><p><strong>按值传递 vs 按引用传递：</strong></p>
+<ul>
+<li><strong>按值传递（Value）：</strong> 仅传递变量的副本，函数内部的修改不会影响原变量。</li>
+<li><strong>按引用传递（Reference）：</strong> 传递变量的地址，函数内部的修改会影响原变量。</li>
+</ul>
+</li>
+<li><p><strong>在 DPI-C 中，<code>output</code> 参数被按引用传递，即使在 Verilog 中看起来像是按值传递。</strong></p>
+</li>
+<li><p><strong>因此，C 函数可以通过指针修改 Verilog 中的变量。</strong></p>
+</li>
+</ul>
+<hr>
+<p><strong>示例对照：</strong></p>
+<ul>
+<li><p><strong>Verilog 调用：</strong></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">int</span> temp;<br>call_c_function(input1, temp); <span class="hljs-comment">// temp 被作为 output 参数，按引用传递</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>C 函数接收：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">call_c_function</span><span class="hljs-params">(<span class="hljs-type">uint32_t</span> input1, <span class="hljs-type">uint32_t</span>* output1)</span> </span>&#123;<br>    <span class="hljs-comment">// output1 是一个指向 temp 的指针</span><br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>C 函数内部修改：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp">*output1 = input1 + <span class="hljs-number">1</span>; <span class="hljs-comment">// 修改了 temp 的值</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Verilog 中的结果：</strong></p>
+<ul>
+<li>调用结束后，<code>temp</code> 的值被更新为 <code>input1 + 1</code>。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>进一步说明：</strong></p>
+<ul>
+<li><p><strong>为什么不需要在 Verilog 中取地址？</strong></p>
+<ul>
+<li>在高级语言中，如 C 或 C++，当需要传递变量的地址时，需要显式地使用取地址符 <code>&amp;</code>。</li>
+<li>但在 Verilog 中，参数传递方式由参数方向决定，编译器自动处理，无需显式取地址。</li>
+<li>这使得代码更简洁，同时避免了与硬件描述语言的风格冲突。</li>
+</ul>
+</li>
+<li><p><strong>如何确认参数传递方式？</strong></p>
+<ul>
+<li>查看函数的声明，关注参数的方向（<code>input</code>、<code>output</code>）。</li>
+<li>在 C 函数中，<code>input</code> 参数对应于值，<code>output</code> 参数对应于指针。</li>
+</ul>
+</li>
+</ul>
+<hr>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PA2/" class="category-chain-item">PA2</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PA2/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="category-chain-item">模拟器</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/DPI-C/" class="print-no-link">#DPI-C</a>
+      
+        <a href="/tags/Verilog/" class="print-no-link">#Verilog</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>DPI-C 传递参数的问题</div>
+      <div>http://blog.luliang.online/2024/09/25/DPI-C传参的问题/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/09/26/nemu%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" title="nemu 工作原理解析">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">nemu 工作原理解析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/25/verilator%E7%BC%96%E8%AF%91%E5%A4%9A%E4%B8%AAcpp%E6%96%87%E4%BB%B6/" title="verilator 编译多个 cpp 文件">
+                        <span class="hidden-mobile">verilator 编译多个 cpp 文件</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

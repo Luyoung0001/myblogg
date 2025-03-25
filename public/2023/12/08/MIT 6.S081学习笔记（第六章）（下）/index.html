@@ -1,0 +1,756 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言MIT 6.S081 实验六：Multithreading；开始之前，切换分支： 123$ git fetch $ git checkout thread $ make clean  一、实验：MultithreadingUthread: switching between threads (moderate) In this exercise you will design the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081学习笔记（第六章）（下）">
+<meta property="og:url" content="http://blog.luliang.online/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言MIT 6.S081 实验六：Multithreading；开始之前，切换分支： 123$ git fetch $ git checkout thread $ make clean  一、实验：MultithreadingUthread: switching between threads (moderate) In this exercise you will design the">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-08T01:04:37.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.772Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="学习">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="MIT 6.S081">
+<meta property="article:tag" content="文件系统">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>MIT 6.S081学习笔记（第六章）（下） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MIT 6.S081学习笔记（第六章）（下）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-08 09:04" pubdate>
+          2023年12月8日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">MIT 6.S081学习笔记（第六章）（下）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p><strong>MIT 6.S081</strong> 实验六：<strong>Multithreading</strong>；<br>开始之前，切换分支：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ git fetch<br> $ git checkout thread<br> $ make clean<br></code></pre></td></tr></table></figure>
+
+<h2 id="一、实验：Multithreading"><a href="#一、实验：Multithreading" class="headerlink" title="一、实验：Multithreading"></a>一、实验：Multithreading</h2><h2 id="Uthread-switching-between-threads-moderate"><a href="#Uthread-switching-between-threads-moderate" class="headerlink" title="Uthread: switching between threads (moderate)"></a>Uthread: switching between threads (moderate)</h2><blockquote>
+<p>In this exercise you will design the <strong>context switch mechanism</strong> for a user-level threading system, and then implement it. To get you started, your xv6 has two files <code>user/uthread.c</code> and <code>user/uthread_switch.S</code>, and a rule in the <strong>Makefile</strong> to build a uthread program. <code>uthread.c</code> contains most of a user-level threading package, and code for three simple test threads. The threading package is missing some of the code to create a thread and to switch between threads.</p>
+</blockquote>
+<blockquote>
+<p>Your job is to come up with a plan to create threads and save&#x2F;restore registers to switch between threads, and implement that plan. When you’re done, make grade should say that your solution passes the uthread test.</p>
+</blockquote>
+<h3 id="Some-Hints"><a href="#Some-Hints" class="headerlink" title="Some Hints"></a>Some Hints</h3><ul>
+<li><code>thread_switch</code> needs to save&#x2F;restore only the callee-save registers. Why?</li>
+<li>You can see the assembly code for uthread in <code>user/uthread.asm</code>, which may be handy for debugging.</li>
+</ul>
+<p>这个实验思路很简单，本质上就是模拟 <strong>xv6</strong> 中的线程上下文切换机制。以下为代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/types.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/stat.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;user/user.h&quot;</span></span><br><br><span class="hljs-comment">/* Possible states of a thread: */</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> FREE        0x0</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> RUNNING     0x1</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> RUNNABLE    0x2</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> STACK_SIZE  8192</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MAX_THREAD  4</span><br><br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">context</span> &#123;</span><br>  uint64 ra;<br>  uint64 sp;<br><br>  <span class="hljs-comment">// callee-saved</span><br>  uint64 s0;<br>  uint64 s1;<br>  uint64 s2;<br>  uint64 s3;<br>  uint64 s4;<br>  uint64 s5;<br>  uint64 s6;<br>  uint64 s7;<br>  uint64 s8;<br>  uint64 s9;<br>  uint64 s10;<br>  uint64 s11;<br>&#125;;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread</span> &#123;</span><br>  <span class="hljs-type">char</span>       <span class="hljs-built_in">stack</span>[STACK_SIZE]; <span class="hljs-comment">/* the thread&#x27;s stack */</span><br>  <span class="hljs-type">int</span>        state;             <span class="hljs-comment">/* FREE, RUNNING, RUNNABLE */</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">context</span> <span class="hljs-title">ctx</span>;</span><br>&#125;;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread</span> <span class="hljs-title">all_thread</span>[<span class="hljs-title">MAX_THREAD</span>];</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread</span> *<span class="hljs-title">current_thread</span>;</span><br><span class="hljs-keyword">extern</span> <span class="hljs-type">void</span> <span class="hljs-title function_">thread_switch</span><span class="hljs-params">(uint64, uint64)</span>;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">thread_init</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-comment">// main() is thread 0, which will make the first invocation to</span><br>  <span class="hljs-comment">// thread_schedule(). It needs a stack so that the first thread_switch() can</span><br>  <span class="hljs-comment">// save thread 0&#x27;s state.</span><br>  current_thread = &amp;all_thread[<span class="hljs-number">0</span>];<br>  current_thread-&gt;state = RUNNING;<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">thread_schedule</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread</span> *<span class="hljs-title">t</span>, *<span class="hljs-title">next_thread</span>;</span><br><br>  <span class="hljs-comment">/* Find another runnable thread. */</span><br>  next_thread = <span class="hljs-number">0</span>;<br>  t = current_thread + <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; MAX_THREAD; i++)&#123;<br>    <span class="hljs-keyword">if</span>(t &gt;= all_thread + MAX_THREAD)<br>      t = all_thread;<br>    <span class="hljs-keyword">if</span>(t-&gt;state == RUNNABLE) &#123;<br>      next_thread = t;<br>      <span class="hljs-keyword">break</span>;<br>    &#125;<br>    t = t + <span class="hljs-number">1</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">if</span> (next_thread == <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_schedule: no runnable threads\n&quot;</span>);<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>  &#125;<br><br>  <span class="hljs-keyword">if</span> (current_thread != next_thread) &#123;         <span class="hljs-comment">/* switch threads?  */</span><br>    next_thread-&gt;state = RUNNING;<br>    t = current_thread;<br>    current_thread = next_thread;<br>    <span class="hljs-comment">/* YOUR CODE HERE</span><br><span class="hljs-comment">     * Invoke thread_switch to switch from t to next_thread:</span><br><span class="hljs-comment">     * thread_switch(??, ??);</span><br><span class="hljs-comment">     */</span><br>    thread_switch((uint64)&amp;t-&gt;ctx, (uint64)&amp;next_thread-&gt;ctx);<br>  &#125; <span class="hljs-keyword">else</span><br>    next_thread = <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">thread_create</span><span class="hljs-params">(<span class="hljs-type">void</span> (*func)())</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">thread</span> *<span class="hljs-title">t</span>;</span><br><br>  <span class="hljs-keyword">for</span> (t = all_thread; t &lt; all_thread + MAX_THREAD; t++) &#123;<br>    <span class="hljs-keyword">if</span> (t-&gt;state == FREE) <span class="hljs-keyword">break</span>;<br>  &#125;<br>  t-&gt;state = RUNNABLE;<br>  <span class="hljs-comment">// YOUR CODE HERE</span><br>  t-&gt;ctx.sp = (uint64)&amp;t-&gt;<span class="hljs-built_in">stack</span> + (STACK_SIZE - <span class="hljs-number">1</span>);<br>  t-&gt;ctx.ra = (uint64)func;<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">thread_yield</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  current_thread-&gt;state = RUNNABLE;<br>  thread_schedule();<br>&#125;<br><br><span class="hljs-keyword">volatile</span> <span class="hljs-type">int</span> a_started, b_started, c_started;<br><span class="hljs-keyword">volatile</span> <span class="hljs-type">int</span> a_n, b_n, c_n;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">thread_a</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">int</span> i;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_a started\n&quot;</span>);<br>  a_started = <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">while</span>(b_started == <span class="hljs-number">0</span> || c_started == <span class="hljs-number">0</span>)<br>    thread_yield();<br><br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_a %d\n&quot;</span>, i);<br>    a_n += <span class="hljs-number">1</span>;<br>    thread_yield();<br>  &#125;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_a: exit after %d\n&quot;</span>, a_n);<br><br>  current_thread-&gt;state = FREE;<br>  thread_schedule();<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">thread_b</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">int</span> i;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_b started\n&quot;</span>);<br>  b_started = <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">while</span>(a_started == <span class="hljs-number">0</span> || c_started == <span class="hljs-number">0</span>)<br>    thread_yield();<br><br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_b %d\n&quot;</span>, i);<br>    b_n += <span class="hljs-number">1</span>;<br>    thread_yield();<br>  &#125;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_b: exit after %d\n&quot;</span>, b_n);<br><br>  current_thread-&gt;state = FREE;<br>  thread_schedule();<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">thread_c</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">int</span> i;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_c started\n&quot;</span>);<br>  c_started = <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">while</span>(a_started == <span class="hljs-number">0</span> || b_started == <span class="hljs-number">0</span>)<br>    thread_yield();<br><br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_c %d\n&quot;</span>, i);<br>    c_n += <span class="hljs-number">1</span>;<br>    thread_yield();<br>  &#125;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;thread_c: exit after %d\n&quot;</span>, c_n);<br><br>  current_thread-&gt;state = FREE;<br>  thread_schedule();<br>&#125;<br><br><span class="hljs-type">int</span><br><span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span><br>&#123;<br>  a_started = b_started = c_started = <span class="hljs-number">0</span>;<br>  a_n = b_n = c_n = <span class="hljs-number">0</span>;<br>  thread_init();<br>  thread_create(thread_a);<br>  thread_create(thread_b);<br>  thread_create(thread_c);<br>  current_thread-&gt;state = FREE;<br>  thread_schedule();<br>  <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>以及对 <code>user/uthread_swtch.S</code> 的改动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs bash">	.text<br><br>	/*<br>         * save the old thread<span class="hljs-string">&#x27;s registers,</span><br><span class="hljs-string">         * restore the new thread&#x27;</span>s registers.<br>         */<br><br>	.globl thread_switch<br>thread_switch:<br>	/* YOUR CODE HERE */<br>	sd ra, 0(a0)<br>	sd sp, 8(a0)<br>	sd s0, 16(a0)<br>	sd s1, 24(a0)<br>	sd s2, 32(a0)<br>	sd s3, 40(a0)<br>	sd s4, 48(a0)<br>	sd s5, 56(a0)<br>	sd s6, 64(a0)<br>	sd s7, 72(a0)<br>	sd s8, 80(a0)<br>	sd s9, 88(a0)<br>	sd s10, 96(a0)<br>	sd s11, 104(a0)<br><br>	ld ra, 0(a1)<br>    ld sp, 8(a1)<br>    ld s0, 16(a1)<br>    ld s1, 24(a1)<br>    ld s2, 32(a1)<br>    ld s3, 40(a1)<br>    ld s4, 48(a1)<br>    ld s5, 56(a1)<br>    ld s6, 64(a1)<br>    ld s7, 72(a1)<br>    ld s8, 80(a1)<br>    ld s9, 88(a1)<br>    ld s10, 96(a1)<br>    ld s11, 104(a1)<br><br>	ret    /* <span class="hljs-built_in">return</span> to ra */<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="Using-threads-moderate"><a href="#Using-threads-moderate" class="headerlink" title="Using threads (moderate)"></a>Using threads (moderate)</h2><blockquote>
+<p><strong>n</strong> this assignment you will explore parallel programming with threads and locks using a hash table. You should do this assignment on a real Linux or MacOS computer (not xv6, not qemu) that has multiple cores. Most recent laptops have multicore processors.</p>
+</blockquote>
+<h3 id="Some-hints"><a href="#Some-hints" class="headerlink" title="Some hints"></a>Some hints</h3><blockquote>
+<ul>
+<li>The numbers you see may differ from this sample output by a factor of two or more, depending on how fast your computer is, whether it has multiple cores, and whether it’s busy doing other things.</li>
+<li>ph runs two benchmarks. First it adds lots of keys to the hash table by calling <code>put()</code>, and prints the achieved rate in <code>puts</code> per second. The it fetches keys from the hash table with <code>get()</code>. It prints the number keys that should have been in the hash table as a result of the puts but are missing (zero in this case), and it prints the number of gets per second it achieved.</li>
+</ul>
+</blockquote>
+<p>熟悉多线程编程的话，直接<strong>上两个锁</strong>就完成了，但为了性能问题，要将临界区的范围控制到<strong>很小</strong>，不然第二个测试过不了。</p>
+<p>声明两个锁：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">pthread_mutex_t</span> get_lock;<br><span class="hljs-type">pthread_mutex_t</span> put_lock;<br></code></pre></td></tr></table></figure>
+<p>这两个锁记得初始化：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span><br>&#123;<br>  <span class="hljs-type">pthread_t</span> *tha;<br>  <span class="hljs-type">void</span> *value;<br>  <span class="hljs-type">double</span> t1, t0;<br>  pthread_mutex_init(&amp;put_lock, <span class="hljs-literal">NULL</span>);<br>  pthread_mutex_init(&amp;get_lock, <span class="hljs-literal">NULL</span>);<br>  ...<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><code>put()</code>、<code>get()</code>中设置临界区：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">(<span class="hljs-type">int</span> key, <span class="hljs-type">int</span> value)</span><br>&#123;<br>  <span class="hljs-type">int</span> i = key % NBUCKET;<br><br><br>  <span class="hljs-comment">// is the key already present?</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">entry</span> *<span class="hljs-title">e</span> =</span> <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (e = table[i]; e != <span class="hljs-number">0</span>; e = e-&gt;next) &#123;<br>    <span class="hljs-keyword">if</span> (e-&gt;key == key)<br>      <span class="hljs-keyword">break</span>;<br>  &#125;<br>  <span class="hljs-keyword">if</span>(e)&#123;<br>    <span class="hljs-comment">// update the existing key.</span><br>    e-&gt;value = value;<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// the new is new.</span><br>    pthread_mutex_lock(&amp;put_lock);<br>    insert(key, value, &amp;table[i], table[i]);<br>    pthread_mutex_unlock(&amp;put_lock);<br>  &#125;<br><br><br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-keyword">struct</span> entry*<br><span class="hljs-title function_">get</span><span class="hljs-params">(<span class="hljs-type">int</span> key)</span><br>&#123;<br>  <span class="hljs-type">int</span> i = key % NBUCKET;<br><br>  pthread_mutex_lock(&amp;get_lock);<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">entry</span> *<span class="hljs-title">e</span> =</span> <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">for</span> (e = table[i]; e != <span class="hljs-number">0</span>; e = e-&gt;next) &#123;<br>    <span class="hljs-keyword">if</span> (e-&gt;key == key) <span class="hljs-keyword">break</span>;<br>  &#125;<br>  pthread_mutex_unlock(&amp;get_lock);<br><br>  <span class="hljs-keyword">return</span> e;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Barrier-moderate"><a href="#Barrier-moderate" class="headerlink" title="Barrier(moderate)"></a>Barrier(moderate)</h2><blockquote>
+<p>In this assignment you’ll implement a <strong>barrier</strong>: a point in an application at which all participating threads must wait until all other participating threads reach that point too. You’ll use <strong>pthread condition variables</strong>, which are a sequence coordination technique similar to xv6’s <code>sleep</code> and <code>wakeup</code>.</p>
+</blockquote>
+<h3 id="Some-hints-1"><a href="#Some-hints-1" class="headerlink" title="Some hints"></a>Some hints</h3><ul>
+<li><p><code>pthread_cond_wait</code> releases the <strong>mutex</strong> when called, and re-acquires the mutex before returning.</p>
+</li>
+<li><p>We have given you <code>barrier_init()</code>. Your job is to implement <code>barrier()</code> so that the panic doesn’t occur. We’ve defined <code>struct barrier</code> for you; its fields are for your use.</p>
+</li>
+<li><p>You have to deal with a succession of barrier calls, each of which we’ll call a <strong>round</strong>. <code>bstate.round</code> records the current round. You should increment <code>bstate.round</code> each time all threads have reached the barrier.</p>
+</li>
+<li><p>You have to handle the case in which one thread races around the loop before the others have exited the barrier. In particular, you are re-using the <code>bstate.nthread</code> variable from one round to the next. Make sure that a thread that leaves the barrier and races around the loop doesn’t increase <code>bstate.nthread</code> while a previous round is still using it.</p>
+</li>
+</ul>
+<p>实现一个<strong>barrier</strong>，每个线程在<strong>barrier</strong>处等待，直到所有的线程都已经运行到了这一点，即一共运行 <strong>nthread</strong> 次，<strong>nthread</strong> 由 <code>main()</code> 函数参数提供。<strong>barrier</strong>通过<strong>pthread</strong>库提供的条件变量来实现。</p>
+<p><strong>pthread</strong>提供了两个API，<code>pthread_cond_wait(&amp;cond, &amp;mutex)</code> 使线程在条件变量<strong>cond</strong>上等待，并释放<strong>mutex</strong>锁。<code>pthread_cond_broadcast(&amp;cond)</code> 用于唤醒所有在条件变量<strong>cond</strong>上等待的线程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">barrier</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-comment">// YOUR CODE HERE</span><br>  <span class="hljs-comment">//</span><br>  <span class="hljs-comment">// Block until all threads have called barrier() and</span><br>  <span class="hljs-comment">// then increment bstate.round.</span><br>  pthread_mutex_lock(&amp;bstate.barrier_mutex);<br>  bstate.nthread++;<br>  <span class="hljs-keyword">if</span> (bstate.nthread &gt;= nthread) &#123;<br>    bstate.round++;<br>    pthread_cond_broadcast(&amp;bstate.barrier_cond);<br>    bstate.nthread = <span class="hljs-number">0</span>;<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    pthread_cond_wait(&amp;bstate.barrier_cond, &amp;bstate.barrier_mutex);<br>  &#125;<br>  pthread_mutex_unlock(&amp;bstate.barrier_mutex);<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="实验总结："><a href="#实验总结：" class="headerlink" title="实验总结："></a>实验总结：</h2><p>这个实验涉及多个部分：</p>
+<h3 id="Multithreading-Uthread-Switching-Between-Threads"><a href="#Multithreading-Uthread-Switching-Between-Threads" class="headerlink" title="Multithreading - Uthread: Switching Between Threads"></a>Multithreading - Uthread: Switching Between Threads</h3><p>这部分任务是设计并实现用户级线程系统的上下文切换机制。代码中包含了一个简单的线程包，但缺少创建线程和线程之间切换的部分。主要涉及 <code>uthread.c</code> 和 <code>uthread_switch.S</code> 两个文件的实现，要完成线程创建、线程调度和上下文切换等功能。</p>
+<h3 id="Using-Threads"><a href="#Using-Threads" class="headerlink" title="Using Threads"></a>Using Threads</h3><p>这个部分需要在具有多个核心的真实操作系统上完成。任务是使用线程和锁实现一个哈希表，并进行基准测试。需要处理临界区问题，确保性能的同时完成 <code>put()</code> 和 <code>get()</code> 操作。</p>
+<h3 id="Barrier"><a href="#Barrier" class="headerlink" title="Barrier"></a>Barrier</h3><p>这个部分要求实现一个屏障（barrier），通过 <strong>pthread</strong> 提供的条件变量实现。线程在 <strong>barrier</strong> 处等待，直到所有线程都到达该点。需要考虑多个线程之间的同步问题，确保所有线程都调用了 <strong>barrier</strong> 并适当地增加 <strong>bstate.round</strong>。</p>
+<p>整体而言，这个实验涉及了多线程编程、上下文切换机制设计、锁的使用、以及线程同步问题的解决。需要理解和实现线程的创建、调度、上下文切换，以及在多线程环境下处理临界区和同步问题。</p>
+<p><em>全文完，感谢阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/Unix-Linux/" class="category-chain-item">Unix/Linux</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0/" class="print-no-link">#学习</a>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/MIT-6-S081/" class="print-no-link">#MIT 6.S081</a>
+      
+        <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="print-no-link">#文件系统</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MIT 6.S081学习笔记（第六章）（下）</div>
+      <div>http://blog.luliang.online/2023/12/08/MIT 6.S081学习笔记（第六章）（下）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/" title="xv6 中的一些系统调用（上）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">xv6 中的一些系统调用（上）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8A%EF%BC%89/" title="MIT 6.S081学习笔记（第六章）（上）">
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第六章）（上）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

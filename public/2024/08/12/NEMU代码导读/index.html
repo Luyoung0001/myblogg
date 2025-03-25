@@ -1,0 +1,780 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="项目构建首先得了解一些 make 的行为，重要的就是查看make 的行为以及make 的子进程如何与系统进行交互，比如 :  strace -f make make -nB # 只打印命令不执行 B强制构建 make -d make -debug&#x3D;v  具体RTFM。  nemu&#x2F;Makefile  SRCS: 和YEMU差不多, 是需要编译的源文件    CFLAGS:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NEMU 代码导读">
+<meta property="og:url" content="http://blog.luliang.online/2024/08/12/NEMU%E4%BB%A3%E7%A0%81%E5%AF%BC%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="项目构建首先得了解一些 make 的行为，重要的就是查看make 的行为以及make 的子进程如何与系统进行交互，比如 :  strace -f make make -nB # 只打印命令不执行 B强制构建 make -d make -debug&#x3D;v  具体RTFM。  nemu&#x2F;Makefile  SRCS: 和YEMU差不多, 是需要编译的源文件    CFLAGS:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-12T03:22:33.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.772Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="模拟器">
+<meta property="article:tag" content="NEMU">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>NEMU 代码导读 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NEMU 代码导读"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-12 11:22" pubdate>
+          2024年8月12日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NEMU 代码导读</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="项目构建"><a href="#项目构建" class="headerlink" title="项目构建"></a>项目构建</h2><p>首先得了解一些 make 的行为，重要的就是查看make 的行为以及make 的子进程如何与系统进行交互，比如 :</p>
+<ul>
+<li>strace -f make</li>
+<li>make -nB # 只打印命令不执行 B强制构建</li>
+<li>make -d</li>
+<li>make -debug&#x3D;v</li>
+</ul>
+<p>具体RTFM。</p>
+<ul>
+<li>nemu&#x2F;Makefile</li>
+<li><ul>
+<li>SRCS: 和YEMU差不多, 是需要编译的源文件</li>
+</ul>
+</li>
+<li><ul>
+<li>CFLAGS: 刚才看到的编译选项</li>
+</ul>
+</li>
+<li><ul>
+<li>include $(NEMU_HOME)&#x2F;scripts&#x2F;native.mk: 包含其他文件</li>
+</ul>
+</li>
+<li>nemu&#x2F;scripts&#x2F;native.mk</li>
+<li><ul>
+<li>一些用于运行和清除编译结果的伪目标</li>
+</ul>
+</li>
+<li>nemu&#x2F;scripts&#x2F;build.mk</li>
+<li><ul>
+<li>编译规则</li>
+</ul>
+</li>
+<li><ul>
+<li>包含源文件与头文件的依赖关系(由gcc的-MMD选项生成, 并通过fixdep工具处理)</li>
+</ul>
+</li>
+</ul>
+<h2 id="代码选讲"><a href="#代码选讲" class="headerlink" title="代码选讲"></a>代码选讲</h2><h3 id="gdb"><a href="#gdb" class="headerlink" title="gdb"></a>gdb</h3><p>使用 gdb 来查看程序入口，是一种很好的方法，并且可以根据 gdb 的操作可以看到程序依次执行的各个函数。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) b main<br>Breakpoint 1 at 0x5080: file src/nemu-main.c, line 59.<br>(gdb)<br></code></pre></td></tr></table></figure>
+
+<p>可以使用 GDB 来 RTFSC：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">(gdb) layout src   <span class="hljs-comment"># layout split还可以看到汇编代码, 但目前不需要</span><br></code></pre></td></tr></table></figure>
+
+<p>一些常用的命令：</p>
+<ul>
+<li>r - 重新开始执行程序</li>
+<li>s - 单步执行一行源代码 &#x2F; n - 类似但不进入函数(可用于跳过库函数)</li>
+<li>finish - 执行直到当前函数返回</li>
+<li>p - 打印变量或寄存器的值</li>
+<li>x - 扫描内存</li>
+<li>bt - 查看调用栈</li>
+<li>b - 设置断点 &#x2F; watch - 设置监视点</li>
+<li>help xxx - 查看xxx命令的帮助</li>
+</ul>
+<h3 id="RTFSC"><a href="#RTFSC" class="headerlink" title="RTFSC"></a>RTFSC</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    <span class="hljs-comment">/* Initialize the monitor. */</span><br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> CONFIG_TARGET_AM</span><br>    am_init_monitor();<br><span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br><br>    init_monitor(argc, argv);<br>    <span class="hljs-comment">// test_expr();</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br>    <span class="hljs-comment">/* Start engine. */</span><br>    engine_start();<br><br>    <span class="hljs-keyword">return</span> is_exit_status_bad();<br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+
+<p>首先，执行的是init_monitor(argc, argv):</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">init_monitor</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    <span class="hljs-comment">/* Perform some global initialization. */</span><br><br>    <span class="hljs-comment">/* Parse arguments. */</span><br>    parse_args(argc, argv);<br><br>    <span class="hljs-comment">/* Set random seed. */</span><br>    init_rand();<br><br>    <span class="hljs-comment">/* Open the log file. */</span><br>    init_log(log_file);<br><br>    <span class="hljs-comment">/* Initialize memory. */</span><br>    init_mem();<br><br>    <span class="hljs-comment">/* Initialize devices. */</span><br>    IFDEF(CONFIG_DEVICE, init_device());<br><br>    <span class="hljs-comment">/* Perform ISA dependent initialization. */</span><br>    init_isa();<br><br>    <span class="hljs-comment">/* Load the image to memory. This will overwrite the built-in image. */</span><br>    <span class="hljs-type">long</span> img_size = load_img();<br><br>    <span class="hljs-comment">/* Initialize differential testing. */</span><br>    init_difftest(diff_so_file, img_size, difftest_port);<br><br>    <span class="hljs-comment">/* Initialize the simple debugger. */</span><br>    init_sdb();<br><br><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> CONFIG_ISA_loongarch32r</span><br>    IFDEF(CONFIG_ITRACE,<br>          init_disasm(<br>              MUXDEF(CONFIG_ISA_x86, <span class="hljs-string">&quot;i686&quot;</span>,<br>                     MUXDEF(CONFIG_ISA_mips32, <span class="hljs-string">&quot;mipsel&quot;</span>,<br>                            MUXDEF(CONFIG_ISA_riscv,<br>                                   MUXDEF(CONFIG_RV64, <span class="hljs-string">&quot;riscv64&quot;</span>, <span class="hljs-string">&quot;riscv32&quot;</span>),<br>                                   <span class="hljs-string">&quot;bad&quot;</span>))) <span class="hljs-string">&quot;-pc-linux-gnu&quot;</span>));<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br>    <span class="hljs-comment">/* Display welcome message. */</span><br>    welcome();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>通过init_monitor初始化NEMU的大部分功能。</p>
+<p>首先是解析参数，nemu 是一个命令行工具，它在启动的时候，可以接受参数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">parse_args</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">option</span> <span class="hljs-title">table</span>[] =</span> &#123;<br>        &#123;<span class="hljs-string">&quot;batch&quot;</span>, no_argument, <span class="hljs-literal">NULL</span>, <span class="hljs-string">&#x27;b&#x27;</span>&#125;,<br>        &#123;<span class="hljs-string">&quot;log&quot;</span>, required_argument, <span class="hljs-literal">NULL</span>, <span class="hljs-string">&#x27;l&#x27;</span>&#125;,<br>        &#123;<span class="hljs-string">&quot;diff&quot;</span>, required_argument, <span class="hljs-literal">NULL</span>, <span class="hljs-string">&#x27;d&#x27;</span>&#125;,<br>        &#123;<span class="hljs-string">&quot;port&quot;</span>, required_argument, <span class="hljs-literal">NULL</span>, <span class="hljs-string">&#x27;p&#x27;</span>&#125;,<br>        &#123;<span class="hljs-string">&quot;help&quot;</span>, no_argument, <span class="hljs-literal">NULL</span>, <span class="hljs-string">&#x27;h&#x27;</span>&#125;,<br>        &#123;<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>&#125;,<br>    &#125;;<br>    <span class="hljs-type">int</span> o;<br>    <span class="hljs-keyword">while</span> ((o = getopt_long(argc, argv, <span class="hljs-string">&quot;-bhl:d:p:&quot;</span>, table, <span class="hljs-literal">NULL</span>)) != <span class="hljs-number">-1</span>) &#123;<br>        <span class="hljs-keyword">switch</span> (o) &#123;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;b&#x27;</span>:<br>                sdb_set_batch_mode();<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;p&#x27;</span>:<br>                <span class="hljs-built_in">sscanf</span>(optarg, <span class="hljs-string">&quot;%d&quot;</span>, &amp;difftest_port);<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;l&#x27;</span>:<br>                log_file = optarg;<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;d&#x27;</span>:<br>                diff_so_file = optarg;<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br>                img_file = optarg;<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Usage: %s [OPTION...] IMAGE [args]\n\n&quot;</span>, argv[<span class="hljs-number">0</span>]);<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\t-b,--batch              run with batch mode\n&quot;</span>);<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\t-l,--log=FILE           output log to FILE\n&quot;</span>);<br>                <span class="hljs-built_in">printf</span>(<br>                    <span class="hljs-string">&quot;\t-d,--diff=REF_SO        run DiffTest with reference &quot;</span><br>                    <span class="hljs-string">&quot;REF_SO\n&quot;</span>);<br>                <span class="hljs-built_in">printf</span>(<br>                    <span class="hljs-string">&quot;\t-p,--port=PORT          run DiffTest with port PORT\n&quot;</span>);<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br>                <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>接着是，init_rand()，初始化随机数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">init_rand</span><span class="hljs-params">()</span> &#123;<br>  srand(get_time_internal());<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>接下来进行日志功能，打开日志文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">init_log</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *log_file)</span> &#123;<br>  log_fp = <span class="hljs-built_in">stdout</span>;<br>  <span class="hljs-keyword">if</span> (log_file != <span class="hljs-literal">NULL</span>) &#123;<br>    FILE *fp = fopen(log_file, <span class="hljs-string">&quot;w&quot;</span>);<br>    Assert(fp, <span class="hljs-string">&quot;Can not open &#x27;%s&#x27;&quot;</span>, log_file);<br>    log_fp = fp;<br>  &#125;<br>  Log(<span class="hljs-string">&quot;Log is written to %s&quot;</span>, log_file ? log_file : <span class="hljs-string">&quot;stdout&quot;</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>接着是 init_mem()，初始化状态机的 M</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">init_mem</span><span class="hljs-params">()</span> &#123;<br><span class="hljs-meta">#<span class="hljs-keyword">if</span>   defined(CONFIG_PMEM_MALLOC)</span><br>  pmem = <span class="hljs-built_in">malloc</span>(CONFIG_MSIZE);<br>  assert(pmem);<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>  IFDEF(CONFIG_MEM_RANDOM, <span class="hljs-built_in">memset</span>(pmem, rand(), CONFIG_MSIZE));<br>  Log(<span class="hljs-string">&quot;physical memory area [&quot;</span> FMT_PADDR <span class="hljs-string">&quot;, &quot;</span> FMT_PADDR <span class="hljs-string">&quot;]&quot;</span>, PMEM_LEFT, PMEM_RIGHT);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这是将内存初始化为随机数，可以暴露访问初始化内存的未定义行为。</p>
+<p>接下来是初始化状态机的状态：init_isa():</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><br><span class="hljs-type">void</span> <span class="hljs-title function_">init_isa</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-comment">/* Load built-in image. */</span><br>  <span class="hljs-built_in">memcpy</span>(guest_to_host(RESET_VECTOR), img, <span class="hljs-keyword">sizeof</span>(img));<br><br>  <span class="hljs-comment">/* Initialize this virtual computer system. */</span><br>  restart();<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">restart</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-comment">/* Set the initial program counter. */</span><br>  cpu.pc = RESET_VECTOR;<br><br>  <span class="hljs-comment">/* The zero register is always 0. */</span><br>  cpu.gpr[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个过程是将 img 中的一些指令复制到 host 地址中执行。接着设置客户机的 pc 为 0，以及 cpu.gpr[0] &#x3D; 0。零寄存器很好用，可以方便得让 CPU 产生 0.</p>
+<p>接着为load_img，但是参数中并没有给出，因此直接略过：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">long</span> <span class="hljs-title function_">load_img</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">if</span> (img_file == <span class="hljs-literal">NULL</span>) &#123;<br>        Log(<span class="hljs-string">&quot;No image is given. Use the default build-in image.&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">4096</span>;  <span class="hljs-comment">// built-in image size</span><br>    &#125;<br><br>    FILE* fp = fopen(img_file, <span class="hljs-string">&quot;rb&quot;</span>);<br>    Assert(fp, <span class="hljs-string">&quot;Can not open &#x27;%s&#x27;&quot;</span>, img_file);<br><br>    fseek(fp, <span class="hljs-number">0</span>, SEEK_END);<br>    <span class="hljs-type">long</span> size = ftell(fp);<br><br>    Log(<span class="hljs-string">&quot;The image is %s, size = %ld&quot;</span>, img_file, size);<br><br>    fseek(fp, <span class="hljs-number">0</span>, SEEK_SET);<br>    <span class="hljs-type">int</span> ret = fread(guest_to_host(RESET_VECTOR), size, <span class="hljs-number">1</span>, fp);<br>    assert(ret == <span class="hljs-number">1</span>);<br><br>    fclose(fp);<br>    <span class="hljs-keyword">return</span> size;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>接着就是初始化 sdb 了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">init_sdb</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">/* Compile the regular expressions. */</span><br>    init_regex();<br><br>    <span class="hljs-comment">/* Initialize the watchpoint pool. */</span><br>    init_wp_pool();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接着就是，welcome()</p>
+<ul>
+<li>输出欢迎信息</li>
+<li>以及trace的状态信息</li>
+<li>还输出了编译的时间和日期</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">welcome</span><span class="hljs-params">()</span> &#123;<br>    Log(<span class="hljs-string">&quot;Trace: %s&quot;</span>, MUXDEF(CONFIG_TRACE, ANSI_FMT(<span class="hljs-string">&quot;ON&quot;</span>, ANSI_FG_GREEN),<br>                            ANSI_FMT(<span class="hljs-string">&quot;OFF&quot;</span>, ANSI_FG_RED)));<br>    IFDEF(CONFIG_TRACE,<br>          Log(<span class="hljs-string">&quot;If trace is enabled, a log file will be generated &quot;</span><br>              <span class="hljs-string">&quot;to record the trace. This may lead to a large log file. &quot;</span><br>              <span class="hljs-string">&quot;If it is not necessary, you can disable it in menuconfig&quot;</span>));<br>    Log(<span class="hljs-string">&quot;Build time: %s, %s&quot;</span>, __TIME__, __DATE__);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Welcome to %s-NEMU!\n&quot;</span>,<br>           ANSI_FMT(str(__GUEST_ISA__), ANSI_FG_YELLOW ANSI_BG_RED));<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;For help, type \&quot;help\&quot;\n&quot;</span>);<br>    Log(<span class="hljs-string">&quot;Exercise: Please remove me in the source code and compile NEMU &quot;</span><br>        <span class="hljs-string">&quot;again.&quot;</span>);<br>    assert(<span class="hljs-number">1</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>接着回到 main，执行engine_start()–&gt;sdb_mainloop():</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">sdb_mainloop</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">if</span> (is_batch_mode) &#123;<br>        cmd_c(<span class="hljs-literal">NULL</span>);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span>* str; (str = rl_gets()) != <span class="hljs-literal">NULL</span>;) &#123;<br>        <span class="hljs-type">char</span>* str_end = str + <span class="hljs-built_in">strlen</span>(str);<br><br>        <span class="hljs-comment">/* extract the first token as the command */</span><br>        <span class="hljs-type">char</span>* cmd = strtok(str, <span class="hljs-string">&quot; &quot;</span>);<br>        <span class="hljs-keyword">if</span> (cmd == <span class="hljs-literal">NULL</span>) &#123;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br><br>        <span class="hljs-comment">/* treat the remaining string as the arguments,</span><br><span class="hljs-comment">         * which may need further parsing</span><br><span class="hljs-comment">         */</span><br>        <span class="hljs-type">char</span>* args = cmd + <span class="hljs-built_in">strlen</span>(cmd) + <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">if</span> (args &gt;= str_end) &#123;<br>            args = <span class="hljs-literal">NULL</span>;<br>        &#125;<br><br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> CONFIG_DEVICE</span><br>        <span class="hljs-keyword">extern</span> <span class="hljs-type">void</span> <span class="hljs-title function_">sdl_clear_event_queue</span><span class="hljs-params">()</span>;<br>        sdl_clear_event_queue();<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br>        <span class="hljs-type">int</span> i;<br>        <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; NR_CMD; i++) &#123;<br>            <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(cmd, cmd_table[i].name) == <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-keyword">if</span> (cmd_table[i].handler(args) &lt; <span class="hljs-number">0</span>) &#123;<br>                    <span class="hljs-keyword">return</span>;<br>                &#125;<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (i == NR_CMD) &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Unknown command &#x27;%s&#x27;\n&quot;</span>, cmd);<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这里就是 PA1 的 sdb 了。</p>
+<h3 id="指令执行"><a href="#指令执行" class="headerlink" title="指令执行"></a>指令执行</h3><p>执行指令和 YEMU 中的 inst_cycle 很相似，类似于 CPU 执行一个一个指令。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><br><span class="hljs-type">int</span> <span class="hljs-title function_">isa_exec_once</span><span class="hljs-params">(Decode *s)</span> &#123;<br>  s-&gt;isa.inst.val = inst_fetch(&amp;s-&gt;snpc, <span class="hljs-number">4</span>);<br>  <span class="hljs-keyword">return</span> decode_exec(s);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中 decode 解码和执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">decode_exec</span><span class="hljs-params">(Decode *s)</span> &#123;<br>  <span class="hljs-type">int</span> rd = <span class="hljs-number">0</span>;<br>  <span class="hljs-type">word_t</span> src1 = <span class="hljs-number">0</span>, src2 = <span class="hljs-number">0</span>, imm = <span class="hljs-number">0</span>;<br>  s-&gt;dnpc = s-&gt;snpc;<br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> INSTPAT_INST(s) ((s)-&gt;isa.inst.val)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> INSTPAT_MATCH(s, name, type, ... <span class="hljs-comment">/* execute body */</span> ) &#123; \</span><br><span class="hljs-meta">  decode_operand(s, &amp;rd, &amp;src1, &amp;src2, &amp;imm, concat(TYPE_, type)); \</span><br><span class="hljs-meta">  __VA_ARGS__ ; \</span><br><span class="hljs-meta">&#125;</span><br><br>  INSTPAT_START();<br>  INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? ??? ????? 00101 11&quot;</span>, auipc  , U, R(rd) = s-&gt;pc + imm);<br>  INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 100 ????? 00000 11&quot;</span>, lbu    , I, R(rd) = Mr(src1 + imm, <span class="hljs-number">1</span>));<br>  INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 000 ????? 01000 11&quot;</span>, sb     , S, Mw(src1 + imm, <span class="hljs-number">1</span>, src2));<br><br>  INSTPAT(<span class="hljs-string">&quot;0000000 00001 00000 000 00000 11100 11&quot;</span>, ebreak , N, NEMUTRAP(s-&gt;pc, R(<span class="hljs-number">10</span>))); <span class="hljs-comment">// R(10) is $a0</span><br>  INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? ??? ????? ????? ??&quot;</span>, inv    , N, INV(s-&gt;pc));<br>  INSTPAT_END();<br><br>  R(<span class="hljs-number">0</span>) = <span class="hljs-number">0</span>; <span class="hljs-comment">// reset $zero to 0</span><br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>以上，就是 nemu 的一个大概的过程，当然要想更全面理解 nemu，需要深入仔细阅读源码。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="print-no-link">#模拟器</a>
+      
+        <a href="/tags/NEMU/" class="print-no-link">#NEMU</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NEMU 代码导读</div>
+      <div>http://blog.luliang.online/2024/08/12/NEMU代码导读/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/13/NEMU%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%9A%84%E8%BF%87%E7%A8%8B/" title="NEMU 指令执行过程">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NEMU 指令执行过程</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/09/%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E5%92%8C%E6%A8%A1%E6%8B%9F%E5%99%A8/" title="程序的执行和模拟器">
+                        <span class="hidden-mobile">程序的执行和模拟器</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

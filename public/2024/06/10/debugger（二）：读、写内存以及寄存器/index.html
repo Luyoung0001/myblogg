@@ -1,0 +1,715 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言上一节，可以通过 break 0xADDR 的方式打断点，这种打断点的原理很简单，就是修改指令的第一个字节为 int3（0xcc）。本文将会读写内存单元、读写寄存器。 一、读写内存启动 mini debugger，并打一个断点： 123456789&gt; .&#x2F;minidbg helloStart debugging the progress: hello, pid &#x3D; 128959:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="debugger（二）：读、写内存以及寄存器">
+<meta property="og:url" content="http://blog.luliang.online/2024/06/10/debugger%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E8%AF%BB%E3%80%81%E5%86%99%E5%86%85%E5%AD%98%E4%BB%A5%E5%8F%8A%E5%AF%84%E5%AD%98%E5%99%A8/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言上一节，可以通过 break 0xADDR 的方式打断点，这种打断点的原理很简单，就是修改指令的第一个字节为 int3（0xcc）。本文将会读写内存单元、读写寄存器。 一、读写内存启动 mini debugger，并打一个断点： 123456789&gt; .&#x2F;minidbg helloStart debugging the progress: hello, pid &#x3D; 128959:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-10T12:40:27.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.773Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="debugger">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>debugger（二）：读、写内存以及寄存器 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="debugger（二）：读、写内存以及寄存器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-10 20:40" pubdate>
+          2024年6月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">debugger（二）：读、写内存以及寄存器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>上一节，可以通过 <code>break 0xADDR</code> 的方式打断点，这种打断点的原理很简单，就是修改指令的第一个字节为 <code>int3</code>（<code>0xc</code>c）。本文将会读写内存单元、读写寄存器。</p>
+<h2 id="一、读写内存"><a href="#一、读写内存" class="headerlink" title="一、读写内存"></a>一、读写内存</h2><p>启动 mini debugger，并打一个断点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">&gt; ./minidbg hello<br>Start debugging the progress: hello, pid = 128959:<br>unknown SIGTRAP code 0<br>minidbg&gt; <span class="hljs-built_in">break</span> 0x5555555551d5<br>Set breakpoint at address 0x5555555551d5<br>minidbg&gt; <span class="hljs-built_in">continue</span><br>minidbg&gt; memory <span class="hljs-built_in">read</span> 0x5555555551d5<br>4800000e60058dcc<br>minidbg&gt;<br></code></pre></td></tr></table></figure>
+
+<p>一下为进程的maps 部分信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">00000000000011c9 &lt;main&gt;:<br>    11c9:       f3 0f 1e fa             endbr64<br>    11cd:       55                      push   %rbp<br>    11ce:       48 89 e5                mov    %rsp,%rbp<br>    11d1:       48 83 ec 10             sub    <span class="hljs-variable">$0x10</span>,%rsp<br>    11d5:       48 8d 05 60 0e 00 00    lea    0xe60(%rip),%rax        <span class="hljs-comment"># 203c &lt;_IO_stdin_used+0x3c&gt;</span><br>    11dc:       48 89 c6                mov    %rax,%rsi<br>    11df:       48 8d 05 3a 2e 00 00    lea    0x2e3a(%rip),%rax        <span class="hljs-comment"># 4020 &lt;_ZSt4cerr@GLIBCXX_3.4&gt;</span><br>    11e6:       48 89 c7                mov    %rax,%rdi<br>    11e9:       e8 b2 fe ff ff          call   10a0 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;<br>    11ee:       48 8d 05 56 0e 00 00<br>    ...<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，打了一个断点之后，<code>0x5555555551d5</code> 的数据被改写了，其中 <code>0x48</code> 被修改为了 <code>0xcc</code>。我们要做的就是读写内存，并且利用写数据的方法打一个断点来检验成果。</p>
+<p>事实上，读写内存很简单，直接可以用 <code>ptrace()</code> 系统调用来实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">uint64_t</span> <span class="hljs-title">Debugger::read_memory</span><span class="hljs-params">(std::<span class="hljs-type">intptr_t</span> address)</span> </span>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">ptrace</span>(PTRACE_PEEKDATA, m_pid, address, <span class="hljs-literal">nullptr</span>);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::write_memory</span><span class="hljs-params">(std::<span class="hljs-type">intptr_t</span> address, <span class="hljs-type">uint64_t</span> value)</span> </span>&#123;<br>  <span class="hljs-built_in">ptrace</span>(PTRACE_POKEDATA, m_pid, address, value);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接着尝试使用 memory write 的方式进行打断点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs bash">./minidbg hello<br>Start debugging the progress: hello, pid = 129662:<br>unknown SIGTRAP code 0<br>minidbg&gt; memo write 0x5555555551d5 0x4800000e60058dcc<br>minidbg&gt; memo <span class="hljs-built_in">read</span> 0x5555555551d5<br>4800000e60058dcc<br>minidbg&gt; conti<br>Hit breakpoint at adsress 0x5555555551d5<br>  inline void <span class="hljs-function"><span class="hljs-title">print1</span></span>() &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;helloworld1.\n&quot;</span>; &#125;<br>  inline void <span class="hljs-function"><span class="hljs-title">print2</span></span>() &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;helloworld2.\n&quot;</span>; &#125;<br>  inline void <span class="hljs-function"><span class="hljs-title">print3</span></span>() &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;helloworld3.\n&quot;</span>; &#125;<br>  inline void <span class="hljs-function"><span class="hljs-title">print4</span></span>() &#123; std::cerr &lt;&lt; <span class="hljs-string">&quot;helloworld4.\n&quot;</span>; &#125;<br>  int <span class="hljs-function"><span class="hljs-title">main</span></span>() &#123;<br>&gt;   std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world0.\n&quot;</span>;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world1.\n&quot;</span>;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world2.\n&quot;</span>;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world3.\n&quot;</span>;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world4.\n&quot;</span>;<br>    <span class="hljs-keyword">for</span> (int i = 0; i &lt; 5; i++) &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world.&quot;</span> &lt;&lt; <span class="hljs-string">i &lt;&lt; std::endl;</span><br><span class="hljs-string"></span><br><span class="hljs-string">minidbg&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到非常成功，利用 <code>memory write</code> 成功打了一个“断点”。事实上，这个断点只是暂时的，它并没有被记录在 <code>debug</code> 信息系统中，不过这不重要，这只是在验证 <code>memory write</code> 的功能。</p>
+<h2 id="二、读写寄存器"><a href="#二、读写寄存器" class="headerlink" title="二、读写寄存器"></a>二、读写寄存器</h2><p>这个比 memory 读写能稍微复杂一点，因为要做一些辅助性工作。首先要创建一些枚举、结构体以及一些辅助函数。</p>
+<p>这里会用到一个库 <code>&lt;sys/user.h&gt;</code>，这个库中提供了<code> ptrace()</code>进行修改读写的数据结构，比如 <code>struct user_regs_struct</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">user_regs_struct</span><br>&#123;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> ebx;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> ecx;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> edx;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> esi;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> edi;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> ebp;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> eax;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> xds;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> xes;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> xfs;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> xgs;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> orig_eax;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> eip;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> xcs;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> eflags;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> esp;<br>  <span class="hljs-type">long</span> <span class="hljs-type">int</span> xss;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>我们可以类似于这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp">user_regs_struct regs;<br><span class="hljs-built_in">ptrace</span>(PTRACE_GETREGS, pid, <span class="hljs-literal">nullptr</span>, &amp;regs);<br></code></pre></td></tr></table></figure>
+<p>对被 <code>debug</code> 的进程进行访问。要对寄存器进行有效快速地访问，首先得定义一些函数，这些函数分别是：从寄存器本身、寄存器编号、寄存器名称进行访问。函数原型如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">uint64_t</span> <span class="hljs-title">get_register_value</span><span class="hljs-params">(<span class="hljs-type">pid_t</span> pid, reg r)</span></span>;<br><span class="hljs-function"><span class="hljs-type">uint64_t</span> <span class="hljs-title">get_register_value_from_dwarf_register</span><span class="hljs-params">(<span class="hljs-type">pid_t</span> pid, <span class="hljs-type">unsigned</span> regnum)</span></span>;<br><span class="hljs-function">reg <span class="hljs-title">get_register_from_name</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string &amp;name)</span></span>;<br></code></pre></td></tr></table></figure>
+<p>要实现这些算法，首先得定义一些必要的数据结构：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">enum class</span> <span class="hljs-title class_">reg</span> &#123;<br>  rax,rbx,rcx,rdx,<br>  rdi,rsi,rbp,rsp,<br>  r8,r9,r10,r11,<br>  r12,r13,r14,r15,<br>  rip,rflags,cs,orig_rax,<br>  fs_base,gs_base,<br>  fs,gs,ss,ds,es<br>&#125;;<br><span class="hljs-keyword">constexpr</span> std::<span class="hljs-type">size_t</span> n_registers = <span class="hljs-number">27</span>;<br><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">reg_descriptor</span> &#123;<br>  reg r;<br>  <span class="hljs-type">int</span> dwarf_r;<br>  std::string name;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>以上包括一个寄存器描述符，这是进行以上访问的基本结构。接着初始化一个描述符数组，这个数组的类型为寄存器描述符，大小为 <code>27</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-type">const</span> std::array&lt;reg_descriptor, n_registers&gt; g_register_descriptors&#123;&#123;<br>    &#123;reg::r15, <span class="hljs-number">15</span>, <span class="hljs-string">&quot;r15&quot;</span>&#125;,<br>    &#123;reg::r14, <span class="hljs-number">14</span>, <span class="hljs-string">&quot;r14&quot;</span>&#125;,<br>    &#123;reg::r13, <span class="hljs-number">13</span>, <span class="hljs-string">&quot;r13&quot;</span>&#125;,<br>    &#123;reg::r12, <span class="hljs-number">12</span>, <span class="hljs-string">&quot;r12&quot;</span>&#125;,<br>    &#123;reg::rbp, <span class="hljs-number">6</span>, <span class="hljs-string">&quot;rbp&quot;</span>&#125;,<br>    &#123;reg::rbx, <span class="hljs-number">3</span>, <span class="hljs-string">&quot;rbx&quot;</span>&#125;,<br>    &#123;reg::r11, <span class="hljs-number">11</span>, <span class="hljs-string">&quot;r11&quot;</span>&#125;,<br>    &#123;reg::r10, <span class="hljs-number">10</span>, <span class="hljs-string">&quot;r10&quot;</span>&#125;,<br>    &#123;reg::r9, <span class="hljs-number">9</span>, <span class="hljs-string">&quot;r9&quot;</span>&#125;,<br>    &#123;reg::r8, <span class="hljs-number">8</span>, <span class="hljs-string">&quot;r8&quot;</span>&#125;,<br>    &#123;reg::rax, <span class="hljs-number">0</span>, <span class="hljs-string">&quot;rax&quot;</span>&#125;,<br>    &#123;reg::rcx, <span class="hljs-number">2</span>, <span class="hljs-string">&quot;rcx&quot;</span>&#125;,<br>    &#123;reg::rdx, <span class="hljs-number">1</span>, <span class="hljs-string">&quot;rdx&quot;</span>&#125;,<br>    &#123;reg::rsi, <span class="hljs-number">4</span>, <span class="hljs-string">&quot;rsi&quot;</span>&#125;,<br>    &#123;reg::rdi, <span class="hljs-number">5</span>, <span class="hljs-string">&quot;rdi&quot;</span>&#125;,<br>    &#123;reg::orig_rax, <span class="hljs-number">-1</span>, <span class="hljs-string">&quot;orig_rax&quot;</span>&#125;,<br>    &#123;reg::rip, <span class="hljs-number">-1</span>, <span class="hljs-string">&quot;rip&quot;</span>&#125;,<br>    &#123;reg::cs, <span class="hljs-number">51</span>, <span class="hljs-string">&quot;cs&quot;</span>&#125;,<br>    &#123;reg::rflags, <span class="hljs-number">49</span>, <span class="hljs-string">&quot;eflags&quot;</span>&#125;,<br>    &#123;reg::rsp, <span class="hljs-number">7</span>, <span class="hljs-string">&quot;rsp&quot;</span>&#125;,<br>    &#123;reg::ss, <span class="hljs-number">52</span>, <span class="hljs-string">&quot;ss&quot;</span>&#125;,<br>    &#123;reg::fs_base, <span class="hljs-number">58</span>, <span class="hljs-string">&quot;fs_base&quot;</span>&#125;,<br>    &#123;reg::gs_base, <span class="hljs-number">59</span>, <span class="hljs-string">&quot;gs_base&quot;</span>&#125;,<br>    &#123;reg::ds, <span class="hljs-number">53</span>, <span class="hljs-string">&quot;ds&quot;</span>&#125;,<br>    &#123;reg::es, <span class="hljs-number">50</span>, <span class="hljs-string">&quot;es&quot;</span>&#125;,<br>    &#123;reg::fs, <span class="hljs-number">54</span>, <span class="hljs-string">&quot;fs&quot;</span>&#125;,<br>    &#123;reg::gs, <span class="hljs-number">55</span>, <span class="hljs-string">&quot;gs&quot;</span>&#125;,<br>&#125;&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>然后就是访问的基本实现了：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">uint64_t</span> <span class="hljs-title">get_register_value</span><span class="hljs-params">(<span class="hljs-type">pid_t</span> pid, reg r)</span> </span>&#123;<br>  user_regs_struct regs;<br>  <span class="hljs-built_in">ptrace</span>(PTRACE_GETREGS, pid, <span class="hljs-literal">nullptr</span>, &amp;regs);<br>  <span class="hljs-keyword">auto</span> it =<br>      std::<span class="hljs-built_in">find_if</span>(<span class="hljs-built_in">begin</span>(g_register_descriptors), <span class="hljs-built_in">end</span>(g_register_descriptors),<br>                   [r](<span class="hljs-keyword">auto</span> &amp;&amp;rd) &#123; <span class="hljs-keyword">return</span> rd.r == r; &#125;);<br>  <span class="hljs-keyword">return</span> *(<span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">uint64_t</span> *&gt;(&amp;regs) +<br>           (it - <span class="hljs-built_in">begin</span>(g_register_descriptors)));<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">set_register_value</span><span class="hljs-params">(<span class="hljs-type">pid_t</span> pid, reg r, <span class="hljs-type">uint64_t</span> value)</span> </span>&#123;<br>  user_regs_struct regs;<br>  <span class="hljs-built_in">ptrace</span>(PTRACE_GETREGS, pid, <span class="hljs-literal">nullptr</span>, &amp;regs);<br>  <span class="hljs-keyword">auto</span> it =<br>      std::<span class="hljs-built_in">find_if</span>(<span class="hljs-built_in">begin</span>(g_register_descriptors), <span class="hljs-built_in">end</span>(g_register_descriptors),<br>                   [r](<span class="hljs-keyword">auto</span> &amp;&amp;rd) &#123; <span class="hljs-keyword">return</span> rd.r == r; &#125;);<br>  *(<span class="hljs-built_in">reinterpret_cast</span>&lt;<span class="hljs-type">int64_t</span> *&gt;(&amp;regs) + (it - <span class="hljs-built_in">begin</span>(g_register_descriptors))) =<br>      value;<br>  <span class="hljs-built_in">ptrace</span>(PTRACE_SETREGS, pid, <span class="hljs-literal">nullptr</span>, &amp;regs);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">uint64_t</span> <span class="hljs-title">get_register_value_from_dwarf_register</span><span class="hljs-params">(<span class="hljs-type">pid_t</span> pid, <span class="hljs-type">unsigned</span> regnum)</span> </span>&#123;<br>  <span class="hljs-keyword">auto</span> it =<br>      std::<span class="hljs-built_in">find_if</span>(<span class="hljs-built_in">begin</span>(g_register_descriptors), <span class="hljs-built_in">end</span>(g_register_descriptors),<br>                   [regnum](<span class="hljs-keyword">auto</span> &amp;&amp;rd) &#123; <span class="hljs-keyword">return</span> rd.dwarf_r == regnum; &#125;);<br>  <span class="hljs-keyword">if</span> (it == <span class="hljs-built_in">end</span>(g_register_descriptors)) &#123;<br>    <span class="hljs-keyword">throw</span> std::out_of_range&#123;<span class="hljs-string">&quot;Unknown dwarf register&quot;</span>&#125;;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">get_register_value</span>(pid, it-&gt;r);<br>&#125;<br><br><span class="hljs-function">std::string <span class="hljs-title">get_register_name</span><span class="hljs-params">(reg r)</span> </span>&#123;<br>  <span class="hljs-keyword">auto</span> it =<br>      std::<span class="hljs-built_in">find_if</span>(<span class="hljs-built_in">begin</span>(g_register_descriptors), <span class="hljs-built_in">end</span>(g_register_descriptors),<br>                   [r](<span class="hljs-keyword">auto</span> &amp;&amp;rd) &#123; <span class="hljs-keyword">return</span> rd.r == r; &#125;);<br>  <span class="hljs-keyword">return</span> it-&gt;name;<br>&#125;<br><span class="hljs-function">reg <span class="hljs-title">get_register_from_name</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string &amp;name)</span> </span>&#123;<br>  <span class="hljs-keyword">auto</span> it =<br>      std::<span class="hljs-built_in">find_if</span>(<span class="hljs-built_in">begin</span>(g_register_descriptors), <span class="hljs-built_in">end</span>(g_register_descriptors),<br>                   [name](<span class="hljs-keyword">auto</span> &amp;&amp;rd) &#123; <span class="hljs-keyword">return</span> rd.name == name; &#125;);<br>  <span class="hljs-keyword">return</span> it-&gt;r;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样就可以验证了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs bash">./minidbg hello<br>Start debugging the progress: hello, pid = 130539:<br>unknown SIGTRAP code 0<br>minidbg&gt; regi dump<br>...<br>r8 0x0000000000000000<br>rax 0x0000000000000000<br>rcx 0x0000000000000000<br>rdx 0x0000000000000000<br>rsi 0x0000000000000000<br>....<br>minidbg&gt; regis write rax 0x1<br>minidbg&gt; regi dump<br>...<br>r8 0x0000000000000000<br>rax 0x0000000000000001<br>rcx 0x0000000000000000<br>rdx 0x0000000000000000<br>...<br>minidbg&gt;<br></code></pre></td></tr></table></figure>
+<p>上述，首先打印出了所有的寄存器，然后给 <code>rax</code> 中写了 <code>0x1</code>，接着 <code>dump</code>，可以看到 <code>rax</code> 成功地被修改为了 <code>1</code>。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/debugger/" class="category-chain-item">debugger</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/debugger/" class="print-no-link">#debugger</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>debugger（二）：读、写内存以及寄存器</div>
+      <div>http://blog.luliang.online/2024/06/10/debugger（二）：读、写内存以及寄存器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/10/debugger%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9Adwarf%20%E6%96%87%E4%BB%B6/" title="debugger（三）：dwarf 文件">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">debugger（三）：dwarf 文件</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/25/debugger%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%89%93%E6%96%AD%E7%82%B9%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/" title="debugger（一）：打断点的实现以及案例分析">
+                        <span class="hidden-mobile">debugger（一）：打断点的实现以及案例分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,737 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言最近在学习 debugger 的实现原理，并按照博客实现，是一个很不错的小项目，这是地址。由于 macOS 的问题，系统调用并不完全相同，因此实现了两个版本分支，一个是 main 版本分支（macOS M1 silicon），另一个是 linux 版本分支（Ubuntu 20.04 x86），这是仓库地址。以下以及后都用 linux 版本代码阐述其原理。 一、断点创建这很简单，主要是由">
+<meta property="og:type" content="article">
+<meta property="og:title" content="debugger（一）：打断点的实现以及案例分析">
+<meta property="og:url" content="http://blog.luliang.online/2024/05/25/debugger%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%89%93%E6%96%AD%E7%82%B9%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言最近在学习 debugger 的实现原理，并按照博客实现，是一个很不错的小项目，这是地址。由于 macOS 的问题，系统调用并不完全相同，因此实现了两个版本分支，一个是 main 版本分支（macOS M1 silicon），另一个是 linux 版本分支（Ubuntu 20.04 x86），这是仓库地址。以下以及后都用 linux 版本代码阐述其原理。 一、断点创建这很简单，主要是由">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-25T15:32:01.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.773Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="debugger">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>debugger（一）：打断点的实现以及案例分析 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="debugger（一）：打断点的实现以及案例分析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-25 23:32" pubdate>
+          2024年5月25日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">debugger（一）：打断点的实现以及案例分析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>最近在学习 <strong>debugger</strong> 的实现原理，并按照博客实现，是一个很不错的小项目，这是<a target="_blank" rel="noopener" href="https://blog.tartanllama.xyz/writing-a-linux-debugger-breakpoints/">地址</a>。由于 <strong>macOS</strong> 的问题，系统调用并不完全相同，因此实现了两个版本分支，一个是 <strong>main</strong> 版本分支（macOS M1 silicon），另一个是 <strong>linux</strong> 版本分支（Ubuntu 20.04 x86），这是<a target="_blank" rel="noopener" href="https://github.com/Luyoung0001/mydebugger">仓库地址</a>。以下以及后都用 <strong>linux</strong> 版本代码阐述其原理。</p>
+<h2 id="一、断点创建"><a href="#一、断点创建" class="headerlink" title="一、断点创建"></a>一、断点创建</h2><p>这很简单，主要是由 <code>ptrace()</code> 实现（<strong>debug</strong>工具都依赖于 <code>ptrace()</code> ）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> BREAKPOINT_HPP_</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BREAKPOINT_HPP_</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/ptrace.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BreakPoint</span> &#123;<br>  <span class="hljs-type">pid_t</span> m_pid;<br>  <span class="hljs-type">intptr_t</span> m_addr;<br>  <span class="hljs-type">bool</span> m_enabled;<br>  <span class="hljs-type">uint8_t</span> m_saved_data; <span class="hljs-comment">// 最低位的旧数据（1 字节）,之后需要恢复</span><br><br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-built_in">BreakPoint</span>() &#123;&#125;<br>  <span class="hljs-built_in">BreakPoint</span>(<span class="hljs-type">pid_t</span> pid, <span class="hljs-type">intptr_t</span> addr)<br>      : <span class="hljs-built_in">m_pid</span>(pid), <span class="hljs-built_in">m_addr</span>(addr), <span class="hljs-built_in">m_enabled</span>(<span class="hljs-literal">false</span>), m_saved_data&#123;&#125; &#123;&#125;<br>  <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">is_enabled</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">bool</span> </span>&#123; <span class="hljs-keyword">return</span> m_enabled; &#125;<br>  <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">get_address</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">intptr_t</span> </span>&#123; <span class="hljs-keyword">return</span> m_addr; &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">enable</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> data = <span class="hljs-built_in">ptrace</span>(PTRACE_PEEKDATA, m_pid, m_addr, <span class="hljs-literal">nullptr</span>);<br>    m_saved_data = <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">uint8_t</span>&gt;(data &amp; <span class="hljs-number">0xff</span>); <span class="hljs-comment">// save bottom byte</span><br><br>    <span class="hljs-type">uint64_t</span> int3 = <span class="hljs-number">0xcc</span>;<br>    <span class="hljs-type">uint64_t</span> data_with_int3 = ((data &amp; ~<span class="hljs-number">0xff</span>) | int3); <span class="hljs-comment">// set bottom byte to</span><br>                                                       <span class="hljs-comment">// 0xcc</span><br>    <span class="hljs-built_in">ptrace</span>(PTRACE_POKEDATA, m_pid, m_addr, data_with_int3);<br><br>    m_enabled = <span class="hljs-literal">true</span>;<br>  &#125;<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">disable</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> data = <span class="hljs-built_in">ptrace</span>(PTRACE_PEEKDATA, m_pid, m_addr, <span class="hljs-literal">nullptr</span>);<br>    <span class="hljs-keyword">auto</span> restored_data = ((data &amp; ~<span class="hljs-number">0xff</span>) | m_saved_data);<br>    <span class="hljs-built_in">ptrace</span>(PTRACE_POKEDATA, m_pid, m_addr, restored_data);<br><br>    m_enabled = <span class="hljs-literal">false</span>;<br>  &#125;<br>&#125;;<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br></code></pre></td></tr></table></figure>
+
+<p>以上是 <strong>BreakPoint</strong> 类的定义。重点是关注 <code>enable()</code> 和 <code>disable()</code> 两个方法，在这两个方法中，这段代码及其关键：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">auto</span> data = <span class="hljs-built_in">ptrace</span>(PTRACE_PEEKDATA, m_pid, m_addr, <span class="hljs-literal">nullptr</span>);<br>   m_saved_data = <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">uint8_t</span>&gt;(data &amp; <span class="hljs-number">0xff</span>); <span class="hljs-comment">// save bottom byte</span><br><br>   <span class="hljs-type">uint64_t</span> int3 = <span class="hljs-number">0xcc</span>;<br>   <span class="hljs-type">uint64_t</span> data_with_int3 = ((data &amp; ~<span class="hljs-number">0xff</span>) | int3); <span class="hljs-comment">// set bottom byte to</span><br>                                                      <span class="hljs-comment">// 0xcc</span><br>   <span class="hljs-built_in">ptrace</span>(PTRACE_POKEDATA, m_pid, m_addr, data_with_int3);<br></code></pre></td></tr></table></figure>
+
+<p>这里先说明一下，<code>int3</code> 是 <code>x86</code> 中的一个中断指令，只要我们把某个指令修改为 <code>int3</code>，那么它运行到这里就会停下来。另外，我们只是打个断点，又不想真正得越过这个指令（这个指令被越过不执行，谁都不知道会发生什么），所以后面得恢复这个执行，并重新执行它，这就是 <code>disable()</code>，我们先讨论 <code>enable()</code>。</p>
+<p>因为 <strong>int3</strong> 指令的代码为 <code>0xcc</code>，这很明显是一个 1 字节指令，只要我们在我们想打断的指令处，将操作码改为 <code>0xcc</code>，这个指令就会停下来（这里牵扯到字节序，因为指令第一个字节是低地址，因为我们需要将 <strong>int3</strong> 放在一个指令的最低处）。然后再将这个被篡改的指令放回到原处，就成功的打了一个断点。</p>
+<p>至于 <code>disable()</code>，其实做的也是这样的事情，将原来的被替换的一个字节再恢复放回去：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">auto</span> data = <span class="hljs-built_in">ptrace</span>(PTRACE_PEEKDATA, m_pid, m_addr, <span class="hljs-literal">nullptr</span>);<br>   <span class="hljs-keyword">auto</span> restored_data = ((data &amp; ~<span class="hljs-number">0xff</span>) | m_saved_data);<br>   <span class="hljs-built_in">ptrace</span>(PTRACE_POKEDATA, m_pid, m_addr, restored_data);<br><br>   m_enabled = <span class="hljs-literal">false</span>;<br></code></pre></td></tr></table></figure>
+
+<p>以上都是很简单的东西，我们现在就可以检验这个事情了，对了以下是 debugger 类的定义：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> DEBUGGER_HPP_</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> DEBUGGER_HPP_</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;../ext/linenoise/linenoise.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;breakpoint.hpp&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;helpers.hpp&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstddef&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unordered_map&gt;</span></span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">debugger</span> &#123;<br>  std::string m_prog_name;<br>  <span class="hljs-type">pid_t</span> m_pid;<br>  std::unordered_map&lt;std::<span class="hljs-type">intptr_t</span>, BreakPoint&gt; m_breakPoints; <span class="hljs-comment">// 存储断点</span><br><br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-comment">// 这里不应该给默认参数，断言：传了正确的 prog_name，pid</span><br>  <span class="hljs-built_in">debugger</span>(std::string prog_name, <span class="hljs-type">pid_t</span> pid)<br>      : <span class="hljs-built_in">m_prog_name</span>(prog_name), <span class="hljs-built_in">m_pid</span>(pid) &#123;&#125;<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">int</span> wait_status;<br>    <span class="hljs-keyword">auto</span> options = <span class="hljs-number">0</span>;<br>    <span class="hljs-built_in">waitpid</span>(m_pid, &amp;wait_status, options);<br>    <span class="hljs-type">char</span> *line = <span class="hljs-literal">nullptr</span>;<br>    <span class="hljs-keyword">while</span> ((line = <span class="hljs-built_in">linenoise</span>(<span class="hljs-string">&quot;minidbg&gt; &quot;</span>)) != <span class="hljs-literal">nullptr</span>) &#123;<br>      <span class="hljs-built_in">handl_command</span>(line);<br>      <span class="hljs-built_in">linenoiseHistoryAdd</span>(line);<br>      <span class="hljs-built_in">linenoiseFree</span>(line);<br>    &#125;<br>  &#125;<br>  <span class="hljs-comment">// handlers</span><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">handl_command</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string &amp;line)</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> args = <span class="hljs-built_in">split</span>(line, <span class="hljs-string">&#x27; &#x27;</span>);<br>    <span class="hljs-keyword">auto</span> command = args[<span class="hljs-number">0</span>];<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">is_prefix</span>(command, <span class="hljs-string">&quot;continue&quot;</span>)) &#123;<br>      <span class="hljs-built_in">continue_execution</span>();<br><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">is_prefix</span>(command, <span class="hljs-string">&quot;break&quot;</span>)) &#123; <span class="hljs-comment">// break 地址</span><br>      std::string addr&#123;args[<span class="hljs-number">1</span>], <span class="hljs-number">2</span>&#125;;<br>      <span class="hljs-built_in">set_breakPoint</span>(std::<span class="hljs-built_in">stol</span>(addr, <span class="hljs-number">0</span>, <span class="hljs-number">16</span>));<br><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      std::cerr &lt;&lt; <span class="hljs-string">&quot;Unkown command\n&quot;</span>;<br>    &#125;<br>  &#125;<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">continue_execution</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-built_in">ptrace</span>(PTRACE_CONT, m_pid, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br><br>    <span class="hljs-type">int</span> wait_status;<br>    <span class="hljs-keyword">auto</span> options = <span class="hljs-number">0</span>;<br>    <span class="hljs-built_in">waitpid</span>(m_pid, &amp;wait_status, options);<br>  &#125;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">set_breakPoint</span><span class="hljs-params">(std::<span class="hljs-type">intptr_t</span> addr)</span> </span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Set breakpoint at address 0x&quot;</span> &lt;&lt; std::hex &lt;&lt; addr<br>              &lt;&lt; std::endl;<br>    BreakPoint bp&#123;m_pid, addr&#125;;<br>    bp.<span class="hljs-built_in">enable</span>();<br>    m_breakPoints[addr] = bp;<br>  &#125;<br><br>  ~<span class="hljs-built_in">debugger</span>() &#123;&#125;<br>&#125;;<br><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
+
+
+<h2 id="二、检测"><a href="#二、检测" class="headerlink" title="二、检测"></a>二、检测</h2><p><code>main()</code> 就是 <strong>debugger</strong> 的 <code>main()</code> 了：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;../include/debugger.hpp&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cstddef&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/personality.h&gt;</span></span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> </span>&#123;<br>  <span class="hljs-keyword">if</span> (argc &lt; <span class="hljs-number">2</span>) &#123;<br>    std::cerr &lt;&lt; <span class="hljs-string">&quot;Program paras are not right.&quot;</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>  &#125;<br>  <span class="hljs-keyword">auto</span> proj = argv[<span class="hljs-number">1</span>];<br>  <span class="hljs-keyword">auto</span> pid = fork();<br>  <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-built_in">personality</span>(ADDR_NO_RANDOMIZE); <span class="hljs-comment">// 取消随机内存</span><br>    <span class="hljs-comment">// child progress</span><br>    <span class="hljs-comment">// debugged progress</span><br>    <span class="hljs-built_in">ptrace</span>(PTRACE_TRACEME, <span class="hljs-number">0</span>, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>    <span class="hljs-built_in">execl</span>(proj, proj, <span class="hljs-literal">nullptr</span>);<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid &gt;= <span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-comment">// parent progress</span><br>    <span class="hljs-comment">// debugger progress</span><br><br>    std::cout &lt;&lt; <span class="hljs-string">&quot;Start debugging the progress: &quot;</span> &lt;&lt; proj &lt;&lt; <span class="hljs-string">&quot;, pid = &quot;</span> &lt;&lt; pid<br>              &lt;&lt; <span class="hljs-string">&quot;:\n&quot;</span>;<br>    <span class="hljs-function">debugger <span class="hljs-title">dbg</span><span class="hljs-params">(proj, pid)</span></span>;<br>    dbg.<span class="hljs-built_in">run</span>();<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><code>被 debug</code> 的进程放在子进程中，然后由父进程，也就是我们的 <code>debugger process</code>，由它进行调试。</p>
+<p>我们先写一个被 <strong>debug</strong> 的程序，这个程序输出 <code>hello,world.</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world.\n&quot;</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>编译后，我们要打断点进行测试，可以看到目前只能传入一个地址，这个地址还是 <code>0x</code> 开头的 16 进制地址，我们对于这个地址丝毫没有头绪，因为我们不知道  <code>std::cerr &lt;&lt; &quot;hello,world.\n&quot;;</code>这个语句对应的汇编代码的指令地址是什么。这个程序首先有一个程序结构，对这个不清楚的话，可以看看我之前写的文章，是关于 <code>elf</code> 的，可以参考 c++ 内存模型或者 c++内存管理的那几篇博客。</p>
+<p>现在看看这个被调试的程序的文件结构：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br></pre></td><td class="code"><pre><code class="hljs bash">objdump -d hw<br><br>hw:     file format elf64-x86-64<br><br><br>Disassembly of section .init:<br><br>0000000000001000 &lt;_init&gt;:<br>    1000:       f3 0f 1e fa             endbr64<br>    1004:       48 83 ec 08             sub    <span class="hljs-variable">$0x8</span>,%rsp<br>    1008:       48 8b 05 d9 2f 00 00    mov    0x2fd9(%rip),%rax        <span class="hljs-comment"># 3fe8 &lt;__gmon_start__&gt;</span><br>    100f:       48 85 c0                <span class="hljs-built_in">test</span>   %rax,%rax<br>    1012:       74 02                   je     1016 &lt;_init+0x16&gt;<br>    1014:       ff d0                   callq  *%rax<br>    1016:       48 83 c4 08             add    <span class="hljs-variable">$0x8</span>,%rsp<br>    101a:       c3                      retq<br><br>Disassembly of section .plt:<br><br>0000000000001020 &lt;.plt&gt;:<br>    1020:       ff 35 82 2f 00 00       pushq  0x2f82(%rip)        <span class="hljs-comment"># 3fa8 &lt;_GLOBAL_OFFSET_TABLE_+0x8&gt;</span><br>    1026:       f2 ff 25 83 2f 00 00    bnd jmpq *0x2f83(%rip)        <span class="hljs-comment"># 3fb0 &lt;_GLOBAL_OFFSET_TABLE_+0x10&gt;</span><br>    102d:       0f 1f 00                nopl   (%rax)<br>    1030:       f3 0f 1e fa             endbr64<br>    1034:       68 00 00 00 00          pushq  <span class="hljs-variable">$0x0</span><br>    1039:       f2 e9 e1 ff ff ff       bnd jmpq 1020 &lt;.plt&gt;<br>    103f:       90                      nop<br>    1040:       f3 0f 1e fa             endbr64<br>    1044:       68 01 00 00 00          pushq  <span class="hljs-variable">$0x1</span><br>    1049:       f2 e9 d1 ff ff ff       bnd jmpq 1020 &lt;.plt&gt;<br>    104f:       90                      nop<br>    1050:       f3 0f 1e fa             endbr64<br>    1054:       68 02 00 00 00          pushq  <span class="hljs-variable">$0x2</span><br>    1059:       f2 e9 c1 ff ff ff       bnd jmpq 1020 &lt;.plt&gt;<br>    105f:       90                      nop<br><br>Disassembly of section .plt.got:<br><br>0000000000001060 &lt;__cxa_finalize@plt&gt;:<br>    1060:       f3 0f 1e fa             endbr64<br>    1064:       f2 ff 25 65 2f 00 00    bnd jmpq *0x2f65(%rip)        <span class="hljs-comment"># 3fd0 &lt;__cxa_finalize@GLIBC_2.2.5&gt;</span><br>    106b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)<br><br>Disassembly of section .plt.sec:<br><br>0000000000001070 &lt;__cxa_atexit@plt&gt;:<br>    1070:       f3 0f 1e fa             endbr64<br>    1074:       f2 ff 25 3d 2f 00 00    bnd jmpq *0x2f3d(%rip)        <span class="hljs-comment"># 3fb8 &lt;__cxa_atexit@GLIBC_2.2.5&gt;</span><br>    107b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)<br><br>0000000000001080 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;:<br>    1080:       f3 0f 1e fa             endbr64<br>    1084:       f2 ff 25 35 2f 00 00    bnd jmpq *0x2f35(%rip)        <span class="hljs-comment"># 3fc0 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@GLIBCXX_3.4&gt;</span><br>    108b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)<br><br>0000000000001090 &lt;_ZNSt8ios_base4InitC1Ev@plt&gt;:<br>    1090:       f3 0f 1e fa             endbr64<br>    1094:       f2 ff 25 2d 2f 00 00    bnd jmpq *0x2f2d(%rip)        <span class="hljs-comment"># 3fc8 &lt;_ZNSt8ios_base4InitC1Ev@GLIBCXX_3.4&gt;</span><br>    109b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)<br><br>Disassembly of section .text:<br><br>00000000000010a0 &lt;_start&gt;:<br>    10a0:       f3 0f 1e fa             endbr64<br>    10a4:       31 ed                   xor    %ebp,%ebp<br>    10a6:       49 89 d1                mov    %rdx,%r9<br>    10a9:       5e                      pop    %rsi<br>    10aa:       48 89 e2                mov    %rsp,%rdx<br>    10ad:       48 83 e4 f0             and    <span class="hljs-variable">$0xfffffffffffffff0</span>,%rsp<br>    10b1:       50                      push   %rax<br>    10b2:       54                      push   %rsp<br>    10b3:       4c 8d 05 d6 01 00 00    lea    0x1d6(%rip),%r8        <span class="hljs-comment"># 1290 &lt;__libc_csu_fini&gt;</span><br>    10ba:       48 8d 0d 5f 01 00 00    lea    0x15f(%rip),%rcx        <span class="hljs-comment"># 1220 &lt;__libc_csu_init&gt;</span><br>    10c1:       48 8d 3d c1 00 00 00    lea    0xc1(%rip),%rdi        <span class="hljs-comment"># 1189 &lt;main&gt;</span><br>    10c8:       ff 15 12 2f 00 00       callq  *0x2f12(%rip)        <span class="hljs-comment"># 3fe0 &lt;__libc_start_main@GLIBC_2.2.5&gt;</span><br>    10ce:       f4                      hlt<br>    10cf:       90                      nop<br><br>00000000000010d0 &lt;deregister_tm_clones&gt;:<br>    10d0:       48 8d 3d 39 2f 00 00    lea    0x2f39(%rip),%rdi        <span class="hljs-comment"># 4010 &lt;__TMC_END__&gt;</span><br>    10d7:       48 8d 05 32 2f 00 00    lea    0x2f32(%rip),%rax        <span class="hljs-comment"># 4010 &lt;__TMC_END__&gt;</span><br>    10de:       48 39 f8                cmp    %rdi,%rax<br>    10e1:       74 15                   je     10f8 &lt;deregister_tm_clones+0x28&gt;<br>    10e3:       48 8b 05 ee 2e 00 00    mov    0x2eee(%rip),%rax        <span class="hljs-comment"># 3fd8 &lt;_ITM_deregisterTMCloneTable&gt;</span><br>    10ea:       48 85 c0                <span class="hljs-built_in">test</span>   %rax,%rax<br>    10ed:       74 09                   je     10f8 &lt;deregister_tm_clones+0x28&gt;<br>    10ef:       ff e0                   jmpq   *%rax<br>    10f1:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)<br>    10f8:       c3                      retq<br>    10f9:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)<br><br>0000000000001100 &lt;register_tm_clones&gt;:<br>    1100:       48 8d 3d 09 2f 00 00    lea    0x2f09(%rip),%rdi        <span class="hljs-comment"># 4010 &lt;__TMC_END__&gt;</span><br>    1107:       48 8d 35 02 2f 00 00    lea    0x2f02(%rip),%rsi        <span class="hljs-comment"># 4010 &lt;__TMC_END__&gt;</span><br>    110e:       48 29 fe                sub    %rdi,%rsi<br>    1111:       48 89 f0                mov    %rsi,%rax<br>    1114:       48 c1 ee 3f             shr    <span class="hljs-variable">$0x3f</span>,%rsi<br>    1118:       48 c1 f8 03             sar    <span class="hljs-variable">$0x3</span>,%rax<br>    111c:       48 01 c6                add    %rax,%rsi<br>    111f:       48 d1 fe                sar    %rsi<br>    1122:       74 14                   je     1138 &lt;register_tm_clones+0x38&gt;<br>    1124:       48 8b 05 c5 2e 00 00    mov    0x2ec5(%rip),%rax        <span class="hljs-comment"># 3ff0 &lt;_ITM_registerTMCloneTable&gt;</span><br>    112b:       48 85 c0                <span class="hljs-built_in">test</span>   %rax,%rax<br>    112e:       74 08                   je     1138 &lt;register_tm_clones+0x38&gt;<br>    1130:       ff e0                   jmpq   *%rax<br>    1132:       66 0f 1f 44 00 00       nopw   0x0(%rax,%rax,1)<br>    1138:       c3                      retq<br>    1139:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)<br><br>0000000000001140 &lt;__do_global_dtors_aux&gt;:<br>    1140:       f3 0f 1e fa             endbr64<br>    1144:       80 3d e5 2f 00 00 00    cmpb   <span class="hljs-variable">$0x0</span>,0x2fe5(%rip)        <span class="hljs-comment"># 4130 &lt;completed.0&gt;</span><br>    114b:       75 2b                   jne    1178 &lt;__do_global_dtors_aux+0x38&gt;<br>    114d:       55                      push   %rbp<br>    114e:       48 83 3d 7a 2e 00 00    cmpq   <span class="hljs-variable">$0x0</span>,0x2e7a(%rip)        <span class="hljs-comment"># 3fd0 &lt;__cxa_finalize@GLIBC_2.2.5&gt;</span><br>    1155:       00<br>    1156:       48 89 e5                mov    %rsp,%rbp<br>    1159:       74 0c                   je     1167 &lt;__do_global_dtors_aux+0x27&gt;<br>    115b:       48 8b 3d a6 2e 00 00    mov    0x2ea6(%rip),%rdi        <span class="hljs-comment"># 4008 &lt;__dso_handle&gt;</span><br>    1162:       e8 f9 fe ff ff          callq  1060 &lt;__cxa_finalize@plt&gt;<br>    1167:       e8 64 ff ff ff          callq  10d0 &lt;deregister_tm_clones&gt;<br>    116c:       c6 05 bd 2f 00 00 01    movb   <span class="hljs-variable">$0x1</span>,0x2fbd(%rip)        <span class="hljs-comment"># 4130 &lt;completed.0&gt;</span><br>    1173:       5d                      pop    %rbp<br>    1174:       c3                      retq<br>    1175:       0f 1f 00                nopl   (%rax)<br>    1178:       c3                      retq<br>    1179:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)<br><br>0000000000001180 &lt;frame_dummy&gt;:<br>    1180:       f3 0f 1e fa             endbr64<br>    1184:       e9 77 ff ff ff          jmpq   1100 &lt;register_tm_clones&gt;<br><br>0000000000001189 &lt;main&gt;:<br>    1189:       f3 0f 1e fa             endbr64<br>    118d:       55                      push   %rbp<br>    118e:       48 89 e5                mov    %rsp,%rbp<br>    1191:       48 8d 35 6d 0e 00 00    lea    0xe6d(%rip),%rsi        <span class="hljs-comment"># 2005 &lt;_ZStL19piecewise_construct+0x1&gt;</span><br>    1198:       48 8d 3d 81 2e 00 00    lea    0x2e81(%rip),%rdi        <span class="hljs-comment"># 4020 &lt;_ZSt4cerr@@GLIBCXX_3.4&gt;</span><br>    119f:       e8 dc fe ff ff          callq  1080 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;<br>    11a4:       b8 00 00 00 00          mov    <span class="hljs-variable">$0x0</span>,%eax<br>    11a9:       5d                      pop    %rbp<br>    11aa:       c3                      retq<br><br>00000000000011ab &lt;_Z41__static_initialization_and_destruction_0ii&gt;:<br>    11ab:       f3 0f 1e fa             endbr64<br>    11af:       55                      push   %rbp<br>    11b0:       48 89 e5                mov    %rsp,%rbp<br>    11b3:       48 83 ec 10             sub    <span class="hljs-variable">$0x10</span>,%rsp<br>    11b7:       89 7d <span class="hljs-built_in">fc</span>                mov    %edi,-0x4(%rbp)<br>    11ba:       89 75 f8                mov    %esi,-0x8(%rbp)<br>    11bd:       83 7d <span class="hljs-built_in">fc</span> 01             cmpl   <span class="hljs-variable">$0x1</span>,-0x4(%rbp)<br>    11c1:       75 32                   jne    11f5 &lt;_Z41__static_initialization_and_destruction_0ii+0x4a&gt;<br>    11c3:       81 7d f8 ff ff 00 00    cmpl   <span class="hljs-variable">$0xffff</span>,-0x8(%rbp)<br>    11ca:       75 29                   jne    11f5 &lt;_Z41__static_initialization_and_destruction_0ii+0x4a&gt;<br>    11cc:       48 8d 3d 5e 2f 00 00    lea    0x2f5e(%rip),%rdi        <span class="hljs-comment"># 4131 &lt;_ZStL8__ioinit&gt;</span><br>    11d3:       e8 b8 fe ff ff          callq  1090 &lt;_ZNSt8ios_base4InitC1Ev@plt&gt;<br>    11d8:       48 8d 15 29 2e 00 00    lea    0x2e29(%rip),%rdx        <span class="hljs-comment"># 4008 &lt;__dso_handle&gt;</span><br>    11df:       48 8d 35 4b 2f 00 00    lea    0x2f4b(%rip),%rsi        <span class="hljs-comment"># 4131 &lt;_ZStL8__ioinit&gt;</span><br>    11e6:       48 8b 05 0b 2e 00 00    mov    0x2e0b(%rip),%rax        <span class="hljs-comment"># 3ff8 &lt;_ZNSt8ios_base4InitD1Ev@GLIBCXX_3.4&gt;</span><br>    11ed:       48 89 c7                mov    %rax,%rdi<br>    11f0:       e8 7b fe ff ff          callq  1070 &lt;__cxa_atexit@plt&gt;<br>    11f5:       90                      nop<br>    11f6:       c9                      leaveq<br>    11f7:       c3                      retq<br><br>00000000000011f8 &lt;_GLOBAL__sub_I_main&gt;:<br>    11f8:       f3 0f 1e fa             endbr64<br>    11fc:       55                      push   %rbp<br>    11fd:       48 89 e5                mov    %rsp,%rbp<br>    1200:       be ff ff 00 00          mov    <span class="hljs-variable">$0xffff</span>,%esi<br>    1205:       bf 01 00 00 00          mov    <span class="hljs-variable">$0x1</span>,%edi<br>    120a:       e8 9c ff ff ff          callq  11ab &lt;_Z41__static_initialization_and_destruction_0ii&gt;<br>    120f:       5d                      pop    %rbp<br>    1210:       c3                      retq<br>    1211:       66 2e 0f 1f 84 00 00    nopw   %cs:0x0(%rax,%rax,1)<br>    1218:       00 00 00<br>    121b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)<br><br>0000000000001220 &lt;__libc_csu_init&gt;:<br>    1220:       f3 0f 1e fa             endbr64<br>    1224:       41 57                   push   %r15<br>    1226:       4c 8d 3d 5b 2b 00 00    lea    0x2b5b(%rip),%r15        <span class="hljs-comment"># 3d88 &lt;__frame_dummy_init_array_entry&gt;</span><br>    122d:       41 56                   push   %r14<br>    122f:       49 89 d6                mov    %rdx,%r14<br>    1232:       41 55                   push   %r13<br>    1234:       49 89 f5                mov    %rsi,%r13<br>    1237:       41 54                   push   %r12<br>    1239:       41 89 <span class="hljs-built_in">fc</span>                mov    %edi,%r12d<br>    123c:       55                      push   %rbp<br>    123d:       48 8d 2d 54 2b 00 00    lea    0x2b54(%rip),%rbp        <span class="hljs-comment"># 3d98 &lt;__do_global_dtors_aux_fini_array_entry&gt;</span><br>    1244:       53                      push   %rbx<br>    1245:       4c 29 fd                sub    %r15,%rbp<br>    1248:       48 83 ec 08             sub    <span class="hljs-variable">$0x8</span>,%rsp<br>    124c:       e8 af fd ff ff          callq  1000 &lt;_init&gt;<br>    1251:       48 c1 fd 03             sar    <span class="hljs-variable">$0x3</span>,%rbp<br>    1255:       74 1f                   je     1276 &lt;__libc_csu_init+0x56&gt;<br>    1257:       31 db                   xor    %ebx,%ebx<br>    1259:       0f 1f 80 00 00 00 00    nopl   0x0(%rax)<br>    1260:       4c 89 f2                mov    %r14,%rdx<br>    1263:       4c 89 ee                mov    %r13,%rsi<br>    1266:       44 89 e7                mov    %r12d,%edi<br>    1269:       41 ff 14 <span class="hljs-built_in">df</span>             callq  *(%r15,%rbx,8)<br>    126d:       48 83 c3 01             add    <span class="hljs-variable">$0x1</span>,%rbx<br>    1271:       48 39 <span class="hljs-built_in">dd</span>                cmp    %rbx,%rbp<br>    1274:       75 ea                   jne    1260 &lt;__libc_csu_init+0x40&gt;<br>    1276:       48 83 c4 08             add    <span class="hljs-variable">$0x8</span>,%rsp<br>    127a:       5b                      pop    %rbx<br>    127b:       5d                      pop    %rbp<br>    127c:       41 5c                   pop    %r12<br>    127e:       41 5d                   pop    %r13<br>    1280:       41 5e                   pop    %r14<br>    1282:       41 5f                   pop    %r15<br>    1284:       c3                      retq<br>    1285:       66 66 2e 0f 1f 84 00    data16 nopw %cs:0x0(%rax,%rax,1)<br>    128c:       00 00 00 00<br><br>0000000000001290 &lt;__libc_csu_fini&gt;:<br>    1290:       f3 0f 1e fa             endbr64<br>    1294:       c3                      retq<br><br>Disassembly of section .fini:<br><br>0000000000001298 &lt;_fini&gt;:<br>    1298:       f3 0f 1e fa             endbr64<br>    129c:       48 83 ec 08             sub    <span class="hljs-variable">$0x8</span>,%rsp<br>    12a0:       48 83 c4 08             add    <span class="hljs-variable">$0x8</span>,%rsp<br>    12a4:       c3                      retq<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，这个程序虽然只是输出 <code>hello,world.</code>，但依然很复杂，因为它要包含其它很多的基础资源或者子程序，我们只需要重点关注 <code>main</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">0000000000001189 &lt;main&gt;:<br>    1189:       f3 0f 1e fa             endbr64<br>    118d:       55                      push   %rbp<br>    118e:       48 89 e5                mov    %rsp,%rbp<br>    1191:       48 8d 35 6d 0e 00 00    lea    0xe6d(%rip),%rsi        <span class="hljs-comment"># 2005 &lt;_ZStL19piecewise_construct+0x1&gt;</span><br>    1198:       48 8d 3d 81 2e 00 00    lea    0x2e81(%rip),%rdi        <span class="hljs-comment"># 4020 &lt;_ZSt4cerr@@GLIBCXX_3.4&gt;</span><br>    119f:       e8 dc fe ff ff          callq  1080 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;<br>    11a4:       b8 00 00 00 00          mov    <span class="hljs-variable">$0x0</span>,%eax<br>    11a9:       5d                      pop    %rbp<br>    11aa:       c3                      retq<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，这个段是从<code>0000000000001189</code>开始的，需要关注的输出语句为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-number">119f</span>:       e8 dc fe ff ff          callq  <span class="hljs-number">1080</span> &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;<br></code></pre></td></tr></table></figure>
+
+<p>这个地址 <code>119f</code> 就是我们需要打断点的地方，被我们找出来了，这个地址是定死的，它在运行的时候，需要加载到内存中。问题是，加载到哪里？</p>
+<p>我们并不知道加载到哪里，<strong>换句话说，我们不知道段地址是什么，它不固定</strong>，这主要是为了程序数据安全考虑，采用了内存分布随机化，<strong>我们可以关掉内存分布随机化</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-built_in">personality</span>(ADDR_NO_RANDOMIZE); <span class="hljs-comment">// 取消随机内存</span><br>    <span class="hljs-comment">// child progress</span><br>    <span class="hljs-comment">// debugged progress</span><br>    <span class="hljs-built_in">ptrace</span>(PTRACE_TRACEME, <span class="hljs-number">0</span>, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>    <span class="hljs-built_in">execl</span>(proj, proj, <span class="hljs-literal">nullptr</span>);<br>    ...<br></code></pre></td></tr></table></figure>
+<p>这样它就固定了，我们可以这样查看它在运行的时候的 <code>map</code>，首先用我们程序进行调试：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp">./main hw<br>Start debugging the progress: hw, pid = <span class="hljs-number">260915</span>:<br>minidbg&gt;<br></code></pre></td></tr></table></figure>
+<p>可以看到，<code>pid</code> 为 <code>260915</code>，另开一个 <strong>zsh</strong>，直接查看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> /proc/260915/maps<br>555555554000-555555555000 r--p 00000000 <span class="hljs-built_in">fc</span>:01 698165                     /root/mydebugger/src/hw<br>555555555000-555555556000 r-xp 00001000 <span class="hljs-built_in">fc</span>:01 698165                     /root/mydebugger/src/hw<br>555555556000-555555557000 r--p 00002000 <span class="hljs-built_in">fc</span>:01 698165                     /root/mydebugger/src/hw<br>555555557000-555555559000 rw-p 00002000 <span class="hljs-built_in">fc</span>:01 698165                     /root/mydebugger/src/hw<br>7ffff7fcb000-7ffff7fce000 r--p 00000000 00:00 0                          [vvar]<br>7ffff7fce000-7ffff7fcf000 r-xp 00000000 00:00 0                          [vdso]<br>7ffff7fcf000-7ffff7fd0000 r--p 00000000 <span class="hljs-built_in">fc</span>:01 1185709                    /usr/lib/x86_64-linux-gnu/ld-2.31.so<br>7ffff7fd0000-7ffff7ff3000 r-xp 00001000 <span class="hljs-built_in">fc</span>:01 1185709                    /usr/lib/x86_64-linux-gnu/ld-2.31.so<br>7ffff7ff3000-7ffff7ffb000 r--p 00024000 <span class="hljs-built_in">fc</span>:01 1185709                    /usr/lib/x86_64-linux-gnu/ld-2.31.so<br>7ffff7ffc000-7ffff7ffe000 rw-p 0002c000 <span class="hljs-built_in">fc</span>:01 1185709                    /usr/lib/x86_64-linux-gnu/ld-2.31.so<br>7ffff7ffe000-7ffff7fff000 rw-p 00000000 00:00 0<br>7ffffffde000-7ffffffff000 rw-p 00000000 00:00 0                          [stack]<br>ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0<br></code></pre></td></tr></table></figure>
+
+<p>可以看到我们的可执行代码也就是 <code>main</code> 段在这里：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">555555555000-555555556000 r-xp 00001000 <span class="hljs-built_in">fc</span>:01 698165                     /root/mydebugger/src/hw<br></code></pre></td></tr></table></figure>
+
+<p>这以后都是固定的，虽然不安全，但是仅仅是为了演示，就没关系了。段的偏移地址为<code>555555554000</code>，因为我们需要打断点的地址为<code>119f</code>，因此：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">基址 + 指令相对地址<br>= 555555554000 + 119f<br>= 55555555519f<br></code></pre></td></tr></table></figure>
+<p>可以预见的是，如果 <code>break 0x55555555519f</code>，之后执行，并不会打印出 <code>hello,world</code>，但是我们如果打到了下一条地址：<code>0x5555555551a4</code>，运行之后，就会理解打印出 <code>hello,world</code>。以下进行检测：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">./main hw<br>Start debugging the progress: hw, pid = 261169:<br>minidbg&gt; <span class="hljs-built_in">break</span> 0x55555555519f<br>Set breakpoint at address 0x55555555519f<br>minidbg&gt; <span class="hljs-built_in">continue</span><br>minidbg&gt;<br></code></pre></td></tr></table></figure>
+<p>我们换一个地址：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">./main hw<br>Start debugging the progress: hw, pid = 261407:<br>minidbg&gt; <span class="hljs-built_in">break</span> 0x0x5555555551a4<br>Set breakpoint at address 0x5555555551a4<br>minidbg&gt; <span class="hljs-built_in">continue</span><br>hello,world.<br>minidbg&gt;<br></code></pre></td></tr></table></figure>
+<p>可以看到，以下就打印出了<code>hello,world</code>。以上符合我们的预期，因此实验是成功的，另外不需要担心 <code>pid</code> 不一样，由于我们关闭了地址空间布局随机化（<strong>ASLR</strong>, Address Space Layout Randomization），段地址不会变，因此地址也是固定的。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C/debugger/" class="category-chain-item">debugger</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/debugger/" class="print-no-link">#debugger</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>debugger（一）：打断点的实现以及案例分析</div>
+      <div>http://blog.luliang.online/2024/05/25/debugger（一）：打断点的实现以及案例分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/10/debugger%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E8%AF%BB%E3%80%81%E5%86%99%E5%86%85%E5%AD%98%E4%BB%A5%E5%8F%8A%E5%AF%84%E5%AD%98%E5%99%A8/" title="debugger（二）：读、写内存以及寄存器">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">debugger（二）：读、写内存以及寄存器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/20/C++%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="C++内存模型">
+                        <span class="hidden-mobile">C++内存模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

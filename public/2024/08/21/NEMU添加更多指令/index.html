@@ -1,0 +1,1331 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言上一篇博客中介绍了如何添加指令，这篇将会熟悉这个过程，学习以及添加更多的指令。 所有程序在am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;tests 目录下有很多测试： 12345678910111213141516171819202122232425262728293031323334353637ls -ltotal 140-rw-rw-r-- 1 l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NEMU 添加更多的指令">
+<meta property="og:url" content="http://blog.luliang.online/2024/08/21/NEMU%E6%B7%BB%E5%8A%A0%E6%9B%B4%E5%A4%9A%E6%8C%87%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="前言上一篇博客中介绍了如何添加指令，这篇将会熟悉这个过程，学习以及添加更多的指令。 所有程序在am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;tests 目录下有很多测试： 12345678910111213141516171819202122232425262728293031323334353637ls -ltotal 140-rw-rw-r-- 1 l">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-21T03:22:33.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.772Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="模拟器">
+<meta property="article:tag" content="NEMU">
+<meta property="article:tag" content="PA2">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>NEMU 添加更多的指令 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NEMU 添加更多的指令"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-21 11:22" pubdate>
+          2024年8月21日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          102 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NEMU 添加更多的指令</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇博客中介绍了如何添加指令，这篇将会熟悉这个过程，学习以及添加更多的指令。</p>
+<h2 id="所有程序"><a href="#所有程序" class="headerlink" title="所有程序"></a>所有程序</h2><p>在am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;tests 目录下有很多测试：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs txt">ls -l<br>total 140<br>-rw-rw-r-- 1 luyoung luyoung 1050 Aug 15 21:56 add.c<br>-rw-rw-r-- 1 luyoung luyoung 1562 Aug 15 21:56 add-longlong.c<br>-rw-rw-r-- 1 luyoung luyoung  954 Aug 15 21:56 bit.c<br>-rw-rw-r-- 1 luyoung luyoung  512 Aug 15 21:56 bubble-sort.c<br>-rw-rw-r-- 1 luyoung luyoung 1001 Aug 15 21:56 crc32.c<br>-rw-rw-r-- 1 luyoung luyoung  322 Aug 15 21:56 div.c<br>-rw-rw-r-- 1 luyoung luyoung   27 Aug 15 21:56 dummy.c<br>-rw-rw-r-- 1 luyoung luyoung  315 Aug 15 21:56 fact.c<br>-rw-rw-r-- 1 luyoung luyoung  461 Aug 15 21:56 fib.c<br>-rw-rw-r-- 1 luyoung luyoung  379 Aug 15 21:56 goldbach.c<br>-rw-rw-r-- 1 luyoung luyoung  317 Aug 15 21:56 hello-str.c<br>-rw-rw-r-- 1 luyoung luyoung  544 Aug 15 21:56 if-else.c<br>-rw-rw-r-- 1 luyoung luyoung  604 Aug 15 21:56 leap-year.c<br>-rw-rw-r-- 1 luyoung luyoung  972 Aug 15 21:56 load-store.c<br>-rw-rw-r-- 1 luyoung luyoung 2020 Aug 15 21:56 matrix-mul.c<br>-rw-rw-r-- 1 luyoung luyoung  995 Aug 15 21:56 max.c<br>-rw-rw-r-- 1 luyoung luyoung  667 Aug 15 21:56 mersenne.c<br>-rw-rw-r-- 1 luyoung luyoung 1146 Aug 15 21:56 min3.c<br>-rw-rw-r-- 1 luyoung luyoung  292 Aug 15 21:56 mov-c.c<br>-rw-rw-r-- 1 luyoung luyoung  497 Aug 15 21:56 movsx.c<br>-rw-rw-r-- 1 luyoung luyoung  668 Aug 15 21:56 mul-longlong.c<br>-rw-rw-r-- 1 luyoung luyoung  583 Aug 15 21:56 pascal.c<br>-rw-rw-r-- 1 luyoung luyoung  342 Aug 15 21:56 prime.c<br>-rw-rw-r-- 1 luyoung luyoung  717 Aug 15 21:56 quick-sort.c<br>-rw-rw-r-- 1 luyoung luyoung  819 Aug 15 21:56 recursion.c<br>-rw-rw-r-- 1 luyoung luyoung  518 Aug 15 21:56 select-sort.c<br>-rw-rw-r-- 1 luyoung luyoung  748 Aug 15 21:56 shift.c<br>-rw-rw-r-- 1 luyoung luyoung  338 Aug 15 21:56 shuixianhua.c<br>-rw-rw-r-- 1 luyoung luyoung  574 Aug 15 21:56 string.c<br>-rw-rw-r-- 1 luyoung luyoung 1562 Aug 15 21:56 sub-longlong.c<br>-rw-rw-r-- 1 luyoung luyoung  145 Aug 15 21:56 sum.c<br>-rw-rw-r-- 1 luyoung luyoung  522 Aug 15 21:56 switch.c<br>-rw-rw-r-- 1 luyoung luyoung  783 Aug 15 21:56 to-lower-case.c<br>-rw-rw-r-- 1 luyoung luyoung  287 Aug 15 21:56 unalign.c<br>-rw-rw-r-- 1 luyoung luyoung  275 Aug 15 21:56 wanshu.c<br></code></pre></td></tr></table></figure>
+
+<p>我的目标是，将这些测试全部通过。</p>
+<h1 id="add-c"><a href="#add-c" class="headerlink" title="add.c"></a>add.c</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">(nemu) c<br>invalid opcode(PC = 0x80000078):<br>        03 a9 0a 00 93 04 0b 00 ...<br>        000aa903 000b0493...<br>There are two cases <span class="hljs-built_in">which</span> will trigger this unexpected exception:<br>1. The instruction at PC = 0x80000078 is not implemented.<br>2. Something is implemented incorrectly.<br>Find this PC(0x80000078) <span class="hljs-keyword">in</span> the disassembling result to distinguish <span class="hljs-built_in">which</span> <span class="hljs-keyword">case</span> it is.<br></code></pre></td></tr></table></figure>
+
+<p>老规矩，直接看反汇编代码，发现是这条指令：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-number">000</span>aa903          	lw	s2,<span class="hljs-number">0</span>(s5)<br></code></pre></td></tr></table></figure>
+
+<h2 id="lw"><a href="#lw" class="headerlink" title="lw"></a>lw</h2><p>在 RISC-V 指令集中，<code>lw</code> 指令表示“Load Word”。这是一种加载指令，用于将内存中的一个 32 位字（word）读取到寄存器中。<code>lw</code> 是 I-type（立即数类型）指令的一部分，用于从指定的内存地址加载数据到寄存器。</p>
+<h3 id="指令格式"><a href="#指令格式" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>lw</code> 指令的基本格式如下：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scss">lw rd, <span class="hljs-built_in">offset</span>(rs1)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储加载的数据。</li>
+<li>**<code>offset</code>**：一个立即数，表示相对于基址寄存器 <code>rs1</code> 的偏移量。</li>
+<li>**<code>rs1</code>**：基址寄存器，提供内存加载操作的基础地址。</li>
+</ul>
+<h3 id="功能描述"><a href="#功能描述" class="headerlink" title="功能描述"></a>功能描述</h3><p>当执行 <code>lw</code> 指令时，处理器会执行以下操作：</p>
+<ol>
+<li>从基址寄存器 <code>rs1</code> 中读取地址。</li>
+<li>将这个地址与立即数 <code>offset</code> 相加，计算出最终的内存地址。</li>
+<li>从得到的内存地址读取一个 32 位字（4 字节）。</li>
+<li>将读取的数据存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>lw</code> 指令在多种编程场景中都非常有用，特别是在需要从内存中读取数据的情况下。它可以用来：</p>
+<ul>
+<li>从数组或数据结构中获取元素。</li>
+<li>读取函数调用的参数或局部变量（如果它们被存储在内存中）。</li>
+<li>在进行系统调用或硬件操作时，从特定的内存映射区域加载设备状态或数据。</li>
+</ul>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>假设有一个整数数组，数组的首地址存储在寄存器 <code>a0</code> 中，我们想要加载数组的第一个元素到寄存器 <code>t0</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">lw t0, 0(a0)  # 从内存地址 a0 加载一个字到寄存器 t0<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将会从 <code>a0</code> 指定的地址加载一个 32 位的整数到 <code>t0</code> 寄存器中。如果要加载数组的第二个元素，偏移量将是 4（因为每个数组元素占用 4 字节）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">lw t0, 4(a0)  # 加载数组的第二个元素<br></code></pre></td></tr></table></figure>
+
+<p>因此，指令应该这样解析和执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 010 ????? 00000 11&quot;</span>, addi, I,<br>            Mw(src1 + imm, <span class="hljs-number">4</span>, R(rd)));<br></code></pre></td></tr></table></figure>
+
+<p>继续编译运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">(nemu) c<br>invalid opcode(PC = 0x80000090):<br>        33 05 a9 00 33 05 f5 40 ...<br>        00a90533 40f50533...<br>There are two cases <span class="hljs-built_in">which</span> will trigger this unexpected exception:<br>1. The instruction at PC = 0x80000090 is not implemented.<br>2. Something is implemented incorrectly.<br></code></pre></td></tr></table></figure>
+<p>00a90533 是：00a90533          	add	a0,s2,a0。</p>
+<h2 id="add"><a href="#add" class="headerlink" title="add"></a>add</h2><p>在 RISC-V 指令集中，<code>add</code> 指令是一种算术指令，用于执行两个寄存器的内容之间的整数加法操作，并将结果存储在一个寄存器中。这是一种 R-type（寄存器类型）指令，完全基于寄存器操作，不涉及立即数或内存访问。</p>
+<h3 id="指令格式-1"><a href="#指令格式-1" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>add</code> 指令的基本格式如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">add</span> rd, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储加法运算的结果。</li>
+<li>**<code>rs1</code>**：第一个源寄存器，提供第一个加数。</li>
+<li>**<code>rs2</code>**：第二个源寄存器，提供第二个加数。</li>
+</ul>
+<h3 id="功能描述-1"><a href="#功能描述-1" class="headerlink" title="功能描述"></a>功能描述</h3><p>当执行 <code>add</code> 指令时，处理器会进行以下操作：</p>
+<ol>
+<li>从寄存器 <code>rs1</code> 中读取第一个操作数。</li>
+<li>从寄存器 <code>rs2</code> 中读取第二个操作数。</li>
+<li>将这两个操作数相加。</li>
+<li>将相加的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-1"><a href="#使用场景-1" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>add</code> 指令在几乎所有需要进行算术运算的编程任务中都非常重要。它用于：</p>
+<ul>
+<li>简单的数值运算。</li>
+<li>地址计算，如确定数据结构中的元素位置。</li>
+<li>循环控制和迭代中的计数器操作。</li>
+<li>数组和指针操作中的索引计算。</li>
+</ul>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a0</code> 和 <code>a1</code> 分别存储了两个整数，我们想将这两个整数相加，并将结果存储在寄存器 <code>a2</code> 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">add a2, a0, a1  # 将 a0 和 a1 中的数值相加，结果存储到 a2<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将会把 <code>a0</code> 和 <code>a1</code> 中的值相加，然后将计算结果存储到 <code>a2</code>。</p>
+<p>这种指令对于实现高级数据结构和复杂算法至关重要，它提供了基本的数值处理能力，是处理器功能的基石之一。</p>
+<p>因此，可以这样解析和操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 000 ????? 01100 11&quot;</span>, add, R,<br>            R(rd) = src1 + src2);<br><br></code></pre></td></tr></table></figure>
+
+<p>继续编译和运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">(nemu) c<br>invalid opcode(PC = 0x80000094):<br>        33 05 f5 40 13 35 15 00 ...<br>        40f50533 00153513...<br>There are two cases <span class="hljs-built_in">which</span> will trigger this unexpected exception:<br>1. The instruction at PC = 0x80000094 is not implemented.<br>2. Something is implemented incorrectly.<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，add 成功解析，接下来解析40f50533：40f50533          	sub	a0,a0,a5</p>
+<h2 id="sub"><a href="#sub" class="headerlink" title="sub"></a>sub</h2><p>在 RISC-V 指令集中，<code>sub</code> 指令用于从一个寄存器的值中减去另一个寄存器的值，并将结果存储在一个寄存器中。这也是一个 R-type 指令，与 <code>add</code> 指令相似，但用于执行整数减法运算。</p>
+<h3 id="指令格式-2"><a href="#指令格式-2" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>sub</code> 指令的基本格式如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-keyword">sub</span> rd, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**（Destination Register）：目标寄存器，用于存储运算结果。</li>
+<li>**<code>rs1</code>**（Source Register 1）：第一个源寄存器，提供被减数。</li>
+<li>**<code>rs2</code>**（Source Register 2）：第二个源寄存器，提供减数。</li>
+</ul>
+<h3 id="功能描述-2"><a href="#功能描述-2" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>sub</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li>从寄存器 <code>rs1</code> 中读取被减数。</li>
+<li>从寄存器 <code>rs2</code> 中读取减数。</li>
+<li>将 <code>rs1</code> 的值减去 <code>rs2</code> 的值。</li>
+<li>将得到的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-2"><a href="#使用场景-2" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>sub</code> 指令在各种需要算术减法的编程场景中都非常有用。它可以用于：</p>
+<ul>
+<li>算术计算和数据处理。</li>
+<li>地址或指针计算，如计算偏移量或逆向索引。</li>
+<li>控制结构中的计数器递减操作。</li>
+<li>在实现某些算法（如排序、搜索等）时调整循环或条件。</li>
+</ul>
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>t0</code> 和 <code>t1</code> 分别存储了两个整数，我们想从 <code>t0</code> 的值中减去 <code>t1</code> 的值，并将结果存储在寄存器 <code>t2</code> 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">sub t2, t0, t1  # 将 t0 和 t1 中的数值相减，结果存储到 t2<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将计算 <code>t0 - t1</code> 的结果，并把结果保存在 <code>t2</code> 寄存器中。</p>
+<p><code>sub</code> 指令与 <code>add</code> 指令一样，是 RISC-V 指令集中基本的算术操作之一，提供了直接通过寄存器进行整数减法的能力。</p>
+<p>因此，sub 指令可以这样解析和实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;0100000 ????? ????? 000 ????? 01100 11&quot;</span>, sub, R,<br>            R(rd) = src1 - src2);<br></code></pre></td></tr></table></figure>
+
+<p>编译运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">(nemu) c<br>invalid opcode(PC = 0x80000098):<br>        13 35 15 00 ef f0 5f f7 ...<br>        00153513 f75ff0ef...<br>There are two cases <span class="hljs-built_in">which</span> will trigger this unexpected exception:<br>1. The instruction at PC = 0x80000098 is not implemented.<br>2. Something is implemented incorrectly.<br></code></pre></td></tr></table></figure>
+
+<p>可以看到 sub 解析成功，接下来就是：00153513   seqz	a0,a0。</p>
+<h2 id="seqz"><a href="#seqz" class="headerlink" title="seqz"></a>seqz</h2><p>在 RISC-V 指令集中，<code>seqz</code> 指令表示“Set if Equal to Zero”。这是一种 I-type 指令，用于检查一个寄存器的值是否为零，并据此设置另一个寄存器的值。如果检查的寄存器值为零，则目标寄存器被设置为1；如果不为零，则设置为0。这种指令通常用于条件判断和分支控制逻辑。</p>
+<h3 id="指令格式-3"><a href="#指令格式-3" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>seqz</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">seqz <span class="hljs-built_in">rd</span>, rs<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储结果（1 或 0）。</li>
+<li>**<code>rs</code>**：源寄存器，其值将被检查是否等于零。</li>
+</ul>
+<h3 id="功能描述-3"><a href="#功能描述-3" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>seqz</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li>从寄存器 <code>rs</code> 中读取值。</li>
+<li>检查 <code>rs</code> 的值是否为零：<ul>
+<li>如果 <code>rs</code> 的值为零，则将 <code>rd</code> 设置为1。</li>
+<li>如果 <code>rs</code> 的值不为零，则将 <code>rd</code> 设置为0。</li>
+</ul>
+</li>
+</ol>
+<h3 id="使用场景-3"><a href="#使用场景-3" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>seqz</code> 指令在需要根据某些条件控制程序流程的场景中非常有用，例如：</p>
+<ul>
+<li>判断循环是否应该结束。</li>
+<li>检查函数的返回值是否表明某种特定状态（例如错误码为零表示无错误）。</li>
+<li>实现更复杂的逻辑条件判断，通常与其他分支指令结合使用。</li>
+</ul>
+<h3 id="示例-3"><a href="#示例-3" class="headerlink" title="示例"></a>示例</h3><p>假设我们需要检查寄存器 <code>a1</code> 中的值是否为零，并根据这个结果决定接下来的操作。我们可以使用 <code>seqz</code> 指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">seqz a2, a1  # 检查 a1 是否为零，将结果存储在 a2 中<br></code></pre></td></tr></table></figure>
+
+<p>如果 <code>a1</code> 的值为零，则 <code>a2</code> 将被设置为1；否则，<code>a2</code> 将被设置为0。然后，可以使用 <code>a2</code> 的值来控制程序的分支，例如使用条件分支指令跳转到不同的代码段。</p>
+<p><code>seqz</code>（Set if Equal to Zero）在 RISC-V 中是一种伪指令，而不是硬件直接支持的正式指令。伪指令是由编译器或汇编器在编译或汇编过程中转换成一种或多种硬件支持的基本指令的。<code>seqz</code> 的作用是测试一个寄存器的值是否为0，并据此设置另一个寄存器的值为1（如果为0）或0（如果不为0）。</p>
+<h3 id="如何实现-seqz"><a href="#如何实现-seqz" class="headerlink" title="如何实现 seqz"></a>如何实现 <code>seqz</code></h3><p><code>seqz rd, rs</code> 通常可以通过以下等效的基础指令实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">sltiu rd, rs, 1<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>sltiu</code>（Set Less Than Immediate Unsigned）</strong>：这条指令比较寄存器 <code>rs</code> 和立即数 <code>1</code>。如果 <code>rs</code> 小于 <code>1</code>（即，<code>rs</code> 为 <code>0</code>，因为无符号比较），<code>rd</code> 将被设置为 <code>1</code>。如果 <code>rs</code> 不为 <code>0</code>，<code>rd</code> 将被设置为 <code>0</code>。</li>
+</ul>
+<p>因此，seqz(sltiu)可以这样设置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 011 ????? 00100 11&quot;</span>, sltiu, I,<br>            R(rd) = src1 &lt; <span class="hljs-number">1</span> ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+
+<p>编译和运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">(nemu) c<br>invalid opcode(PC = 0x80000010):<br>        63 04 05 00 67 80 00 00 ...<br>        00050463 00008067...<br>There are two cases <span class="hljs-built_in">which</span> will trigger this unexpected exception:<br>1. The instruction at PC = 0x80000010 is not implemented.<br>2. Something is implemented incorrectly.<br></code></pre></td></tr></table></figure>
+
+<p>继续解析：00050463   	beqz	a0,80000018。</p>
+<h2 id="beqz"><a href="#beqz" class="headerlink" title="beqz"></a>beqz</h2><p>在 RISC-V 指令集中，<code>beqz</code> 同样是一种伪指令，用于条件分支。<code>beqz</code> 的全称是 “Branch if Equal to Zero”。当给定的寄存器中的值等于零时，它将导致程序跳转到指定的标签或地址。这是在编程中常用的控制流机制，特别是在循环和条件判断中。</p>
+<h3 id="指令格式-4"><a href="#指令格式-4" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>beqz</code> 的使用格式如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">beqz rs, <span class="hljs-selector-tag">label</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rs</code>**：源寄存器，其值将被检查是否等于零。</li>
+<li>**<code>label</code>**：如果 <code>rs</code> 的值为零，则跳转到这个标签指向的代码位置。</li>
+</ul>
+<h3 id="功能描述-4"><a href="#功能描述-4" class="headerlink" title="功能描述"></a>功能描述</h3><p>当执行 <code>beqz</code> 指令时，如果寄存器 <code>rs</code> 的值为零，则程序的执行流将跳转到 <code>label</code> 指定的位置。如果 <code>rs</code> 的值不为零，程序将继续执行下一条指令。</p>
+<h3 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h3><p>作为一种伪指令，<code>beqz rs, label</code> 通常被汇编器翻译为正式的 RISC-V 指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">beq rs, zero, label<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>beq</code>**（Branch if Equal）：这是一个基础的分支指令，用于比较两个寄存器的值。如果它们相等，则执行跳转。在这里，<code>beqz</code> 使用 <code>beq</code> 指令将 <code>rs</code> 寄存器与 <code>zero</code> 寄存器（永远为 0 的寄存器）比较。</li>
+</ul>
+<h3 id="使用场景-4"><a href="#使用场景-4" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>beqz</code> 指令在处理循环退出条件或根据函数返回值执行错误处理时非常有用。例如，它可以用来检查函数的返回值是否表示失败（通常用0表示），如果是，则跳转到错误处理代码。</p>
+<p>先设置 TYPE-B 的 imm 宏：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> immB()                                                          \</span><br><span class="hljs-meta">    do &#123;                                                                \</span><br><span class="hljs-meta">        *imm = SEXT(((BITS(i, 31, 31) &lt;&lt; 11) | (BITS(i, 30, 25) &lt;&lt; 4) | \</span><br><span class="hljs-meta">                     BITS(i, 11, 8) | (BITS(i, 7, 7) &lt;&lt; 10))            \</span><br><span class="hljs-meta">                        &lt;&lt; 1,                                           \</span><br><span class="hljs-meta">                    12);                                                \</span><br><span class="hljs-meta">    &#125; while (0)</span><br><br></code></pre></td></tr></table></figure>
+
+<p>因此，beqz(beq)可以这样设置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 000 ????? 11000 11&quot;</span>, beq, I,<br>            <span class="hljs-keyword">if</span> (src1 == src2) s-&gt;dnpc = imm);<br></code></pre></td></tr></table></figure>
+
+<p>编译，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">(nemu) c<br>invalid opcode(PC = 0x800000a4):<br>        e3 90 89 fe 13 05 10 00 ...<br>        fe8990e3 00100513...<br>There are two cases <span class="hljs-built_in">which</span> will trigger this unexpected exception:<br>1. The instruction at PC = 0x800000a4 is not implemented.<br>2. Something is implemented incorrectly.<br></code></pre></td></tr></table></figure>
+
+<p>接着继续处理下一跳指令：fe8990e3   	bne	s3,s0,80000084。</p>
+<h2 id="bne"><a href="#bne" class="headerlink" title="bne"></a>bne</h2><p>在 RISC-V 指令集中，<code>bne</code> 指令代表 “Branch if Not Equal”。这是一种条件分支指令，用于在两个寄存器的值不相等时，将程序的执行流跳转到指定的标签或地址。<code>bne</code> 是 RISC-V 的基础指令之一，直接支持在硬件级别，非伪指令。</p>
+<h3 id="指令格式-5"><a href="#指令格式-5" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>bne</code> 指令的基本格式如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-keyword">bne</span> rs1, rs2, label<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rs1</code>**：第一个源寄存器。</li>
+<li>**<code>rs2</code>**：第二个源寄存器。</li>
+<li>**<code>label</code>**：如果 <code>rs1</code> 和 <code>rs2</code> 的值不相等，则跳转到这个标签指向的代码位置。</li>
+</ul>
+<h3 id="功能描述-5"><a href="#功能描述-5" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>bne</code> 指令时的操作如下：</p>
+<ol>
+<li><strong>比较操作</strong>：比较来自 <code>rs1</code> 和 <code>rs2</code> 的值。</li>
+<li><strong>条件跳转</strong>：如果 <code>rs1</code> 和 <code>rs2</code> 的值不相等，程序的执行流将跳转到 <code>label</code> 指定的位置。如果它们相等，则继续执行下一条指令。</li>
+</ol>
+<h3 id="使用场景-5"><a href="#使用场景-5" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>bne</code> 指令在许多编程任务中都非常有用，特别是在循环、条件判断和错误检测中。它允许程序根据条件执行不同的代码路径，是实现复杂逻辑和控制流的关键工具。</p>
+<p>因此可以这样设置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 001 ????? 11000 11&quot;</span>, bne, B,<br>            <span class="hljs-keyword">if</span> (src1 != src2) s-&gt;dnpc = imm);<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，bne 和 beq 指令非常相似。</p>
+<p>编译运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">(nemu) c<br>[src/cpu/cpu-exec.c:164 cpu_exec] nemu: HIT GOOD TRAP at pc = 0x80000120<br></code></pre></td></tr></table></figure>
+
+<p>这样这个 add.c 就算完成了。</p>
+<h1 id="add-longlong-c"><a href="#add-longlong-c" class="headerlink" title="add-longlong.c"></a>add-longlong.c</h1><h2 id="sltu"><a href="#sltu" class="headerlink" title="sltu"></a>sltu</h2><p>在 RISC-V 指令集中，<code>sltu</code> 指令代表“Set Less Than Unsigned”。这是一个 R-type 指令，用于比较两个寄存器中的无符号整数值，并根据比较结果设置目标寄存器的值。</p>
+<h3 id="指令格式-6"><a href="#指令格式-6" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>sltu</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">sltu <span class="hljs-built_in">rd</span>, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，将存储比较的结果。</li>
+<li>**<code>rs1</code>**：第一个源寄存器，其值作为比较的左操作数。</li>
+<li>**<code>rs2</code>**：第二个源寄存器，其值作为比较的右操作数。</li>
+</ul>
+<h3 id="功能描述-6"><a href="#功能描述-6" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>sltu</code> 指令时，处理器会进行以下操作：</p>
+<ol>
+<li><strong>比较操作</strong>：比较来自 <code>rs1</code> 和 <code>rs2</code> 的值，作为无符号整数进行比较。</li>
+<li><strong>设置结果</strong>：<ul>
+<li>如果 <code>rs1</code> 的无符号值小于 <code>rs2</code> 的无符号值，则将 <code>rd</code> 设置为 <code>1</code>。</li>
+<li>否则，将 <code>rd</code> 设置为 <code>0</code>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="使用场景-6"><a href="#使用场景-6" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>sltu</code> 指令在多种编程场景中都非常有用，尤其是涉及无符号数比较的情况。它可以用于：</p>
+<ul>
+<li>实现条件分支和循环控制，特别是在数据结构如优先队列和二叉搜索树的操作中。</li>
+<li>数值比较，尤其是在处理大量数据或数组时，进行元素排序和搜索。</li>
+<li>算法中的决策制定，如决定两个无符号数的大小关系。</li>
+</ul>
+<h3 id="示例-4"><a href="#示例-4" class="headerlink" title="示例"></a>示例</h3><p>假设我们需要根据两个无符号整数的大小关系来执行不同的操作。我们可以使用 <code>sltu</code> 指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">sltu t0, a1, a2  # 检查寄存器 a1 是否小于 a2，将结果存储在 t0<br></code></pre></td></tr></table></figure>
+
+<p>如果 <code>a1</code> 中的无符号值小于 <code>a2</code> 中的值，则 <code>t0</code> 将被设置为 <code>1</code>；否则，<code>t0</code> 将被设置为 <code>0</code>。然后，可以使用 <code>t0</code> 的值来控制程序的分支，例如使用条件分支指令跳转到不同的代码段。</p>
+<p><code>sltu</code> 为 RISC-V 提供了一种简洁的方式来比较无符号整数，并根据比较结果设置条件代码或执行分支操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 011 ????? 01100 11&quot;</span>, sltu, R,<br>            R(rd) = src1 &lt; src2);<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="xor"><a href="#xor" class="headerlink" title="xor"></a>xor</h2><p>在 RISC-V 指令集中，<code>xor</code> 指令用于执行两个寄存器之间的按位异或（XOR）操作。这也是一个 R-type 指令，它处理两个寄存器的位数据，并将结果存储在一个目标寄存器中。</p>
+<h3 id="指令格式-7"><a href="#指令格式-7" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>xor</code> 指令的基本格式如下：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada"><span class="hljs-keyword">xor</span> rd, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储操作的结果。</li>
+<li>**<code>rs1</code>**：第一个源寄存器。</li>
+<li>**<code>rs2</code>**：第二个源寄存器。</li>
+</ul>
+<h3 id="功能描述-7"><a href="#功能描述-7" class="headerlink" title="功能描述"></a>功能描述</h3><p>当执行 <code>xor</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>按位异或操作</strong>：从寄存器 <code>rs1</code> 和 <code>rs2</code> 中读取数值，对这两个数值进行按位异或操作。按位异或是一个二元操作，其中两位相同结果为 0，不同则为 1。</li>
+<li><strong>存储结果</strong>：将异或操作的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-7"><a href="#使用场景-7" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>xor</code> 指令在各种场景中有多种用途，包括：</p>
+<ul>
+<li><strong>数据掩码和位操作</strong>：可以用来切换特定的位或清除特定的位设置。</li>
+<li><strong>数据校验</strong>：在某些错误检测和校正算法中，使用异或操作来生成校验位或校验码。</li>
+<li><strong>实现简单的逻辑运算</strong>：异或操作在某些算法中用于条件逻辑判断。</li>
+<li><strong>加密和解密</strong>：在某些简单的加密算法中，使用异或来对数据进行加密或解密。</li>
+</ul>
+<h3 id="示例-5"><a href="#示例-5" class="headerlink" title="示例"></a>示例</h3><p>假设有两个寄存器 <code>a1</code> 和 <code>a2</code>，其中存储了两个数值，我们需要获取这两个数值的按位异或结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">xor a3, a1, a2  # 将 a1 和 a2 中的值进行按位异或，结果存储在 a3<br></code></pre></td></tr></table></figure>
+
+<p>这条指令会将 <code>a1</code> 和 <code>a2</code> 中的每一位进行比较，相同则在 <code>a3</code> 的对应位设置为 0，不同则设置为 1。例如，如果 <code>a1</code> 是 <code>1101</code>，<code>a2</code> 是 <code>1011</code>，那么 <code>a3</code> 将被设置为 <code>0110</code>。</p>
+<p><code>xor</code> 指令是 RISC-V 指令集中基础的位操作指令之一，提供了基本的逻辑功能，是许多更复杂操作和算法的构建块。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 100 ????? 01100 11&quot;</span>, xor, R,<br>            R(rd) = src1 ^ src2);<br></code></pre></td></tr></table></figure>
+
+<h2 id="or"><a href="#or" class="headerlink" title="or"></a>or</h2><p>在 RISC-V 指令集中，<code>or</code> 指令用于执行两个寄存器之间的按位或（OR）操作。这也是一个 R-type 指令，它处理两个寄存器的位数据，并将结果存储在一个目标寄存器中。</p>
+<h3 id="指令格式-8"><a href="#指令格式-8" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>or</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">or <span class="hljs-built_in">rd</span>, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储操作的结果。</li>
+<li>**<code>rs1</code>**：第一个源寄存器。</li>
+<li>**<code>rs2</code>**：第二个源寄存器。</li>
+</ul>
+<h3 id="功能描述-8"><a href="#功能描述-8" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>or</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>按位或操作</strong>：从寄存器 <code>rs1</code> 和 <code>rs2</code> 中读取数值，对这两个数值进行按位或操作。按位或是一个二元操作，其中任一位为 1，则结果位也为 1。</li>
+<li><strong>存储结果</strong>：将按位或操作的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-8"><a href="#使用场景-8" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>or</code> 指令在多种编程场景中非常有用，包括：</p>
+<ul>
+<li><strong>设置特定的位</strong>：可以用来确保特定的位设置为 1，常用于标志位和控制位的操作。</li>
+<li><strong>合并位掩码</strong>：在需要结合多个条件或标志时，使用按位或来合并掩码。</li>
+<li><strong>实现简单的逻辑运算</strong>：<code>or</code> 通常用于实现基本的逻辑运算，尤其是在布尔逻辑和条件判断中。</li>
+</ul>
+<h3 id="示例-6"><a href="#示例-6" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 和 <code>a2</code> 分别存储了两个数值，我们需要合并这两个数值的位，保证任一位为 1 的都设置为 1：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">or a3, a1, a2  # 将 a1 和 a2 中的值进行按位或，结果存储在 a3<br></code></pre></td></tr></table></figure>
+
+<p>这条指令会将 <code>a1</code> 和 <code>a2</code> 中的每一位进行比较，任何一位为 1，相应的在 <code>a3</code> 的对应位也将设置为 1。例如，如果 <code>a1</code> 是 <code>1101</code>，<code>a2</code> 是 <code>1011</code>，那么 <code>a3</code> 将被设置为 <code>1111</code>。</p>
+<p><code>or</code> 指令是 RISC-V 指令集中基础的位操作指令之一，提供了基本的逻辑功能，是许多更复杂操作和算法的构建块。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 110 ????? 01100 11&quot;</span>, or, R,<br>            R(rd) = src1 | src2);<br></code></pre></td></tr></table></figure>
+
+<h1 id="bit-c"><a href="#bit-c" class="headerlink" title="bit.c"></a>bit.c</h1><h2 id="sh"><a href="#sh" class="headerlink" title="sh"></a>sh</h2><p>在 RISC-V 指令集中，<code>sh</code> 指令代表 “Store Halfword”。这是一个 S-type 指令，用于将一个 16位（半字）的整数从寄存器存储到内存中。与其他存储指令如 <code>sb</code>（Store Byte）和 <code>sw</code>（Store Word）相似，<code>sh</code> 主要用于将数据写入内存中指定的地址。</p>
+<h3 id="指令格式-9"><a href="#指令格式-9" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>sh</code> 指令的基本格式如下：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scss">sh rs2, <span class="hljs-built_in">offset</span>(rs1)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rs2</code>**：源寄存器，其值（或其中的一部分）将被存储到内存中。</li>
+<li>**<code>rs1</code>**：基址寄存器，提供内存地址的基础部分。</li>
+<li>**<code>offset</code>**：一个立即数偏移量，与基址寄存器的内容相加，得到最终的内存地址。</li>
+</ul>
+<h3 id="功能描述-9"><a href="#功能描述-9" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>sh</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>计算地址</strong>：从基址寄存器 <code>rs1</code> 中读取基础地址，并加上偏移量 <code>offset</code>，以计算出内存中的目标地址。</li>
+<li><strong>存储数据</strong>：将寄存器 <code>rs2</code> 的低 16 位（即半字）存储到计算出的内存地址中。</li>
+</ol>
+<h3 id="使用场景-9"><a href="#使用场景-9" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>sh</code> 指令在需要将较小的数据单元（如 16 位整数）存储到内存的情况下非常有用。它可以用于以下场景：</p>
+<ul>
+<li><strong>保存数据结构的一部分</strong>：如只需要更新结构中的一个字段时。</li>
+<li><strong>处理数组或列表中的元素</strong>：特别是在数组元素为 16 位整数的情况下。</li>
+<li><strong>资源受限的环境</strong>：在内存或带宽受限的嵌入式系统中，可能需要优化数据传输的大小。</li>
+</ul>
+<h3 id="示例-7"><a href="#示例-7" class="headerlink" title="示例"></a>示例</h3><p>假设我们需要将寄存器 <code>t1</code> 中的一个 16 位值存储到由寄存器 <code>a0</code> 指定的内存地址处，地址偏移量为 2：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">sh t1, 2(a0)  # 将寄存器 t1 的低 16 位存储到由 a0 寄存器加 2 的地址<br></code></pre></td></tr></table></figure>
+
+<p>此指令会将 <code>t1</code> 的低 16 位内容存储到 <code>a0 + 2</code> 指定的内存位置。这种操作是在处理各种数据传输和存储操作时常见的，特别是在与硬件设备交互或在内存中构建数据结构时。</p>
+<h2 id="srai"><a href="#srai" class="headerlink" title="srai"></a>srai</h2><p>在 RISC-V 指令集中，<code>srai</code> 指令代表 “Shift Right Arithmetic Immediate”。这是一个 I-type 指令，用于将寄存器中的数值向右算术移位一定的位数，位数由立即数指定，移位过程中保持数值的符号位不变。这种指令在处理符号整数时非常有用，因为它保持了数的符号（正或负）。</p>
+<h3 id="指令格式-10"><a href="#指令格式-10" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>srai</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">srai <span class="hljs-built_in">rd</span>, rs1, imm<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储操作结果。</li>
+<li>**<code>rs1</code>**：源寄存器，其值将被移位。</li>
+<li>**<code>imm</code>**：立即数，指定向右移动的位数。</li>
+</ul>
+<h3 id="功能描述-10"><a href="#功能描述-10" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>srai</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 中读取数值。</li>
+<li><strong>算术右移</strong>：按照 <code>imm</code> 指定的位数将 <code>rs1</code> 的值向右移动。在移动过程中，最高位（符号位）的值将复制到新移出的高位中，这保证了移位后的数值保持原有的符号。</li>
+<li><strong>存储结果</strong>：将移位后的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-10"><a href="#使用场景-10" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>srai</code> 指令在多种编程场景中有用，尤其是涉及到处理符号整数的情况。它可以用于：</p>
+<ul>
+<li><strong>实现快速的除法运算</strong>：对于 2 的幂次方的除法，可以使用算术右移来快速完成。</li>
+<li><strong>调整数值的大小</strong>：在不丢失符号的情况下调整数值的范围。</li>
+<li><strong>信号处理和图形处理</strong>：在进行数据标准化或参数调整时经常需要算术右移。</li>
+</ul>
+<h3 id="示例-8"><a href="#示例-8" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 中存储了一个整数，我们需要将这个数值右移 3 位：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">srai a2, a1, 3  # 将寄存器 a1 中的值向右算术移位 3 位，结果存储在 a2<br></code></pre></td></tr></table></figure>
+
+<p>这条指令会将 <code>a1</code> 中的值向右移动 3 位，移动过程中保留符号位，并将最终的结果存储在寄存器 <code>a2</code> 中。如果 <code>a1</code> 中的值为 <code>-8</code>（在二进制中表示为 <code>11111111111111111111111111111000</code>），则执行这条指令后 <code>a2</code> 中的值将是 <code>-1</code>（在二进制中表示为 <code>11111111111111111111111111111111</code>）。</p>
+<p><code>srai</code> 指令为 RISC-V 提供了有效的方式来处理算术右移，使得基于位的操作可以有效执行，同时保留数值的符号。</p>
+<h2 id="andi"><a href="#andi" class="headerlink" title="andi"></a>andi</h2><p>在 RISC-V 指令集中，<code>andi</code> 指令代表 “AND Immediate”。这是一种 I-type 指令，用于将寄存器中的数值与一个立即数进行按位与（AND）操作，并将结果存储在目标寄存器中。<code>andi</code> 指令使得处理器可以直接与一个立即数进行逻辑运算，无需另一个寄存器作为第二操作数，这在处理位掩码和清除特定位等操作时非常有用。</p>
+<h3 id="指令格式-11"><a href="#指令格式-11" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>andi</code> 指令的基本格式如下：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs avrasm"><span class="hljs-keyword">andi</span> rd, rs1, imm<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储操作结果。</li>
+<li>**<code>rs1</code>**：源寄存器，其值将被用于与操作。</li>
+<li>**<code>imm</code>**：立即数，与源寄存器的值进行按位与操作。</li>
+</ul>
+<h3 id="功能描述-11"><a href="#功能描述-11" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>andi</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 中读取数值。</li>
+<li><strong>按位与操作</strong>：将 <code>rs1</code> 的值与立即数 <code>imm</code> 进行按位与操作。此操作对 <code>rs1</code> 的每一位与 <code>imm</code> 的相应位执行逻辑与，如果两者都是 1，则结果位也是 1；否则结果位为 0。</li>
+<li><strong>存储结果</strong>：将按位与操作的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-11"><a href="#使用场景-11" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>andi</code> 指令在多种编程场景中有用，尤其是涉及到处理位级数据的情况。它可以用于：</p>
+<ul>
+<li><strong>设置特定的位</strong>：可以用来清除（置零）特定的位，或确保某些位保持不变。</li>
+<li><strong>创建掩码</strong>：在需要对数值应用特定掩码时使用。</li>
+<li><strong>条件检查</strong>：检查特定的位是否被设置。</li>
+</ul>
+<h3 id="示例-9"><a href="#示例-9" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 中存储了一个整数，我们需要保留这个数值的低 8 位，其他位清零：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">andi a2, a1, 255  # 将寄存器 a1 中的值与立即数 255 (二进制 11111111) 进行按位与，结果存储在 a2<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将 <code>a1</code> 中的值与 <code>255</code> 进行按位与操作，只保留 <code>a1</code> 的低 8 位，其他位都会被清零，最终的结果存储在寄存器 <code>a2</code> 中。</p>
+<p><code>andi</code> 指令为 RISC-V 提供了一种高效的方式来执行与立即数的逻辑运算，它是实现基于位的操作的关键工具。</p>
+<h2 id="sll"><a href="#sll" class="headerlink" title="sll"></a>sll</h2><p>在 RISC-V 指令集中，<code>sll</code> 指令代表 “Shift Left Logical”。这是一个 R-type 指令，用于将寄存器中的数值向左逻辑移位，移位的位数由另一个寄存器指定。此指令主要用于位操作，如数据的位扩展和快速乘法运算。</p>
+<h3 id="指令格式-12"><a href="#指令格式-12" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>sll</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">sll <span class="hljs-built_in">rd</span>, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储操作的结果。</li>
+<li>**<code>rs1</code>**：源寄存器，其值将被移位。</li>
+<li>**<code>rs2</code>**：指定移位位数的寄存器。</li>
+</ul>
+<h3 id="功能描述-12"><a href="#功能描述-12" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>sll</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 中读取数值。</li>
+<li><strong>读取位数寄存器</strong>：从寄存器 <code>rs2</code> 中读取指定的移位位数。</li>
+<li><strong>逻辑左移</strong>：将 <code>rs1</code> 的值向左移动 <code>rs2</code> 中指定的位数。在移动过程中，从右侧移入的位将设置为 0。</li>
+<li><strong>存储结果</strong>：将移位后的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-12"><a href="#使用场景-12" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>sll</code> 指令在多种编程场景中有用，尤其是涉及到位操作的情况。它可以用于：</p>
+<ul>
+<li><strong>位字段操作</strong>：可以用来左移位字段，扩大数值范围或为进一步的位操作做准备。</li>
+<li><strong>快速乘法</strong>：对于2的幂次方的乘法，可以使用左移实现快速计算。</li>
+<li><strong>数据打包</strong>：在处理需要组合多个小数据项到一个单一数据块中时使用。</li>
+</ul>
+<h3 id="示例-10"><a href="#示例-10" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 中存储了一个整数，我们需要将这个数值左移 <code>a2</code> 寄存器中指定的位数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">sll a3, a1, a2  # 将寄存器 a1 中的值向左移位，移位数由 a2 指定，结果存储在 a3<br></code></pre></td></tr></table></figure>
+
+<p>这条指令会将 <code>a1</code> 中的值向左移动 <code>a2</code> 中指定的位数，移位过程中低位补零，并将最终的结果存储在寄存器 <code>a3</code> 中。</p>
+<p><code>sll</code> 指令为 RISC-V 提供了一种高效的方式来执行逻辑左移，使得基于位的操作可以有效执行，从而扩展数据处理和数值计算的能力。</p>
+<h2 id="and"><a href="#and" class="headerlink" title="and"></a>and</h2><p>在 RISC-V 指令集中，<code>and</code> 指令代表 “AND”，即逻辑与操作。这是一个 R-type 指令，用于执行两个寄存器中的数值的按位与操作，并将结果存储在目标寄存器中。</p>
+<h3 id="指令格式-13"><a href="#指令格式-13" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>and</code> 指令的基本格式如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-keyword">and</span> rd, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储操作的结果。</li>
+<li>**<code>rs1</code>**：第一个源寄存器。</li>
+<li>**<code>rs2</code>**：第二个源寄存器。</li>
+</ul>
+<h3 id="功能描述-13"><a href="#功能描述-13" class="headerlink" title="功能描述"></a>功能描述</h3><p>当执行 <code>and</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>按位与操作</strong>：从寄存器 <code>rs1</code> 和 <code>rs2</code> 中读取数值，对这两个数值进行按位与操作。按位与是一个二元操作，其中两位都为1时，结果位才为1；否则，结果位为0。</li>
+<li><strong>存储结果</strong>：将按位与操作的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-13"><a href="#使用场景-13" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>and</code> 指令在多种编程场景中非常有用，包括：</p>
+<ul>
+<li><strong>数据掩码操作</strong>：可以用来确保特定的位被清除（置0），或确保某些位保持不变。这对于处理位掩码或进行特定的配置设置非常有用。</li>
+<li><strong>权限和属性检查</strong>：在操作系统和其他系统软件中，常用于检查和设置对象的权限和属性。</li>
+<li><strong>实现简单的逻辑运算</strong>：<code>and</code> 操作是实现复杂逻辑表达式的基础。</li>
+</ul>
+<h3 id="示例-11"><a href="#示例-11" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 和 <code>a2</code> 分别存储了两个整数，我们需要获取这两个整数中同时为1的位：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">and a3, a1, a2  # 将寄存器 a1 和 a2 中的值进行按位与，结果存储在 a3<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将 <code>a1</code> 和 <code>a2</code> 中的每一位进行比较，两者对应位都为1时，在 <code>a3</code> 的对应位也将设置为1。例如，如果 <code>a1</code> 是 <code>1101</code> 和 <code>a2</code> 是 <code>1011</code>，那么 <code>a3</code> 将被设置为 <code>1001</code>。</p>
+<p><code>and</code> 指令是 RISC-V 指令集中的基础逻辑操作之一，提供了直接通过寄存器进行按位与操作的能力，是处理器功能的基石之一。</p>
+<h2 id="xori"><a href="#xori" class="headerlink" title="xori"></a>xori</h2><p>在 RISC-V 指令集中，<code>xori</code> 指令代表 “XOR Immediate”。这是一种 I-type 指令，用于执行寄存器中的数值与一个立即数的按位异或（XOR）操作，并将结果存储在目标寄存器中。这种指令允许直接与一个常量进行逻辑运算，非常适合进行快速的位反转或检查位差异等操作。</p>
+<h3 id="指令格式-14"><a href="#指令格式-14" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>xori</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">xori <span class="hljs-built_in">rd</span>, rs1, imm<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储操作的结果。</li>
+<li>**<code>rs1</code>**：源寄存器，其值将被用于与操作。</li>
+<li>**<code>imm</code>**：一个立即数，与源寄存器的值进行按位异或操作。</li>
+</ul>
+<h3 id="功能描述-14"><a href="#功能描述-14" class="headerlink" title="功能描述"></a>功能描述</h3><p>当执行 <code>xori</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 中读取数值。</li>
+<li><strong>按位异或操作</strong>：将 <code>rs1</code> 的值与立即数 <code>imm</code> 进行按位异或操作。按位异或是一个二元操作，其中两位相同结果为 0，不同则为 1。</li>
+<li><strong>存储结果</strong>：将按位异或操作的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-14"><a href="#使用场景-14" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>xori</code> 指令在多种编程场景中有用，尤其是涉及到处理位级数据的情况。它可以用于：</p>
+<ul>
+<li><strong>位反转</strong>：可以通过异或一个全1的立即数来反转寄存器中的位。</li>
+<li><strong>生成特定的位模式</strong>：用于快速生成或切换特定的位模式。</li>
+<li><strong>条件检查</strong>：在某些条件或算法逻辑中，使用异或来确定两个值的位级差异。</li>
+</ul>
+<h3 id="示例-12"><a href="#示例-12" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 中存储了一个整数，我们需要将这个数值中的特定位反转：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">xori a2, a1, 0x0F  # 将寄存器 a1 中的值与立即数 0x0F (二进制 00001111) 进行按位异或，结果存储在 a2<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将 <code>a1</code> 中的值与 <code>0x0F</code> 进行按位异或操作，特别是低4位将被反转，而高位保持不变。如果 <code>a1</code> 的值为 <code>1101 1010</code>（二进制形式），则 <code>a2</code> 将被设置为 <code>1101 1101</code>。</p>
+<p><code>xori</code> 指令为 RISC-V 提供了一种高效的方式来执行逻辑异或操作，使得基于位的操作可以有效执行，从而扩展数据处理和数值计算的能力。</p>
+<h1 id="bubble-sort-c"><a href="#bubble-sort-c" class="headerlink" title="bubble-sort.c"></a>bubble-sort.c</h1><h2 id="blez"><a href="#blez" class="headerlink" title="blez"></a>blez</h2><p>在 RISC-V 指令集中，<code>blez</code>（Branch if Less than or Equal to Zero）并不是一个官方的单独指令。然而，许多指令集提供类似的功能，用于在某个寄存器的值小于或等于零时进行条件分支。在 RISC-V 中，这样的条件分支可以通过组合其他指令来实现。</p>
+<h3 id="RISC-V-中实现类似-blez-的功能"><a href="#RISC-V-中实现类似-blez-的功能" class="headerlink" title="RISC-V 中实现类似 blez 的功能"></a>RISC-V 中实现类似 <code>blez</code> 的功能</h3><p>尽管 RISC-V 没有直接提供 <code>blez</code> 指令，但可以通过使用 <code>bge</code>（Branch if Greater or Equal）指令与零寄存器（<code>x0</code> 或 <code>zero</code>）相结合来模拟这个功能。<code>bge</code> 指令用于判断第一个操作数（寄存器）是否大于等于第二个操作数（寄存器或立即数）。</p>
+<h4 id="示例-13"><a href="#示例-13" class="headerlink" title="示例"></a>示例</h4><p>假设我们想要检查寄存器 <code>a1</code> 的值是否小于或等于零，并根据结果跳转到某个标签 <code>target_label</code>。可以这样写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">bge x0, a1, target_label<br></code></pre></td></tr></table></figure>
+
+<p>这行代码的逻辑是，如果零（<code>x0</code>）大于等于 <code>a1</code> 的值，那么就跳转到 <code>target_label</code>。这实际上检查了 <code>a1</code> 是否小于或等于零。</p>
+<h3 id="使用场景-15"><a href="#使用场景-15" class="headerlink" title="使用场景"></a>使用场景</h3><p>类似 <code>blez</code> 的逻辑在多种编程场景中非常有用，尤其是在需要根据某些计算结果或状态值进行决策控制流的情况下，如：</p>
+<ul>
+<li>检查计数器或循环变量是否耗尽。</li>
+<li>根据函数或计算的结果判断是否需要执行错误处理或特殊处理。</li>
+<li>在算法中基于条件执行不同的代码路径。</li>
+</ul>
+<p>通过这种方式，尽管 RISC-V 指令集本身可能不包括某些特定的分支指令，但它的设计允许通过组合现有的指令来实现复杂的逻辑，保持了指令集的整洁性和可扩展性。</p>
+<h1 id="crc32-c"><a href="#crc32-c" class="headerlink" title="crc32.c"></a>crc32.c</h1><h2 id="lui"><a href="#lui" class="headerlink" title="lui"></a>lui</h2><p>在 RISC-V 指令集中，<code>lui</code> 指令代表 “Load Upper Immediate”。这是一种 U-type 指令，用于将一个20位的立即数加载到寄存器的高20位，同时将低12位清零。这种指令非常有用于设置大的常数或者构造高精度地址，尤其是与其他指令组合使用时。</p>
+<h3 id="指令格式-15"><a href="#指令格式-15" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>lui</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">lui <span class="hljs-built_in">rd</span>, imm<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储加载的20位立即数。</li>
+<li>**<code>imm</code>**：20位的立即数。</li>
+</ul>
+<h3 id="功能描述-15"><a href="#功能描述-15" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>lui</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>加载立即数</strong>：取出指令中的20位立即数 <code>imm</code>。</li>
+<li><strong>放置到寄存器</strong>：将这个20位立即数放置在目标寄存器 <code>rd</code> 的高20位。</li>
+<li><strong>清零低12位</strong>：目标寄存器的低12位被清零。</li>
+</ol>
+<h3 id="使用场景-16"><a href="#使用场景-16" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>lui</code> 指令在多种编程场景中都非常有用，尤其是在进行内存地址计算或设置大的常数值时。它的主要用途包括：</p>
+<ul>
+<li><strong>初始化寄存器</strong>：用于设置寄存器的初始值，特别是那些用于地址计算或数据操作的寄存器。</li>
+<li><strong>地址计算</strong>：经常与 <code>addi</code> 或其他指令结合使用来形成完整的32位或更大的地址值。</li>
+<li><strong>常量加载</strong>：加载大的常数到寄存器，为后续操作提供参数。</li>
+</ul>
+<h3 id="示例-14"><a href="#示例-14" class="headerlink" title="示例"></a>示例</h3><p>假设我们需要将一个大的常数值加载到寄存器 <code>a1</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">lui a1, 0x12345  # 将立即数 0x12345 加载到寄存器 a1 的高20位，低12位清零<br></code></pre></td></tr></table></figure>
+
+<p>执行后，<code>a1</code> 的值将是 <code>0x12345000</code>。这种操作是设置高精度数值的快捷方式，也是内存地址设置的基础。</p>
+<p>通过 <code>lui</code>，RISC-V 提供了一种简单而有效的方法来处理高位立即数加载，使得处理器能够快速地设置大范围的数值或地址。这是构建高效且可扩展的软件系统的关键能力之一。</p>
+<h2 id="srli"><a href="#srli" class="headerlink" title="srli"></a>srli</h2><p>在 RISC-V 指令集中，<code>srli</code> 指令代表 “Shift Right Logical Immediate”。这是一个 I-type 指令，用于将寄存器中的数值向右进行逻辑移位，移位的位数由立即数指定。逻辑移位意味着在右移的过程中，左边移入的位总是设置为0，不管原始的最高位是什么。</p>
+<h3 id="指令格式-16"><a href="#指令格式-16" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>srli</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">srli <span class="hljs-built_in">rd</span>, rs1, imm<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储移位后的结果。</li>
+<li>**<code>rs1</code>**：源寄存器，其值将被移位。</li>
+<li>**<code>imm</code>**：立即数，指定要移位的位数。</li>
+</ul>
+<h3 id="功能描述-16"><a href="#功能描述-16" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>srli</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 中读取数值。</li>
+<li><strong>逻辑右移</strong>：按照立即数 <code>imm</code> 指定的位数，将 <code>rs1</code> 的值向右逻辑移位。在移位过程中，高位移入的部分全为0。</li>
+<li><strong>存储结果</strong>：将移位后的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-17"><a href="#使用场景-17" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>srli</code> 指令在需要进行位级别的操作时非常有用，尤其是处理无符号数或需要明确处理高位为0的场景。它可以用于：</p>
+<ul>
+<li><strong>无符号除法</strong>：快速进行对2的幂次方的除法（无符号数），例如 <code>srli</code> 可以用来计算无符号数的除2、除4等。</li>
+<li><strong>位处理</strong>：在数据处理或编码过程中，需要逻辑右移以处理某些特定位或进行掩码运算。</li>
+<li><strong>数据打包和解包</strong>：在将多个数据项组合到一个寄存器中或者从中解包出来时，可以使用移位操作。</li>
+</ul>
+<h3 id="示例-15"><a href="#示例-15" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 中存储了一个整数，我们需要将这个数值右移3位：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">srli a2, a1, 3  # 将寄存器 a1 中的值向右逻辑移位3位，结果存储在 a2<br></code></pre></td></tr></table></figure>
+
+<p>这条指令会将 <code>a1</code> 中的值向右移动3位，左边移入的位全为0，最终的结果存储在寄存器 <code>a2</code> 中。例如，如果 <code>a1</code> 的值是 <code>0b10011000</code>，执行 <code>srli</code> 后，<code>a2</code> 的值将是 <code>0b00010011</code>。</p>
+<p><code>srli</code> 指令为 RISC-V 提供了一个基础的逻辑移位功能，使得在处理无符号数和进行位操作时更加高效。</p>
+<h2 id="bgeu"><a href="#bgeu" class="headerlink" title="bgeu"></a>bgeu</h2><p>在 RISC-V 指令集中，<code>bgeu</code> 指令代表 “Branch if Greater or Equal Unsigned”。这是一种 B-type 指令，用于比较两个寄存器中的无符号整数值。如果第一个寄存器的值大于或等于第二个寄存器的值（以无符号整数的方式比较），则程序将执行到指定的标签或地址处。</p>
+<h3 id="指令格式-17"><a href="#指令格式-17" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>bgeu</code> 指令的基本格式如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">bgeu rs1, rs2, <span class="hljs-selector-tag">label</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rs1</code>**：第一个源寄存器。</li>
+<li>**<code>rs2</code>**：第二个源寄存器。</li>
+<li>**<code>label</code>**：如果 <code>rs1</code> 的无符号值大于或等于 <code>rs2</code> 的无符号值，则跳转到这个标签指向的代码位置。</li>
+</ul>
+<h3 id="功能描述-17"><a href="#功能描述-17" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>bgeu</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>比较操作</strong>：比较来自 <code>rs1</code> 和 <code>rs2</code> 的无符号整数值。</li>
+<li><strong>条件跳转</strong>：如果 <code>rs1</code> 的无符号值大于或等于 <code>rs2</code> 的无符号值，程序的执行流将跳转到 <code>label</code> 指定的位置。如果它们不满足这个条件，则程序将继续执行下一条指令。</li>
+</ol>
+<h3 id="使用场景-18"><a href="#使用场景-18" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>bgeu</code> 指令在处理无符号数比较的场景中非常有用，特别是在需要基于数值大小决定程序流向的场合。它可以用于：</p>
+<ul>
+<li><strong>循环控制</strong>：在循环结构中，根据计数器或索引的大小来决定是否继续执行循环。</li>
+<li><strong>数组或数据结构操作</strong>：在处理数组或其他数据结构时，比较索引或边界条件，防止越界。</li>
+<li><strong>资源管理</strong>：在系统资源或内存管理中，根据资源的量或大小进行条件判断和相应操作。</li>
+</ul>
+<h3 id="示例-16"><a href="#示例-16" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>t0</code> 和 <code>t1</code> 分别存储了两个无符号整数，我们需要根据它们的值大小来决定程序的流程：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs assembly">bgeu t0, t1, proceed<br># 其他指令<br>proceed:<br>    # 如果 t0 大于或等于 t1，执行此处的代码<br></code></pre></td></tr></table></figure>
+
+<p>在这个示例中，如果 <code>t0</code> 的无符号值大于或等于 <code>t1</code> 的无符号值，程序将跳转到标签 <code>proceed</code>。这样的逻辑可以用于保护程序不进入不应该执行的代码区域，或者用于循环和条件执行的优化。</p>
+<p><code>bgeu</code> 指令是 RISC-V 指令集中对无符号整数比较提供的直接支持，是实现高效、安全程序控制流的重要工具。</p>
+<h2 id="slli"><a href="#slli" class="headerlink" title="slli"></a>slli</h2><p>在 RISC-V 指令集中，<code>slli</code> 指令代表 “Shift Left Logical Immediate”。这是一个 I-type 指令，用于将寄存器中的数值向左逻辑移位，移位的位数由一个立即数指定。这种操作通常用于位字段操作，如快速乘以2的幂次，或者将数据字段对齐到特定的位置。</p>
+<h3 id="指令格式-18"><a href="#指令格式-18" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>slli</code> 指令的基本格式如下：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">slli <span class="hljs-built_in">rd</span>, rs1, imm<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储移位后的结果。</li>
+<li>**<code>rs1</code>**：源寄存器，其值将被移位。</li>
+<li>**<code>imm</code>**：立即数，指定要移位的位数。</li>
+</ul>
+<h3 id="功能描述-18"><a href="#功能描述-18" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>slli</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 中读取数值。</li>
+<li><strong>逻辑左移</strong>：按照立即数 <code>imm</code> 指定的位数，将 <code>rs1</code> 的值向左逻辑移位。在移动过程中，从右侧移入的位将设置为 0。</li>
+<li><strong>存储结果</strong>：将移位后的结果存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-19"><a href="#使用场景-19" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>slli</code> 指令在多种编程场景中非常有用，尤其是涉及到位操作的情况。它可以用于：</p>
+<ul>
+<li><strong>位字段操作</strong>：可以用来左移位字段，扩大数值范围或为进一步的位操作做准备。</li>
+<li><strong>快速乘法</strong>：对于2的幂次方的乘法，可以使用左移实现快速计算。</li>
+<li><strong>数据打包和解包</strong>：在将多个数据项组合到一个单一数据块中或者从中解包出来时，可以使用移位操作。</li>
+</ul>
+<h3 id="示例-17"><a href="#示例-17" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 中存储了一个整数，我们需要将这个数值左移 5 位：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">slli a2, a1, 5  # 将寄存器 a1 中的值向左逻辑移位 5 位，结果存储在 a2<br></code></pre></td></tr></table></figure>
+
+<p>这条指令会将 <code>a1</code> 中的值向左移动 5 位，左边移入的位全为0，并将最终的结果存储在寄存器 <code>a2</code> 中。例如，如果 <code>a1</code> 的值是 <code>0b0001</code>（二进制），执行 <code>slli</code> 后，<code>a2</code> 的值将是 <code>0b100000</code>（二进制）。</p>
+<p><code>slli</code> 指令为 RISC-V 提供了一种高效的方式来执行逻辑左移，使得基于位的操作可以有效执行，从而扩展数据处理和数值计算的能力。</p>
+<h1 id="div-c"><a href="#div-c" class="headerlink" title="div.c"></a>div.c</h1><h2 id="mul"><a href="#mul" class="headerlink" title="mul"></a>mul</h2><p>在 RISC-V 指令集中，<code>mul</code> 指令代表 “Multiply”，用于执行两个寄存器中的数值的乘法操作，并将结果的低 32 位存储在目标寄存器中。这是一个 R-type 指令，是 RISC-V 指令集中标准整数乘法指令的一部分。</p>
+<h3 id="指令格式-19"><a href="#指令格式-19" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>mul</code> 指令的基本格式如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-keyword">mul</span> rd, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储乘法操作的结果。</li>
+<li>**<code>rs1</code>**：第一个源寄存器，提供第一个乘数。</li>
+<li>**<code>rs2</code>**：第二个源寄存器，提供第二个乘数。</li>
+</ul>
+<h3 id="功能描述-19"><a href="#功能描述-19" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>mul</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 和 <code>rs2</code> 中分别读取两个操作数。</li>
+<li><strong>执行乘法操作</strong>：将这两个操作数相乘。</li>
+<li><strong>存储结果</strong>：将乘积的低 32 位存储到目标寄存器 <code>rd</code> 中。如果处理器是 64 位的，<code>mul</code> 仍然只会存储结果的低 32 位，而不考虑高位部分。</li>
+</ol>
+<h3 id="使用场景-20"><a href="#使用场景-20" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>mul</code> 指令在需要进行整数乘法计算的多种场景中非常有用，特别是在涉及数学运算、算法实现、图形处理以及任何需要乘法计算的地方。它可以用于：</p>
+<ul>
+<li><strong>算术运算</strong>：直接进行两个整数的乘法运算。</li>
+<li><strong>算法实现</strong>：在执行算法，如矩阵乘法、信号处理等，中频繁使用乘法。</li>
+<li><strong>资源估算</strong>：计算资源需求，如内存分配和性能预测等。</li>
+</ul>
+<h3 id="示例-18"><a href="#示例-18" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 和 <code>a2</code> 分别存储了两个整数，我们需要计算这两个整数的乘积：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">mul a3, a1, a2  # 将寄存器 a1 和 a2 中的值相乘，结果存储在 a3<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将计算 <code>a1</code> 和 <code>a2</code> 的乘积，并将结果的低 32 位存储在 <code>a3</code> 中。如果是在 32 位 RISC-V 架构上执行，结果是完整的；在 64 位架构上，如果乘积超过 32 位，则只存储低 32 位结果。</p>
+<p><code>mul</code> 指令是 RISC-V 指令集中处理基本乘法操作的关键工具，提供了高效的方式来执行整数乘法。</p>
+<h2 id="div"><a href="#div" class="headerlink" title="div"></a>div</h2><p>在 RISC-V 指令集中，<code>div</code> 指令代表 “Divide”，用于执行两个寄存器中的数值的除法操作。这是一个 R-type 指令，它处理有符号整数的除法，并将除法的商存储在目标寄存器中。</p>
+<h3 id="指令格式-20"><a href="#指令格式-20" class="headerlink" title="指令格式"></a>指令格式</h3><p><code>div</code> 指令的基本格式如下：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript"><span class="hljs-keyword">div</span> rd, rs1, rs2<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**<code>rd</code>**：目标寄存器，用于存储除法操作的结果，即商。</li>
+<li>**<code>rs1</code>**：第一个源寄存器，提供被除数。</li>
+<li>**<code>rs2</code>**：第二个源寄存器，提供除数。</li>
+</ul>
+<h3 id="功能描述-20"><a href="#功能描述-20" class="headerlink" title="功能描述"></a>功能描述</h3><p>执行 <code>div</code> 指令时，处理器将进行以下操作：</p>
+<ol>
+<li><strong>读取源寄存器</strong>：从寄存器 <code>rs1</code> 和 <code>rs2</code> 中分别读取被除数和除数。</li>
+<li><strong>执行除法操作</strong>：<ul>
+<li>如果 <code>rs2</code>（除数）为零，结果根据具体实现可能定义为最大的负数或特定的异常值。</li>
+<li>如果除法结果超出寄存器可以表示的范围（例如，最小的负数除以 <code>-1</code>），结果可能被定义为最大的正数或溢出的值。</li>
+</ul>
+</li>
+<li><strong>存储结果</strong>：将除法的商存储到目标寄存器 <code>rd</code> 中。</li>
+</ol>
+<h3 id="使用场景-21"><a href="#使用场景-21" class="headerlink" title="使用场景"></a>使用场景</h3><p><code>div</code> 指令在需要进行整数除法计算的场景中非常有用，特别是在涉及数学运算和算法实现中。它可以用于：</p>
+<ul>
+<li><strong>算术运算</strong>：直接进行两个整数的除法运算。</li>
+<li><strong>算法实现</strong>：在执行算法，如统计分析、信号处理等，中频繁使用除法。</li>
+<li><strong>资源分配</strong>：计算资源分配的比例或分配单元。</li>
+</ul>
+<h3 id="示例-19"><a href="#示例-19" class="headerlink" title="示例"></a>示例</h3><p>假设寄存器 <code>a1</code> 和 <code>a2</code> 分别存储了两个整数，我们需要计算这两个整数的除法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs assembly">div a3, a1, a2  # 将寄存器 a1 和 a2 中的值进行除法运算，结果存储在 a3<br></code></pre></td></tr></table></figure>
+
+<p>这条指令将计算 <code>a1</code>（被除数）除以 <code>a2</code>（除数）的商，并将结果存储在 <code>a3</code> 中。如果 <code>a2</code> 为零，处理器的行为将取决于具体的实现，可能会设置 <code>a3</code> 为某个特定的值或引发异常。</p>
+<p><code>div</code> 指令是 RISC-V 指令集中处理基本除法操作的关键工具，提供了一种有效的方式来执行有符号整数的除法运算。</p>
+<p>现在，已经可以通过很多的程序了，上面的指令解析如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// add.c</span><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 010 ????? 00000 11&quot;</span>, lw, I,<br>            R(rd) = SEXT(Mr(src1 + imm, <span class="hljs-number">4</span>), <span class="hljs-number">32</span>));<br><br>    INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 000 ????? 01100 11&quot;</span>, add, R,<br>            R(rd) = src1 + src2);<br><br>    INSTPAT(<span class="hljs-string">&quot;0100000 ????? ????? 000 ????? 01100 11&quot;</span>, sub, R,<br>            R(rd) = src1 - src2);<br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 011 ????? 00100 11&quot;</span>, sltiu, I,<br>            R(rd) = (<span class="hljs-type">word_t</span>)src1 &lt; (<span class="hljs-type">word_t</span>)imm);<br><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 000 ????? 11000 11&quot;</span>, beq, B,<br>            <span class="hljs-keyword">if</span> (src1 == src2) s-&gt;dnpc = s-&gt;pc + imm);<br><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 001 ????? 11000 11&quot;</span>, bne, B,<br>            <span class="hljs-keyword">if</span> (src1 != src2) s-&gt;dnpc = s-&gt;pc + imm);<br>    <span class="hljs-comment">// add-longlong.c</span><br>    INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 011 ????? 01100 11&quot;</span>, sltu, R,<br>            R(rd) = (<span class="hljs-type">word_t</span>)src1 &lt; (<span class="hljs-type">word_t</span>)src2);<br><br>    INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 100 ????? 01100 11&quot;</span>, xor, R,<br>            R(rd) = src1 ^ src2);<br><br>    INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 110 ????? 01100 11&quot;</span>, or, R,<br>            R(rd) = src1 | src2);<br>    <span class="hljs-comment">// bit.c</span><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 001 ????? 01000 11&quot;</span>, sh, S,<br>            Mw(src1 + imm, <span class="hljs-number">2</span>, src2));<br>    INSTPAT(<br>        <span class="hljs-string">&quot;0100000 ????? ????? 101 ????? 00100 11&quot;</span>, srai, I,<br>        R(rd) =<br>            (<span class="hljs-type">sword_t</span>)src1 &gt;&gt;<br>            BITS(imm, <span class="hljs-number">5</span>,<br>                 <span class="hljs-number">0</span>));  <span class="hljs-comment">// 数学右移，保留符号位；丢弃 I-TYPE imm 前面的0100000</span><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 111 ????? 00100 11&quot;</span>, andi, I,<br>            R(rd) = src1 &amp; imm);<br>    INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 001 ????? 01100 11&quot;</span>, sll, R,<br>            R(rd) = src1 &lt;&lt; src2);<br><br>    INSTPAT(<span class="hljs-string">&quot;0000000 ????? ????? 111 ????? 01100 11&quot;</span>, and, R,<br>            R(rd) = src1 &amp; src2);<br><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 100 ????? 00100 11&quot;</span>, xori, I,<br>            R(rd) = src1 ^ imm);<br><br>    <span class="hljs-comment">// bubble-sort.c</span><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 101 ????? 11000 11&quot;</span>, bge, B,<br>            <span class="hljs-keyword">if</span> (src1 &gt;= src2) s-&gt;dnpc = s-&gt;pc + imm);<br>    <span class="hljs-comment">// crc32.c</span><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? ??? ????? 01101 11&quot;</span>, lui, U,<br>            R(rd) = imm);  <span class="hljs-comment">// TYPE-U 已经将数左移 12 位了，这里不需要再继续左移</span><br><br>    INSTPAT(<br>        <span class="hljs-string">&quot;0000000 ????? ????? 101 ????? 00100 11&quot;</span>, srli, I,<br>        R(rd) =<br>            (<span class="hljs-type">word_t</span>)src1 &gt;&gt;<br>            BITS(imm, <span class="hljs-number">5</span>,<br>                 <span class="hljs-number">0</span>));  <span class="hljs-comment">// 逻辑右移，不保留符号位；丢弃 I-TYPE imm 前面的0000000</span><br><br>    INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? 111 ????? 11000 11&quot;</span>, bgeu, B,<br>            <span class="hljs-keyword">if</span> ((<span class="hljs-type">word_t</span>)src1 &gt;= (<span class="hljs-type">word_t</span>)src2) s-&gt;dnpc = s-&gt;pc + imm);<br><br>    INSTPAT(<br>        <span class="hljs-string">&quot;0000000 ????? ????? 001 ????? 00100 11&quot;</span>, slli, I,<br>        R(rd) =<br>            (<span class="hljs-type">word_t</span>)src1 &lt;&lt; BITS(<br>                imm, <span class="hljs-number">5</span>,<br>                <span class="hljs-number">0</span>));  <span class="hljs-comment">// 逻辑右移，不保留符号位；丢弃 I-TYPE imm 前面的0000000</span><br><br>    <span class="hljs-comment">// div.c</span><br>    INSTPAT(<span class="hljs-string">&quot;0000001 ????? ????? 000 ????? 01100 11&quot;</span>, mul, R,<br>            R(rd) = src1 * src2);<br>    INSTPAT(<span class="hljs-string">&quot;0000001 ????? ????? 100 ????? 01100 11&quot;</span>, div, R,<br>            R(rd) = src1 / src2);<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/RISCV/PA/" class="category-chain-item">PA</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="print-no-link">#模拟器</a>
+      
+        <a href="/tags/NEMU/" class="print-no-link">#NEMU</a>
+      
+        <a href="/tags/PA2/" class="print-no-link">#PA2</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NEMU 添加更多的指令</div>
+      <div>http://blog.luliang.online/2024/08/21/NEMU添加更多指令/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/22/%E7%A8%8B%E5%BA%8F_RTE_AM/" title="程序, 运行时环境与AM">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">程序, 运行时环境与AM</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/14/nemu%E6%B7%BB%E5%8A%A0%E6%8C%87%E4%BB%A4/" title="NEMU 添加指令">
+                        <span class="hidden-mobile">NEMU 添加指令</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

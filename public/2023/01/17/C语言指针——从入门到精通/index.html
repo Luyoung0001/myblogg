@@ -1,0 +1,820 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文是本人在学习 C语言的过程中所积累的对 C语言指针的感悟，可能会有些地方描述不准确，还请指出。本文遵循一般文章结构，从简单到难，从基本概念到抽象总结。适合任何任何学习 C语言的人群。 一、指针的概念指针的值就是某一个变量的内存地址，指针变量就是用来存放某个变量的内存地址的变量，和广义的变量没有什么区别。 在同一CPU构架下，不同类型的指针变量所占用的存储单元长度是相同的。这是因为操">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C语言指针——从入门到精通">
+<meta property="og:url" content="http://blog.luliang.online/2023/01/17/C%E8%AF%AD%E8%A8%80%E6%8C%87%E9%92%88%E2%80%94%E2%80%94%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文是本人在学习 C语言的过程中所积累的对 C语言指针的感悟，可能会有些地方描述不准确，还请指出。本文遵循一般文章结构，从简单到难，从基本概念到抽象总结。适合任何任何学习 C语言的人群。 一、指针的概念指针的值就是某一个变量的内存地址，指针变量就是用来存放某个变量的内存地址的变量，和广义的变量没有什么区别。 在同一CPU构架下，不同类型的指针变量所占用的存储单元长度是相同的。这是因为操">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a5447bfddc92441798f02960cb72245c_1720253841019.png?token=ANB4BCL6OQ4I6HDTTXSON2DGRD65K">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/29b6615a9cab428180440d9ac64e6516_1720253850025.png?token=ANB4BCKRTVUDJBONKKPER3DGRD65O">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ef4fb7201f65461283945465a56c6e18_1720253850025.png?token=ANB4BCKP7D2DHDRFOZ52BJLGRD65Q">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/007b9d1fdcbe41bf8b71bd53e6e9edf9_1720253850025.png?token=ANB4BCI3YOLE3BYBITGUU23GRD65S">
+<meta property="article:published_time" content="2023-01-17T15:40:06.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.770Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="开发语言">
+<meta property="article:tag" content="c语言">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a5447bfddc92441798f02960cb72245c_1720253841019.png?token=ANB4BCL6OQ4I6HDTTXSON2DGRD65K">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>C语言指针——从入门到精通 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C语言指针——从入门到精通"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-17 23:40" pubdate>
+          2023年1月17日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          38 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">C语言指针——从入门到精通</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文是本人在学习 C语言的过程中所积累的对 C语言指针的感悟，可能会有些地方描述不准确，还请指出。本文遵循一般文章结构，从简单到难，从基本概念到抽象总结。适合任何任何学习 C语言的人群。</p>
+<h2 id="一、指针的概念"><a href="#一、指针的概念" class="headerlink" title="一、指针的概念"></a>一、指针的概念</h2><p>指针的值就是某一个变量的<strong>内存地址</strong>，指针变量就是用来存放某个变量的内存地址的变量，和广义的变量没有什么区别。</p>
+<p>在同一CPU构架下，不同类型的指针变量所占用的存储单元长度是相同的。这是因为操作系统的位数与其所能支持的最大内存有直接的关系。由于计算机是按照字节寻址的，如在 32 位操作系统下，32位比特位一共能描述 2^32 个状态，一个状态标记大小为 1B(一般定义8位（bit，比特）为一字节)，所以一共有 <strong>2^32*1B &#x3D; 4GB</strong>。因此 32 位系统所能支持的最大内存为 4GB。而对于 64 位操作系统（目前主流操作系统），所能支持的最大内存为 <strong>2^64*1B &#x3D; 17179869184GB</strong>，这是一个很大的数，基本上可以支持任何现实中任意存在的内存。</p>
+<p>而指针最小就是以字节为单位进行指引，因此对于 32 位操作系统，它也要是 32 位的，即 4 字节大小；而对于 64 位操作系统，它就得是 64 位 即 8 字节大小。</p>
+<p>我们可以写一个程序验证下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">4</span>;<br>    <span class="hljs-type">int</span>* p = &amp;a;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%zu\n&quot;</span>, <span class="hljs-keyword">sizeof</span>(p));<br>    <span class="hljs-comment">// 指针变量占据 8 个字节</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n&quot;</span>, p);<br>    <span class="hljs-comment">// 变量 a 存放在以内存地址为0x16f85f71c开头的内存单元中</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<blockquote>
+<p>8<br>0x16f85f71c</p>
+</blockquote>
+<p>在 C&#x2F;C++语言中，指针一般被认为是指针变量，指针变量的内容存储的是其指向的对象的首地址，指向的对象可以是变量（指针变量也是变量），数组，函数等占据存储空间的实体。</p>
+<h2 id="二、指针详解"><a href="#二、指针详解" class="headerlink" title="二、指针详解"></a>二、指针详解</h2><p>以下的例子由易到难，每次增长一颗星。</p>
+<h3 id="（一）★"><a href="#（一）★" class="headerlink" title="（一）★"></a>（一）★</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">0</span>, b = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> *p1 = &amp;a, *p2 = &amp;b;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n%p\n&quot;</span>, p1, p2);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>0x16bacb718<br>0x16bacb714</p>
+</blockquote>
+<p>这是一个很简单的例子，程序中创建了两个局部变量，然后利用指针输出它们的地址。其中<code>&amp;</code>是取地址符，取出来以后赋给两个指针变量p1、p2，并将其打印出来。<br>细心的话可以发现这两个地址由大到小，相差为 4。这说明栈中的这两个变量恰好相邻，且一个<code>int</code>类型的变量占用 4B大小空间。而且还说明栈空间的增长方向是由大到小的，当然我们的主题是指针，这里不再赘述。</p>
+<h3 id="（二）★★"><a href="#（二）★★" class="headerlink" title="（二）★★"></a>（二）★★</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">int</span>* p = &amp;a;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;通过指针修改前 a 的值为:%d\n&quot;</span>, a);<br>    *p = <span class="hljs-number">10</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;通过指针修改后 a 的值为:%d\n&quot;</span>, a);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>通过指针修改前 a 的值为:0<br>通过指针修改后 a 的值为:10</p>
+</blockquote>
+<p>这里就比上面稍微多了一点东西，就是可以通过指针去修改被该指针所指的变量的值。换句话说，就是间接修改变量的值。其中<code>*p </code>的含义为解引用，指代的就是变量 <code>a</code>。</p>
+<h3 id="（三）★★★"><a href="#（三）★★★" class="headerlink" title="（三）★★★"></a>（三）★★★</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">0</span>, b = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> *p1 = &amp;a, *p2 = &amp;b;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a在%p\n&quot;</span>, p1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;b在%p\n&quot;</span>, p2);<br><br>    <span class="hljs-type">int</span> **pp1 = &amp;p1, **pp2 = &amp;p2;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp2);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>a在0x16da73718<br>b在0x16da73714<br>a的指针p1在0x16da73708<br>a的指针p1在0x16da73700</p>
+</blockquote>
+<p>可以看到，指针变量也有一个内存地址，它指向的是一个指针变量的内存地址。那么，我们同样可以通过二级指针对一级指针作出修改：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">0</span>, b = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> *p1 = &amp;a, *p2 = &amp;b;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a在%p\n&quot;</span>, p1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;b在%p\n&quot;</span>, p2);<br><br>    <span class="hljs-type">int</span> **pp1 = &amp;p1, **pp2 = &amp;p2;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;b的指针p2在%p\n&quot;</span>, pp2);<br><br>    <span class="hljs-comment">// 交换两个二级指针</span><br>    <span class="hljs-type">int</span>** temp = pp1;<br>    pp1 = pp2;<br>    pp2 = temp;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;b的指针p2在%p\n&quot;</span>, pp2);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>a在0x16fa0b718<br>b在0x16fa0b714<br>a的指针p1在0x16fa0b708<br>b的指针p2在0x16fa0b700<br>a的指针p1在0x16fa0b700<br>b的指针p2在0x16fa0b708</p>
+</blockquote>
+<p>这里需要提一点，就是当一个变量（前提是一个变量）为表达式左值时，它代表一个变量，当其为右值时，它代表<strong>变量的值</strong>。关于左值右值的概念，不再赘述。</p>
+<p>交换前的指针关系：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a5447bfddc92441798f02960cb72245c_1720253841019.png?token=ANB4BCL6OQ4I6HDTTXSON2DGRD65K" alt="在这里插入图片描述"><br>交换后的指针关系：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/29b6615a9cab428180440d9ac64e6516_1720253850025.png?token=ANB4BCKRTVUDJBONKKPER3DGRD65O" alt="在这里插入图片描述"><br>我们还可以尝试通过<code>pp2</code>来直接修改变量<code>a</code>的值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">0</span>, b = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> *p1 = &amp;a, *p2 = &amp;b;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a在%p\n&quot;</span>, p1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;b在%p\n&quot;</span>, p2);<br><br>    <span class="hljs-type">int</span> **pp1 = &amp;p1, **pp2 = &amp;p2;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp2);<br><br>    <span class="hljs-comment">// 交换两个二级指针</span><br>    <span class="hljs-type">int</span>** temp = pp1;<br>    pp1 = pp2;<br>    pp2 = temp;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp1);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a的指针p1在%p\n&quot;</span>, pp2);<br><br>    **pp2 = <span class="hljs-number">10</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;修改后a的值为:%d\n&quot;</span>, a);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>a在0x16b1ff718<br>b在0x16b1ff714<br>a的指针p1在0x16b1ff708<br>a的指针p1在0x16b1ff700<br>a的指针p1在0x16b1ff700<br>a的指针p1在0x16b1ff708<br>修改后a的值为:10</p>
+</blockquote>
+<p>其中二级指针<code>pp2</code>解引用了<strong>两次</strong>，才与<code>a</code>等价。这里的例子大量使用了二级指针，即 <code>int**</code>类型的变量。具体来说，指针类型有多种，比如 <code>int* p</code>，<code>int** p</code>, <code>int*** p</code>等等。</p>
+<h3 id="（四）★★★★"><a href="#（四）★★★★" class="headerlink" title="（四）★★★★"></a>（四）★★★★</h3><p>前面几节都是很简单的概念，接下来几节将会引入数组、字符串等来对指针的使用进行更深的阐述。</p>
+<h4 id="（1）关于数组名"><a href="#（1）关于数组名" class="headerlink" title="（1）关于数组名"></a>（1）关于数组名</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n&quot;</span>, a);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%zu\n&quot;</span>, <span class="hljs-keyword">sizeof</span>(a));<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>0x16fc9b708<br>12</p>
+</blockquote>
+<p>可以看到，数组名 a 是一个指针类型的值，它实际上指向的是大小为 12B 的连续空间的首地址。<strong>数组名其实是一个常量，因此它不能当做左值</strong>。当我们修改它的值时，它会提示<code>array type &#39;int [3]&#39; is not assignable</code>，意思是这个变量不可被修改。另外，a 的大小为 12B 这表明和普通的指针并不一样，或者a并不是简单的指针。因此，很多参考书上说“数组名本质上就是一个指针”的说法是完全错误的。</p>
+<h4 id="（2）利用数组名来访问某个内存单元"><a href="#（2）利用数组名来访问某个内存单元" class="headerlink" title="（2）利用数组名来访问某个内存单元"></a>（2）利用数组名来访问某个内存单元</h4><p>我们刚提到，数组名是一个常量，因此我们可以利用一个指针变量来访问内存单元：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br>    <span class="hljs-type">int</span>* p = a;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d &quot;</span>, *(p + i));<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>1 2 3</p>
+</blockquote>
+<p>其中 <code>p+i</code>的含义是，指针指向了 <code>p</code>所指的内存再向右偏移<code>i</code>个类型为 <code>int</code> 的内存单元。之所以是 <code>int</code>，是因为我们声明的是 <code>int</code> 类型的指针。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br><br>    <span class="hljs-type">int</span>* p = a;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n&quot;</span>, p);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n&quot;</span>, p + <span class="hljs-number">1</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n&quot;</span>, p + <span class="hljs-number">2</span>);<br><br>    <span class="hljs-type">long</span> *q = a;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n&quot;</span>, q);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%p\n&quot;</span>, q + <span class="hljs-number">1</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>0x16f1c3708<br>0x16f1c370c<br>0x16f1c3710<br>0x16f1c3708<br>0x16f1c3710</p>
+</blockquote>
+<p>可以看到，因为<code>long</code>类型占 8 个字节（<code>long</code>的定义为不少于 <code>int</code> 类型的大小，有些计算机系统 <code>long</code> 和 <code>int</code> 等价，但大部分 <code>long</code> 类型都占 8 字节），<code>int</code> 占 4 个字节，所以<code>long</code>类型的指针偏移的长度为 <code>int</code> 类型的两倍。同样，我们可以搞点稍微复杂的事情：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;数组的首地址为:%p\n&quot;</span>, a);<br><br>    <span class="hljs-type">int</span>* p = (<span class="hljs-type">int</span>*)(&amp;a + <span class="hljs-number">1</span>);<br>    <span class="hljs-type">int</span>* q = a + <span class="hljs-number">3</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;此时 p 指向:%p\n&quot;</span>, p);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;此时 q 指向:%p\n&quot;</span>, q);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>数组的首地址为:0x16b25f708<br>此时 p 指向:0x16b25f714<br>此时 q 指向:0x16b25f714</p>
+</blockquote>
+<p>这说明，<code>&amp;a + 1</code>的偏移量为3个 int 类型大小。这里就需要格外注意，<strong>指针偏移一个单位是参考哪一种类型的变量指针的</strong>。这里参考的是<code>int a[3]</code>，也就是说，a的数据类型为 <code>int[3] </code>，偏移一次当然偏移 12B了，因为 <code>int[3]</code> 的大小就是 12B！</p>
+<p>我们就可以很简单地预见以下的程序输出：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br><br>    <span class="hljs-type">int</span>* p = (<span class="hljs-type">int</span>*)(&amp;a + <span class="hljs-number">1</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>, *(p - <span class="hljs-number">1</span>));<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>3</p>
+</blockquote>
+<p>因为 <code>p</code> 指向的是数组最后一个元素的下一个内存单元，又因为 <code>p</code> 是 <code>int</code> 类型的指针，因此一个偏移量大小为 <code>int</code>，所以 <code>p-1</code>之后，就指向了数组的最后一个元素。</p>
+<h4 id="（3）字符串"><a href="#（3）字符串" class="headerlink" title="（3）字符串"></a>（3）字符串</h4><p>字符串是一个重点，也是一个难点。但是只要掌握指针基本概念，把握字符数组和字符串的区别和联系，也是送分题。</p>
+<p>首先得了解下字符串输出的基本原理：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> c[<span class="hljs-number">3</span>] = &#123;<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>&#125;;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, c);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出为：</p>
+<blockquote>
+<p>abc*&#x2F;</p>
+</blockquote>
+<p>为什么会有这么奇怪的输出呢？这是因为<code>printf(&quot;%s\n&quot;, c)</code>输出字符串时，只要输入一个指针（任何类型的指针都可以），就会一直打印，直到遇到<code>&#39;\0&#39;</code>为止。比如下面这个程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">100</span>, <span class="hljs-number">101</span>, <span class="hljs-number">102</span>&#125;;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, a);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<blockquote>
+<p>d</p>
+</blockquote>
+<p>这是因为数据存放为大端方式，<code>100</code>存在到第一个高地址字节空间后，后面三个存放的都是<code>&#39;\0&#39;</code>，所以就停止打印了。我们可以印证一下：<br>假设我们想要打印出 <code>&quot;abc&quot;</code>，这就要保证内存单元里面放的是 <code>97\98\99\00</code>。即<code>0x61626300</code>。大端方式存入内存单元就为：<code>0x00636261</code>，这个数字 10 进制大小为<code>6513249</code>，因此：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">6513249</span>,<span class="hljs-number">100</span>,<span class="hljs-number">200</span>&#125;;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, a);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>程序输出为：</p>
+<blockquote>
+<p>abc</p>
+</blockquote>
+<p>果然输出了<code>&quot;abc&quot;</code>，这无疑是一件令人激动的事情！当然，这里的重点是字符串输出，就不再赘述其它了。</p>
+<p>经过上面的例子，可以充分地说明输出函数的特性，即只要是一个指针，丢给<code>printf(&quot;%s\n&quot;, a)</code>后，就会打印出结果。</p>
+<p>所以字符串是使用空字符 <code>&#39;\0&#39;</code>结尾的一组数据，就这么简单。我们可以很容易地构造出一些字符串，比如我们上面通过一些手段构造的<code>&quot;abc&quot;</code>，以及下面用字符数组构造的字符串（常用手段）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> <span class="hljs-built_in">string</span>[<span class="hljs-number">12</span>] = &#123;<span class="hljs-string">&#x27;H&#x27;</span>,<span class="hljs-string">&#x27;e&#x27;</span>,<span class="hljs-string">&#x27;l&#x27;</span>,<span class="hljs-string">&#x27;l&#x27;</span>,<span class="hljs-string">&#x27;o&#x27;</span>,<span class="hljs-string">&#x27;w&#x27;</span>,<span class="hljs-string">&#x27;o&#x27;</span>,<span class="hljs-string">&#x27;r&#x27;</span>,<span class="hljs-string">&#x27;l&#x27;</span>,<span class="hljs-string">&#x27;d&#x27;</span>,<span class="hljs-string">&#x27;!&#x27;</span>,<span class="hljs-string">&#x27;\0&#x27;</span>&#125;;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>,<span class="hljs-built_in">string</span>);<br><br>    <span class="hljs-type">char</span> *string1 = <span class="hljs-string">&quot;Helloworld!&quot;</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>,string1);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在用字符数组构造字符串时，一定要注意在最后一个内存单元加上’\0’，因为我们不能保证字符串结束后的下一个内存单元放的是不是’\0’，因此字符串<strong>可能不会正常终止</strong>。</p>
+<p>还可以使用字面值常量来创建字符串，比如<code>char *string1 = &quot;Helloworld!&quot;</code>。这种不需要在在最后一个内存单元加上<code>&#39;\0&#39;</code>，编译系统会自动加。</p>
+<h4 id="（4）字符串赋值"><a href="#（4）字符串赋值" class="headerlink" title="（4）字符串赋值"></a>（4）字符串赋值</h4><p>为了明白字符串赋值的本质，这里不会使用库函数提供的各种函数，比如 <code>strcpy()</code>,<code>strcat()</code>等。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> <span class="hljs-built_in">string</span>[<span class="hljs-number">12</span>] = &#123;<span class="hljs-string">&#x27;H&#x27;</span>, <span class="hljs-string">&#x27;e&#x27;</span>, <span class="hljs-string">&#x27;l&#x27;</span>, <span class="hljs-string">&#x27;l&#x27;</span>, <span class="hljs-string">&#x27;o&#x27;</span>, <span class="hljs-string">&#x27;w&#x27;</span>,<br>                       <span class="hljs-string">&#x27;o&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>, <span class="hljs-string">&#x27;l&#x27;</span>, <span class="hljs-string">&#x27;d&#x27;</span>, <span class="hljs-string">&#x27;!&#x27;</span>, <span class="hljs-string">&#x27;\0&#x27;</span>&#125;;<br>    <span class="hljs-type">char</span> string1[<span class="hljs-number">12</span>] = &#123;<span class="hljs-number">0</span>&#125;;  <span class="hljs-comment">// 初始化与否都可以,因为紧接着我们就要对其赋值</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">12</span>; i++) &#123;<br>        string1[i] = <span class="hljs-built_in">string</span>[i];<br>    &#125;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, string1);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>本例采用了逐个字符赋值的方法来完成对字符串的赋值。我们的主题是指针，那么可不可以像下面那样赋值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> <span class="hljs-built_in">string</span>[<span class="hljs-number">12</span>] = &#123;<span class="hljs-string">&#x27;H&#x27;</span>, <span class="hljs-string">&#x27;e&#x27;</span>, <span class="hljs-string">&#x27;l&#x27;</span>, <span class="hljs-string">&#x27;l&#x27;</span>, <span class="hljs-string">&#x27;o&#x27;</span>, <span class="hljs-string">&#x27;w&#x27;</span>,<br>                       <span class="hljs-string">&#x27;o&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>, <span class="hljs-string">&#x27;l&#x27;</span>, <span class="hljs-string">&#x27;d&#x27;</span>, <span class="hljs-string">&#x27;!&#x27;</span>, <span class="hljs-string">&#x27;\0&#x27;</span>&#125;;<br>    <span class="hljs-type">char</span> string1[<span class="hljs-number">12</span>] = &#123;<span class="hljs-number">0</span>&#125;;  <span class="hljs-comment">// 初始化与否都可以,因为紧接着我们就要对其赋值</span><br>    string1 = <span class="hljs-built_in">string</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, string1);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当然不可以，前文已经提到，数组名只一个地址常量，既然是常量当然就不可以被修改，自然就不能当做左值。事实上，上文还提到了通过字面值常量来创造字符串，既然是常量，那么自然也就不能修改，比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span>* p = <span class="hljs-string">&quot;Helloworld!&quot;</span>;<br>    *(p + <span class="hljs-number">1</span>) = <span class="hljs-string">&#x27;E&#x27;</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, p);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个程序的目的是把”Helloworld”改为”HElloworld”，那么目的能达到吗？自然不能，编译器会报错<code>bus error</code>。我们不去管这个错误的具体含义，只需要知道常量字符串是无法修改的。也就是说，我们的指针并不是指在哪里就改哪里，那计算机系统就乱套了！</p>
+<p>如果我们迫切的想要修改，可以这样做：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span>* p = <span class="hljs-string">&quot;Helloworld!&quot;</span>;<br>    <span class="hljs-type">int</span> len = <span class="hljs-built_in">strlen</span>(p);<br>    <span class="hljs-type">char</span>* newString = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * (len + <span class="hljs-number">1</span>));<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; len; i++) &#123;<br>        newString[i] = p[i];<br>    &#125;<br>    newString[len] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    newString[<span class="hljs-number">1</span>] = <span class="hljs-string">&#x27;E&#x27;</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, newString);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<blockquote>
+<p>HElloworld!</p>
+</blockquote>
+<p>过程也很简单，就是申请一块内存空间，先复制过来，然后再修改成想要的样子。</p>
+<h3 id="（五）★★★★★"><a href="#（五）★★★★★" class="headerlink" title="（五）★★★★★"></a>（五）★★★★★</h3><p>开始之前，我们先来谈谈什么是匿名数组。顾名思义，匿名就是藏起来名字的意思。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span>* p = (<span class="hljs-type">int</span>[<span class="hljs-number">2</span>])&#123;<span class="hljs-number">19</span>, <span class="hljs-number">20</span>&#125;;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>我们定义了一个匿名的数组，并赋给一个<code>int*</code>类型的变量 p。匿名类在 Java 中 的作用之一是起到很好的封装性，同样在 C语言中也有这样的作用。这个数组，只能通过 p 访问。你可能注意到了，我并没有用 <code>int</code>类型的指针去描述 p，而是用 <code>int*</code>类型来描述 p。</p>
+<h4 id="（1）数据类型"><a href="#（1）数据类型" class="headerlink" title="（1）数据类型"></a>（1）数据类型</h4><p>C语言中的数据类型有哪些？一般来说，有四大类型，分别是基本类型，构造类型，空类型以及我们讲的<strong>指针类型</strong>。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ef4fb7201f65461283945465a56c6e18_1720253850025.png?token=ANB4BCKP7D2DHDRFOZ52BJLGRD65Q" alt="在这里插入图片描述"></p>
+<p>指针类型是花样最多的一种类型，它通常包括 5 类：<code>int*</code>，<code>char*</code>，<code>int**</code>，<code>int(*)[]</code>，<code>int*[]</code>。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/007b9d1fdcbe41bf8b71bd53e6e9edf9_1720253850025.png?token=ANB4BCI3YOLE3BYBITGUU23GRD65S" alt="在这里插入图片描述"></p>
+<p>换句话说，从语法的角度讲，把指针声明语句里的指针名字去掉，剩下的部分就是这个指针的类型。比如，给出一个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br><br>    <span class="hljs-type">int</span>* p;<br>    <span class="hljs-type">char</span>* s;<br>    <span class="hljs-type">int</span>** q;<br>    <span class="hljs-type">int</span>(*pt)[<span class="hljs-number">3</span>];<br>    <span class="hljs-type">int</span>*[<span class="hljs-number">3</span>];<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在这个例子中，指针的类型分别为：<code>int*</code>，<code>char*</code>，<code>int**</code>，<code>int(*)[3]</code>，<code>int*[3]</code>。我们经常用到数组指针以及指针数组，因此重点理解它们就是关键。</p>
+<h4 id="（2）指针数组"><a href="#（2）指针数组" class="headerlink" title="（2）指针数组"></a>（2）指针数组</h4><p>对于指针数组，描述它的语法为<code>int*p[3]</code>。首先，它是一个数组，所以得是个 <code>p[3]</code>；其次要是一个指针类型的也就是<code>int*</code>。所以就产生了<code>int*p[3]</code>。数组 p 中每一个元素都是一个指针，指向一个一维数组。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>&#125;;<br>    <span class="hljs-type">int</span> b[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>&#125;;<br>    <span class="hljs-type">int</span> c[<span class="hljs-number">5</span>] = &#123;<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-number">10</span>,<span class="hljs-number">11</span>&#125;;<br><br>    <span class="hljs-type">int</span> *p[<span class="hljs-number">3</span>] = &#123;a,b,c&#125;;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>为了更明显，不如把它写成<code>int*(p[3])</code>，但是由于<code>[3]</code>的结合度非常高，因此这个括号可以去掉。</p>
+<h4 id="（3）数组指针"><a href="#（3）数组指针" class="headerlink" title="（3）数组指针"></a>（3）数组指针</h4><p>顾名思义，数组指针就是一个指向数组的指针。我们这样定义：·int(*p)[3]·。首先得是一个指针，因此得是<code>(int*p)</code>；然后得是一个数组类型的，因此就是 <code>(int*p)[3]</code>。但这样明显歧义了，因此就成了<code>int(*p)[3]</code>。它指向一个类型为 <code>int[3]</code>的变量。比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>&#125;;<br>    <span class="hljs-type">int</span> (*p)[<span class="hljs-number">3</span>] = &amp;a;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>a 的数据类型为 <code>int[3]</code>，p 的类型为 <code>int(*)[3]</code>。要想让 p指向 a，我们只需要把变量 a 的地址赋值给 p，即<code>int (*p)[3] = &amp;a</code>。为了更明显，我们可以这样修改一下程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>] = &#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>&#125;;<br>    <span class="hljs-type">int</span> b[<span class="hljs-number">4</span>] = &#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>&#125;;<br>    <span class="hljs-type">int</span> (*p)[<span class="hljs-number">3</span>];<br>    p = &amp;a;<br>    p = &amp;b;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以看到这样的报错：<code>incompatible pointer types assigning to &#39;int (*)[3]&#39; from &#39;int (*)[4]&#39; [-Wincompatible-pointer-types]</code>。意思是从<code>“int (*)[4]”[-Wincompatible-pointer-types] 分配给“int (*)[3]”的不兼容指针类型</code>。这也从侧面反映了<code> int(*)[3]</code>是一种确定的<strong>指针类</strong>类型。</p>
+<p>能看到这里，想必你已经功力深厚，返璞归真了，哈哈~</p>
+<h2 id="三、总结"><a href="#三、总结" class="headerlink" title="三、总结"></a>三、总结</h2><p>这里只总结难点：</p>
+<ul>
+<li>对于声明一个指针数组<code>int*p[3]</code>，这里的重点是 p 的数据类型为 <code>int*[3]</code>，数组每一个元素都是一个指针，指向 <code>int 类型的数组</code>。</li>
+<li>对于声明一个数组指针 <code>int(*p)[3]</code>，这里的重点是 p 的数据类型为 <code>int(*)[3]</code>，p 是一个指针，指向<code>类型为 int[3]的变量</code>。</li>
+</ul>
+<p><em>全文完，感谢你的阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Things-about-C/" class="category-chain-item">Things about C</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#开发语言</a>
+      
+        <a href="/tags/c%E8%AF%AD%E8%A8%80/" class="print-no-link">#c语言</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C语言指针——从入门到精通</div>
+      <div>http://blog.luliang.online/2023/01/17/C语言指针——从入门到精通/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/02/15/%E7%AE%80%E5%8D%95%E7%9A%84%20ls%20%E5%91%BD%E4%BB%A4%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="简单的 ls 命令的实现（一）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">简单的 ls 命令的实现（一）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/13/%EF%BC%88%E4%B8%89%EF%BC%89%E6%8A%BD%E8%B1%A1%E7%B1%BB/" title="（三）抽象类">
+                        <span class="hidden-mobile">（三）抽象类</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

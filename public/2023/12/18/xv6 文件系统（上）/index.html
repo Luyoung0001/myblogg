@@ -1,0 +1,820 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文将会结合 xv6 源码讨论文件系统的工作原理。 一、文件系统实现概述 xv6 文件系统可以用下面的图来表示： 按照分层的方式进行理解：  在最底层是磁盘，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。 在这之上是buffer cache或者说 block cache，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。 为了保证持久性，再往">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 文件系统（上）">
+<meta property="og:url" content="http://blog.luliang.online/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文将会结合 xv6 源码讨论文件系统的工作原理。 一、文件系统实现概述 xv6 文件系统可以用下面的图来表示： 按照分层的方式进行理解：  在最底层是磁盘，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。 在这之上是buffer cache或者说 block cache，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。 为了保证持久性，再往">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/30fe0488ebb94e3c923471bcec6e0b31_1720253687327.png?token=ANB4BCLBDV23KBET47CTY6TGRD6TO">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5ddd240a426a45d0923a595d5941f384_1720253687327.png?token=ANB4BCPT6SB7PRRYEKLKIKLGRD6TQ">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/04e09f55418a4ec78b30579c533a2499_1720253687327.png?token=ANB4BCOBPNV633LQZDFNZM3GRD6TS">
+<meta property="article:published_time" content="2023-12-18T09:00:59.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.776Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="xv6">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/30fe0488ebb94e3c923471bcec6e0b31_1720253687327.png?token=ANB4BCLBDV23KBET47CTY6TGRD6TO">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>xv6 文件系统（上） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="xv6 文件系统（上）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-18 17:00" pubdate>
+          2023年12月18日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">xv6 文件系统（上）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文将会结合 <strong>xv6</strong> 源码讨论文件系统的工作原理。</p>
+<h2 id="一、文件系统实现概述"><a href="#一、文件系统实现概述" class="headerlink" title="一、文件系统实现概述"></a>一、文件系统实现概述</h2><p> xv6 文件系统可以用下面的图来表示：<br> <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/30fe0488ebb94e3c923471bcec6e0b31_1720253687327.png?token=ANB4BCLBDV23KBET47CTY6TGRD6TO" alt="在这里插入图片描述"><br>按照分层的方式进行理解：</p>
+<ul>
+<li>在最底层是<strong>磁盘</strong>，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。</li>
+<li>在这之上是<strong>buffer cache</strong>或者说 <strong>block cache</strong>，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。</li>
+<li>为了保证持久性，再往上通常会有一个<strong>logging层</strong>。</li>
+<li>在logging层之上，xv6有<strong>inode cache</strong>，这主要是为了同步（synchronization）。inode通常小于一个disk block，所以多个inode通常会打包存储在一个disk block中。为了向单个inode提供同步操作，xv6维护了<strong>inode cache</strong>。</li>
+<li>再往上就是<strong>inode本身</strong>了。它实现了read&#x2F;write。</li>
+<li>再往上，就是<strong>文件名</strong>&amp;<strong>文件描述符</strong>操作。</li>
+</ul>
+<h2 id="二、文件系统怎么使用硬盘"><a href="#二、文件系统怎么使用硬盘" class="headerlink" title="二、文件系统怎么使用硬盘"></a>二、文件系统怎么使用硬盘</h2><p>有些术语有点让人困惑，它们是 <strong>sectors</strong> 和 <strong>blocks</strong>：</p>
+<ul>
+<li><strong>sector</strong> 通常是磁盘驱动可以读写的最小单元，它过去通常是<strong>512</strong>字节；</li>
+<li><strong>block</strong> 通常是操作系统或者文件系统视角的数据。它由文件系统定义，在xv6中它是1024字节。<strong>所以 xv6 中一个block对应两个sector</strong>。通常来说一个block对应了一个或者多个sector。</li>
+</ul>
+<p>有的时候，人们也将磁盘上的 <strong>sector</strong> 称为 <strong>block</strong>，所以这里的术语也不是很精确。</p>
+<p>从文件系统的角度来看磁盘还是很直观的。因为对于磁盘就是读写 <strong>block</strong> 或者 <strong>sector</strong>，我们可以将磁盘看作是一个巨大的<strong>block</strong>的<strong>数组</strong>，数组从<strong>0</strong>开始，一直增长到磁盘的最后。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5ddd240a426a45d0923a595d5941f384_1720253687327.png?token=ANB4BCPT6SB7PRRYEKLKIKLGRD6TQ" alt="在这里插入图片描述"></p>
+<p>而文件系统的工作就是将所有的数据结构以一种能够在重启之后重新构建文件系统的方式，存放在磁盘上。虽然有不同的方式，但是 <strong>xv6</strong> 使用了一种非常简单，但是还挺常见的布局结构。通常来说：</p>
+<ul>
+<li><strong>block0</strong> 要么没有用，要么被用作<strong>boot sector</strong>来启动操作系统。</li>
+<li><strong>block1</strong> 通常被称为<strong>super block</strong>，它描述了文件系统。它可能包含磁盘上有多少个block共同构成了文件系统这样的信息。我们之后会看到XV6在里面会存更多的信息，你可以通过block1构造出大部分的文件系统信息。</li>
+<li>在<strong>xv6</strong> 中，<strong>log</strong>从 <strong>block2</strong> 开始，到 <strong>block32</strong> 结束。实际上 <strong>log</strong> 的大小可能不同，<strong>这里在super block中会定义log就是30个block</strong>。</li>
+<li>接下来在 <strong>block32</strong> 到 <strong>block45</strong> 之间，<strong>xv6</strong> 存储了 <strong>inode</strong>。</li>
+<li>之后是 <strong>bitmap block</strong>，这是我们构建文件系统的默认方法，<strong>它只占据一个block</strong>。它记录了数据block是否空闲。</li>
+<li>之后就全是<strong>数据block</strong>了，<strong>数据block</strong>存储了文件的内容和目录的内容（目录也是文件）。</li>
+</ul>
+<p>通常来说，<strong>bitmap block，inode blocks和log blocks被统称为metadata block</strong>。它们虽然不存储实际的数据，但是它们存储了能<strong>帮助文件系统完成工作</strong>的元数据。</p>
+<p>假设 <strong>inode</strong> 是 <strong>64</strong> 字节，如果你想要读取 <strong>inode10</strong>，那么你应该按照下面的公式去对应的 <strong>block</strong> 读取 <strong>inode</strong>：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/04e09f55418a4ec78b30579c533a2499_1720253687327.png?token=ANB4BCOBPNV633LQZDFNZM3GRD6TS" alt="在这里插入图片描述"><br>所以 <strong>inode0</strong> 在 <strong>block32</strong>，<strong>inode17</strong> 会在 <strong>block33</strong>。只要有 <strong>inode</strong> 的编号，我们总是可以找到 <strong>inode</strong> 在磁盘上存储的位置。</p>
+<h2 id="三、inode-结构"><a href="#三、inode-结构" class="headerlink" title="三、inode 结构"></a>三、inode 结构</h2><p><strong>inode</strong> 结构体在内存中的表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> NDIRECT 12</span><br><br><span class="hljs-comment">// in-memory copy of an inode</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode</span> &#123;</span><br>  uint dev;           <span class="hljs-comment">// Device number</span><br>  uint inum;          <span class="hljs-comment">// Inode number</span><br>  <span class="hljs-type">int</span> ref;            <span class="hljs-comment">// Reference count</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sleeplock</span> <span class="hljs-title">lock</span>;</span> <span class="hljs-comment">// protects everything below here</span><br>  <span class="hljs-type">int</span> valid;          <span class="hljs-comment">// inode has been read from disk?</span><br><br>  <span class="hljs-type">short</span> type;         <span class="hljs-comment">// copy of disk inode</span><br>  <span class="hljs-type">short</span> major;<br>  <span class="hljs-type">short</span> minor;<br>  <span class="hljs-type">short</span> nlink;<br>  uint size;<br>  uint addrs[NDIRECT+<span class="hljs-number">1</span>];<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>在硬盘中的表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// On-disk inode structure</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dinode</span> &#123;</span><br>  <span class="hljs-type">short</span> type;           <span class="hljs-comment">// File type</span><br>  <span class="hljs-type">short</span> major;          <span class="hljs-comment">// Major device number (T_DEVICE only)</span><br>  <span class="hljs-type">short</span> minor;          <span class="hljs-comment">// Minor device number (T_DEVICE only)</span><br>  <span class="hljs-type">short</span> nlink;          <span class="hljs-comment">// Number of links to inode in file system</span><br>  uint size;            <span class="hljs-comment">// Size of file (bytes)</span><br>  uint addrs[NDIRECT+<span class="hljs-number">1</span>];   <span class="hljs-comment">// Data block addresses</span><br>&#125;;<br><br></code></pre></td></tr></table></figure>
+
+<p>我们先研究在硬盘的 <strong>inode</strong> 结构：</p>
+<ul>
+<li>通常来说它有一个 <strong>type</strong> 字段，表明 <strong>inode</strong> 是文件还是目录。</li>
+<li><strong>nlink</strong>字段，也就是 <strong>link计数器</strong>，用来跟踪究竟有多少文件名指向了当前的<strong>inode</strong>。</li>
+<li><strong>size</strong>字段，表明了文件数据有多少个字节。</li>
+<li>不同文件系统中的表达方式可能不一样，不过在 <strong>xv6</strong> 中接下来是一些 <strong>block</strong> 的编号，例如编号0，编号1，等等。<strong>xv6</strong>的 <strong>inode</strong> 中总共有<strong>12</strong>个 <strong>block编号</strong>。这些被称为<strong>direct block number</strong>。这 <strong>12</strong> 个 <strong>block</strong> 编号指向了构成文件的前 <strong>12</strong> 个 <strong>block</strong>。举个例子，如果文件只有<strong>2</strong>个字节，那么只会有一个<strong>block</strong>编号<strong>0</strong>，它包含的数字是磁盘上文件前2个字节的<strong>block</strong>的位置。</li>
+<li>之后还有一个 <strong>indirect block number</strong>，它对应了磁盘上一个 <strong>block</strong>，这个 <strong>block</strong> 包含了<strong>256</strong>个 <strong>block number</strong>，这 <strong>256</strong> 个 <strong>block number</strong> 包含了文件的数据。所以 <strong>inode</strong> 中 <strong>block number0</strong> 到 <strong>block number11</strong> 都是<strong>direct block number</strong>，而 <strong>block number12</strong>保存的 <strong>indirect block number</strong> 指向了另一个<strong>block</strong>。所以数组 <code>addrs[NDIRECT+1]</code> 的长度为 <strong>13</strong>。</li>
+</ul>
+<p>如果一个 <strong>block号</strong> 占 <strong>4</strong> 个字节，那么一个<strong>block</strong> 就可以存储 <code>1024/4 = 256</code> 个 <strong>block号</strong>。所以我们很轻易地计算出 <strong>xv6</strong> 中一个文件的大小上限：<code>(256+12)*1KB</code>。因为一个块号占 4 个字节，那么 xv6 一共可以寻址 <code>2^32</code>个 block，一个 block 大小为 1KB，那么 xv6 一共可以安装的硬盘大小为  <code>2^42</code>B，也就是 <strong>4TB</strong>。</p>
+<h2 id="四、目录"><a href="#四、目录" class="headerlink" title="四、目录"></a>四、目录</h2><p>文件系统的酷炫特性就是<strong>层次化的命名空间</strong>（<strong>hierarchical namespace</strong>），你可以在文件系统中保存对用户友好的文件名。大部分 <strong>Unix文件系统</strong> 有趣的点在于，一个目录本质上是一个文件加上一些文件系统能够理解的结构。在 <strong>xv6</strong> 中，这里的结构极其简单。每一个目录包含了<strong>directory entries</strong>，每一条 <strong>entry</strong> 都有固定的格式：</p>
+<ul>
+<li>前 <strong>2</strong> 个字节包含了目录中文件或者子目录的 <strong>inode</strong> 编号;</li>
+<li>接下来的 <strong>14</strong> 个字节包含了文件或者子目录名。</li>
+</ul>
+<p>所以每个 <strong>entry</strong> 总共是<strong>16</strong>个字节。</p>
+<p>对于实现路径名查找，这里的信息就足够了。假设我们要查找路径名 <strong>“&#x2F;y&#x2F;x”</strong>，我们该怎么做呢？</p>
+<p>从路径名我们知道，应该从 <strong>root inode</strong> 开始查找。通常 <strong>root inode</strong> 会有固定的 <strong>inode</strong> 编号，在 <strong>xv6</strong> 中，这个编号是<strong>1</strong>。我们该如何根据编号找到 <strong>root inode</strong> 呢？</p>
+<p>从前一节我们可以知道，<strong>inode</strong> 从 <strong>block32</strong> 开始，如果是 <strong>inode1</strong>，那么必然在<strong>block32</strong> 中的 <strong>64</strong> 到 <strong>128</strong> 字节的位置。所以文件系统可以直接读到 <strong>root inode</strong> 的内容。</p>
+<p>由于 <strong>inode</strong>（<strong>in-memory copy of an inode</strong>） 中包含对于路径名查找程序，接下来就是扫描 <strong>root inode</strong> 包含的所有 <strong>block</strong>，就是为了找到 <strong>“y”</strong> 。该怎么找到 <strong>root inode</strong> 所有对应的 <strong>block</strong> 呢？根据前一节的内容就是读取所有的 <strong>direct block number</strong>和<strong>indirect block number</strong>。</p>
+<p>如果找到了，那么 <strong>目录y</strong> 也会有一个 <strong>inode</strong> 编号，假设是 <strong>251</strong>。我们可以继续从<strong>inode251</strong>查找，先用公式计算出 <strong>block号</strong>，然后再根据偏移量读取 <strong>inode251</strong> 的内容，之后再扫描 <strong>inode</strong> 所有对应的<strong>block</strong>，以找到 <strong>“x”</strong>并得到<strong>文件x</strong>对应的<strong>inode编号</strong>，最后将其作为<strong>路径名查找的结果</strong>返回。</p>
+<p>这么简单的一件事，上面的过程一共查询了三次 <strong>inode</strong>（两次<strong>目录node</strong>，一次<strong>文件x</strong> 的 <strong>inode</strong> ），两次 <strong>扫描block</strong> 操作。</p>
+<p>很明现，这里的结构不是很有效。<strong>为了找到一个目录名，需要线性扫描</strong>。实际的文件系统会使用更复杂的数据结构来使得查找更快，当然这又是设计数据结构的问题，而不是设计操作系统的问题。出于简单和更容易解释的目的，<strong>xv6</strong> 使用了这里这种非常简单的数据结构。</p>
+<h2 id="五、文件系统工作示例"><a href="#五、文件系统工作示例" class="headerlink" title="五、文件系统工作示例"></a>五、文件系统工作示例</h2><p>首先启动 <strong>xv6</strong>，启动 <strong>xv6</strong> 的过程中，调用了<strong>makefs</strong>指令，来创建一个文件系统。</p>
+<p>所以<strong>makefs</strong>创建了一个全新的磁盘镜像，在这个磁盘镜像中包含了我们在指令中传入的一些文件。<strong>makefs</strong>为你创建了一个<strong>包含这些文件的新的文件系统</strong>。</p>
+<p>xv6 总是会打印文件系统的一些信息，所以从指令的下方可以看出有<strong>46</strong>个<strong>meta block</strong>，其中包括了：</p>
+<ul>
+<li>boot block</li>
+<li>super block</li>
+<li>30个log block</li>
+<li>13个inode block</li>
+<li>1个bitmap block</li>
+</ul>
+<p>之后是<strong>954</strong>个<strong>data block</strong>。所以这是一个袖珍级的文件系统，总共就包含了<strong>1000</strong>个<strong>block</strong>。</p>
+<p>稍微修改了一下 <strong>xv6</strong>之后，使得任何时候写入 <strong>block</strong> 都会打印出 <strong>block</strong> 的编号：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span><br><span class="hljs-title function_">log_write</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> buf *b)</span><br>&#123;<br>  ...<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;write: %d\n&quot;</span>,b-&gt;blockno);     <span class="hljs-comment">// 打印使用的 block 号</span><br>  <span class="hljs-built_in">log</span>.lh.block[i] = b-&gt;blockno;<br>  <span class="hljs-keyword">if</span> (i == <span class="hljs-built_in">log</span>.lh.n) &#123;  <span class="hljs-comment">// Add new block to log?</span><br>    bpin(b);<br>    <span class="hljs-built_in">log</span>.lh.n++;<br>  &#125;<br>  release(&amp;<span class="hljs-built_in">log</span>.lock);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<p>接下来我们运行一个命令 <code>echo hi &gt; x</code>，来看一下特定的命令对哪些 <strong>block</strong> 做了写操作，并理解为什么要对这些 <strong>block</strong> 写入数据。</p>
+<p>我们通过<code>echo hi &gt; x</code>，来创建一个<strong>文件x</strong>，并写入字符 <code>hi</code>，这会打印以下信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">echo</span> hi &gt; x<br>1	write: 33<br>2	write: 33<br>3	write: 46<br>4	write: 32<br>5	write: 33<br>6	write: 45<br>7	write: 908<br>8	write: 908<br>9	write: 33<br>10	write: 908<br>11	write: 33<br></code></pre></td></tr></table></figure>
+
+<p>这里会有几个阶段：</p>
+<ul>
+<li>第一阶段是创建<strong>文件x</strong>；</li>
+<li>第二阶段将 <code>hi</code>写入文件；</li>
+<li>第三阶段将 <code>\n</code>换行符写入到文件；</li>
+</ul>
+<p>看一下<code>user/echo.c</code>的代码实现，基本就是这3个阶段：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/types.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/stat.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;user/user.h&quot;</span></span><br><br><span class="hljs-type">int</span><br><span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span><br>&#123;<br>  <span class="hljs-type">int</span> i;<br><br>  <span class="hljs-keyword">for</span>(i = <span class="hljs-number">1</span>; i &lt; argc; i++)&#123;<br>    write(<span class="hljs-number">1</span>, argv[i], <span class="hljs-built_in">strlen</span>(argv[i]));<br>    <span class="hljs-keyword">if</span>(i + <span class="hljs-number">1</span> &lt; argc)&#123;<br>      write(<span class="hljs-number">1</span>, <span class="hljs-string">&quot; &quot;</span>, <span class="hljs-number">1</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      write(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;\n&quot;</span>, <span class="hljs-number">1</span>);<br>    &#125;<br>  &#125;<br>  <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>首先它将 <code>hi</code>写入到标准输出（我们在此处已经重定向了，对于 <code>echo()</code>，<code>argc==2</code> ），然后继续写入 <code>\n</code>。</p>
+<h3 id="1、创建文件x"><a href="#1、创建文件x" class="headerlink" title="1、创建文件x"></a>1、创建文件x</h3><p>我们已经了解到，<strong>x文件</strong>是创建在根目录下的。既然是创建文件，第一步肯定是分配一个 <strong>inode</strong>。因此要在空闲 inode 列表中找一个空闲的 inode，然后打上标记。</p>
+<p>然后我们要在此 <strong>inode</strong> 中写入一些信息，比如 <strong>inode</strong> 的引用计数、<strong>addrs</strong>等内容。</p>
+<p>以上两步对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">1	write: 33<br>2	write: 33<br></code></pre></td></tr></table></figure>
+
+<p>由于我们在根目录下创建了一个<strong>文件x</strong>，因此根目录的 <strong>inode</strong>、<strong>inode</strong> 映射的<strong>addrs</strong>中的内容都要被修改。首先修改的是根目录中的第一个 <strong>block</strong>，<strong>文件x</strong> 是根目录下的一个 <strong>entry</strong>，自然要修改这个 <strong>block</strong>。然后根目录的 <strong>inode</strong> 也要修改，因为根目录大小变了。之后，又修改了一次<strong>文件x</strong> 的 <strong>inode</strong>。</p>
+<p>以上两步对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">3	write: 46<br>4	write: 32<br>5	write: 33<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、写入文件x-hi"><a href="#2、写入文件x-hi" class="headerlink" title="2、写入文件x hi"></a>2、写入文件x <code>hi</code></h3><p>因为要引用某个块，所以要更新 <strong>bitmap</strong>。之后要往某个 <strong>direct block</strong> 中写两个字符。最后还需要更改<strong>文件x</strong> <strong>inode</strong>中的<strong>size</strong>字段，而且还会将 <strong>inode</strong> 与 <strong>block</strong> 关联起来，即修改 <code>addrs</code> 字段。这对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">6	write: 45<br>7	write: 908<br>8	write: 908<br>9	write: 33<br></code></pre></td></tr></table></figure>
+
+<p>这意味着文件系统挑选了 <strong>block 908</strong>。</p>
+<h3 id="3、写入-n"><a href="#3、写入-n" class="headerlink" title="3、写入\n"></a>3、写入<code>\n</code></h3><p>这就很简单了，写文件，修改 <strong>inode</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">10	write: 908<br>11	write: 33<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="4、再执行一条命令"><a href="#4、再执行一条命令" class="headerlink" title="4、再执行一条命令"></a>4、再执行一条命令</h3><p>通过再执行一条命令 <code>echo hii &gt; x</code>：这条命令会将 <strong>文件x</strong> 中内容覆盖，并且重新写 <code>hii</code>、<code>\n</code>（注意这是分开写的）。因为<strong>文件x</strong> 已经创建过了，因此这个写入<strong>block</strong> 的记录和上面的那个命令是不同的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">echo</span> hii &gt; x<br>1	write: 45<br>2	write: 33<br>3	write: 45<br>4	write: 908<br>5	write: 908<br>6	write: 33<br>7	write: 908<br>8	write: 33<br></code></pre></td></tr></table></figure>
+<p>首先修改<strong>bitmap</strong>，然后修改 <strong>inode</strong>。这是为了将 <strong>x文件</strong>中的内容全部清空，那么这个<strong>block</strong> 自然就不用了，需要修改 <strong>inode</strong> 中 的 <strong>size</strong>、<strong>addrs</strong>字段等。这对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">1	write: 45<br>2	write: 33<br></code></pre></td></tr></table></figure>
+
+<p>之后又要继续写 <code>hii</code>。这意味着要重新启用这个 <strong>block</strong>，因此要修改 <strong>bitmap</strong>。之后写入 <code>hii</code>，写完后，继续更新 <strong>inode</strong>，这对应于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">3	write: 45<br>4	write: 908<br>5	write: 908<br>6	write: 33<br></code></pre></td></tr></table></figure>
+
+<p>因为写入了 3 个字符，但是这里的 <strong>block</strong> 被写了两次，<em>目前还找不到原因</em>。事实上，我尝试写了几十个字符，也只有两次写入 <strong>block</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">echo</span> asdfsdfasdf &gt; x<br>write: 45<br>write: 33<br>write: 45<br>write: 908<br>write: 908<br>write: 33<br>write: 908<br>write: 33<br></code></pre></td></tr></table></figure>
+
+<p>然后就是写入<code>\n</code>了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">7	write: 908<br>8	write: 33<br></code></pre></td></tr></table></figure>
+<p>以上就是文件系统的工作示例了。</p>
+<h2 id="五、代码"><a href="#五、代码" class="headerlink" title="五、代码"></a>五、代码</h2><p><code>sysfile.c</code>中包含了所有与文件系统相关的函数，分配<strong>inode</strong>发生在<code>sys_open()</code>函数中，这个函数会负责创建文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c">uint64<br><span class="hljs-title function_">sys_open</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-type">char</span> path[MAXPATH];<br>  <span class="hljs-type">int</span> fd, omode;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file</span> *<span class="hljs-title">f</span>;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode</span> *<span class="hljs-title">ip</span>;</span><br>  <span class="hljs-type">int</span> n;<br><br>  argint(<span class="hljs-number">1</span>, &amp;omode);<br>  <span class="hljs-keyword">if</span>((n = argstr(<span class="hljs-number">0</span>, path, MAXPATH)) &lt; <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br><br>  begin_op();<br><br>  <span class="hljs-keyword">if</span>(omode &amp; O_CREATE)&#123;<br>    ip = create(path, T_FILE, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span>(ip == <span class="hljs-number">0</span>)&#123;<br>      end_op();<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>  &#125;<br>  ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>superblock</strong> 中存储着各种各样的信息，包括 <strong>inode</strong> 的数量 <strong>ninodes</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Disk layout:</span><br><span class="hljs-comment">// [ boot block | super block | log | inode blocks |</span><br><span class="hljs-comment">//                                          free bit map | data blocks]</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// mkfs computes the super block and builds an initial file system. The</span><br><span class="hljs-comment">// super block describes the disk layout:</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">superblock</span> &#123;</span><br>  uint magic;        <span class="hljs-comment">// Must be FSMAGIC</span><br>  uint size;         <span class="hljs-comment">// Size of file system image (blocks)</span><br>  uint nblocks;      <span class="hljs-comment">// Number of data blocks</span><br>  uint ninodes;      <span class="hljs-comment">// Number of inodes.</span><br>  uint nlog;         <span class="hljs-comment">// Number of log blocks</span><br>  uint logstart;     <span class="hljs-comment">// Block number of first log block</span><br>  uint inodestart;   <span class="hljs-comment">// Block number of first inode block</span><br>  uint bmapstart;    <span class="hljs-comment">// Block number of first free map block</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>创建的过程中，它会调用 <code>create()</code>函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-keyword">struct</span> inode*<br><span class="hljs-title function_">create</span><span class="hljs-params">(<span class="hljs-type">char</span> *path, <span class="hljs-type">short</span> type, <span class="hljs-type">short</span> major, <span class="hljs-type">short</span> minor)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode</span> *<span class="hljs-title">ip</span>, *<span class="hljs-title">dp</span>;</span><br>  <span class="hljs-type">char</span> name[DIRSIZ];<br><br>  <span class="hljs-keyword">if</span>((dp = nameiparent(path, name)) == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br><br>  ilock(dp);<br><br>  <span class="hljs-keyword">if</span>((ip = dirlookup(dp, name, <span class="hljs-number">0</span>)) != <span class="hljs-number">0</span>)&#123;<br>    iunlockput(dp);<br>    ilock(ip);<br>    <span class="hljs-keyword">if</span>(type == T_FILE &amp;&amp; (ip-&gt;type == T_FILE || ip-&gt;type == T_DEVICE))<br>      <span class="hljs-keyword">return</span> ip;<br>    iunlockput(ip);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">if</span>((ip = ialloc(dp-&gt;dev, type)) == <span class="hljs-number">0</span>)&#123;<br>    iunlockput(dp);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br>  ilock(ip);<br>  ip-&gt;major = major;<br>  ip-&gt;minor = minor;<br>  ip-&gt;nlink = <span class="hljs-number">1</span>;<br>  iupdate(ip);<br><br>  <span class="hljs-keyword">if</span>(type == T_DIR)&#123;  <span class="hljs-comment">// Create . and .. entries.</span><br>    <span class="hljs-comment">// No ip-&gt;nlink++ for &quot;.&quot;: avoid cyclic ref count.</span><br>    <span class="hljs-keyword">if</span>(dirlink(ip, <span class="hljs-string">&quot;.&quot;</span>, ip-&gt;inum) &lt; <span class="hljs-number">0</span> || dirlink(ip, <span class="hljs-string">&quot;..&quot;</span>, dp-&gt;inum) &lt; <span class="hljs-number">0</span>)<br>      <span class="hljs-keyword">goto</span> fail;<br>  &#125;<br><br>  <span class="hljs-keyword">if</span>(dirlink(dp, name, ip-&gt;inum) &lt; <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">goto</span> fail;<br><br>  <span class="hljs-keyword">if</span>(type == T_DIR)&#123;<br>    <span class="hljs-comment">// now that success is guaranteed:</span><br>    dp-&gt;nlink++;  <span class="hljs-comment">// for &quot;..&quot;</span><br>    iupdate(dp);<br>  &#125;<br><br>  iunlockput(dp);<br><br>  <span class="hljs-keyword">return</span> ip;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><code>create()</code>函数中首先会解析路径名并找到最后一个目录，之后会查看文件是否存在，如果存在的话会返回错误。之后就会调用<code>ialloc()</code>，这个函数会为 <strong>文件x</strong> 分配<strong>inode</strong>。<strong>ialloc</strong>函数位于<code>fs.c</code>文件中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Allocate an inode on device dev.</span><br><span class="hljs-comment">// Mark it as allocated by  giving it type type.</span><br><span class="hljs-comment">// Returns an unlocked but allocated and referenced inode,</span><br><span class="hljs-comment">// or NULL if there is no free inode.</span><br><span class="hljs-keyword">struct</span> inode*<br><span class="hljs-title function_">ialloc</span><span class="hljs-params">(uint dev, <span class="hljs-type">short</span> type)</span><br>&#123;<br>  <span class="hljs-type">int</span> inum;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">buf</span> *<span class="hljs-title">bp</span>;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dinode</span> *<span class="hljs-title">dip</span>;</span><br><br>  <span class="hljs-keyword">for</span>(inum = <span class="hljs-number">1</span>; inum &lt; sb.ninodes; inum++)&#123;<br>    bp = bread(dev, IBLOCK(inum, sb));<br>    dip = (<span class="hljs-keyword">struct</span> dinode*)bp-&gt;data + inum%IPB;<br>    <span class="hljs-keyword">if</span>(dip-&gt;type == <span class="hljs-number">0</span>)&#123;  <span class="hljs-comment">// a free inode</span><br>      <span class="hljs-built_in">memset</span>(dip, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(*dip));<br>      dip-&gt;type = type;<br>      log_write(bp);   <span class="hljs-comment">// mark it allocated on the disk</span><br>      brelse(bp);<br>      <span class="hljs-keyword">return</span> iget(dev, inum);<br>    &#125;<br>    brelse(bp);<br>  &#125;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ialloc: no inodes\n&quot;</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>它会遍历所有可能的 <strong>inode编号</strong>，<code>IBLOCK(inum, sb)</code>可以将通过<strong>inum</strong>找到 <strong>superblock</strong> 对应的 <strong>block number</strong>。<code>bread()</code>可以通过<strong>设备名和 blockno</strong> 可以得到硬盘中的 <strong>block</strong> 在内存中的<strong>缓存</strong>，记为 <strong>bp</strong>。由于 <strong>bp</strong> 是 <strong>dblock</strong> 中的一个拷贝，因此接下来就直接在 <strong>bp</strong> 中操作了。</p>
+<p>找到<strong>inode</strong>所在的<strong>block</strong>，再看位于<strong>block</strong>中的<strong>inode</strong>数据的<strong>type字段</strong>。如果这是一个空闲的 <strong>inode</strong>，那么将其<strong>type</strong>字段设置为文件，<strong>这会将inode标记为已被分配</strong>。函数中的<code>log_write()</code> 就是我们之前看到在<strong>console</strong>中有关写<strong>block</strong>的输出。这里的 <code>log_write()</code> 是我们看到的<strong>整个输出的第一个</strong>。</p>
+<p>以上就是第一次写磁盘涉及到的函数调用。</p>
+<p>这里有个有趣的问题，<strong>如果有多个进程同时调用create函数会发生什么？</strong> 对于一个多核的计算机，进程可能并行运行，两个进程可能同时会调用到 <strong>ialloc函数</strong>，然后进而调用 <code>bread()</code> 函数。所以必须要有一些机制确保这两个进程不会互相影响。</p>
+<p>这个已经在上一个实验中讨论了，就不再赘述了。</p>
+<h2 id="六、总结（大模型总结）"><a href="#六、总结（大模型总结）" class="headerlink" title="六、总结（大模型总结）"></a>六、总结（大模型总结）</h2><p>这篇文章深入探讨了文件系统在 <strong>xv6</strong> 环境下的工作原理，分层次地介绍了文件系统的实现概述、硬盘使用、<strong>inode</strong> 结构、目录、以及文件系统的工作示例。文章详细解释了<strong>inode</strong>和<strong>block</strong>在磁盘上的分布方式，以及文件的创建、写入和元数据修改的过程。它提供了清晰的代码示例和相关函数的解释，为理解文件系统的内部机制提供了深入而全面的认识。</p>
+<p>文章非常详尽地描述了 <strong>xv6</strong> 文件系统的内部机制和数据结构，从底层的磁盘操作到高层的文件操作都有涉及。它还着重强调了在文件系统设计中的一些限制和简化，尤其是对于路径查找等操作的效率问题。这样的详细解释对于想要深入了解文件系统工作原理的读者来说是非常有帮助的。</p>
+<p>全文完，感谢阅读。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/xv6/" class="print-no-link">#xv6</a>
+      
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>xv6 文件系统（上）</div>
+      <div>http://blog.luliang.online/2023/12/18/xv6 文件系统（上）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月18日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" title="xv6 文件系统（下）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">xv6 文件系统（下）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第七章）">
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第七章）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,768 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言阅读本案例需要有做 nemu 的经历，最低要求是是做到 PA3.1。 一个最简单的异常处理程序12345678910111213141516#include &lt;klib.h&gt;void handler() &#123;    uintptr_t mepc;    asm volatile(&quot;csrr %0, mepc&quot; : &quot;&#x3D;r&quot;(mep">
+<meta property="og:type" content="article">
+<meta property="og:title" content="再探究异常处理">
+<meta property="og:url" content="http://blog.luliang.online/2024/11/19/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="前言阅读本案例需要有做 nemu 的经历，最低要求是是做到 PA3.1。 一个最简单的异常处理程序12345678910111213141516#include &lt;klib.h&gt;void handler() &#123;    uintptr_t mepc;    asm volatile(&quot;csrr %0, mepc&quot; : &quot;&#x3D;r&quot;(mep">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-19T08:20:40.000Z">
+<meta property="article:modified_time" content="2024-12-04T08:41:00.147Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="异常处理">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>再探究异常处理 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="再探究异常处理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-19 16:20" pubdate>
+          2024年11月19日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">再探究异常处理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>阅读本案例需要有做 nemu 的经历，最低要求是是做到 PA3.1。</p>
+<h2 id="一个最简单的异常处理程序"><a href="#一个最简单的异常处理程序" class="headerlink" title="一个最简单的异常处理程序"></a>一个最简单的异常处理程序</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;klib.h&gt;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">handler</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">uintptr_t</span> mepc;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mepc&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(mepc))</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exception at mepc = %p\n&quot;</span>, mepc);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrw mtvec, %0&quot;</span> : : <span class="hljs-string">&quot;r&quot;</span>(handler))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;.word 0&quot;</span>)</span>;  <span class="hljs-comment">// illegal instruction</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;I am alive!\n&quot;</span>);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这是 Makefile：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><br>NAME = simple-rv-handler<br>SRCS = simple-rv-handler.c<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/Makefile<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="在-riscv32—nemu-运行"><a href="#在-riscv32—nemu-运行" class="headerlink" title="在 riscv32—nemu 运行"></a>在 riscv32—nemu 运行</h3><p>这是一个很简单的异常处理程序，将它编译成 riscv32，并尝试在 nemu 上运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make ARCH=riscv32-nemu -j8 run<br></code></pre></td></tr></table></figure>
+
+<p>就会发现，程序并不能按照想象中的运行，这是因为 nemu 并没有加入指令异常处理机制：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>invalid opcode(PC = 0x80000044):<br>        00 00 00 00 17 05 00 00 ...<br>        00000000 00000517...<br>There are two cases <span class="hljs-built_in">which</span> will trigger this unexpected exception:<br>1. The instruction at PC = 0x80000044 is not implemented.<br>2. Something is implemented incorrectly.<br>Find this PC(0x80000044) <span class="hljs-keyword">in</span> the disassembling result to distinguish <span class="hljs-built_in">which</span> <span class="hljs-keyword">case</span> it is.<br><br>If it is the first <span class="hljs-keyword">case</span>, see<br>       _                         __  __                         _<br>      (_)                       |  \/  |                       | |<br>  _ __ _ ___  ___ ________   __ | \  / | __ _ _ __  _   _  __ _| |<br> | <span class="hljs-string">&#x27;__| / __|/ __|______\ \ / / | |\/| |/ _` | &#x27;</span>_ \| | | |/ _` | |<br> | |  | \__ \ (__        \ V /  | |  | | (_| | | | | |_| | (_| | |<br> |_|  |_|___/\___|        \_/   |_|  |_|\__,_|_| |_|\__,_|\__,_|_|<br><br><span class="hljs-keyword">for</span> more details.<br><br>If it is the second <span class="hljs-keyword">case</span>, remember:<br>* The machine is always right!<br>* Every line of untested code is always wrong!<br><br>[src/cpu/cpu-exec.c:144 cpu_exec] nemu: ABORT at pc = 0x80000044<br>...<br></code></pre></td></tr></table></figure>
+
+<p>当程序直行到非法0指令的时候：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs asm">8000002c &lt;main&gt;:<br>8000002c:	ff010113          	addi	sp,sp,-16<br>80000030:	00112623          	sw	ra,12(sp)<br>80000034:	00288893          	addi	a7,a7,2<br>80000038:	00000797          	auipc	a5,0x0<br>8000003c:	fd878793          	addi	a5,a5,-40 # 80000010 &lt;handler&gt;<br>80000040:	30579073          	csrw	mtvec,a5<br>80000044:	00000000          	.word	0x00000000<br>80000048:	00000517          	auipc	a0,0x0<br>8000004c:	46450513          	addi	a0,a0,1124 # 800004ac &lt;_etext+0x18&gt;<br>80000050:	39c000ef          	jal	ra,800003ec &lt;printf&gt;<br>80000054:	0000006f          	j	80000054 &lt;main+0x28&gt;<br></code></pre></td></tr></table></figure>
+
+<p>nemu 模拟器的处理是老办法，已经很熟悉了。</p>
+<p>但是我想要让这个程序在 nemu 上运行且能正确处理指令异常的话，需要给 nemu 加一点东西。</p>
+<h3 id="指令异常处理"><a href="#指令异常处理" class="headerlink" title="指令异常处理"></a>指令异常处理</h3><p>首先，我们需要将原来的错误指令处理函数修改成这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs C">INSTPAT(<span class="hljs-string">&quot;0000000 00001 00000 000 00000 11100 11&quot;</span>, ebreak, N,<br>        NEMUTRAP(s-&gt;pc, R(<span class="hljs-number">10</span>)));  <span class="hljs-comment">// R(10) is $a0</span><br><span class="hljs-comment">// INSTPAT(&quot;??????? ????? ????? ??? ????? ????? ??&quot;, inv, N,</span><br><span class="hljs-comment">// INV(s-&gt;pc));</span><br>INSTPAT(<span class="hljs-string">&quot;??????? ????? ????? ??? ????? ????? ??&quot;</span>, ecall, I,<br>        ECALL(s-&gt;dnpc));  <span class="hljs-comment">// 这里如果指令出现错误，就触发异常</span><br>INSTPAT_END();<br></code></pre></td></tr></table></figure>
+
+<p>这样，当接受到非法指令的时候，就会发起异常。</p>
+<p>然后我们要需要模拟硬件保存状态寄存器：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">word_t</span> <span class="hljs-title function_">isa_raise_intr</span><span class="hljs-params">(<span class="hljs-type">word_t</span> NO, <span class="hljs-type">vaddr_t</span> epc)</span> &#123;<br>    <span class="hljs-comment">// 实现 etrace</span><br>    IFDEF(CONFIG_ETRACE, etrace(NO, epc));<br>    <span class="hljs-comment">// 在这里决定是否对 pc + 4：</span><br>    <span class="hljs-comment">// 如果是缺页中断: 不加 4；</span><br>    <span class="hljs-comment">// 如果是陷入指令，那么这条指令执行完了自然要执行下一跳指令，+4</span><br>    <span class="hljs-comment">// 如果这里是指令异常，那么应该不 +4，以确保其指向正确的当前指令</span><br>    <span class="hljs-comment">// 非法指令异常号是 2</span><br>    cpu.csr.mcause = NO;<br>    <span class="hljs-keyword">if</span> (NO == <span class="hljs-number">2</span>) &#123;<br>        cpu.csr.mepc = epc;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        cpu.csr.mepc = epc + <span class="hljs-number">4</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> cpu.csr.mtvec;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>那么这个 NO 怎么来的呢？如果是在 C语言层次发起的异常，比如通过系统调用，那么会自动的调用这yield()：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span> <span class="hljs-title function_">yield</span><span class="hljs-params">()</span> &#123;<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __riscv_e</span><br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;li a5, -1; ecall&quot;</span>)</span>;<br><span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;li a7, 11; ecall&quot;</span>)</span>;<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>但是上面的例子并不是通过系统调用引发的异常，那应该怎么办呢？我们只需要把上面的程序改造一下，手动给 a7 中写入 2 这个异常类型就好了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;addi a7, a7, 2&quot;</span>)</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrw mtvec, %0&quot;</span> : : <span class="hljs-string">&quot;r&quot;</span>(handler))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;.word 0&quot;</span>)</span>;  <span class="hljs-comment">// illegal instruction</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;I am alive!\n&quot;</span>);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这下就成功了:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>bili/异常处理/build/simple-rv-handler-riscv32-nemu.bin, size = 1301<br>[src/monitor/monitor.c:30 welcome] Trace: OFF<br>[src/monitor/monitor.c:36 welcome] Build time: 21:43:22, Nov 21 2024<br>Welcome to riscv32-NEMU!<br>For <span class="hljs-built_in">help</span>, <span class="hljs-built_in">type</span> <span class="hljs-string">&quot;help&quot;</span><br>[src/monitor/monitor.c:40 welcome] Exercise: Please remove me <span class="hljs-keyword">in</span> the <span class="hljs-built_in">source</span> code and compile NEMU again.<br>exception at mepc = 0x80000044<br></code></pre></td></tr></table></figure>
+<p>这样就大功告成了，我们的 mepc 正确指向了错误的指令（不能+4）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs asm">8000002c &lt;main&gt;:<br>8000002c:	ff010113          	addi	sp,sp,-16<br>80000030:	00112623          	sw	ra,12(sp)<br>80000034:	00288893          	addi	a7,a7,2<br>80000038:	00000797          	auipc	a5,0x0<br>8000003c:	fd878793          	addi	a5,a5,-40 # 80000010 &lt;handler&gt;<br>80000040:	30579073          	csrw	mtvec,a5<br>80000044:	00000000          	.word	0x00000000<br>80000048:	00000517          	auipc	a0,0x0<br>8000004c:	46450513          	addi	a0,a0,1124 # 800004ac &lt;_etext+0x18&gt;<br>80000050:	39c000ef          	jal	ra,800003ec &lt;printf&gt;<br>80000054:	0000006f          	j	80000054 &lt;main+0x28&gt;<br></code></pre></td></tr></table></figure>
+
+<p>解释一下这个程序，就是当遇到非法指令的时候，cpu 应该会自动发起异常，然后由 handler 负责解决异常。</p>
+<p>我在硬件层面模拟了硬件过程（设置 mcause、mepc、mtvec），现在对上面的程序进行修改，我们希望能读出来这三个寄存器的值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;klib.h&gt;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">handler</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">uintptr_t</span> mepc, mcause, mtvec;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mepc&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(mepc))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mcause&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(mcause))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mtvec&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(mtvec))</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exception at mepc = %p\n&quot;</span>, mepc);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exception mcause = %p\n&quot;</span>, mcause);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exception mtvec = %p\n&quot;</span>, mtvec);<br>     <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>);<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;addi a7, a7, 2&quot;</span>)</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrw mtvec, %0&quot;</span> : : <span class="hljs-string">&quot;r&quot;</span>(handler))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;.word 0&quot;</span>)</span>;  <span class="hljs-comment">// illegal instruction</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;I am alive!\n&quot;</span>);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>编译运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">make ARCH=riscv32-nemu -j8 run<br>...<br><br>exception at mepc = 0x80000074<br>exception mcause = 0x2<br>exception mtvec = 0x80000010<br><br></code></pre></td></tr></table></figure>
+<p>对比它的部分反汇编查看：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs asm"><br>80000010 &lt;handler&gt;:<br>80000010:	ff010113          	addi	sp,sp,-16<br>80000014:	00112623          	sw	ra,12(sp)<br>80000018:	00812423          	sw	s0,8(sp)<br>8000001c:	00912223          	sw	s1,4(sp)<br>80000020:	341025f3          	csrr	a1,mepc<br>80000024:	342024f3          	csrr	s1,mcause<br>80000028:	30502473          	csrr	s0,mtvec<br>...<br><br>8000005c &lt;main&gt;:<br>...<br>8000006c:	fa878793          	addi	a5,a5,-88 # 80000010 &lt;handler&gt;<br>80000070:	30579073          	csrw	mtvec,a5<br>80000074:	00000000          	.word	0x00000000<br>80000078:	00000517          	auipc	a0,0x0<br>...<br></code></pre></td></tr></table></figure>
+
+<p>也是符合预期的。</p>
+<p>这个是指令异常，指令是 0 指令。假设这个指令问题不大，不会对程序造成任何影响，那么我需要让这个异常处理程序返回到 0 指令的下一条指令，因此这里的 mepc 应该+4。是否+4，完全取决于中断类型。</p>
+<p>那么怎么返回呢？可以将 mepc 的值打到 pc 中，绝对不可以用 ret 指令来返回，因为 ret 是一个伪指令，它实际上是 jalr。在回复上下文后使用 ret，我们的现场就又遭到了破坏（jalr 会修改寄存器），就无法恢复。</p>
+<p>但是我们可以使用 mret，它实际上是将 mepc 拷贝到 pc。</p>
+<p>我们可以在程序中这样操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;klib.h&gt;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">handler</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">uintptr_t</span> mepc, mcause, mtvec;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mepc&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(mepc))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mcause&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(mcause))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mtvec&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(mtvec))</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exception at mepc = %p\n&quot;</span>, mepc);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exception mcause = %p\n&quot;</span>, mcause);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;exception mtvec = %p\n&quot;</span>, mtvec);<br><br>    <span class="hljs-keyword">if</span> (mcause == <span class="hljs-number">2</span>) &#123;<br>        <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrw mepc, %0;mret&quot;</span> ::<span class="hljs-string">&quot;r&quot;</span>(mepc + <span class="hljs-number">4</span>))</span>; <span class="hljs-comment">//</span><br>    &#125;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;addi a7, a7, 2&quot;</span>)</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrw mtvec, %0&quot;</span> : : <span class="hljs-string">&quot;r&quot;</span>(handler))</span>;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;.word 0&quot;</span>)</span>;  <span class="hljs-comment">// illegal instruction</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;I am alive!\n&quot;</span>);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当 mcause 为 2 的时候，我们再执行两条指令，分别是修改 mepc，以及 mret。编译运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">make ARCH=riscv32-nemu -j8 run<br>...<br><br>exception at mepc = 0x80000094<br>exception mcause = 0x2<br>exception mtvec = 0x80000010<br>I am alive!<br><br></code></pre></td></tr></table></figure>
+
+<p>当然这种返回不符合规范，因为它没有保存、恢复上下文。正常的异常处理调用 handler 之前，需要保存现场，然后返回到 handler，然后再恢复现场，最后调用 mret。</p>
+<h2 id="系统调用"><a href="#系统调用" class="headerlink" title="系统调用"></a>系统调用</h2><p>CPU 的特权级（riscv）：</p>
+<ul>
+<li>M: 机器模式</li>
+<li>S: 监管模式</li>
+<li>U: 用户模式</li>
+</ul>
+<p>怎么管理呢？不是任何程序都能随便指令危险的指令比如内联汇编中操作 csr 寄存器。这个解决方案是由硬件提供的，之前在 nemu 中跑上面的例子，都是以 M 模式直接跑的，真实环境下是不行的。</p>
+<p>比如下面这个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> csr;<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __riscv</span><br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;csrr %0, mepc&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(csr))</span>;<br><span class="hljs-meta">#<span class="hljs-keyword">else</span>  <span class="hljs-comment">// x86</span></span><br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(<span class="hljs-string">&quot;mov %%cr0, %0&quot;</span> : <span class="hljs-string">&quot;=r&quot;</span>(csr))</span>;<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;csr = %p\n&quot;</span>, csr);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个程序不管是 riscv 还是 x86 都在尝试执行非法指令，我们先在 rv64 中跑：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ rv64gcc test.c<br>$ ./a.out<br>[1]    248701 illegal hardware instruction (core dumped)  ./a.out<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，它报错，显示非法指令。继续在 x86 上跑：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ gcc test.c<br>$ ./a.out<br>[1]    248889 segmentation fault (core dumped)  ./a.out<br></code></pre></td></tr></table></figure>
+
+<p>x86 的报错是段错误，也是一样的，因为寄存器地址非法。</p>
+<p>修改程序，让其执行U模式下可以执行的指令：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> a0;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(</span><br><span class="hljs-params">        <span class="hljs-string">&quot;li a0, 10\n&quot;</span></span><br><span class="hljs-params">        <span class="hljs-string">&quot;mv %0, a0&quot;</span></span><br><span class="hljs-params">        : <span class="hljs-string">&quot;=r&quot;</span>(a0)</span><br><span class="hljs-params">        :</span><br><span class="hljs-params">        : <span class="hljs-string">&quot;a0&quot;</span>)</span>;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a0 = %x\n&quot;</span>, a0);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行就很正常：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ rv64gcc test.c<br>$ ./a.out<br>a0 = a<br></code></pre></td></tr></table></figure>
+
+
+
+<p>一般规定，资源管理程序放在高特权级（S），这实际上就是操作系统的代码；用户程序运行在低特权级（U），比如普通运算，发起系统调用请求等。</p>
+<p>那么怎么发起一个系统调用呢？唯一合法方式：自陷类异常-执行一条无条件触发异常的指令。riscv 提供了 ecall 指令，操作系统从而可以根据这个 ecall 指令，去审查 mcause 判断该异常的来源。比如在 U 模式下发起的 ecall，mcause 为 8；在 S 模式下发起的 ecall，mcause 为 9；在 M 模式下发起 ecall，mcause 为 10。</p>
+<p>当发起 ecall 的时候，OS 会检查 mcause，从而判断是否合法；如果合法。就会出处理这个 ecall。具体就是保存上下文、返回到 handler，handler 处理完后恢复现场，然后 mret。</p>
+<p>当然，请求系统调用需要给系统传参，告诉操作系统我需要何种服务。最合理的方式是通过寄存器来传参。约定：a7 传递系统调用号码。</p>
+<p>一个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello World!\n&quot;</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在 rv64 平台下运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ rv64gcc hello.c<br>$ ./a.out<br>Hello World!<br></code></pre></td></tr></table></figure>
+
+<p>我们想知道它在运行的时候的 trace，比如 strace，这时候加上一些参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ qemu-riscv64 -d strace,trace:guest_user_syscall a.out<br>...<br>guest_user_syscall cpu=0x55afcb4bf7e0 num=0x0000000000000040 arg1=0x0000000000000001 arg2=0x00000040000032a0 arg3=0x000000000000000d arg4=0x00000040000032a0 arg5=0x0000000000000000 arg6=0x0000000000000000 arg7=0x0000000000000000 arg8=0x0000000000000000<br>250892 write(1,0x32a0,13)Hello World!<br> = 13<br>...<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，printf 其实就是一个系统调用 write：第一个参数为文件描述符 1，说明是标准输出；第二个参数为缓冲区地址0x32a0，第三个参数为字符长度，刚好是 13。</p>
+<p>可以看手册：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash">man 2 write<br>...<br>NAME<br>       write - write to a file descriptor<br><br>SYNOPSIS<br>       <span class="hljs-comment">#include &lt;unistd.h&gt;</span><br><br>       ssize_t write(int fd, const void *buf, size_t count);<br><br>DESCRIPTION<br>       write()  writes up to count bytes from the buffer starting at buf to the file referred to by the file<br>       descriptor fd.<br>...<br><br></code></pre></td></tr></table></figure>
+
+<p>通过上面的 trace，可以看到这个系统调用的调用号为 num &#x3D; 0x40，那么我们就可以通过汇编来发起系统调用了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span> <span class="hljs-params">(</span><br><span class="hljs-params">      <span class="hljs-string">&quot;li a0, 1\n&quot;</span></span><br><span class="hljs-params">      <span class="hljs-string">&quot;mv a1, %0\n&quot;</span></span><br><span class="hljs-params">      <span class="hljs-string">&quot;mv a2, %1\n&quot;</span></span><br><span class="hljs-params">      <span class="hljs-string">&quot;li a7, 0x40\n&quot;</span></span><br><span class="hljs-params">      <span class="hljs-string">&quot;ecall\n&quot;</span></span><br><span class="hljs-params">      : : <span class="hljs-string">&quot;r&quot;</span>(<span class="hljs-string">&quot;Hello World_Hello world!\n&quot;</span>), <span class="hljs-string">&quot;r&quot;</span>(<span class="hljs-number">26</span>))</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>编译运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ rv64gcc a.c<br>$ ./a.out<br>Hello World_Hello world!<br></code></pre></td></tr></table></figure>
+
+<p>通过 trace 可以发现，几乎一摸一样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">guest_user_syscall cpu=0x629597e6b7a0 num=0x0000000000000040 arg1=0x0000000000000001 arg2=0x0000004000000658 arg3=0x000000000000001a arg4=0x0000000000000000 arg5=0x000000000000001a arg6=0x0000004000000658 arg7=0x0000000000000000 arg8=0x0000000000000000<br>252231 write(1,0x658,26)Hello World_Hello world!<br> = 26<br></code></pre></td></tr></table></figure>
+
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/ysyx/" class="category-chain-item">ysyx</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" class="print-no-link">#异常处理</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>再探究异常处理</div>
+      <div>http://blog.luliang.online/2024/11/19/异常处理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/10/30/%E6%80%BB%E7%BA%BF/" title="总线">
+                        <span class="hidden-mobile">总线</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

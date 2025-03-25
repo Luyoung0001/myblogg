@@ -1,0 +1,880 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本章主要是关于实验环境的搭建和完成 LAB UTIL。平台：阿里云 Ubuntu20.04+VScode on macOS（M1 Apple Silicon）。 一、环境搭建1、QEMU QEMU（quick emulator）是一款由法布里斯·贝拉（FabriceBellard）等人编写的通用且免费的可执行硬件虚拟化的（hardwarevirtualization）开源仿真器（Emu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.S081学习笔记（第一章）">
+<meta property="og:url" content="http://blog.luliang.online/2023/09/10/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本章主要是关于实验环境的搭建和完成 LAB UTIL。平台：阿里云 Ubuntu20.04+VScode on macOS（M1 Apple Silicon）。 一、环境搭建1、QEMU QEMU（quick emulator）是一款由法布里斯·贝拉（FabriceBellard）等人编写的通用且免费的可执行硬件虚拟化的（hardwarevirtualization）开源仿真器（Emu">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/68737d99ab96432998a15f0cce8936e3_1720253724529.png?token=ANB4BCMS2ZGBQQUYQUSBSBTGRD6VY">
+<meta property="article:published_time" content="2023-09-10T11:30:08.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.771Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="学习">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="MIT 6.S081">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/68737d99ab96432998a15f0cce8936e3_1720253724529.png?token=ANB4BCMS2ZGBQQUYQUSBSBTGRD6VY">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>MIT 6.S081学习笔记（第一章） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MIT 6.S081学习笔记（第一章）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-10 19:30" pubdate>
+          2023年9月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">MIT 6.S081学习笔记（第一章）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本章主要是关于实验环境的搭建和完成 <a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2023/labs/util.html">LAB UTIL</a>。<br>平台：阿里云 Ubuntu20.04+VScode on macOS（M1 Apple Silicon）。</p>
+<h2 id="一、环境搭建"><a href="#一、环境搭建" class="headerlink" title="一、环境搭建"></a>一、环境搭建</h2><h3 id="1、QEMU"><a href="#1、QEMU" class="headerlink" title="1、QEMU"></a>1、QEMU</h3><blockquote>
+<p>QEMU（quick emulator）是一款由法布里斯·贝拉（Fabrice<br>Bellard）等人编写的通用且免费的可执行<strong>硬件虚拟化的（hardware<br>virtualization）开源仿真器（Emulator）</strong>。</p>
+<p>其与Bochs，PearPC类似，但拥有高速（配合KVM），跨平台的特性。</p>
+<p>QEMU是一个托管的虚拟机，它通过动态的二进制转换，<strong>模拟CPU，并且提供一组设备模型</strong>，使它能够运行多种未修改的客户机OS，可以通过与KVM一起使用进而接近本地速度运行虚拟机（接近真实电脑的速度）。</p>
+<p>QEMU还可以为user-level的进程执行CPU仿真，进而允许了为一种架构编译的程序在另外一种架构上面运行（借由VMM的形式）。——wikipedia</p>
+</blockquote>
+<p><strong>实验中QEMU用来模拟 RISC-V 处理器以及一组必要硬件（内存、硬盘等）。</strong></p>
+<h3 id="2、RISC-V"><a href="#2、RISC-V" class="headerlink" title="2、RISC-V"></a>2、RISC-V</h3><blockquote>
+<p>RISC-V（发音为“risk-five”）是一个基于精简指令集（RISC）原则的开源指令集架构（ISA），简易解释为与开源软体运动相对应的一种“开源硬体”。</p>
+<p>与大多数指令集相比，RISC-V指令集可以自由地用于任何目的，允许任何人设计、制造和销售RISC-V芯片和软件而不必支付给任何公司专利费。虽然这不是第一个开源指令集，但它具有重要意义，因为其设计使其适用于现代计算设备（如仓库规模云计算机、高端移动电话和微小嵌入式系统）。设计者考虑到了这些用途中的性能与功率效率。该指令集还具有众多支持的软件，这解决了新指令集通常的弱点。</p>
+<p>RISC-V指令集的设计考虑了小型、快速、低功耗的现实情况来实做，但并没有对特定的微架构做过度的设计。——wikipedia</p>
+</blockquote>
+<h3 id="3、xv6"><a href="#3、xv6" class="headerlink" title="3、xv6"></a>3、xv6</h3><blockquote>
+<p>xv6是以ANSI C重新编写的Unix第六版现代实现版本，适用于多处理器x86或RISC-V系统。xv6于2006年问世，作为麻省理工学院的操作系统工程（6.828）课程的教学使用。<br>与Linux或BSD不同，xv6非常简单，足以在一个学期内讲完，但仍然包含Unix的重要概念和组织。由于PDP-11机器没有被广泛使用，而且最初的操作系统是用过时的pre-ANSI<br>C编写的，所以该课程没有学习原始的V6代码，而是使用xv6。——wikipedia</p>
+</blockquote>
+<p>由于 xv6 足够经典也足够简单，因此学习它就可以了解足够的关于 OS 的知识。</p>
+<h3 id="4、搭建环境"><a href="#4、搭建环境" class="headerlink" title="4、搭建环境"></a>4、搭建环境</h3><p>一行命令搞定：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu<br></code></pre></td></tr></table></figure>
+<p>直接拉取源码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ git <span class="hljs-built_in">clone</span> git://g.csail.mit.edu/xv6-labs-2023<br>$ <span class="hljs-built_in">cd</span> xv6-labs-2023<br></code></pre></td></tr></table></figure>
+<p>编译，直接进入 xv6 终端：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">******:~/xv6-labs-2023<span class="hljs-comment"># make qemu</span><br>qemu-system-riscv64 -machine virt -bios none -kernel kernel/kernel -m 128M -smp 3 -nographic -drive file=fs.img,<span class="hljs-keyword">if</span>=none,format=raw,<span class="hljs-built_in">id</span>=x0 -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0<br><br>xv6 kernel is booting<br><br>hart 1 starting<br>hart 2 starting<br>init: starting sh<br>$<br></code></pre></td></tr></table></figure>
+<p>玩玩命令啥的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">ls</span><br>.              1 1 1024<br>..             1 1 1024<br>README         2 2 2059<br>xargstest.sh   2 3 93<br><span class="hljs-built_in">cat</span>            2 4 23888<br><span class="hljs-built_in">echo</span>           2 5 22720<br>forktest       2 6 13080<br>grep           2 7 27248<br>init           2 8 23824<br><span class="hljs-built_in">kill</span>           2 9 22696<br><span class="hljs-built_in">ln</span>             2 10 22648<br><span class="hljs-built_in">ls</span>             2 11 26120<br><span class="hljs-built_in">mkdir</span>          2 12 22792<br><span class="hljs-built_in">rm</span>             2 13 22784<br>sh             2 14 41656<br><span class="hljs-built_in">wc</span>             2 18 25032<br>zombie         2 19 22184<br>console        3 21 0<br>$ <span class="hljs-built_in">echo</span> README<br>README<br>$ <span class="hljs-built_in">echo</span> hello<br>hello<br>$ <span class="hljs-built_in">cat</span> README<br>xv6 is a re-implementation of Dennis Ritchie<span class="hljs-string">&#x27;s and Ken Thompson&#x27;</span>s Unix<br>Version 6 (v6).  xv6 loosely follows the structure and style of v6,<br>...<br>$<br></code></pre></td></tr></table></figure>
+
+<p>退出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ctrl+a // 松开<br>x<br></code></pre></td></tr></table></figure>
+<h2 id="二、完成第一个任务"><a href="#二、完成第一个任务" class="headerlink" title="二、完成第一个任务"></a>二、完成第一个任务</h2><h3 id="1、查看所有分支"><a href="#1、查看所有分支" class="headerlink" title="1、查看所有分支"></a>1、查看所有分支</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash">******:~/xv6-labs-2023<span class="hljs-comment"># git branch --all</span><br>  master<br>* util<br>  remotes/origin/HEAD -&gt; origin/master<br>  remotes/origin/cow<br>  remotes/origin/fs<br>  remotes/origin/lazy<br>  remotes/origin/lock<br>  remotes/origin/master<br>  remotes/origin/mmap<br>  remotes/origin/net<br>  remotes/origin/pgtbl<br>  remotes/origin/riscv<br>  remotes/origin/syscall<br>  remotes/origin/thread<br>  remotes/origin/traps<br>  remotes/origin/util<br></code></pre></td></tr></table></figure>
+<h3 id="2、切换第一个实验-util-分支"><a href="#2、切换第一个实验-util-分支" class="headerlink" title="2、切换第一个实验 util 分支"></a>2、切换第一个实验 util 分支</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git checkout util<br></code></pre></td></tr></table></figure>
+<h3 id="3、完成-sleep-easy"><a href="#3、完成-sleep-easy" class="headerlink" title="3、完成 sleep(easy)"></a>3、完成 sleep(easy)</h3><p>在 <code>/user</code>中创建 <code>sleep.c</code>，编写程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/types.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/stat.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;user/user.h&quot;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc,<span class="hljs-type">char</span> *argv[])</span>&#123;<br>  <span class="hljs-keyword">if</span>(argc &lt;= <span class="hljs-number">1</span>)&#123;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>  &#125;<br>  <span class="hljs-type">int</span> time = atoi(argv[<span class="hljs-number">1</span>]);<br>  sleep(time);<br>  <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个实验相当简单，就是让你使用一下系统调用 sleep()。</p>
+<h3 id="4、测试"><a href="#4、测试" class="headerlink" title="4、测试"></a>4、测试</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">******:~/xv6-<span class="hljs-built_in">labs</span><span class="hljs-number">-2023</span># ./grade-lab-util sleep<br>make: <span class="hljs-string">&#x27;kernel/kernel&#x27;</span> is up to date.<br>== Test sleep, no arguments == sleep, no arguments: OK (<span class="hljs-number">1.1</span>s)<br>== Test sleep, returns == sleep, returns: OK (<span class="hljs-number">0.8</span>s)<br>== Test sleep, makes syscall == sleep, makes syscall: OK (<span class="hljs-number">1.0</span>s)<br></code></pre></td></tr></table></figure>
+
+<p>测试都通过了。</p>
+<p>现在就可以顺利地做试验了，把剩下的任务都完成一下。</p>
+<h2 id="三、完成所有实验"><a href="#三、完成所有实验" class="headerlink" title="三、完成所有实验"></a>三、完成所有实验</h2><h3 id="1、pingpong-easy"><a href="#1、pingpong-easy" class="headerlink" title="1、pingpong(easy)"></a>1、pingpong(easy)</h3><h4 id="Question-requirements"><a href="#Question-requirements" class="headerlink" title="Question requirements"></a>Question requirements</h4><blockquote>
+<p>Write a program that uses UNIX system calls to ‘’ping-pong’’ a byte between two processes over a pair of pipes, one for each direction. The parent should send a byte to the child; the child should print “<pid>: received ping”, where <pid> is its process ID, write the byte on the pipe to the parent, and exit; the parent should read the byte from the child, print “<pid>: received pong”, and exit. Your solution should be in the file user&#x2F;pingpong.c.</p>
+</blockquote>
+<h4 id="Some-hints"><a href="#Some-hints" class="headerlink" title="Some hints"></a>Some hints</h4><blockquote>
+<ul>
+<li>Use pipe to create a pipe.</li>
+<li>Use fork to create a child.</li>
+<li>Use read to read from the pipe, and write to write to the pipe.</li>
+<li>Use getpid to find the process ID of the calling process.</li>
+<li>Add the program to UPROGS in Makefile.</li>
+<li>User programs on xv6 have a limited set of library functions available to them. You can see - the list in user&#x2F;user.h;</li>
+<li>the source  (other than for system calls) is in user&#x2F;ulib.c, user&#x2F;printf.c, and</li>
+<li>user&#x2F;umalloc.c.</li>
+</ul>
+</blockquote>
+<h4 id="Run-the-program-from-the-xv6-shell-and-it-should-produce-the-following-output"><a href="#Run-the-program-from-the-xv6-shell-and-it-should-produce-the-following-output" class="headerlink" title="Run the program from the xv6 shell and it should produce the following output"></a>Run the program from the xv6 shell and it should produce the following output</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make qemu<br>...<br>init: starting sh<br>$ pingpong<br>4: received ping<br>3: received pong<br>$<br></code></pre></td></tr></table></figure>
+<h4 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/types.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/stat.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;user/user.h&quot;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">10</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    <span class="hljs-comment">// 将用不到的文件描述符尽可能全部关闭</span><br>    <span class="hljs-type">int</span> p1[<span class="hljs-number">2</span>], p2[<span class="hljs-number">2</span>];<br>    pipe(p1); <span class="hljs-comment">// 父进程发</span><br>    pipe(p2); <span class="hljs-comment">// 子进程发</span><br><br>    <span class="hljs-type">int</span> pid = fork();<br>    <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-type">const</span> <span class="hljs-type">char</span> *message = <span class="hljs-string">&quot;S&quot;</span>;<br>        <span class="hljs-comment">// 子进程:在 p2 中发送,p1 中接收</span><br>        close(<span class="hljs-number">0</span>);<br>        close(<span class="hljs-number">2</span>);<br><br>        close(p1[<span class="hljs-number">1</span>]);<br>        close(p2[<span class="hljs-number">0</span>]);<br><br>        <span class="hljs-comment">// 接收</span><br>        read(p1[<span class="hljs-number">0</span>], buf, <span class="hljs-number">10</span>);<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&quot;%d: received ping\n&quot;</span>, getpid());<br>        close(p1[<span class="hljs-number">0</span>]);<br>        <span class="hljs-comment">// 发送</span><br><br>        write(p2[<span class="hljs-number">1</span>], message, <span class="hljs-number">2</span>);<br>        <span class="hljs-comment">// 发送完就关闭</span><br>        close(p2[<span class="hljs-number">1</span>]);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pid &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-type">const</span> <span class="hljs-type">char</span> *message = <span class="hljs-string">&quot;F&quot;</span>;<br>        <span class="hljs-comment">// 父进程:在 p1 中 发送,p2 中 接收</span><br>        close(<span class="hljs-number">0</span>);<br>        close(<span class="hljs-number">2</span>);<br><br>        close(p1[<span class="hljs-number">0</span>]);<br>        close(p2[<span class="hljs-number">1</span>]);<br><br>        <span class="hljs-comment">// 发送</span><br>        write(p1[<span class="hljs-number">1</span>], message, <span class="hljs-number">2</span>);<br>        <span class="hljs-comment">// 发送完就关闭</span><br>        close(p1[<span class="hljs-number">1</span>]);<br>        <span class="hljs-comment">// 接收</span><br>        read(p2[<span class="hljs-number">0</span>], buf, <span class="hljs-number">10</span>);<br>        close(p2[<span class="hljs-number">0</span>]);<br><br>        <span class="hljs-type">int</span> status;<br>        wait(&amp;status);<span class="hljs-comment">// 防止抢占1</span><br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&quot;%d: received pong\n&quot;</span>, getpid());<br><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&quot;err for fork()\n&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">******:~/xv6-labs-2023<span class="hljs-comment"># ./grade-lab-util pingpong</span><br>make: <span class="hljs-string">&#x27;kernel/kernel&#x27;</span> is up to <span class="hljs-built_in">date</span>.<br>== Test pingpong == pingpong: OK (1.6s)<br></code></pre></td></tr></table></figure>
+
+<h4 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h4><p>有以下需要注意的地方：</p>
+<ul>
+<li>如果设置 <code>CPUS=1</code>，（建议不要设置，因为后期实验可能需要多线程来处理）那就不用通过 <code>wait()</code> 来解决抢占问题。但是那也是多线程编程的好习惯，避免僵尸进程的出现；</li>
+<li>如果操作系统不同，代码可能略有差异。比如macOS的 stdin、stdout、定义的并不是 0、1。<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// macOS</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span>	stdin	__stdinp</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span>	stdout	__stdoutp</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span>	stderr	__stderrp</span><br>...<br><span class="hljs-keyword">extern</span> FILE *__stdinp;<br><span class="hljs-keyword">extern</span> FILE *__stdoutp;<br><span class="hljs-keyword">extern</span> FILE *__stderrp;<br>...<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2、primes-moderate"><a href="#2、primes-moderate" class="headerlink" title="2、primes(moderate)"></a>2、primes(moderate)</h3><h4 id="Question-requirements-1"><a href="#Question-requirements-1" class="headerlink" title="Question requirements"></a>Question requirements</h4><blockquote>
+<p>Write a concurrent version of prime sieve using pipes. This idea is due to Doug McIlroy, inventor of Unix pipes. The picture halfway down this page and the surrounding text explain how to do it. Your solution should be in the file user&#x2F;primes.c.</p>
+</blockquote>
+<h4 id="Some-hints-1"><a href="#Some-hints-1" class="headerlink" title="Some hints"></a>Some hints</h4><blockquote>
+<ul>
+<li>Be careful to close file descriptors that a process doesn’t need, because otherwise your program will run xv6 out of resources before the first process reaches 35.</li>
+<li>Once the first process reaches 35, it should wait until the entire pipeline terminates, including all children, grandchildren, &amp;c. Thus the main primes process should only exit after all the output has been printed, and after all the other primes processes have exited.</li>
+<li>Hint: read returns zero when the write-side of a pipe is closed.<br>It’s simplest to directly write 32-bit (4-byte) ints to the pipes, rather than using formatted ASCII I&#x2F;O.</li>
+<li>You should create the processes in the pipeline only as they are needed.</li>
+<li>Add the program to UPROGS in Makefile.</li>
+</ul>
+</blockquote>
+<h4 id="Your-solution-is-correct-if-it-implements-a-pipe-based-sieve-and-produces-the-following-output"><a href="#Your-solution-is-correct-if-it-implements-a-pipe-based-sieve-and-produces-the-following-output" class="headerlink" title="Your solution is correct if it implements a pipe-based sieve and produces the following output:"></a>Your solution is correct if it implements a pipe-based sieve and produces the following output:</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make qemu<br> ...<br> init: starting sh<br> $ primes<br> prime 2<br> prime 3<br> prime 5<br> prime 7<br> prime 11<br> prime 13<br> prime 17<br> prime 19<br> prime 23<br> prime 29<br> prime 31<br> $<br></code></pre></td></tr></table></figure>
+<h4 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution"></a>Solution</h4><p>这就是在父进程中给 pipe 中 写入 2~35，如果不能被 2 整除，就把所有的数移到另一个子进程中的管道；然后循环操作。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">p = get a number from left neighbor <span class="hljs-built_in">print</span> p loop:<br>    n = get a number from left neighbor<br>    <span class="hljs-keyword">if</span> (p does not divide n)<br>        send n to right neighbor<br></code></pre></td></tr></table></figure>
+
+<p>图示如下：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/68737d99ab96432998a15f0cce8936e3_1720253724529.png?token=ANB4BCMS2ZGBQQUYQUSBSBTGRD6VY" alt="在这里插入图片描述"></p>
+<p>直接上代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/types.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/stat.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;user/user.h&quot;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">prime</span><span class="hljs-params">(<span class="hljs-type">int</span> p[])</span>&#123;<br>  <span class="hljs-type">int</span> x,y;<br>  <span class="hljs-type">int</span> child_p[<span class="hljs-number">2</span>];<br>  <span class="hljs-comment">// 子进程</span><br>  <span class="hljs-comment">// 从 p[0] 接收</span><br>  close(p[<span class="hljs-number">1</span>]);<br><br>  <span class="hljs-keyword">if</span>(read(p[<span class="hljs-number">0</span>],&amp;x,<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>)))&#123;<br>    <span class="hljs-comment">// 打印素数</span><br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&quot;prime %d\n&quot;</span>,x);<br>    <span class="hljs-comment">// 处理其它数字</span><br>    pipe(child_p);<br>    <span class="hljs-type">int</span> pid = fork();<br>    <span class="hljs-keyword">if</span>(pid &gt; <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-comment">// 父进程</span><br>      close(child_p[<span class="hljs-number">0</span>]);<br>      <span class="hljs-keyword">while</span>(read(p[<span class="hljs-number">0</span>], &amp;y,<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>)))&#123;<br>        <span class="hljs-keyword">if</span>(y%x != <span class="hljs-number">0</span>)&#123;<br>          <span class="hljs-comment">// 其它不能被 x 整除的数,全部发往下一个子进程</span><br>          write(child_p[<span class="hljs-number">1</span>], &amp;y, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br>        &#125;<br>      &#125;<br>      close(p[<span class="hljs-number">0</span>]);<br>      close(child_p[<span class="hljs-number">1</span>]);<br>      <span class="hljs-comment">// 返回</span><br>      <span class="hljs-type">int</span> status;<br>      wait(&amp;status);<br>    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(pid == <span class="hljs-number">0</span>)&#123;<br>      prime(child_p);<br>    &#125;<br>  &#125;<br>  <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br><br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span>&#123;<br><br>  <span class="hljs-type">int</span> p[<span class="hljs-number">2</span>];<br>  pipe(p);<br>  <span class="hljs-type">int</span> pid = fork();<br><br>  <span class="hljs-keyword">if</span>(pid == <span class="hljs-number">0</span>)&#123;<br>    <span class="hljs-comment">// 递归实现</span><br>    prime(p);<br><br>  &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(pid &gt; <span class="hljs-number">0</span>)&#123;<br>    close(p[<span class="hljs-number">0</span>]);<br>    <span class="hljs-comment">// 父进程将数据传给子进程</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= <span class="hljs-number">35</span>; i++)&#123;<br>      write(p[<span class="hljs-number">1</span>], &amp;i,<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br>    &#125;<br>    close(p[<span class="hljs-number">1</span>]);<br>    <span class="hljs-type">int</span> status;<br>    wait(&amp;status);<br>  &#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;err for fork()\n&quot;</span>);<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>  &#125;<br><br>  <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h4 id="Output-1"><a href="#Output-1" class="headerlink" title="Output"></a>Output</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ primes<br>prime 2<br>prime 3<br>prime 5<br>prime 7<br>prime 11<br>prime 13<br>prime 17<br>prime 19<br>prime 23<br>prime 29<br>prime 31<br>$<br></code></pre></td></tr></table></figure>
+
+<h4 id="Notes-1"><a href="#Notes-1" class="headerlink" title="Notes"></a>Notes</h4><ul>
+<li>这题目还是用递归比较好，递归的出口就是 <code>read()</code> 返回为 0；</li>
+<li>将管道作为参数传递给另一个函数时，实际上传递的是指向管道的文件描述符数组的指针。</li>
+</ul>
+<h3 id="3、find-moderate"><a href="#3、find-moderate" class="headerlink" title="3、find (moderate)"></a>3、find (moderate)</h3><h4 id="Question-requirements-2"><a href="#Question-requirements-2" class="headerlink" title="Question requirements"></a>Question requirements</h4><blockquote>
+<p>Write a simple version of the UNIX find program: find all the files in a directory tree with a specific name. Your solution should be in the file user&#x2F;find.c.</p>
+</blockquote>
+<h4 id="Some-hints-2"><a href="#Some-hints-2" class="headerlink" title="Some hints"></a>Some hints</h4><blockquote>
+<ul>
+<li>Look at user&#x2F;ls.c to see how to read directories.</li>
+<li>Use recursion to allow find to descend into sub-directories.</li>
+<li>Don’t recurse into “.” and “..”.</li>
+<li>Changes to the file system persist across runs of qemu; to get a clean file system run make clean and then make qemu.</li>
+<li>You’ll need to use C strings. Have a look at K&amp;R (the C book), for example Section 5.5.</li>
+<li>Note that &#x3D;&#x3D; does not compare strings like in Python. Use strcmp() instead.</li>
+<li>Add the program to UPROGS in Makefile.</li>
+</ul>
+</blockquote>
+<h4 id="Your-solution-is-correct-if-produces-the-following-output-when-the-file-system-contains-the-files-b-and-a-b"><a href="#Your-solution-is-correct-if-produces-the-following-output-when-the-file-system-contains-the-files-b-and-a-b" class="headerlink" title="Your solution is correct if produces the following output (when the file system contains the files b and a&#x2F;b):"></a>Your solution is correct if produces the following output (when the file system contains the files b and a&#x2F;b):</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make qemu<br>...<br>init: starting sh<br>$ <span class="hljs-built_in">echo</span> &gt; b<br>$ <span class="hljs-built_in">mkdir</span> a<br>$ <span class="hljs-built_in">echo</span> &gt; a/b<br>$ find . b<br>./b<br>./a/b<br>$<br></code></pre></td></tr></table></figure>
+
+<h4 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h4><p>这个题目比较简单，主要就是想让我了解一下 xv6 的文件系统。系统调用很少，所有的系统调用就这一些：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// system calls</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">fork</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">exit</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span> __<span class="hljs-title function_">attribute__</span><span class="hljs-params">((<span class="hljs-keyword">noreturn</span>))</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">wait</span><span class="hljs-params">(<span class="hljs-type">int</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">pipe</span><span class="hljs-params">(<span class="hljs-type">int</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">write</span><span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">const</span> <span class="hljs-type">void</span>*, <span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">read</span><span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">void</span>*, <span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">close</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">kill</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">exec</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">char</span>**)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">open</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">mknod</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">short</span>, <span class="hljs-type">short</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">unlink</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">fstat</span><span class="hljs-params">(<span class="hljs-type">int</span> fd, <span class="hljs-keyword">struct</span> stat*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">link</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">mkdir</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">chdir</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">dup</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">getpid</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">sbrk</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">sleep</span><span class="hljs-params">(<span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">uptime</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;<br></code></pre></td></tr></table></figure>
+<p>和这个任务有关的，就这两个：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">open</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">fstat</span><span class="hljs-params">(<span class="hljs-type">int</span> fd, <span class="hljs-keyword">struct</span> stat*)</span>;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><em>int open(const char <em>path, int flags);</em></em></p>
+<ul>
+<li>作用：open 函数用于打开文件，并返回一个文件描述符（file descriptor），该描述符用于后续对文件的读取和写入操作。 参数：</li>
+<li>path：一个字符串，表示要打开的文件的路径和名称。</li>
+<li>flags：一个整数，用于指定打开文件的方式和权限等。这个参数通常包括了标志位，例如 O_RDONLY（只读）、O_WRONLY（只写）、O_RDWR（读写）、O_CREAT（如果文件不存在则创建）等等。</li>
+<li>返回值：如果成功打开文件，open 函数返回一个非负整数，表示文件- 描述符。如果失败，它返回-1，并可以通过检查 errno 变量来获取失败的具体原因。</li>
+</ul>
+<p><em>int fstat(int fd, struct stat <em>buf);</em></em></p>
+<ul>
+<li>作用：fstat 函数用于获取已打开文件的元数据信息，并将这些信息填充到提供的 struct stat 结构体中。 参数：</li>
+<li>fd：一个整数，表示已打开文件的文件描述符。</li>
+<li>buf：一个指向 struct stat 结构体的指针，用于存储文件的元数据信息。</li>
+<li>返回值：如果成功，fstat 函数返回0，如果失败，返回-1，并可以通过检查 errno 变量来获取失败的具体原因。</li>
+<li>填充的 struct stat 结构体包含有关文件的各种信息，如文件类型、大小、权限、所有者、修改时间等等，可以用于进一步的文件操作和分析。</li>
+</ul>
+</blockquote>
+<p>但是，本实验可以不需要用到这两个系统调用，xv6 帮我们实现了几个更好用的用户调用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// ulib.c</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">stat</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-keyword">struct</span> stat*)</span>;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">strcpy</span><span class="hljs-params">(<span class="hljs-type">char</span>*, <span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">void</span> *<span class="hljs-title function_">memmove</span><span class="hljs-params">(<span class="hljs-type">void</span>*, <span class="hljs-type">const</span> <span class="hljs-type">void</span>*, <span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">strchr</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">char</span> c)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">strcmp</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">fprintf</span><span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">const</span> <span class="hljs-type">char</span>*, ...)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">printf</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, ...)</span>;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">gets</span><span class="hljs-params">(<span class="hljs-type">char</span>*, <span class="hljs-type">int</span> max)</span>;<br>uint <span class="hljs-title function_">strlen</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">void</span>* <span class="hljs-title function_">memset</span><span class="hljs-params">(<span class="hljs-type">void</span>*, <span class="hljs-type">int</span>, uint)</span>;<br><span class="hljs-type">void</span>* <span class="hljs-title function_">malloc</span><span class="hljs-params">(uint)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">free</span><span class="hljs-params">(<span class="hljs-type">void</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">atoi</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">memcmp</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">void</span> *, <span class="hljs-type">const</span> <span class="hljs-type">void</span> *, uint)</span>;<br><span class="hljs-type">void</span> *<span class="hljs-title function_">memcpy</span><span class="hljs-params">(<span class="hljs-type">void</span> *, <span class="hljs-type">const</span> <span class="hljs-type">void</span> *, uint)</span>;<br></code></pre></td></tr></table></figure>
+
+<p>可能会用到的就几个：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">stat</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-keyword">struct</span> stat*)</span>;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">strcpy</span><span class="hljs-params">(<span class="hljs-type">char</span>*, <span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br><span class="hljs-type">void</span> *<span class="hljs-title function_">memmove</span><span class="hljs-params">(<span class="hljs-type">void</span>*, <span class="hljs-type">const</span> <span class="hljs-type">void</span>*, <span class="hljs-type">int</span>)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">strcmp</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>*, <span class="hljs-type">const</span> <span class="hljs-type">char</span>*)</span>;<br></code></pre></td></tr></table></figure>
+
+<p>它们被实现在<code>/user/ulib.c</code>中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">strcmp</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *p, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *q)</span> &#123;<br>    <span class="hljs-keyword">while</span> (*p &amp;&amp; *p == *q)<br>        p++, q++;<br>    <span class="hljs-keyword">return</span> (uchar)*p - (uchar)*q;<br>&#125;<br>uint <span class="hljs-title function_">strlen</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *s)</span> &#123;<br>    <span class="hljs-type">int</span> n;<br><br>    <span class="hljs-keyword">for</span> (n = <span class="hljs-number">0</span>; s[n]; n++)<br>        ;<br>    <span class="hljs-keyword">return</span> n;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">stat</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *n, <span class="hljs-keyword">struct</span> stat *st)</span> &#123;<br>    <span class="hljs-type">int</span> fd;<br>    <span class="hljs-type">int</span> r;<br><br>    fd = open(n, O_RDONLY);<br>    <span class="hljs-keyword">if</span> (fd &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    r = fstat(fd, st);<br>    close(fd);<br>    <span class="hljs-keyword">return</span> r;<br>&#125;<br><span class="hljs-type">void</span> *<span class="hljs-title function_">memmove</span><span class="hljs-params">(<span class="hljs-type">void</span> *vdst, <span class="hljs-type">const</span> <span class="hljs-type">void</span> *vsrc, <span class="hljs-type">int</span> n)</span> &#123;<br>    <span class="hljs-type">char</span> *dst;<br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span> *src;<br><br>    dst = vdst;<br>    src = vsrc;<br>    <span class="hljs-keyword">if</span> (src &gt; dst) &#123;<br>        <span class="hljs-keyword">while</span> (n-- &gt; <span class="hljs-number">0</span>)<br>            *dst++ = *src++;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        dst += n;<br>        src += n;<br>        <span class="hljs-keyword">while</span> (n-- &gt; <span class="hljs-number">0</span>)<br>            *--dst = *--src;<br>    &#125;<br>    <span class="hljs-keyword">return</span> vdst;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>还有几个结构体需要了解一下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Directory is a file containing a sequence of dirent structures.</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> DIRSIZ 14</span><br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dirent</span> &#123;</span><br>  ushort inum;<br>  <span class="hljs-type">char</span> name[DIRSIZ];<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>目录就是一个文件，包含一系列的 <code>dirent</code> 结构，文件长度不超过 13 个字符（最后一个为’\0’）。inum 是这个目录项的所指的文件占用的 inode 个数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> &#123;</span><br>  <span class="hljs-type">int</span> dev;     <span class="hljs-comment">// File system&#x27;s disk device</span><br>  uint ino;    <span class="hljs-comment">// Inode number</span><br>  <span class="hljs-type">short</span> type;  <span class="hljs-comment">// Type of file</span><br>  <span class="hljs-type">short</span> nlink; <span class="hljs-comment">// Number of links to file</span><br>  uint64 size; <span class="hljs-comment">// Size of file in bytes</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>这个结构体包含了文件的元数据信息，包括文件类型，文件大小等，和 Linux 差别比较大。</p>
+<p>代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/types.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/stat.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;user/user.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/fs.h&quot;</span></span><br><span class="hljs-type">char</span>* <span class="hljs-title function_">getfilename</span><span class="hljs-params">(<span class="hljs-type">char</span> *path)</span>&#123;<br>  <span class="hljs-type">char</span> *p;<br>  <span class="hljs-comment">// 从后面向前找</span><br>  <span class="hljs-keyword">for</span>(p=path+<span class="hljs-built_in">strlen</span>(path); p &gt;= path &amp;&amp; *p != <span class="hljs-string">&#x27;/&#x27;</span>; p--)&#123;&#125;<br>  <span class="hljs-keyword">return</span> ++p;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">find</span><span class="hljs-params">(<span class="hljs-type">char</span> *path,<span class="hljs-type">char</span> *fileName)</span>&#123;<br>  <span class="hljs-type">char</span> buf[<span class="hljs-number">512</span>], *p;<br>  <span class="hljs-type">int</span> fd;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dirent</span> <span class="hljs-title">de</span>;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">st</span>;</span><br>  <span class="hljs-keyword">if</span>((fd = open(path, <span class="hljs-number">0</span>)) &lt; <span class="hljs-number">0</span>)&#123;<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;find: cannot open %s\n&quot;</span>, path);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>  &#125;<br>  <span class="hljs-keyword">if</span>(fstat(fd, &amp;st) &lt; <span class="hljs-number">0</span>)&#123;<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-number">2</span>, <span class="hljs-string">&quot;find: cannot stat %s\n&quot;</span>, path);<br>    close(fd);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>  &#125;<br>  <span class="hljs-keyword">switch</span>(st.type)&#123;<br>    <span class="hljs-keyword">case</span> T_FILE:<br>      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(getfilename(path), fileName) == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, path);<br>    &#125;<br>    <span class="hljs-keyword">break</span>;<br>    <span class="hljs-keyword">case</span> T_DIR:<br>    <span class="hljs-keyword">if</span>(<span class="hljs-built_in">strlen</span>(path) + <span class="hljs-number">1</span> + DIRSIZ + <span class="hljs-number">1</span> &gt; <span class="hljs-keyword">sizeof</span> buf)&#123;<br>      <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;find: path too long\n&quot;</span>);<br>      <span class="hljs-keyword">break</span>;<br>    &#125;<br>    <span class="hljs-built_in">strcpy</span>(buf, path);<br>    <span class="hljs-comment">// p指向 buf 最后一个字符&#x27;\0&#x27;</span><br>    p = buf+<span class="hljs-built_in">strlen</span>(buf);<br>    *p++ = <span class="hljs-string">&#x27;/&#x27;</span>;<br>    <span class="hljs-comment">// 循环读取目录,目录就是一个文件，包含一系列的 `dirent` 结构</span><br>    <span class="hljs-keyword">while</span>(read(fd, &amp;de, <span class="hljs-keyword">sizeof</span>(de)) == <span class="hljs-keyword">sizeof</span>(de))&#123;<br>      <span class="hljs-comment">// 空的文件</span><br>      <span class="hljs-keyword">if</span>(de.inum == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">continue</span>;<br>      &#125;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(de.name, <span class="hljs-string">&quot;.&quot;</span>) == <span class="hljs-number">0</span> || <span class="hljs-built_in">strcmp</span>(de.name, <span class="hljs-string">&quot;..&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">continue</span>;<br>      &#125;<br>      <span class="hljs-comment">// 把文件名复制到 buf</span><br>      memmove(p, de.name, DIRSIZ);<br>      p[DIRSIZ] = <span class="hljs-number">0</span>;<br>      <span class="hljs-comment">// 打不开就下一个</span><br>      <span class="hljs-keyword">if</span>(stat(buf, &amp;st) &lt; <span class="hljs-number">0</span>)&#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;find: cannot stat %s\n&quot;</span>, buf);<br>        <span class="hljs-keyword">continue</span>;<br>      &#125;<br>      find(buf, fileName);<br>    &#125;<br>    <span class="hljs-keyword">break</span>;<br>  &#125;<br>  close(fd);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc,<span class="hljs-type">char</span> *argv[])</span>&#123;<br>  <span class="hljs-keyword">if</span>(argc != <span class="hljs-number">3</span>)&#123;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>  &#125;<br>  <span class="hljs-comment">// 这个思路就是找出argv[1]的所有文件,然后找到文件名和 argv[2]一样的文件,并打印出目录</span><br>  find(argv[<span class="hljs-number">1</span>],argv[<span class="hljs-number">2</span>]);<br>  <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="Output-2"><a href="#Output-2" class="headerlink" title="Output"></a>Output</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">******:~/xv6-labs-2023<span class="hljs-comment"># ./grade-lab-util find</span><br>make: <span class="hljs-string">&#x27;kernel/kernel&#x27;</span> is up to <span class="hljs-built_in">date</span>.<br>== Test find, <span class="hljs-keyword">in</span> current directory == find, <span class="hljs-keyword">in</span> current directory: OK (1.8s)<br>== Test find, recursive == find, recursive: OK (1.2s)<br></code></pre></td></tr></table></figure>
+<h4 id="Notes-2"><a href="#Notes-2" class="headerlink" title="Notes"></a>Notes</h4><ul>
+<li>能调用 OS 提供的用户调用，就尽量避免直接调用系统调用。</li>
+</ul>
+<h3 id="4、xargs-moderate"><a href="#4、xargs-moderate" class="headerlink" title="4、xargs (moderate)"></a>4、xargs (moderate)</h3><h4 id="Question-requirements-3"><a href="#Question-requirements-3" class="headerlink" title="Question requirements"></a>Question requirements</h4><blockquote>
+<p>Write a simple version of the UNIX xargs program for xv6: its arguments describe a command to run, it reads lines from the standard input, and it runs the command for each line, appending the line to the command’s arguments. Your solution should be in the file user&#x2F;xargs.c.</p>
+</blockquote>
+<h4 id="Some-hints-3"><a href="#Some-hints-3" class="headerlink" title="Some hints"></a>Some hints</h4><blockquote>
+<ul>
+<li>Use fork and exec to invoke the command on each line of input. Use wait in the parent to wait for the child to complete the command.</li>
+<li>To read individual lines of input, read a character at a time until a newline (‘\n’) appears.</li>
+<li>kernel&#x2F;param.h declares MAXARG, which may be useful if you need to declare an argv array.</li>
+<li>Add the program to UPROGS in Makefile.</li>
+<li>Changes to the file system persist across runs of qemu; to get a clean file system run make clean and then make qemu.</li>
+</ul>
+</blockquote>
+<p>意思就是说，使用 fork、exec 来执行命令；每次读取一个字符，直到读完一行。</p>
+<h4 id="To-test-your-solution-for-xargs-run-the-shell-script-xargstest-sh-Your-solution-is-correct-if-it-produces-the-following-output"><a href="#To-test-your-solution-for-xargs-run-the-shell-script-xargstest-sh-Your-solution-is-correct-if-it-produces-the-following-output" class="headerlink" title="To test your solution for xargs, run the shell script xargstest.sh. Your solution is correct if it produces the following output"></a>To test your solution for xargs, run the shell script xargstest.sh. Your solution is correct if it produces the following output</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make qemu<br>...<br>init: starting sh<br>$ sh &lt; xargstest.sh<br>$ $ $ $ $ $ hello<br>hello<br>hello<br>$ $<br><br></code></pre></td></tr></table></figure>
+
+<h4 id="Solution-3"><a href="#Solution-3" class="headerlink" title="Solution"></a>Solution</h4><p>这个也不难，关键步骤就是将标准输入<strong>0</strong> 中的字符一个一个读取，直到遇见换行符或者读取结束。然后将这个读取的结果稍作处理，加到 argv 字符串数组里面，然后fork() 一个子线程，用 exec() 去执行它。</p>
+<p>代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/types.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/stat.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;user/user.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;kernel/param.h&quot;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;<br>    <span class="hljs-type">int</span> bufP , i, readLen;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">512</span>];<br>    <span class="hljs-type">char</span>* new_argv[MAXARG];<br>    <span class="hljs-comment">// 提取命令以及参数</span><br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; argc; i++) &#123;<br>        new_argv[i - <span class="hljs-number">1</span>] = argv[i];<br>    &#125;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>      bufP = <span class="hljs-number">-1</span>;<br>        <span class="hljs-keyword">do</span> &#123;<br>            bufP++;<br>            readLen = read(<span class="hljs-number">0</span>, &amp;buf[bufP], <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>));<br>            <span class="hljs-comment">// 一次从标准输入里面读一个字符,合成参数</span><br>        &#125; <span class="hljs-keyword">while</span> (readLen &gt; <span class="hljs-number">0</span> &amp;&amp; buf[bufP] != <span class="hljs-string">&#x27;\n&#x27;</span>);<br><br>        <span class="hljs-keyword">if</span> (readLen == <span class="hljs-number">0</span> &amp;&amp; bufP == <span class="hljs-number">0</span>) &#123; <span class="hljs-comment">// 如果没有读到任何标准输入,就退出</span><br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br><br>        buf[bufP] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>        <span class="hljs-comment">// 把参数放到 exe_argv 数组</span><br>        new_argv[argc - <span class="hljs-number">1</span>] = buf;<br>        <span class="hljs-comment">// 0标志命令行参数列表的结束</span><br>        new_argv[argc] = <span class="hljs-number">0</span>;<br><br>        <span class="hljs-keyword">if</span> (fork() == <span class="hljs-number">0</span>) &#123;<br>            exec(new_argv[<span class="hljs-number">0</span>], new_argv);<br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            wait(<span class="hljs-number">0</span>);<br>        &#125;<br>    &#125;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Output-3"><a href="#Output-3" class="headerlink" title="Output"></a>Output</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">******:~/xv6-labs-2023<span class="hljs-comment"># ./grade-lab-util xargs</span><br>make: <span class="hljs-string">&#x27;kernel/kernel&#x27;</span> is up to <span class="hljs-built_in">date</span>.<br>== Test xargs == xargs: OK (2.1s)<br></code></pre></td></tr></table></figure>
+
+<h4 id="Notes-3"><a href="#Notes-3" class="headerlink" title="Notes"></a>Notes</h4><ul>
+<li>exec()和 Linux 中的系统调用还是有一些差别，书中说的是：</li>
+</ul>
+<blockquote>
+<p>This fragment replaces the calling program with an instance of the program &#x2F;bin&#x2F;echo running<br>with the argument list echo hello. Most programs ignore the first element of the argument array,<br>which is conventionally the name of the program.</p>
+</blockquote>
+<ul>
+<li>因此会忽略第一个参数，因为它的第一个参数已经传进去了；</li>
+<li>不同的操作系统是对于 NULL 空指针的定义不同:</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> NULL</span><br>	<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/_types.h&gt;</span> <span class="hljs-comment">/* __DARWIN_NULL */</span></span><br>	<span class="hljs-meta">#<span class="hljs-keyword">define</span> NULL  __DARWIN_NULL</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span>  <span class="hljs-comment">/* NULL */</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __cplusplus</span><br>	<span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __GNUG__</span><br>		<span class="hljs-meta">#<span class="hljs-keyword">define</span> __DARWIN_NULL __null</span><br>	<span class="hljs-meta">#<span class="hljs-keyword">else</span> <span class="hljs-comment">/* ! __GNUG__ */</span></span><br>		<span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __LP64__</span><br>			<span class="hljs-meta">#<span class="hljs-keyword">define</span> __DARWIN_NULL (0L)</span><br>		<span class="hljs-meta">#<span class="hljs-keyword">else</span> <span class="hljs-comment">/* !__LP64__ */</span></span><br>			<span class="hljs-meta">#<span class="hljs-keyword">define</span> __DARWIN_NULL 0</span><br>		<span class="hljs-meta">#<span class="hljs-keyword">endif</span> <span class="hljs-comment">/* __LP64__ */</span></span><br>	<span class="hljs-meta">#<span class="hljs-keyword">endif</span> <span class="hljs-comment">/* __GNUG__ */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">else</span> <span class="hljs-comment">/* ! __cplusplus */</span></span><br>	<span class="hljs-meta">#<span class="hljs-keyword">define</span> __DARWIN_NULL ((void *)0)</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span> <span class="hljs-comment">/* __cplusplus */</span></span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>也就是说，如果在 C++ 环境下，就是用<code>0</code>、<code>0L</code>、<code>__null</code> 来表示<code>NULL</code>；C 环境下，就用<code>(void*)0</code>来表示空指针。因此为了统一，但是不要用<code>0</code>、<code>1</code> 等字符来表示空指针，以防止跨平台什么的出错。</li>
+</ul>
+<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><p>键入 <code>make grade</code> 就会打分：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs bash">== Test <span class="hljs-built_in">sleep</span>, no arguments ==<br>$ make qemu-gdb<br><span class="hljs-built_in">sleep</span>, no arguments: OK (3.3s)<br>== Test <span class="hljs-built_in">sleep</span>, returns ==<br>$ make qemu-gdb<br><span class="hljs-built_in">sleep</span>, returns: OK (1.1s)<br>== Test <span class="hljs-built_in">sleep</span>, makes syscall ==<br>$ make qemu-gdb<br><span class="hljs-built_in">sleep</span>, makes syscall: OK (1.0s)<br>== Test pingpong ==<br>$ make qemu-gdb<br>pingpong: OK (1.1s)<br>== Test primes ==<br>$ make qemu-gdb<br>primes: OK (1.0s)<br>== Test find, <span class="hljs-keyword">in</span> current directory ==<br>$ make qemu-gdb<br>find, <span class="hljs-keyword">in</span> current directory: OK (1.1s)<br>== Test find, recursive ==<br>$ make qemu-gdb<br>find, recursive: OK (1.4s)<br>== Test xargs ==<br>$ make qemu-gdb<br>xargs: OK (1.9s)<br>== Test time ==<br>time: OK<br>Score: 100/100<br></code></pre></td></tr></table></figure>
+
+<p>大概肝了周末两天，总算完成了实验，总算是对 xv6 有了大致的了解。</p>
+<p><em>全文完，感谢阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/Unix-Linux/" class="category-chain-item">Unix/Linux</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0/" class="print-no-link">#学习</a>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/MIT-6-S081/" class="print-no-link">#MIT 6.S081</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MIT 6.S081学习笔记（第一章）</div>
+      <div>http://blog.luliang.online/2023/09/10/MIT 6.S081学习笔记（第一章）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/24/%E4%BB%80%E4%B9%88%E6%98%AFP%E9%97%AE%E9%A2%98%E3%80%81NP%E9%97%AE%E9%A2%98%E5%92%8CNPC%E9%97%AE%E9%A2%98/" title="什么是P问题、NP问题和NPC问题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">什么是P问题、NP问题和NPC问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E3%80%87%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第〇章）">
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第〇章）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

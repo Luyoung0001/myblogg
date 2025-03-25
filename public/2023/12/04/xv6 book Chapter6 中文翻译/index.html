@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文是 xv6 book 第六章的翻译，以下将开始翻译。 一、（翻译）第六章 锁大多数内核，包括 xv6，在执行多个活动时会交错执行。一个交错的来源是多处理器硬件：拥有多个独立执行的CPU的计算机，例如 xv6 的 RISC-V。这些多个CPU共享物理RAM，而 xv6 利用这种共享来维护所有CPU都可以读写的数据结构。这种共享引发了一个可能性，即一个CPU在读取数据结构时，另一个CP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 book Chapter6 中文翻译">
+<meta property="og:url" content="http://blog.luliang.online/2023/12/04/xv6%20book%20Chapter6%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文是 xv6 book 第六章的翻译，以下将开始翻译。 一、（翻译）第六章 锁大多数内核，包括 xv6，在执行多个活动时会交错执行。一个交错的来源是多处理器硬件：拥有多个独立执行的CPU的计算机，例如 xv6 的 RISC-V。这些多个CPU共享物理RAM，而 xv6 利用这种共享来维护所有CPU都可以读写的数据结构。这种共享引发了一个可能性，即一个CPU在读取数据结构时，另一个CP">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c619cc3b0a8742c99c1d237741591d10_1720253703115.png?token=ANB4BCOEGKYHVX256BOFRPTGRD6UQ">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/520d62d15fab40e18505b9cf2073e337_1720253703115.png?token=ANB4BCJTFH525GPTHIXNXP3GRD6US">
+<meta property="article:published_time" content="2023-12-04T12:32:36.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.775Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="xv6">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c619cc3b0a8742c99c1d237741591d10_1720253703115.png?token=ANB4BCOEGKYHVX256BOFRPTGRD6UQ">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>xv6 book Chapter6 中文翻译 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="xv6 book Chapter6 中文翻译"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-04 20:32" pubdate>
+          2023年12月4日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          57 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">xv6 book Chapter6 中文翻译</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文是 <strong>xv6 book</strong> 第六章的翻译，以下将开始翻译。</p>
+<h2 id="一、（翻译）第六章-锁"><a href="#一、（翻译）第六章-锁" class="headerlink" title="一、（翻译）第六章 锁"></a>一、（翻译）第六章 锁</h2><p>大多数内核，包括 xv6，在执行多个活动时会交错执行。一个交错的来源是多处理器硬件：拥有多个独立执行的CPU的计算机，例如 xv6 的 RISC-V。这些多个CPU共享物理<strong>RAM</strong>，而 xv6 利用这种共享来维护所有CPU都可以读写的数据结构。这种共享引发了一个可能性，即一个CPU在读取数据结构时，另一个CPU可能正在更新它，甚至多个CPU可能同时更新同一数据；如果没有仔细设计这样的并行访问，很可能会产生不正确的结果或破坏数据结构。即使在单处理器上，内核也可能在多个线程之间切换CPU，导致它们的执行被交错。最后，一个设备中断处理程序修改与一些可中断代码相同的数据可能在中断发生时损坏数据，如果中断发生的时间恰好不对的话。并发一词指的是多个指令流由于多处理器的并行性、线程切换或中断而交错执行的情况。</p>
+<p>内核中充满了被并发访问的数据。例如，两个CPU可以同时调用 <strong>kalloc</strong>，从空闲列表的头部并发弹出。内核设计者喜欢允许大量并发，因为它可以通过并行性提高性能，并增加响应性。然而，结果是内核设计者花费了大量的精力来确保即使在这种并发情况下也能正确运行。有许多方法可以得到正确的代码，其中一些比其他方法更容易理解。旨在在并发情况下保持正确性的策略和支持它们的抽象称为并发控制技术。</p>
+<p>Xv6根据情况使用了许多并发控制技术，还有许多其他可能的方法。本章重点介绍了一种广泛使用的技术：锁。锁提供互斥性，确保一次只有一个CPU可以持有锁。如果程序员将每个共享数据项与一个锁相关联，并且代码在使用数据项时始终持有相关联的锁，那么该数据项将一次只被一个CPU使用。在这种情况下，我们说该锁保护了数据项。虽然锁是一种易于理解的并发控制机制，但锁的缺点是它们可能会降低性能，因为它们使并发操作串行化。本章的其余部分解释了为什么 xv6 需要锁，以及 xv6 如何实现它们以及如何使用它们。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c619cc3b0a8742c99c1d237741591d10_1720253703115.png?token=ANB4BCOEGKYHVX256BOFRPTGRD6UQ" alt="在这里插入图片描述"></p>
+<center><b><font size ='3'>图 6.1：简化的对称多处理器架构</font></b></center></font>
+
+<h3 id="6-1-竞争条件"><a href="#6-1-竞争条件" class="headerlink" title="6.1 竞争条件"></a>6.1 竞争条件</h3><p>举例说明为什么我们需要锁，考虑两个进程在两个不同的 CPU 上调用 <strong>wait</strong>。<strong>wait</strong> 释放子进程的内存。因此，在每个 CPU 上，内核将调用 <strong>kfree</strong> 释放子进程的页面。内核分配器维护一个链表：<code>kalloc()</code> (<code>kernel/kalloc.c</code>:69) 从空闲页面列表中取出一个页面内存，而 <code>kfree()</code> (<code>kernel/kalloc.c</code>:47) 则将一个页面推送回空闲列表。为了获得最佳性能，我们可能希望这两个父进程的 <strong>kfree</strong> 操作并行执行，而不必等待对方，但是在 xv6 的 <strong>kfree</strong> 实现中这是不正确的。</p>
+<p><strong>图 6.1</strong> 更详细地说明了这种情况：链表存在于两个 CPU 共享的内存中，这两个 CPU 使用 <strong>load</strong> 和 <strong>store</strong> 指令来操作链表。（实际上，处理器有缓存，但在概念上，多处理器系统的行为就好像有一个单一的共享内存。）如果没有并发请求，您可以按以下方式实现列表的推送操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">element</span> &#123;</span><br>    <span class="hljs-type">int</span> data;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">element</span> *<span class="hljs-title">next</span>;</span><br>&#125;;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">element</span> *<span class="hljs-title">list</span> =</span> <span class="hljs-number">0</span>;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">push</span><span class="hljs-params">(<span class="hljs-type">int</span> data)</span> &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">element</span> *<span class="hljs-title">l</span>;</span><br><br>    l = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span> *l);<br>    l-&gt;data = data;<br>    l-&gt;next = <span class="hljs-built_in">list</span>;<br>    <span class="hljs-built_in">list</span> = l;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/520d62d15fab40e18505b9cf2073e337_1720253703115.png?token=ANB4BCJTFH525GPTHIXNXP3GRD6US" alt="在这里插入图片描述"></p>
+<center><b><font size ='3'>图 6.2：竟态示例</font></b></center></font>
+
+<p>这个实现如果单独执行是正确的。然而，如果有多个副本同时执行，那么代码就不正确了。如果两个 CPU 同时执行 <strong>push</strong>，都可能在<strong>图6.1</strong>所示的方式执行第15行，而在执行第16行之前，这将导致一个不正确的结果，正如图6.2所示。这时会有两个列表元素的 <code>next</code> 都设置为 <code>list</code> 之前的值。当在第<strong>16</strong>行发生两次赋值时，第二次赋值会覆盖第一次赋值；参与第一次赋值的元素将会丢失。</p>
+<p>第<strong>16</strong>行的丢失更新是竞争条件的一个例子。竞争条件是指同时访问内存位置的情况，其中至少有一个访问是写操作。竞争通常是一个错误的迹象，要么是丢失更新（如果访问是写操作），要么是对尚未完全更新的数据结构进行读取。竞争的结果取决于涉及的两个 CPU 的确切时序以及它们的内存操作如何被内存系统排序，这可能使由竞争引起的错误难以重现和调试。例如，在调试 <strong>push</strong> 时添加打印语句可能会改变执行的时间，足以使竞争消失。</p>
+<p>避免竞争的通常方法是使用锁。锁确保互斥，因此只有一个 CPU 可以同时执行 <strong>push</strong> 的敏感行；这使得上述场景成为不可能。上述代码的正确加锁版本仅添加了几行代码（用黄色突出显示）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">element</span> *<span class="hljs-title">list</span> =</span> <span class="hljs-number">0</span>;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">lock</span> <span class="hljs-title">listlock</span>;</span>	<span class="hljs-comment">// 黄色</span><br><span class="hljs-type">void</span><br><span class="hljs-title function_">push</span><span class="hljs-params">(<span class="hljs-type">int</span> data)</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">element</span> *<span class="hljs-title">l</span>;</span><br>    l = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span> *l);<br>    l-&gt;data = data;<br>    acquire(&amp;listlock);	<span class="hljs-comment">// 黄色</span><br>    l-&gt;next = <span class="hljs-built_in">list</span>;<br>    <span class="hljs-built_in">list</span> = l;<br>    release(&amp;listlock);	<span class="hljs-comment">// 黄色</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><strong>acquire</strong>和<strong>release</strong>之间的指令序列通常被称为临界区。通常说锁是在保护<strong>list</strong>。</p>
+<p>当我们说锁保护数据时，我们实际上是指锁保护了一些适用于数据的不变性集合。不变性是数据结构的属性，在操作中保持不变。通常情况下，操作的正确行为取决于不变性在操作开始时是正确的。操作可能会暂时违反不变性，但必须在完成之前重新确立它们。例如，在链表的情况下，不变性是<strong>list</strong>指向链表中的第一个元素，并且每个元素的<strong>next</strong>字段指向下一个元素。<strong>push</strong>的实现暂时违反了这个不变性：在第<strong>17</strong>行，<code>l</code>指向下一个列表元素，但是<code>list</code>还没有指向<code>l</code>（在第<strong>18</strong>行重新建立）。我们上面检查的竞争条件发生是因为第二个CPU执行了依赖于列表不变性的代码，而这些不变性（暂时）被违反。正确使用锁可以确保一次只有一个CPU可以在临界区上操作数据结构，因此当数据结构的不变性不成立时，不会有CPU执行数据结构操作。</p>
+<p>你可以将锁视为串行化并发的临界区，以便一次只运行一个临界区，并因此保持不变性（假设临界区在单独的情况下是正确的）。你也可以将由同一个锁保护的临界区视为相互原子化，因此每个临界区仅看到先前临界区的完整更改集，并且永远不会看到部分完成的更新。</p>
+<p>虽然正确使用锁可以使不正确的代码变得正确，但锁限制了性能。例如，如果两个进程同时调用<strong>kfree</strong>，锁将序列化这两个调用，我们将无法从在不同CPU上运行它们中获得任何好处。我们说多个进程发生冲突，如果它们在同一时间想要相同的锁，或者说锁遇到争用。内核设计的一个主要挑战是避免锁争用。xv6做得很少，但是复杂的内核专门组织数据结构和算法，以避免锁争用。在列表示例中，内核可以为每个CPU维护一个空闲列表，并且仅在CPU的列表为空且必须从另一个CPU窃取内存时才会访问另一个CPU的空闲列表。其他使用情况可能需要更复杂的设计。</p>
+<p>锁的放置对性能也很重要。例如，将<strong>acquire</strong>移到<strong>push</strong>中更早的位置是正确的：将<strong>acquire</strong>的调用移动到第<strong>13</strong>行之前是可以的。这可能会降低性能，因为然后对<strong>malloc</strong>的调用也被序列化了。下面的“使用锁”部分提供了一些关于在何处插入<strong>acquire</strong>和<strong>release</strong>调用的指导方针。</p>
+<h3 id="6-2-代码：锁"><a href="#6-2-代码：锁" class="headerlink" title="6.2 代码：锁"></a>6.2 代码：锁</h3><p>xv6有两种类型的锁：自旋锁（<strong>spinlocks</strong>）和睡眠锁（<strong>sleep-locks</strong>）。我们首先来看自旋锁。xv6将自旋锁表示为一个<code>struct spinlock</code>（<code>kernel/spinlock.h</code>:2）。结构中的一个重要字段是<code>locked</code>，这是一个字，当锁可用时为零，被持有时为非零。从逻辑上讲，xv6应该通过执行如下代码来获取锁：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">acquire</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> spinlock *lk)</span> <span class="hljs-comment">// does not work!</span><br>&#123;<br>    <span class="hljs-keyword">for</span>(;;) &#123;<br>        <span class="hljs-keyword">if</span>(lk-&gt;locked == <span class="hljs-number">0</span>) &#123;<br>            lk-&gt;locked = <span class="hljs-number">1</span>;<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>很遗憾，这个实现在多处理器上无法保证互斥性。可能会出现两个 CPU 同时到达第 <strong>25</strong> 行，发现 <code>lk-&gt;locked</code> 是零，然后都执行第 <strong>26</strong> 行抢占锁。在这一刻，两个不同的 CPU 持有了这个锁，这违反了互斥性质。我们需要的是一种方法，使得第 <strong>25</strong> 和 <strong>26</strong> 行作为一个原子（即不可分割）步骤执行。</p>
+<p>由于锁被广泛使用，多核处理器通常提供了实现第 <strong>25</strong> 和 <strong>26</strong> 行的原子版本的指令。在 RISC-V 上，这个指令是 <code>amoswap r, a</code>。<code>amoswap</code> 读取内存地址 <code>a</code> 处的值，将寄存器 <code>r</code> 的内容写入该地址，并将它读取的值放入 <code>r</code> 中。也就是说，它交换了寄存器和内存地址的内容。它使用特殊的硬件以原子方式执行这个序列，防止其他 CPU 在读取和写入之间使用这个内存地址。</p>
+<p>xv6 的 <strong>acquire</strong>（<code>kernel/spinlock.c</code>:22）使用了可移植的 C 库调用 <code>__sync_lock_test_and_set</code>，它归结为 <strong>amoswap</strong> 指令；返回值是 <code>lk-&gt;locked</code> 的旧（交换过的）内容。<code>acquire</code> 函数将交换包装在一个循环中，重复（自旋）直到获得锁。每次迭代都将一个值交换到 <code>lk-&gt;locked</code> 中并检查先前的值；如果先前的值是零，那么我们已经获得了锁，交换将把 <code>lk-&gt;locked</code> 设置为一。如果先前的值是一，那么其他一些 CPU 拥有了这个锁，而我们原子性地将一交换到 <code>lk-&gt;locked</code> 中并没有改变它的值。</p>
+<p>一旦锁被获取，<strong>acquire</strong> 为调试记录了获取锁的 CPU。<code>lk-&gt;cpu</code> 字段由锁保护，必须在持有锁的情况下才能更改。<code>release</code> 函数（<code>kernel/spinlock.c</code>:47）是 <code>acquire</code> 的反向操作：它清除 <code>lk-&gt;cpu</code> 字段，然后释放锁。从概念上讲，释放只需要将零赋给 <code>lk-&gt;locked</code>。C 标准允许编译器使用多个存储指令来实现赋值，因此 C 赋值在并发代码方面可能是非原子的。相反，<strong>release</strong> 使用 C 库函数 <code>__sync_lock_release</code> 执行原子赋值。</p>
+<h3 id="6-3-Code-Using-locks"><a href="#6-3-Code-Using-locks" class="headerlink" title="6.3 Code: Using locks"></a>6.3 Code: Using locks</h3><p>xv6 在许多地方使用锁来避免竞争条件。正如上文所述，<code>kalloc</code>（<code>kernel/kalloc.c</code>:69）和 <code>kfree</code>（<code>kernel/kalloc.c</code>:47）是一个很好的例子。尝试练习1和2，看看如果这些函数省略了锁会发生什么。你可能会发现很难触发错误行为，这表明要可靠地测试代码是否没有锁定错误和竞态条件是很困难的。不排除 xv6 存在一些竞争条件的可能性。</p>
+<p>使用锁的一个难点是决定使用多少个锁以及每个锁应该保护哪些数据和不变量。有几个基本原则。首先，每当一个变量可以由一个 CPU 写入，并且同时另一个 CPU 可以读取或写入它时，应该使用锁来防止两个操作重叠。其次，记住锁保护不变量：如果一个不变量涉及多个内存位置，通常所有这些位置都需要由一个单独的锁来保护，以确保不变量被维护。</p>
+<p>上述规则说明了何时需要锁，但没有说明何时不需要锁，而且不锁定太多对于效率来说很重要，因为锁会减少并行性。如果并行性不重要，那么可以安排只有一个线程，并且不必担心锁。一个简单的内核可以在多处理器上通过拥有一个必须在进入内核时获取并在退出内核时释放的单个锁来实现（尽管管道读取或等待等系统调用可能会带来问题）。许多单处理器操作系统已经使用这种方法转换为在多处理器上运行，有时被称为“大内核锁”，但这种方法会牺牲并行性：一次只能有一个 CPU 在内核中执行。如果内核进行任何重型计算，使用更大的、更细粒度的锁集可能会更有效，这样内核就可以在多个 CPU 上同时执行。</p>
+<p>作为粗粒度锁的例子，xv6 的 <code>kalloc.c</code> 分配器具有一个由单个锁保护的自由列表。如果不同 CPU 上的多个进程同时尝试分配页面，每个进程都将通过在 <code>acquire</code> 中旋转来等待轮到自己。旋转会降低性能，因为这不是有用的工作。如果为了锁的争用浪费了大量 CPU 时间，也许通过更改分配器设计，使用多个带有自己锁的自由列表，来允许真正并行的分配，可以提高性能。</p>
+<p>作为细粒度锁的例子，xv6 每个文件都有一个单独的锁，因此操纵不同文件的进程通常可以在不等待对方锁定的情况下继续执行。如果希望允许进程同时写入同一文件的不同区域，文件锁定方案可以被做得更细粒度。最终，锁粒度的决策需要根据性能测量以及复杂性考虑来做出。</p>
+<p>随后的章节将解释 xv6 的各个部分，并提到 xv6 处理并发性的示例。作为预览，<strong>图 6.3</strong> 列出了 xv6 中的所有锁。</p>
+<h3 id="6-4-死锁和锁定顺序"><a href="#6-4-死锁和锁定顺序" class="headerlink" title="6.4 死锁和锁定顺序"></a>6.4 死锁和锁定顺序</h3><p>如果内核中的某个代码路径必须同时持有多个锁，重要的是所有代码路径以相同的顺序获取这些锁。如果不这样做，就有发生死锁的风险。假设 xv6 中有两个代码路径需要锁 <strong>A</strong> 和 <strong>B</strong>，但是代码路径 1 按照 <strong>A</strong> 然后 <strong>B</strong> 的顺序获取锁，而另一条路径按照 <strong>B</strong> 然后 <strong>A</strong> 的顺序获取。假设线程 <strong>T1</strong> 执行代码路径 1 并获取了锁 <strong>A</strong>，线程 <strong>T2</strong> 执行代码路径 2 并获取了锁 <strong>B</strong>。接下来 T1 将尝试获取锁 <strong>B</strong>，而 <strong>T2</strong> 将尝试获取锁 <strong>A</strong>。两次获取都会无限期地阻塞，因为在两种情况下，另一个线程持有所需的锁，且在其获取返回之前不会释放。为了避免这种死锁，所有代码路径必须以相同的顺序获取锁。全局锁获取顺序的需要意味着锁实际上是每个函数规范的一部分：调用者必须以使锁按约定的顺序获取的方式调用函数。</p>
+<table>
+<thead>
+<tr>
+<th>锁</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bcache.lock</td>
+<td>保护块缓冲区缓存条目的分配</td>
+</tr>
+<tr>
+<td>cons.lock</td>
+<td>序列化对控制台硬件的访问，避免混合输出</td>
+</tr>
+<tr>
+<td>ftable.lock</td>
+<td>序列化文件表中 struct file 的分配</td>
+</tr>
+<tr>
+<td>icache.lock</td>
+<td>保护 inode 缓存条目的分配</td>
+</tr>
+<tr>
+<td>vdisk_lock</td>
+<td>序列化对磁盘硬件和 DMA 描述符队列的访问</td>
+</tr>
+<tr>
+<td>kmem.lock</td>
+<td>序列化内存分配</td>
+</tr>
+<tr>
+<td>log.lock</td>
+<td>序列化对事务日志的操作</td>
+</tr>
+<tr>
+<td>pipe’s pi-&gt;lock</td>
+<td>序列化对每个管道的操作</td>
+</tr>
+<tr>
+<td>pid_lock</td>
+<td>序列化对 next_pid 的增量操作</td>
+</tr>
+<tr>
+<td>proc’s p-&gt;lock</td>
+<td>序列化对进程状态的更改</td>
+</tr>
+<tr>
+<td>tickslock</td>
+<td>序列化对计时器 ticks 的操作</td>
+</tr>
+<tr>
+<td>inode’s ip-&gt;lock</td>
+<td>序列化对每个 inode 及其内容的操作</td>
+</tr>
+<tr>
+<td>buf’s b-&gt;lock</td>
+<td>序列化对每个块缓冲区的操作</td>
+</tr>
+</tbody></table>
+<center><b><font size ='3'>图 6.3：xv6 中的锁</font></b></center></font>
+
+
+<p>xv6 中涉及进程锁（每个 <code>struct proc</code> 中的锁）的长度为两的锁定顺序链非常多，这是因为 <strong>sleep</strong> 的工作方式（参见第 7 章）。例如，<code>consoleintr</code>（<code>kernel/console.c</code>:138）是处理输入字符的中断例程。当新行到达时，任何等待控制台输入的进程都应该被唤醒。为了做到这一点，<strong>consoleintr</strong> 在调用 <strong>wakeup</strong> 时持有 <strong>cons.lock</strong>，后者获取等待进程的锁以唤醒它。因此，全局避免死锁的锁定顺序包括一个规则，即在获取任何进程锁之前必须获取 <strong>cons.lock</strong>。文件系统代码包含了 xv6 最长的锁链。例如，创建文件需要同时持有目录锁、新文件的 <strong>inode</strong> 锁、磁盘块缓冲区的锁、磁盘驱动程序的 <strong>vdisk_lock</strong> 和调用进程的 <strong>p-&gt;lock</strong>。为避免死锁，文件系统代码始终按照前文提到的顺序获取锁。</p>
+<p>遵循全局避免死锁的顺序可能会出人意料地困难。有时锁定顺序与逻辑程序结构冲突，例如，可能代码模块 <strong>M1</strong> 调用模块 <strong>M2</strong>，但是锁定顺序要求在 <strong>M1</strong> 中的某个锁在 <strong>M2</strong> 之前获取。有时锁的身份事先不知道，也许是因为必须持有一个锁才能发现下一个要获取的锁的身份。这种情况在文件系统中查找路径名中的连续组件时以及 <strong>wait</strong> 和 <strong>exit</strong> 的代码中可能出现，因为它们在进程表中搜索子进程。</p>
+<p>最后，避免死锁的危险通常限制了锁定方案的粒度，因为更多的锁通常意味着更多的死锁可能性。避免死锁的需求通常是内核实现的一个主要因素。</p>
+<h3 id="6-5-锁和中断处理程序"><a href="#6-5-锁和中断处理程序" class="headerlink" title="6.5 锁和中断处理程序"></a>6.5 锁和中断处理程序</h3><p>一些 xv6 自旋锁保护着同时被线程和中断处理程序使用的数据。例如，<strong>clockintr</strong> 定时器中断处理程序可能会在大约相同的时间内增加 <code>ticks</code>（<code>kernel/trap.c</code>:163），而内核线程在 <code>sys_sleep</code>（<code>kernel/sysproc.c</code>:64）中读取<code> ticks</code>。锁 <code>tickslock</code> 串行化了这两个访问。</p>
+<p>自旋锁和中断的交互引发了潜在的危险。假设 <code>sys_sleep</code> 持有 <strong>tickslock</strong>，并且它的 CPU 被定时器中断打断。<strong>clockintr</strong> 将尝试获取 <strong>tickslock</strong>，发现它被持有，并等待释放。在这种情况下，<strong>tickslock</strong> 将永远不会被释放：只有 <strong>sys_sleep</strong> 可以释放它，但是 <strong>sys_sleep</strong> 不会继续运行直到 <strong>clockintr</strong> 返回。所以 CPU 会发生死锁，并且任何需要这两个锁的代码也会被冻结。</p>
+<p>为了避免这种情况，如果自旋锁被中断处理程序使用，CPU 不能在启用中断的情况下持有该锁。Xv6 更加保守：当一个 CPU 获取任何锁时，xv6 总是在该 CPU 上禁用中断。中断仍然可能发生在其他 CPU 上，因此中断的获取可以等待线程释放自旋锁，但不能在同一个 CPU 上。</p>
+<p>当 CPU 不持有自旋锁时，xv6 会重新启用中断；它必须做一些书面工作来应对嵌套的关键部分。<strong>acquire</strong> 调用 <code>push_off</code>（<code>kernel/spinlock.c</code>:89）和 <code>release</code> 调用 <code>pop_off</code>（<code>kernel/spinlock.c</code>:100）来跟踪当前 CPU 上锁的嵌套级别。当计数达到零时，<code>pop_off</code> 将恢复最外层关键部分开始时存在的中断使能状态。<code>intr_off</code> 和 <code>intr_on</code> 函数执行 RISC-V 指令来分别禁用和启用中断。</p>
+<p><strong>acquire</strong> 在设置 <code>lk-&gt;locked</code>（<code>kernel/spinlock.c</code>:28）之前严格调用 <code>push_off</code> 是很重要的。如果两者颠倒了，会存在一个短暂的窗口期，在这个时段锁被持有但中断被启用，一个不幸时机的中断会使系统发生死锁。同样地，<strong>release</strong> 在释放锁之后（<code>kernel/spinlock.c</code>:66）才调用 <code>pop_off</code> 也是很重要的。</p>
+<h3 id="6-6-指令和内存排序"><a href="#6-6-指令和内存排序" class="headerlink" title="6.6 指令和内存排序"></a>6.6 指令和内存排序</h3><p>我们自然地认为程序按照源代码语句的顺序执行。然而，许多编译器和 CPU 为了提高性能会乱序执行代码。如果一条指令需要很多周期才能完成，CPU 可能会提前发出该指令，这样可以与其他指令重叠执行，避免 CPU 停顿。例如，CPU 可能注意到在一个指令序列中，指令 <strong>A</strong> 和 <strong>B</strong> 之间没有相互依赖。CPU 可能先开始执行指令 <strong>B</strong>，要么是因为它的输入在指令 A 的输入之前就准备好了，要么是为了重叠执行 <strong>A</strong> 和 <strong>B</strong>。编译器也可以通过发出某个语句的指令来重排序，这些指令会比源代码中紧随其后的语句的指令更早地执行。</p>
+<p>当编译器和 CPU 重新排序时，它们会遵循规则，以确保不改变正确编写的串行代码的结果。然而，这些规则允许对并发代码进行更改，很容易在多处理器上导致不正确的行为 [2, 3]。CPU 的排序规则被称为内存模型。</p>
+<p>例如，在这段 <strong>push</strong> 代码中，如果编译器或 CPU 将与第 4 行相对应的存储移动到第 6 行的释放操作之后，那将是一个灾难：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c">l = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span> *l);<br>l-&gt;data = data;<br>acquire(&amp;listlock);<br>l-&gt;next = <span class="hljs-built_in">list</span>;<br><span class="hljs-built_in">list</span> = l;<br>release(&amp;listlock);<br></code></pre></td></tr></table></figure>
+
+<p>如果发生这样的重排序，就会存在一个时间窗口，另一个 CPU 可以获取锁并观察到已更新的列表，但是看到了未初始化的 <code>list-&gt;next</code>。</p>
+<p>为了告诉硬件和编译器不要执行这种重新排序，xv6 在 <code>acquire</code>（<code>kernel/spinlock.c</code>:22）和 <code>release</code>（<code>kernel/spinlock.c</code>:47）中使用了 <code>__sync_synchronize()</code>。<code>__sync_synchronize()</code> 是一个内存屏障：它告诉编译器和 CPU 在屏障之间不要重新排序加载或存储操作。xv6 中 <strong>acquire</strong> 和 <strong>release</strong> 中的屏障在几乎所有重要情况下都强制排序，因为 xv6 在访问共享数据时使用了锁。第9章讨论了一些例外情况。</p>
+<h3 id="6-7-休眠锁"><a href="#6-7-休眠锁" class="headerlink" title="6.7 休眠锁"></a>6.7 休眠锁</h3><p>有时，xv6 需要长时间持有锁。例如，文件系统（第 8 章）在读写磁盘上的内容时会保持文件锁定，而这些磁盘操作可能需要数十毫秒的时间。如果长时间持有自旋锁，另一个进程想要获取它时会导致资源浪费，因为获取进程在自旋等待期间会长时间占用 CPU。自旋锁的另一个缺点是，进程在保持自旋锁的同时无法让出 CPU；我们希望这样做，这样其他进程可以在拥有锁的进程等待磁盘时使用 CPU。在持有自旋锁的同时放弃 CPU 控制是不允许的，因为如果第二个线程尝试获取自旋锁，这可能导致死锁；由于 <strong>acquire</strong> 操作不会让出 CPU，第二个线程的自旋可能会阻止第一个线程运行并释放锁。在持有锁的同时放弃 CPU 控制也会违反自旋锁持有期间必须关闭中断的要求。因此，我们希望有一种在等待获取锁时放弃 CPU 控制，并且在持有锁期间允许放弃 CPU 控制（和中断）的锁类型。</p>
+<p>xv6 提供了这种锁，称为休眠锁。<strong>acquiresleep</strong>（<code>kernel/sleeplock.c</code>:22）在等待期间放弃 CPU 控制，使用的技术将在第 7 章中解释。在高层次上，休眠锁有一个由自旋锁保护的 <code>locked</code> 字段，并且 <strong>acquiresleep</strong> 的调用在原子操作中放弃了 CPU 控制并释放了自旋锁。结果是，<strong>acquiresleep</strong> 在等待期间其他线程可以执行。</p>
+<p>因为休眠锁允许中断，所以它们不能在中断处理程序中使用。因为 <strong>acquiresleep</strong> 可能放弃 CPU 控制，所以不能在自旋锁关键区域内使用休眠锁（尽管自旋锁可以在休眠锁关键区域内使用）。</p>
+<p>自旋锁最适用于短期关键区域，因为等待它们会浪费 CPU 时间；而休眠锁适用于长时间操作。</p>
+<h3 id="6-8-现实世界"><a href="#6-8-现实世界" class="headerlink" title="6.8 现实世界"></a>6.8 现实世界</h3><p>尽管对并发原语和并行性进行了多年的研究，但使用锁进行编程仍然具有挑战性。通常最好将锁隐藏在诸如同步队列之类的更高级别结构内，尽管 xv6 没有这样做。如果您使用锁进行编程，最好使用一种工具来尝试识别竞态条件，因为很容易忽略需要锁定的不变量。大多数操作系统支持 <strong>POSIX</strong> 线程（<strong>Pthreads</strong>），它允许用户进程在不同 CPU 上并发运行多个线程。</p>
+<p><code>Pthreads</code> 支持用户级别的锁、屏障等。支持 <code>Pthreads</code> 需要操作系统的支持。例如，如果一个 <code>pthread</code> 在系统调用中阻塞，同一进程的另一个 <code>pthread</code> 应该能够在该 CPU 上运行。另一个例子是，如果一个 <code>pthread</code> 改变了其进程的地址空间（例如，映射或取消映射内存），内核必须安排其他运行同一进程线程的 CPU 更新其硬件页表，以反映地址空间的更改。</p>
+<p>有可能实现没有原子指令的锁，但这是昂贵的，大多数操作系统使用原子指令。</p>
+<p>如果许多 CPU 尝试在同一时间获取相同的锁，则锁可能很昂贵。如果一个 CPU 在其本地缓存中缓存了一个锁，而另一个 CPU 必须获取该锁，则用于更新保存锁的缓存行的原子指令必须将该行从一个 CPU 的缓存移动到另一个 CPU 的缓存，并可能使任何其他缓存行的副本无效。从另一个 CPU 的缓存中获取缓存行的成本可能比从本地缓存中获取的成本高出几个数量级。</p>
+<p>为了避免与锁相关的费用，许多操作系统使用无锁数据结构和算法[5, 10]。例如，可以实现类似本章开头的链表，而在列表搜索期间不需要锁，并且在列表中插入项目只需要一个原子指令。然而，无锁编程比使用锁更加复杂；例如，必须担心指令和内存重新排序。由于锁本身就已经很难，因此 xv6 避免了无锁编程的额外复杂性。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/xv6/" class="print-no-link">#xv6</a>
+      
+        <a href="/tags/%E7%BF%BB%E8%AF%91/" class="print-no-link">#翻译</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>xv6 book Chapter6 中文翻译</div>
+      <div>http://blog.luliang.online/2023/12/04/xv6 book Chapter6 中文翻译/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/04/xv6%20book%20Chapter7%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" title="xv6 book Chapter7 中文翻译">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">xv6 book Chapter7 中文翻译</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/04/xv6%20book%20Chapter5%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" title="xv6 book Chapter5 中文翻译">
+                        <span class="hidden-mobile">xv6 book Chapter5 中文翻译</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

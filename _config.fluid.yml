@@ -18,7 +18,7 @@ navbar:
     # - { key: 'opinion', link: '/opinions/', icon: 'iconfont icon-user-fill', name: '观点' }
 
 post:
-  default_index_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/2.jpg # 文章封面图
+  default_index_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg # 文章封面图
   banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg # 文章背景图
   banner_img_height: 65
   banner_mask_alpha: 0
@@ -55,7 +55,7 @@ tag:
 about:
   avatar: https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png
   name: "Luyoung"
-  intro: "我自飞扬临天下。——《遮天》孔雀王"
+  intro: "记录学习的痕迹和一些感想。"
   banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/4.jpg
   banner_img_height: 65
   banner_mask_alpha: 0

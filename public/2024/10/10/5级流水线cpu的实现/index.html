@@ -1,0 +1,737 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言在 PA2 中，要求实现一个单周期的 CPU，也就是 NPC。这个工作做完了之后，我发现了一本好书，名字叫做《CPU 制作入门：基于 RISC-V 和 Chisel》，是一个日本作者写的。内容非常适合入门，我花了一天时间就看到了单周期，被作者的思路完全影响了，第二天就立即开始重构 NPC，重构好了之后，整个项目看起来很清晰，把能在 ID 阶段做的事情都做了，一共分了 5 个阶段：IF、ID">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5 级流水线 CPU 的实现">
+<meta property="og:url" content="http://blog.luliang.online/2024/10/10/5%E7%BA%A7%E6%B5%81%E6%B0%B4%E7%BA%BFcpu%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="前言在 PA2 中，要求实现一个单周期的 CPU，也就是 NPC。这个工作做完了之后，我发现了一本好书，名字叫做《CPU 制作入门：基于 RISC-V 和 Chisel》，是一个日本作者写的。内容非常适合入门，我花了一天时间就看到了单周期，被作者的思路完全影响了，第二天就立即开始重构 NPC，重构好了之后，整个项目看起来很清晰，把能在 ID 阶段做的事情都做了，一共分了 5 个阶段：IF、ID">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-10-10T12:20:40.000Z">
+<meta property="article:modified_time" content="2024-10-10T14:27:45.364Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="Chisel">
+<meta property="article:tag" content="riscv32">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>5 级流水线 CPU 的实现 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="5 级流水线 CPU 的实现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-10-10 20:20" pubdate>
+          2024年10月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          16 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">5 级流水线 CPU 的实现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 PA2 中，要求实现一个单周期的 CPU，也就是 NPC。这个工作做完了之后，我发现了一本好书，名字叫做《CPU 制作入门：基于 RISC-V 和 Chisel》，是一个日本作者写的。内容非常适合入门，我花了一天时间就看到了单周期，被作者的思路完全影响了，第二天就立即开始重构 NPC，重构好了之后，整个项目看起来很清晰，把能在 ID 阶段做的事情都做了，一共分了 5 个阶段：IF、ID、EXE、MEM、WB。</p>
+<p>之后作者开始做流水线，解决了指令冒险、数据冒险之后，5 级流水就做的差不多了。我按照作者的思路，也为我的 NPC 扩展了 5 级流水，可以通过所有测试案例:</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs txt">[   bubble-sort] PASS<br>[           fib] PASS<br>[   select-sort] PASS<br>[         dummy] PASS<br>[   shuixianhua] PASS<br>[        pascal] PASS<br>[        string] PASS<br>[      mersenne] PASS<br>[           div] PASS<br>[           sum] PASS<br>[       if-else] PASS<br>[           add] PASS<br>[     leap-year] PASS<br>[    quick-sort] PASS<br>[        switch] PASS<br>[        wanshu] PASS<br>[  sub-longlong] PASS<br>[           max] PASS<br>[  add-longlong] PASS<br>[  mul-longlong] PASS<br>[         shift] PASS<br>[    matrix-mul] PASS<br>[         movsx] PASS<br>[           bit] PASS<br>[         mov-c] PASS<br>[     hello-str] PASS<br>[     recursion] PASS<br>[    load-store] PASS<br>[         crc32] PASS<br>[ to-lower-case] PASS<br>[      goldbach] PASS<br>[       unalign] PASS<br>[          fact] PASS<br>[          min3] PASS<br>[         prime] PASS<br></code></pre></td></tr></table></figure>
+
+<p>这篇文章记录一下我的思考。</p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>就像前面说的，一共五个阶段：IF、ID、EXE、MEM、WB。本文用这 5 个阶段阐述。</p>
+<h2 id="IF"><a href="#IF" class="headerlink" title="IF"></a>IF</h2><p>取指，就是往内存模块输送正确的指令地址，期望接收到指令。由于 PC 会受到反馈信号影响，因此这里必须提供一个寄存器：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs Scala"><span class="hljs-keyword">val</span> if_pc_reg = <span class="hljs-type">RegInit</span>(<span class="hljs-type">START_ADDR</span>)<br> <span class="hljs-keyword">val</span> if_pc_plus4 = if_pc_reg + <span class="hljs-number">4.</span><span class="hljs-type">U</span>(<span class="hljs-type">WORD_LEN</span>.<span class="hljs-type">W</span>)<br><br> <span class="hljs-keyword">val</span> exe_br_flg   = <span class="hljs-type">Wire</span>(<span class="hljs-type">Bool</span>())<br> <span class="hljs-keyword">val</span> exe_jmp_flg =  <span class="hljs-type">Wire</span>(<span class="hljs-type">Bool</span>())<br> <span class="hljs-keyword">val</span> exe_br_target = <span class="hljs-type">Wire</span>(<span class="hljs-type">UInt</span>(<span class="hljs-type">WORD_LEN</span>.<span class="hljs-type">W</span>))<br><br> <span class="hljs-keyword">val</span> exe_alu_out = <span class="hljs-type">Wire</span>(<span class="hljs-type">UInt</span>(<span class="hljs-type">WORD_LEN</span>.<span class="hljs-type">W</span>))<br><br> <span class="hljs-keyword">val</span> stall_flg = <span class="hljs-type">Wire</span>(<span class="hljs-type">Bool</span>())<br><br><br> <span class="hljs-comment">// 连接 PC</span><br> <span class="hljs-comment">// 这里使用组合电路</span><br> io.imem.addr := if_pc_reg<br> <span class="hljs-keyword">val</span> if_inst = io.imem.inst<br><br> <span class="hljs-keyword">val</span> if_pc_next = <span class="hljs-type">MuxCase</span>(if_pc_plus4, <span class="hljs-type">Seq</span>(<br>     exe_br_flg -&gt; exe_br_target,<br>     exe_jmp_flg -&gt; exe_alu_out,<br>     (if_inst === <span class="hljs-type">ECALL</span>) -&gt; csr_regfile(<span class="hljs-number">0x305</span>), <span class="hljs-comment">// ecall 跳转到这里进行异常处理</span><br>     stall_flg -&gt; if_pc_reg <span class="hljs-comment">// 数据冒险: 保持pc不变</span><br> ))<br><br> if_pc_reg := if_pc_next <span class="hljs-comment">// 下一个周期更新</span><br><br></code></pre></td></tr></table></figure>
+
+<p>同时还得给出 PC 的来源。PC 不是随便给的，这很好理解。程序如果不跳转，那么直接运行就好了，每次+4就行。但是程序的执行过程中，跳转、返回等等是必不可少的。因此 PC 有以下几个来源：</p>
+<ul>
+<li>if_pc_reg + 4 &#x2F;&#x2F; 顺序执行</li>
+<li>exe_br_target &#x2F;&#x2F; 分支</li>
+<li>exe_alu_out &#x2F;&#x2F; 跳转</li>
+<li>if_pc_reg &#x2F;&#x2F; 停顿</li>
+</ul>
+<p>分支是指遇到了 B 指令，跳转则是 jal&#x2F;jalr 引起的，至于停顿，这里牵扯到了数据冒险，后面会提到。</p>
+<p>总结一下就是，IF 阶段就负责干一件事：指出下一条指令的地址。至于拿到指令，这是内存自动给出的。</p>
+<h2 id="ID"><a href="#ID" class="headerlink" title="ID"></a>ID</h2><p>指令解码的含义就是，拿到一条指令，对指令进行解码，分析它的位模式。同时求出操作数、寄存器地址。当然，这些信息来源于一条指令的位模式。</p>
+<p>怎么拿到指令？</p>
+<p>如果直接从 IF 阶段往下传，那么下一个周期就会拿到：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs Scala">id_reg_pc := <span class="hljs-type">Mux</span>(stall_flg, id_reg_pc, if_pc_reg) <span class="hljs-comment">// 如果数据冒险：保持</span><br><br>    <span class="hljs-comment">// 指令冒险：if_inst 置为 BUBBLE</span><br>    id_reg_inst := <span class="hljs-type">MuxCase</span>(if_inst, <span class="hljs-type">Seq</span>(<br>        (exe_br_flg || exe_jmp_flg) -&gt; <span class="hljs-type">BUBBLE</span>,<br>        stall_flg -&gt; id_reg_inst <span class="hljs-comment">// 如果数据冒险：保持</span><br>    ))<br><br><br>    <span class="hljs-comment">// 重置指令：如果是冒险指令、冒险数据，那么在当前周期重置为 BUBBLE</span><br>    <span class="hljs-keyword">val</span> id_inst = <span class="hljs-type">Mux</span>((exe_br_flg || exe_jmp_flg || stall_flg), <span class="hljs-type">BUBBLE</span>, id_reg_inst)<br><br>    <span class="hljs-comment">// 解析寄存器地址</span><br>    <span class="hljs-keyword">val</span> id_rs1_addr = id_inst(<span class="hljs-number">19</span>,<span class="hljs-number">15</span>)<br>    <span class="hljs-keyword">val</span> id_rs2_addr = id_inst(<span class="hljs-number">24</span>,<span class="hljs-number">20</span>)<br>    <span class="hljs-keyword">val</span> id_wb_addr  = id_inst(<span class="hljs-number">11</span>,<span class="hljs-number">7</span>)<br>    <span class="hljs-keyword">val</span> mem_wb_data = <span class="hljs-type">Wire</span>(<span class="hljs-type">UInt</span>(<span class="hljs-type">WORD_LEN</span>.<span class="hljs-type">W</span>))<br></code></pre></td></tr></table></figure>
+
+<p>从多路复用其可以看到，如果不遇到意外，比如没有跳转、数据冒险，就能直接接过接力棒。但是如果遇到了意外，比如分支、数据冒险，那么就不能简单的直接从 IF 拿指令了。</p>
+<p>如果遇到跳转，等等，谁在跳转？</p>
+<p>是 EXE，如果检测到 EXE 在执行一条跳转指令，那么前面处理的 IF、ID不都是白费力气了？</p>
+<p>因此，一旦检测到 EXE 在执行分支、跳转，那么在这个周期，就可以截断 IF 的指令传送，直接让它为 BUBBLE 指令，也就是空指令。下一个周期，这个空指令就会传送到 EXE，这不会改变状态机的任何有效状态。</p>
+<p>如果遇到数据冒险呢？这件事情很常见，也很广泛。以下是一个简单的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">80000000:	00000413          	li	s0,0<br>80000004:	00009117          	auipc	sp,0x9<br>80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 &lt;_end&gt;<br></code></pre></td></tr></table></figure>
+
+<p>当 EXE 开始执行 auipc 的时候，ID 刚好正在处理 addi。此时，ID 要将操作数 sp 准备好，但是 auipc 执行时，并没有将数据放到寄存器中供给 ID 读取。因为 EX 执行后，数据甚至还没到 MEM，后面还有 WB 阶段。</p>
+<p>这时候，可能会想到，等一个周期，等到 MEM 阶段，将数据直接传送到 ID，而 ID 阶段重新执行一下 addi（之前执行的其实是 BUBBLE）。就好了，这个方法就是 直通 + 停顿。</p>
+<h2 id="等一个周期"><a href="#等一个周期" class="headerlink" title="等一个周期"></a>等一个周期</h2><p>一个状态机，怎么实现等待？</p>
+<p>这是一个好问题，答案是保持输入不变。</p>
+<p>ID 阶段需要向 EXE 提供的底层输入有哪些？</p>
+<ul>
+<li>id_reg_pc</li>
+<li>id_reg_inst</li>
+</ul>
+<p>没错，就这两个：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Scala">id_reg_pc := <span class="hljs-type">Mux</span>(stall_flg, id_reg_pc, if_pc_reg)<br><br>id_reg_inst := <span class="hljs-type">MuxCase</span>(if_inst, <span class="hljs-type">Seq</span>(<br>    (exe_br_flg || exe_jmp_flg) -&gt; <span class="hljs-type">BUBBLE</span>,<br>    stall_flg -&gt; id_reg_inst <span class="hljs-comment">// 如果数据冒险：保持</span><br>))<br></code></pre></td></tr></table></figure>
+
+<p>当数据冒险的时候，就保持 id_reg_pc、id_reg_inst。</p>
+<p>然后呢？ID 阶段还有一些操作，这些操作是由组合电路自动完成的，不能乱操作，不能一直经过 EXE、MEM、WB 后影响整个状态机的状态。因此还必须让它空转：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Scala"><span class="hljs-comment">// 重置指令：如果是冒险指令、冒险数据，那么在当前周期重置为 BUBBLE</span><br><span class="hljs-keyword">val</span> id_inst = <span class="hljs-type">Mux</span>((exe_br_flg || exe_jmp_flg || stall_flg), <span class="hljs-type">BUBBLE</span>, id_reg_inst)<br><br></code></pre></td></tr></table></figure>
+
+<p>这样，如果是冒险指令、冒险数据，让它decode BUBBLE，当前的 ID、后面的 EX、MEM、WB 自然就不会影响有效状态。</p>
+<h2 id="直通"><a href="#直通" class="headerlink" title="直通"></a>直通</h2><p>直通就是当 MEM、WB 阶段的时候，ID 要访问寄存器，可以不必等到写好之后再访问，可以直接访问：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs Scala"><span class="hljs-keyword">val</span> id_rs1_data = <span class="hljs-type">MuxCase</span>(regfile(id_rs1_addr), <span class="hljs-type">Seq</span>(<br>        (id_rs1_addr === <span class="hljs-number">0.</span><span class="hljs-type">U</span>) -&gt; <span class="hljs-number">0.</span><span class="hljs-type">U</span>(<span class="hljs-type">WORD_LEN</span>.<span class="hljs-type">W</span>),<br>        <span class="hljs-comment">// 从 MEM 直通</span><br>        ((id_rs1_addr === mem_reg_wb_addr) &amp;&amp; (mem_reg_rf_wen === <span class="hljs-type">REN_S</span>)) -&gt; mem_wb_data,<br>        <span class="hljs-comment">// 从 WB 直通</span><br>        ((id_rs1_addr === wb_reg_wb_addr) &amp;&amp; (wb_reg_rf_wen === <span class="hljs-type">REN_S</span>)) -&gt; wb_reg_wb_data<br><br>    ))<br><span class="hljs-keyword">val</span> id_rs2_data = <span class="hljs-type">MuxCase</span>(regfile(id_rs2_addr), <span class="hljs-type">Seq</span>(<br>        (id_rs2_addr === <span class="hljs-number">0.</span><span class="hljs-type">U</span>) -&gt; <span class="hljs-number">0.</span><span class="hljs-type">U</span>(<span class="hljs-type">WORD_LEN</span>.<span class="hljs-type">W</span>),<br>        <span class="hljs-comment">// 从 MEM 直通</span><br>        ((id_rs2_addr === mem_reg_wb_addr) &amp;&amp; (mem_reg_rf_wen === <span class="hljs-type">REN_S</span>)) -&gt; mem_wb_data,<br>        <span class="hljs-comment">// 从 WB 直通</span><br>        ((id_rs2_addr === wb_reg_wb_addr) &amp;&amp; (wb_reg_rf_wen === <span class="hljs-type">REN_S</span>)) -&gt; wb_reg_wb_data<br>    ))<br></code></pre></td></tr></table></figure>
+
+<p>这样就完成了指令冒险，数据冒险的处理。</p>
+<p>总结：如果遇到指令冒险，那么就等待 EXE 执行一周期，这样，EXE 将会再接下来的两个周期执行两次 BUBBLE，第三个周期才会执行到跳转的目标指令。原因就是 ID 在当前 decode 了 BUBBLE化的指令，同时 ID 的下一个周期还是 BUBBLE，下下个周期才是 IF 传上来的 目标指令。至于 IF，当前传送的指令被BUBBLE 重置，下一个周期自然就是 BUBBLE 了，当前传送的指令也没用，但是下一个周期传送的指令就是目标指令了。</p>
+<p>如果是数据冒险，那么情况就有点复杂。</p>
+<p>如果可以直通，那么就直通；如果不能直通，那么就等待一个周期后直通。等待的含义就是保持状态不变，IF 等待、ID 等待。</p>
+<p>IF 等待只需要保持 if_pc_reg 不变就行了，也就是将 if_pc_next 置为 if_pc_reg。<br>ID 保持，只需要保持 id_reg_pc、id_reg_inst 不变就行了。另外再执行一下 BUBBLE化的指令，这是幂等指令，执行 N 次（N &gt;&#x3D; 0）都不会改变状态机有效状态。</p>
+<p>至于 MEM、WB 就很简单了，没什么可讲的了。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PA2/" class="category-chain-item">PA2</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PA2/CPU/" class="category-chain-item">CPU</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Chisel/" class="print-no-link">#Chisel</a>
+      
+        <a href="/tags/riscv32/" class="print-no-link">#riscv32</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>5 级流水线 CPU 的实现</div>
+      <div>http://blog.luliang.online/2024/10/10/5级流水线cpu的实现/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年10月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/10/14/riscv%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E9%97%AE%E9%A2%98/" title="riscv 函数调用问题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">riscv 函数调用问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/26/nemu%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" title="nemu 工作原理解析">
+                        <span class="hidden-mobile">nemu 工作原理解析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

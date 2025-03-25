@@ -1,0 +1,764 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文是 xv6 book 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。 一、（译文）第三章 页表页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地址空间和内存。页面表确定了内存地址的含义，以及可以访问物理内存的哪些部分。它们使得 xv6 能够隔离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 book Chapter3 中文翻译">
+<meta property="og:url" content="http://blog.luliang.online/2023/11/18/xv6%20book%20Chapter3%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文是 xv6 book 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。 一、（译文）第三章 页表页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地址空间和内存。页面表确定了内存地址的含义，以及可以访问物理内存的哪些部分。它们使得 xv6 能够隔离">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/98bdf961821f424cb5488a45ccc8e488_1720253710031.png?token=ANB4BCIE76HHXRGWKZF2WC3GRD6U2">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ddb97e10a58f4f3f8c9f0990ca7a3283_1720253710031.png?token=ANB4BCIEYKXXQQWRLWC64ADGRD6U4">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/18fbcc6c690644a09cd524751798fb7e_1720253710031.png?token=ANB4BCK2OIIHCECW6TL7YT3GRD6U6">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7701116fd83b409494c78fe85df4abdc_1720253710031.png?token=ANB4BCJWKV2QQTR4XWE76GTGRD6VA">
+<meta property="article:published_time" content="2023-11-18T03:27:51.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.775Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="xv6">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/98bdf961821f424cb5488a45ccc8e488_1720253710031.png?token=ANB4BCIE76HHXRGWKZF2WC3GRD6U2">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>xv6 book Chapter3 中文翻译 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="xv6 book Chapter3 中文翻译"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-18 11:27" pubdate>
+          2023年11月18日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">xv6 book Chapter3 中文翻译</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文是 <strong>xv6 book</strong> 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。</p>
+<h2 id="一、（译文）第三章-页表"><a href="#一、（译文）第三章-页表" class="headerlink" title="一、（译文）第三章 页表"></a>一、（译文）第三章 页表</h2><p>页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地址空间和内存。页面表确定了内存地址的含义，以及可以访问物理内存的哪些部分。它们使得 <strong>xv6</strong> 能够隔离不同进程的地址空间，并将它们多路复用到单个物理内存中。页面表是一种流行的设计，因为它们提供了一种间接级别，使操作系统能够执行许多技巧。<strong>xv6</strong> 使用了一些技巧：在多个地址空间中映射相同的内存（一个跳板页面），并用未映射的页面保护内核和用户堆栈。本章的其余部分解释了 <strong>RISC-V</strong> 硬件提供的页面表以及 <strong>xv6</strong> 如何使用它们。</p>
+<h3 id="3-1-分页硬件"><a href="#3-1-分页硬件" class="headerlink" title="3.1 分页硬件"></a>3.1 分页硬件</h3><p>值得提醒的是，<strong>RISC-V</strong> 指令（包括用户指令和内核内核指令）操作虚拟地址。机器的 <strong>RAM</strong>，或者物理内存，都使用物理地址进行索引。<strong>RISC-V</strong> 的页面硬件连接了这两种地址，通过将每个虚拟地址映射到一个物理地址。</p>
+<p><strong>xv6</strong> 在 <strong>Sv39 RISC-V</strong> 上运行，这意味着仅使用了 64 位虚拟地址的底部 39 位；前 25 位未被使用。在这种 <strong>Sv39</strong> 配置下，一个 <strong>RISC-V</strong> 页面表在逻辑上是一个由 2^27^（134,217,728）个页面表项（<strong>PTEs</strong>）组成的数组。每个 <strong>PTE</strong> 包含一个 44 位的物理页号（<strong>PPN</strong>）和一些标志位。分页硬件通过使用 39 位中的前 27 位来索引页面表以找到一个 PTE，并且构造一个 56 位的物理地址，其中前 44 位来自 <strong>PTE</strong> 中的 <strong>PPN</strong>，后 12 位来自原始虚拟地址的底部。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/98bdf961821f424cb5488a45ccc8e488_1720253710031.png?token=ANB4BCIE76HHXRGWKZF2WC3GRD6U2" alt="图 3.1：RISC-V 虚拟和物理地址，以及简化的逻辑页表"></p>
+<center><b><font size ='3'>图 3.1：RISC-V 虚拟和物理地址，以及简化的逻辑页表</font></b></center></font>
+
+
+
+<p>图 3.1 展示了这个过程，使用一个 <strong>PTE</strong> 简单数组的逻辑视图（详细内容见图 3.2）。页面表让操作系统能够以 4096（2^12^）字节对齐的块的粒度控制虚拟地址到物理地址的转换。这样的一个块被称为一页。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ddb97e10a58f4f3f8c9f0990ca7a3283_1720253710031.png?token=ANB4BCIEYKXXQQWRLWC64ADGRD6U4" alt="在这里插入图片描述"></p>
+<center><b><font size ='3'>图 3.2：RISC-V 地址转换细节</font></b></center></font>
+
+<p>尽管 <strong>CPU</strong> 在执行加载或存储指令时会在硬件中遍历三级结构，但三级结构的一个潜在缺点是 <strong>CPU</strong> 必须从内存中加载三个页面表项（<strong>PTEs</strong>）来执行虚拟地址到物理地址的转换。为了避免从物理内存加载 <strong>PTEs</strong> 的开销，<strong>RISC-V CPU</strong> 将页面表项缓存到一个称为<em>Translation Look-aside Buffer</em>（<strong>TLB</strong>）的缓冲区中。</p>
+<p>每个 <strong>PTE</strong> 包含标志位，告诉分页硬件关联的虚拟地址允许的使用方式。<strong>PTE_V</strong> 表示该 <strong>PTE</strong> 是否存在：如果未设置，则对页面的引用会导致异常（即不被允许）。<strong>PTE_R</strong> 控制指令是否被允许读取页面。<strong>PTE_W</strong> 控制指令是否被允许向页面写入。<strong>PTE_X</strong> 控制 <strong>CPU</strong> 是否可以将页面内容解释为指令并执行它们。<strong>PTE_U</strong> 控制用户模式下的指令是否被允许访问页面；如果未设置 <strong>PTE_U</strong>，则该 <strong>PTE</strong> 只能在核心模式下使用。图 3.2 展示了所有这些工作原理。这些标志和其他所有与页面硬件相关的结构在（<code>kernel/riscv.h</code>）中定义。</p>
+<p>为了告诉硬件使用页面表，内核必须将根页面的物理地址写入 <strong>satp</strong> 寄存器。每个 <strong>CPU</strong> 都有自己的 <strong>satp</strong>。<strong>CPU</strong> 将使用由自己的 <strong>satp</strong> 指向的页面表来转换后续指令生成的所有地址。每个 <strong>CPU</strong> 都有自己的 <strong>satp</strong>，这样不同的 <strong>CPU</strong> 可以运行不同的进程，每个进程都有一个由自己的页面表描述的私有地址空间。</p>
+<p>典型情况下，内核将所有物理内存映射到其页面表中，这样它就可以使用加载&#x2F;存储指令读写物理内存中的任何位置。由于页目录位于物理内存中，内核可以通过使用标准的存储指令向 <strong>PTE</strong> 的虚拟地址写入，来编程页目录中 <strong>PTE</strong> 的内容。</p>
+<p>关于术语的一些说明。物理内存指的是 <strong>DRAM</strong> 中的存储单元。物理内存的每个字节都有一个地址，称为物理地址。指令仅使用虚拟地址，分页硬件将虚拟地址翻译为物理地址，然后发送给 <strong>DRAM</strong> 硬件进行读取或写入。与物理内存和虚拟地址不同，虚拟内存并不是一个物理对象，而是指内核提供的一系列抽象和机制，用于管理物理内存和虚拟地址。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/18fbcc6c690644a09cd524751798fb7e_1720253710031.png?token=ANB4BCK2OIIHCECW6TL7YT3GRD6U6" alt="在这里插入图片描述"></p>
+<center><b><font size ='3'>图 3.3：左侧，xv6 的内核地址空间。 RWX指 PTE 读、写、执行
+权限。 右侧是 xv6 期望看到的 RISC-V 物理地址空间</font></b></center></font>
+
+<h3 id="3-2-内核地址空间"><a href="#3-2-内核地址空间" class="headerlink" title="3.2 内核地址空间"></a>3.2 内核地址空间</h3><p><strong>xv6</strong>为每个进程维护一个页面表，描述了每个进程的用户地址空间，另外还有一个页面表描述了内核的地址空间。内核配置其地址空间的布局，以便在可预测的虚拟地址上让自己访问物理内存和各种硬件资源。图 3.3 展示了这个布局是如何将内核虚拟地址映射到物理地址的。文件（<code>kernel/memlayout.h</code>）声明了 <strong>xv6</strong> 内核内存布局的常量。</p>
+<p><strong>QEMU</strong>模拟的计算机包括从物理地址<code>0x80000000</code>开始并持续至至少<code>0x86400000</code>的<strong>RAM</strong>（物理内存），在 <strong>xv6</strong> 中称为 <strong>PHYSTOP</strong>。<strong>QEMU</strong>模拟还包括诸如磁盘接口之类的<strong>I&#x2F;O</strong>设备。<strong>QEMU</strong>将设备接口作为内存映射的控制寄存器暴露给软件，这些控制寄存器位于物理地址空间的<code>0x80000000</code>以下。内核可以通过读取&#x2F;写入这些特殊的物理地址与设备进行交互；这些读取和写入与设备硬件通信，而不是与<strong>RAM</strong>通信。第4章解释了<strong>xv6</strong> 如何与设备进行交互。</p>
+<p>内核通过“<em>直接映射</em>”方式访问<strong>RAM</strong>和内存映射设备寄存器；即在虚拟地址空间中将资源映射到等于物理地址的虚拟地址上。例如，内核本身位于虚拟地址空间和物理内存中的<code>KERNBASE=0x80000000</code>处。直接映射简化了读取或写入物理内存的内核代码。例如，当<code>fork</code>为子进程分配用户内存时，分配器返回该内存的物理地址；<code>fork</code>在将父进程的用户内存复制到子进程时直接使用该地址作为虚拟地址。</p>
+<p>有一些内核虚拟地址并非直接映射：</p>
+<ul>
+<li>跳板页面。它映射在虚拟地址空间的顶部；用户页表也有相同的映射。第四章讨论了跳板页面的作用，但这里展示了页面表的一个有趣用例；内核虚拟地址空间中的一个物理页面（存储跳板代码）被映射了两次：一次在虚拟地址空间的顶部，另一次是直接映射。</li>
+<li>内核堆栈页面。每个进程都有自己的内核堆栈，映射在高地址处，这样在其下 <strong>xv6</strong> 可以保留一个未映射的守护页。守护页的 <strong>PTE</strong> 是无效的（即 <strong>PTE_V</strong> 未设置），因此如果内核的堆栈溢出，可能会引发异常并导致内核崩溃。没有守护页，溢出的堆栈会覆盖其他内核内存，导致错误操作。宁愿发生崩溃也不愿意堆栈溢出影响其他内核内存。</li>
+</ul>
+<p>虽然内核通过高内存映射使用其堆栈，但它们也可通过直接映射的地址访问。另一种设计可能只使用直接映射，并使用直接映射地址上的堆栈。然而，在这种安排下，提供守护页将涉及取消对本应引用物理内存的虚拟地址的映射，这会使得其难以使用。</p>
+<p>内核将跳板页面和内核文本页的页面映射权限设置为 <strong>PTE_R</strong> 和 <strong>PTE_X</strong>。内核从这些页面读取并执行指令。内核将其他页面的映射权限设置为 <strong>PTE_R</strong> 和 <strong>PTE_W</strong>，以便读取和写入这些页面中的内存。守护页的映射是无效的。</p>
+<h3 id="3-3-代码：创建地址空间"><a href="#3-3-代码：创建地址空间" class="headerlink" title="3.3 代码：创建地址空间"></a>3.3 代码：创建地址空间</h3><p>在 <strong>xv6</strong> 中，用于操作地址空间和页面表的大部分代码都位于 <code>vm.c</code>（<code>kernel/vm.c</code>:1）中。其核心数据结构是 <code>pagetable_t</code>，实际上是指向一个 <strong>RISC-V</strong> 根页面表页的指针；<code>pagetable_t</code> 可能是内核页面表，也可能是每个进程的页面表。主要的函数有 <code>walk</code>，用于找到虚拟地址的 <strong>PTE</strong>，以及 <strong>mappages</strong>，用于加载新的映射的 <strong>PTE</strong>。以 <code>kvm</code> 开头的函数操作内核页面表；以 <code>uvm</code> 开头的函数操作用户页面表；其它函数则同时用于两者。<code>copyout</code> 和 <code>copyin</code> 将数据从系统调用参数提供的用户虚拟地址复制到内核中，并位于 <code>vm.c</code> 中，因为它们需要明确地将这些地址转换为相应的物理内存。</p>
+<p>在引导序列的早期阶段，<code>main</code> 调用 <code>kvminit</code>（<code>kernel/vm.c</code>:54）使用 <code>kvmmake</code>（<code>kernel/vm.c</code>:20）创建内核的页面表。这个调用发生在 <strong>xv6</strong> 在 <strong>RISC-V</strong> 上启用分页之前，所以地址直接引用物理内存。<code>kvmmake</code> 首先分配一个物理内存页面来容纳根页面表页。然后调用 <code>kvmmap</code> 安置内核需要的转换。这些转换包括内核的指令和数据，一直到 <code>PHYSTOP</code> 的物理内存以及实际上是设备的内存范围。<code>proc_mapstacks</code>（<code>kernel/proc.c</code>:33）为每个进程分配一个内核堆栈。它调用 <code>kvmmap</code> 将每个堆栈映射到由 <code>KSTACK</code> 生成的虚拟地址上，这样留出了无效的堆栈守护页的空间。</p>
+<p>在 <strong>xv6</strong> 中，<code>kvmmap</code>（<code>kernel/vm.c</code>:127）调用 <code>mappages</code>（<code>kernel/vm.c</code>:138），它为一段虚拟地址范围到相应的物理地址范围在页面间隔下，分别在页面表中安装映射。对于要映射的每个虚拟地址，在范围内，<code>mappages</code> 分别调用 <code>walk</code> 来找到该地址的 <strong>PTE</strong> 的地址。然后，它初始化 <strong>PTE</strong>，包括相关的物理页号、所需的权限（<strong>PTE_W</strong>、<strong>PTE_X</strong> 和 <strong>PTE_R</strong>），以及将 <strong>PTE_V</strong> 设置为将其标记为有效（<code>kernel/vm.c</code>:153）。</p>
+<p><code>walk</code>（<code>kernel/vm.c</code>:81）模拟了 <strong>RISC-V</strong> 分页硬件，它查找虚拟地址的 <strong>PTE</strong>（参见图 3.2）。<code>walk</code> 一次性下降 <strong>9</strong> 位来遍历 3 级页面表。它使用每个级别的 <strong>9</strong> 位虚拟地址来查找下一级页面表或最终的页的 <strong>PTE</strong>（<code>kernel/vm.c</code>:87）。如果 <strong>PTE</strong> 无效，则表示所需的页面尚未分配；如果 <code>alloc</code> 参数已设置，<code>walk</code> 将分配一个新的页面表页并将其物理地址放入 <strong>PTE</strong> 中。它返回树中最底层的 <strong>PTE</strong> 的地址（<code>kernel/vm.c</code>:97）。</p>
+<p>上述代码依赖于将物理内存直接映射到内核虚拟地址空间。例如，当 <code>walk</code> 遍历页面表的级别时，它从 <strong>PTE</strong> 中获取下一级页面表的（物理）地址（<code>kernel/vm.c</code>:89），然后将该地址作为虚拟地址使用来获取下一级的 <strong>PTE</strong>（<code>kernel/vm.c</code>:87）。</p>
+<p>在引导过程中，<code>main</code> 调用 <code>kvminithart</code>（<code>kernel/vm.c</code>:62）来安装内核页面表。它将根页面表页的物理地址写入寄存器 <strong>satp</strong>。此后，<strong>CPU</strong> 将使用内核页面表来转换地址。由于内核使用恒等映射，下一个指令的虚拟地址将映射到正确的物理内存地址。</p>
+<p>在 <strong>RISC-V</strong> <strong>CPU</strong> 中，页面表项被缓存在一个转址旁路缓存（<strong>TLB</strong>）中，当 <strong>xv6</strong> 更改页面表时，必须告知 <strong>CPU</strong> 使对应的缓存 <strong>TLB</strong> 条目失效。如果没有这样做，那么在稍后某个时刻，<strong>TLB</strong> 可能会使用一个旧的缓存映射，指向一个在此期间已经分配给另一个进程的物理页，结果可能导致一个进程能够篡改另一个进程的内存。<strong>RISC-V</strong> 有一个指令 <code>sfence.vma</code>，用于刷新当前 <strong>CPU</strong> 的 <strong>TLB</strong>。<strong>xv6</strong> 在 <code>kvminithart</code> 中重新加载 <code>satp</code> 寄存器后执行 <code>sfence.vma</code>，并在切换到用户页面表的跳板代码中执行，然后返回用户空间（<code>kernel/trampoline.S</code>:79）。</p>
+<p>为了避免刷新整个 <strong>TLB</strong>，<strong>RISC-V</strong> <strong>CPU</strong> 可能支持地址空间标识符（<strong>ASIDs</strong>）。内核可以只刷新特定地址空间的 <strong>TLB</strong> 条目。</p>
+<h3 id="3-4-物理内存分配"><a href="#3-4-物理内存分配" class="headerlink" title="3.4 物理内存分配"></a>3.4 物理内存分配</h3><p>在运行时，内核必须为页面表、用户内存、内核堆栈和管道缓冲区分配和释放物理内存。</p>
+<p><strong>xv6</strong> 使用内核结束后的第一个存储单元和 <strong>PHYSTOP</strong> 之间的物理内存进行运行时分配。它以整个 <strong>4096 字节</strong>页面的方式进行分配和释放。通过将一个链接列表通过页面本身进行线程化，它跟踪哪些页面是空闲的。分配包括从链接列表中移除一个页面；释放包括将释放的页面添加到列表中。</p>
+<h3 id="3-5-代码：物理内存分配器"><a href="#3-5-代码：物理内存分配器" class="headerlink" title="3.5 代码：物理内存分配器"></a>3.5 代码：物理内存分配器</h3><p>分配器位于 <code>kalloc.c</code>（<code>kernel/kalloc.c</code>:1）中。分配器的数据结构是一系列可用于分配的物理内存页面的空闲列表。每个空闲页面的列表元素都是一个名为 <code>struct run</code> 的结构体（<code>kernel/kalloc.c</code>:17）。那么分配器从哪里获取内存来保存该数据结构呢？它将每个空闲页面的 <code>run</code> 结构体存储在空闲页面本身中，因为那里没有其他存储。空闲列表由一个自旋锁保护（<code>kernel/kalloc.c</code>:21-24）。该列表和锁被包装在一个结构体中，以明确锁保护该结构中的字段。暂时忽略锁和获取&#x2F;释放的调用；第6章将详细讨论锁定问题。</p>
+<p>函数 <code>main</code> 调用 <code>kinit</code> 来初始化分配器（<code>kernel/kalloc.c</code>:27）。<code>kinit</code> 将空闲列表初始化为内核结束后的第一个存储单元和 <strong>PHYSTOP</strong> 之间的每一页。<strong>xv6</strong>应该通过解析硬件提供的配置信息确定可用的物理内存有多少。然而，<strong>xv6</strong> 假设机器有 <strong>128 兆</strong>字节的 <strong>RAM</strong>。<code>kinit</code> 调用 <code>freerange</code> 来通过对 <code>kfree</code> 的每页调用向空闲列表添加内存。<strong>PTE</strong> 只能引用按 <strong>4096 字节</strong>边界对齐的物理地址（即 4096 的倍数），因此 <code>freerange</code> 使用 <strong>PGROUNDUP</strong> 来确保它只释放对齐的物理地址。分配器初始时没有内存；这些对 <code>kfree</code> 的调用给了它一些要管理的内存。</p>
+<p>分配器有时将地址视为整数进行运算（例如，在 <code>freerange</code> 中遍历所有页面），有时将地址用作指针读写内存（例如，操作存储在每个页面中的 <code>run</code> 结构体）；这种地址的双重用途是导致分配器代码充斥着 C 类型转换的主要原因。另一个原因是释放和分配在本质上会改变内存的类型。</p>
+<p>函数 <code>kfree</code>（<code>kernel/kalloc.c</code>:47）首先将要释放的内存中的每个字节设置为值 <strong>1</strong>。这将导致在释放后继续使用内存（使用“悬空引用”）的代码读取垃圾而不是旧的有效内容；希望这样可以更快地使此类代码出现故障。然后 <code>kfree</code> 将页面添加到空闲列表中：它将 <code>pa</code> 转换为指向 <code>struct run</code> 的指针，记录了空闲列表的旧开头在<code> r-&gt;next</code> 中，并将空闲列表设置为 <code>r</code>。<code>kalloc</code> 从空闲列表中移除并返回第一个元素。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7701116fd83b409494c78fe85df4abdc_1720253710031.png?token=ANB4BCJWKV2QQTR4XWE76GTGRD6VA" alt="在这里插入图片描述"></p>
+<center><b><font size ='3'>图 3.4：进程的用户地址空间及其初始堆栈</font></b></center></font>
+
+<h3 id="3-6-进程地址空间"><a href="#3-6-进程地址空间" class="headerlink" title="3.6 进程地址空间"></a>3.6 进程地址空间</h3><p>在 <strong>xv6</strong> 中，每个进程都有一个单独的页面表，并且当 <strong>xv6</strong> 在进程之间切换时，它也会更改页面表。正如图 2.3 所示，一个进程的用户内存从虚拟地址零开始，最多可以增长到 <code>MAXVA</code>（<code>kernel/riscv.h</code>:360），原则上允许一个进程寻址 <strong>256 GB</strong> 的内存。</p>
+<p>当一个进程请求用户内存时，<strong>xv6</strong> 首先使用 <code>kalloc</code> 来分配物理页面。然后将 <strong>PTE</strong> 添加到进程的页面表中，指向新的物理页面。<strong>xv6</strong> 在这些 <strong>PTE</strong> 中设置了 <strong>PTE_W</strong>、<strong>PTE_X</strong>、<strong>PTE_R</strong>、<strong>PTE_U</strong> 和 <strong>PTE_V</strong> 标志。大多数进程不使用整个用户地址空间；<strong>xv6</strong> 在未使用的 <strong>PTE</strong> 中将 <strong>PTE_V</strong> 设置为清除状态。</p>
+<p>我们在这里看到了几个页面表使用的良好例子。首先，不同进程的页面表将用户地址翻译为不同的物理内存页面，因此每个进程都有私有的用户内存。其次，每个进程将其内存视为从零开始的连续虚拟地址，而进程的物理内存可以是不连续的。第三，内核在用户地址空间的顶部映射了带有跳板代码的一个页面，因此单个物理内存页面显示在所有地址空间中。</p>
+<p>图 3.4 更详细地展示了在 <strong>xv6</strong> 中执行进程的用户内存布局。堆栈是一个单独的页面，并显示了由 <code>exec</code> 创建的初始内容。包含命令行参数的字符串，以及指向它们的指针数组，位于堆栈的顶部。在此之下是一些值，允许程序从 <code>main</code> 开始，就好像 <code>main(argc, argv)</code> 函数刚刚被调用一样。</p>
+<p>为了检测用户堆栈是否超出了分配的堆栈内存，<strong>xv6</strong> 在堆栈的正下方通过清除 <strong>PTE_U</strong> 标志，放置了一个不可访问的守护页面。如果用户堆栈溢出，并且进程尝试使用堆栈下方的地址，硬件将生成页面错误异常，因为守护页面对运行在用户模式的程序是不可访问的。真实的操作系统可能会在用户堆栈溢出时自动为其分配更多内存。</p>
+<h3 id="3-7-代码：sbrk"><a href="#3-7-代码：sbrk" class="headerlink" title="3.7 代码：sbrk"></a>3.7 代码：sbrk</h3><p><code>sbrk</code> 是用于进程收缩或扩展其内存的系统调用。该系统调用由函数 <code>growproc</code>（<code>kernel/proc.c</code>:253）实现。<code>growproc</code> 调用 <code>uvmalloc</code> 或 <code>uvmdealloc</code>，取决于 <strong>n</strong> 是否为正数或负数。<code>uvmalloc</code>（<code>kernel/vm.c</code>:221）使用 <code>kalloc</code> 分配物理内存，并使用 <code>mappages</code> 向用户页面表添加 <strong>PTE</strong>。<code>uvmdealloc</code> 调用 <code>uvmunmap</code>（<code>kernel/vm.c</code>:166），它使用 <code>walk</code> 查找 <strong>PTE</strong>，并使用 <code>kfree</code> 释放它们所引用的物理内存。</p>
+<p>在 <strong>xv6</strong> 中，进程的页面表不仅告诉硬件如何映射用户虚拟地址，而且也作为记录分配给该进程的物理内存页面的唯一依据。这就是为什么释放用户内存（在 <code>uvmunmap</code> 中）需要检查用户页面表的原因。</p>
+<h3 id="3-8-代码：exec"><a href="#3-8-代码：exec" class="headerlink" title="3.8 代码：exec"></a>3.8 代码：exec</h3><p><code>exec</code> 是一个系统调用，用于创建地址空间的用户部分。它从文件系统中存储的文件初始化地址空间的用户部分。<code>exec</code>（<code>kernel/exec.c</code>:13）使用 <code>namei</code>（<code>kernel/exec.c</code>:26）打开指定的二进制路径，<code>namei</code> 在第 <strong>8</strong> 章有解释。然后，它读取 <code>ELF</code> 头。<strong>xv6</strong> 应用程序采用广泛使用的 <strong>ELF</strong> 格式描述，定义在（<code>kernel/elf.h</code>）中。一个 <strong>ELF</strong> 二进制文件包括一个 <strong>ELF</strong> 头，<code>struct elfhdr</code>（<code>kernel/elf.h</code>:6），后面跟着一系列程序段头，<code>struct proghdr</code>（<code>kernel/elf.h</code>:25）。每个 <code>proghdr</code> 描述了必须加载到内存中的应用程序部分；<strong>xv6</strong> 程序只有一个程序段头，但其他系统可能会有指令和数据的单独段。</p>
+<p>首先是对文件是否可能包含 <strong>ELF</strong> 二进制的快速检查。<strong>ELF</strong> 二进制以四字节的“魔数”<strong>0x7F</strong>，‘<strong>E</strong>’，‘<strong>L</strong>’，‘<strong>F</strong>’，或 <strong>ELF_MAGIC</strong>（<code>kernel/elf.h</code>:3）开头。如果 <strong>ELF</strong> 头具有正确的魔数，<code>exec</code> 假设二进制文件格式正确。</p>
+<p><code>exec</code> 使用 <code>proc_pagetable</code>（<code>kernel/exec.c</code>:38）分配一个没有用户映射的新页表，使用 <code>uvmalloc</code>（<code>kernel/exec.c</code>:52）为每个 <strong>ELF</strong> 段分配内存，并使用 <code>loadseg</code>（<code>kernel/exec.c</code>:10）将每个段加载到内存中。<code>loadseg</code> 使用 <code>walkaddr</code> 查找已分配内存的物理地址，以便将每个 <strong>ELF</strong> 段的每页写入，并使用 <code>readi</code> 从文件读取数据。</p>
+<p>用 <code>exec</code> 创建的第一个用户程序 <code>/init</code> 的程序段头如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># objdump -p _init</span><br>user/_init: file format elf64-littleriscv<br>Program Header:<br>LOAD off 0x00000000000000b0 vaddr 0x0000000000000000<br>		paddr 0x0000000000000000 align 2**3<br>		filesz 0x0000000000000840 memsz 0x0000000000000858 flags rwx<br>STACK off 0x0000000000000000 vaddr 0x0000000000000000<br>		paddr 0x0000000000000000 align 2**4<br>		filesz 0x0000000000000000 memsz 0x0000000000000000 flags rw<br></code></pre></td></tr></table></figure>
+
+<p>程序段头的 <code>filesz</code> 可能小于 <code>memsz</code>，这表明它们之间的间隙应该用零填充（用于 <strong>C</strong> 全局变量），而不是从文件中读取。对于 <code>/init</code>，<code>filesz</code> 为 <strong>2112</strong> 字节，而 <code>memsz</code> 为 <strong>2136</strong> 字节，因此 <code>uvmalloc</code> 分配足够的物理内存来容纳 <strong>2136</strong> 字节，但仅从文件 <strong>&#x2F;init</strong> 中读取了 <strong>2112</strong> 字节。<br>接下来，<code>exec</code> 分配并初始化用户栈。它仅分配了一页栈空间。<code>exec</code> 逐个将参数字符串复制到栈顶，同时在 <code>ustack</code> 中记录它们的指针。它在即将传递给 <code>main</code> 的 <code>argv</code> 列表末尾放置一个空指针。<code>ustack</code> 中的前三个条目是假的返回<code>程序计数器</code>、<code>argc</code> 和 <code>argv 指针</code>。<br><code>exec</code> 在栈页的正下方放置了一个不可访问的页面，以便那些试图使用多于一页的程序会发生故障。这个不可访问的页面还允许 <code>exec</code> 处理过大的参数；在这种情况下，<code>exec</code> 用于将参数复制到栈中的 <code>copyout</code>（<code>kernel/vm.c</code>:347）函数会注意到目标页面是不可访问的，并返回 <strong>-1</strong>。<br>在准备新内存镜像期间，如果 <code>exec</code> 检测到类似无效程序段的错误，它会跳转到标签 <code>bad</code>，释放新镜像，并返回 <strong>-1</strong>。<code>exec</code> 必须等待释放旧镜像，直到确信系统调用将成功：如果旧镜像消失了，系统调用就无法返回 <strong>-1</strong>。<code>exec</code> 中唯一的错误情况发生在镜像的创建过程中。一旦镜像完成，<code>exec</code> 可以确认新的页表（<code>kernel/exec.c</code>:113），并释放旧的页表（<code>kernel/exec.c</code>:117）。</p>
+<p><code>exec</code>从<strong>ELF</strong>文件加载字节到由ELF文件指定的内存地址。用户或进程可以将它们想要的任何地址放入<strong>ELF</strong>文件中。因此，<code>exec</code>存在风险，因为<strong>ELF</strong>文件中的地址可能无意或故意地引用内核。对于一个不谨慎的内核，后果可能从崩溃到对内核隔离机制的恶意破坏（即安全漏洞）不等。<strong>xv6</strong>执行了许多检查以避免这些风险。例如，<code>if(ph.vaddr + ph.memsz &lt; ph.vaddr)</code> 检查求和是否溢出了<strong>64</strong>位整数。危险在于用户可以构造一个<strong>ELF</strong>二进制文件，其中<code>ph.vaddr</code>指向用户选择的地址，而<code>ph.memsz</code>足够大，导致求和溢出到<strong>0x1000</strong>，看起来像是一个有效值。在旧版的<strong>xv6</strong>中，用户地址空间也包含了内核（但在用户模式下不可读&#x2F;写），用户可以选择一个对应于内核内存的地址，因此将数据从<strong>ELF</strong>二进制文件复制到内核中。在<strong>RISC-V</strong>版本的<strong>xv6</strong>中，这种情况不会发生，因为内核有自己独立的页表；<code>loadseg</code>加载到进程的页表中，而不是内核的页表中。</p>
+<p>对于内核开发人员来说，很容易忽略一个关键的检查，而真实世界的内核在长期历史中存在许多遗漏的检查，这些遗漏可以被用户程序利用来获得内核特权。<strong>xv6</strong>很可能并未完全验证提供给内核的用户级数据，这可能被恶意用户程序利用以规避<strong>xv6</strong>的隔离机制。</p>
+<h3 id="3-9-现实情况"><a href="#3-9-现实情况" class="headerlink" title="3.9 现实情况"></a>3.9 现实情况</h3><p>大多数操作系统都利用分页硬件进行内存保护和映射，但与大多数操作系统相比，xv6的分页使用相对简单。其他操作系统结合了分页和页错误异常，这将在第四章中讨论。</p>
+<p><strong>xv6</strong>简化了内核对虚拟和物理地址之间的直接映射，并假设物理<strong>RAM</strong>位于地址<code>0x8000000</code>处，即内核期望加载的位置。这在<strong>QEMU</strong>上运行良好，但在真实硬件上却不是一个好主意；真实硬件将<strong>RAM</strong>和设备放置在不可预测的物理地址上，因此（例如）在<strong>xv6</strong>期望存储内核的<code>0x8000000</code>处可能没有<strong>RAM</strong>。更严肃的内核设计利用页表将任意硬件物理内存布局转换为可预测的内核虚拟地址布局。</p>
+<p><strong>RISC-V</strong>支持在物理地址级别进行保护，但<strong>xv6</strong>并未使用该功能。在内存较多的计算机上，使用<strong>RISC-V</strong>对“<strong>超级页</strong>”（<strong>super pages</strong>）的支持可能是有意义的。当物理内存较小时，小页面可以以细粒度进行分配和页面置换。例如，如果一个程序只使用了<strong>8K</strong>字节的内存，给它一个完整的<strong>4M</strong>字节超级页面的物理内存是不划算的。较大的页面在<strong>RAM</strong>较多的计算机上是合理的，并且可能减少页表操作的开销。</p>
+<p><strong>xv6</strong>内核缺乏类似于<code>malloc</code>的分配器，无法为小对象提供内存，这阻碍了内核使用需要动态分配的复杂数据结构。内存分配一直是一个持久热门话题，基本问题是高效利用有限内存并为未知的未来请求做准备。现在人们更关心速度而不是空间效率。此外，一个更复杂的内核可能会分配许多不同大小的小块，而不仅仅是像<strong>xv6</strong>一样的<strong>4096</strong>字节块；一个真正的内核分配器需要处理小的分配和大的分配。</p>
+<h2 id="二、翻译感想"><a href="#二、翻译感想" class="headerlink" title="二、翻译感想"></a>二、翻译感想</h2><p>翻译在今天看来不是一个技术活，而是一个体力活。配合一些对话模型（比如 ChatGPT）就能很好地进行翻译了。或许翻译工作者，要将自己的能力提升到很高才能在于对话模型的竞争中略微胜出。</p>
+<p>我做的事情就是复制粘贴，仔细阅读原文和译文，并对译文进行少量的修复（事实上，绝大部分情况，我不做任何修改）。</p>
+<p>我还对比了谷歌翻译和对话模型的翻译质量，以下是两者的对比：</p>
+<h3 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h3><blockquote>
+<p>The allocator resides in kalloc.c (kernel&#x2F;kalloc.c:1). The allocator’s data structure is a free list<br>of physical memory pages that are available for allocation. Each free page’s list element is a<br>struct run (kernel&#x2F;kalloc.c:17). Where does the allocator get the memory to hold that data structure? It store each free page’s run structure in the free page itself, since there’s nothing else stored<br>there. The free list is protected by a spin lock (kernel&#x2F;kalloc.c:21-24). The list and the lock are<br>wrapped in a struct to make clear that the lock protects the fields in the struct. For now, ignore the<br>lock and the calls to acquire and release; Chapter 6 will examine locking in detail.<br>The function main calls kinit to initialize the allocator (kernel&#x2F;kalloc.c:27). kinit initializes<br>the free list to hold every page between the end of the kernel and PHYSTOP. xv6 ought to determine how much physical memory is available by parsing configuration information provided<br>by the hardware. Instead xv6 assumes that the machine has 128 megabytes of RAM. kinit calls<br>freerange to add memory to the free list via per-page calls to kfree. A PTE can only refer to<br>a physical address that is aligned on a 4096-byte boundary (is a multiple of 4096), so freerange<br>uses PGROUNDUP to ensure that it frees only aligned physical addresses. The allocator starts with<br>no memory; these calls to kfree give it some to manage.</p>
+</blockquote>
+<h3 id="谷歌翻译"><a href="#谷歌翻译" class="headerlink" title="谷歌翻译"></a>谷歌翻译</h3><blockquote>
+<p>分配器驻留在 kalloc.c (kernel&#x2F;kalloc.c:1) 中。 分配器的数据结构是一个空闲列表<br>可用于分配的物理内存页数。 每个空闲页面的列表元素是结构运行（kernel&#x2F;kalloc.c:17）。 分配器从哪里获取内存来保存该数据结构？ 它将每个空闲页面的运行结构存储在空闲页面本身中，因为没有存储其他任何内容那里。 空闲列表受自旋锁保护 (kernel&#x2F;kalloc.c:21-24)。 列表和锁是包装在结构中以明确锁保护结构中的字段。 现在，忽略锁以及获取和释放的调用； 第 6 章将详细研究锁定。<br>函数 main 调用 kinit 来初始化分配器 (kernel&#x2F;kalloc.c:27)。 kinit 初始化用于保存内核末尾和 PHYSTOP 之间每个页面的空闲列表。 xv6 应该通过解析提供的配置信息来确定有多少物理内存可用通过硬件。 相反，xv6 假设机器有 128 MB RAM。 kinit 调用freerange 通过每页调用 kfree 将内存添加到空闲列表中。 PTE只能参考在 4096 字节边界（是 4096 的倍数）上对齐的物理地址，因此自由范围使用 PGROUNDUP 确保它只释放对齐的物理地址。 分配器开始于没有记忆； 这些对 kfree 的调用给了它一些管理空间。</p>
+</blockquote>
+<h3 id="ChapGPT-3-5翻译"><a href="#ChapGPT-3-5翻译" class="headerlink" title="ChapGPT 3.5翻译"></a>ChapGPT 3.5翻译</h3><blockquote>
+<p>分配器位于kalloc.c文件中（kernel&#x2F;kalloc.c:1）。分配器的数据结构是一个可用于分配的物理内存页面的空闲列表。每个空闲页面的列表元素是一个struct run（kernel&#x2F;kalloc.c:17）。分配器从哪里获取用于保存该数据结构的内存呢？它将每个空闲页面的运行结构存储在空闲页面本身中，因为那里没有其他存储。空闲列表由自旋锁保护（kernel&#x2F;kalloc.c:21-24）。列表和锁被封装在一个结构体中，以清楚地表明锁保护了结构体中的字段。暂时忽略锁以及获取和释放的调用；第6章将详细讨论锁定。<br>函数main调用kinit来初始化分配器（kernel&#x2F;kalloc.c:27）。kinit初始化空闲列表，以保存内核末尾到PHYSTOP之间的每一页。xv6应该通过解析硬件提供的配置信息来确定有多少物理内存可用。但实际上，xv6假设机器有128兆字节的RAM。kinit调用freerange通过每页调用kfree来将内存添加到空闲列表中。PTE只能引用4096字节边界对齐的物理地址（即4096的倍数），因此freerange使用PGROUNDUP确保它只释放对齐的物理地址。分配器最初没有内存；这些对kfree的调用为其提供了一些要管理的内存。</p>
+</blockquote>
+<h3 id="两者的差异"><a href="#两者的差异" class="headerlink" title="两者的差异"></a>两者的差异</h3><p>看了这两者的翻译，谷歌翻译可以说是完败，而 <code>ChapGPT</code>几乎是完美翻译。因此，以后的翻译可能都要交给大模型了。</p>
+<p><em>全文完，感谢阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/xv6/" class="print-no-link">#xv6</a>
+      
+        <a href="/tags/%E7%BF%BB%E8%AF%91/" class="print-no-link">#翻译</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>xv6 book Chapter3 中文翻译</div>
+      <div>http://blog.luliang.online/2023/11/18/xv6 book Chapter3 中文翻译/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月18日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/11/22/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第三章）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第三章）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/11/13/%E3%80%8AOSTEP%E3%80%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88chap31%EF%BC%89/" title="《OSTEP》信号量（chap31）">
+                        <span class="hidden-mobile">《OSTEP》信号量（chap31）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

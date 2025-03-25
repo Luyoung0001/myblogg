@@ -1,0 +1,751 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文会讨论C++中的左值，右值，左值引用，右值引用，以及会理清它们之间的关系。 一、左值与右值（一）概述　　1. 左值是一般指表达式结束后依然存在的持久化对象。右值指表达式结束时就不再存在的临时对象。便捷的判断方法：能对表达式取地址、有名字的对象为左值。反之，不能取地址、匿名的对象为右值。 　　2. C++ 表达式（运算符带上其操作数、字面量、变量名等）有两种独立的属性：类型和值类别">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++：左值（引用）&amp;右值（引用）">
+<meta property="og:url" content="http://blog.luliang.online/2024/05/10/C++%EF%BC%9A%E5%B7%A6%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89&%E5%8F%B3%E5%80%BC%EF%BC%88%E5%BC%95%E7%94%A8%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文会讨论C++中的左值，右值，左值引用，右值引用，以及会理清它们之间的关系。 一、左值与右值（一）概述　　1. 左值是一般指表达式结束后依然存在的持久化对象。右值指表达式结束时就不再存在的临时对象。便捷的判断方法：能对表达式取地址、有名字的对象为左值。反之，不能取地址、匿名的对象为右值。 　　2. C++ 表达式（运算符带上其操作数、字面量、变量名等）有两种独立的属性：类型和值类别">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-10T14:09:59.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.769Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>C++：左值（引用）&amp;右值（引用） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C++：左值（引用）&amp;右值（引用）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-10 22:09" pubdate>
+          2024年5月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">C++：左值（引用）&amp;右值（引用）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文会讨论C++中的左值，右值，左值引用，右值引用，以及会理清它们之间的关系。</p>
+<h2 id="一、左值与右值"><a href="#一、左值与右值" class="headerlink" title="一、左值与右值"></a>一、左值与右值</h2><h3 id="（一）概述"><a href="#（一）概述" class="headerlink" title="（一）概述"></a>（一）概述</h3><p>　　1. 左值是一般指表达式结束后依然存在的持久化对象。右值指表达式结束时就不再存在的临时对象。便捷的判断方法：能对表达式取地址、有名字的对象为左值。反之，不能取地址、匿名的对象为右值。</p>
+<p>　　2. C++ 表达式（运算符带上其操作数、字面量、变量名等）有两种独立的属性：<strong>类型</strong>和<strong>值类别</strong> 。类型指变量声明时的类型，而值类别是表达式结果的类型，<strong>它必属于左值、纯右值或将亡值三者之一</strong>。如<code>int&amp;&amp; x;</code>其中 <strong>x</strong> 的类型为<strong>右值引用</strong>，但作为表达式使用时其值类别为左值（<strong>因为有名字，可以取址</strong>）。比如：
+　　</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-type">int</span> &amp;&amp;b)</span> </span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;b: &quot;</span> &lt;&lt; b &lt;&lt; <span class="hljs-string">&quot; addr: &quot;</span> &lt;&lt; &amp;b &lt;&lt; std::endl;<br>    b++;<br>    std::cout &lt;&lt; b &lt;&lt; std::endl;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">int</span> c = <span class="hljs-number">10</span>;<br>    <span class="hljs-built_in">func</span>(std::<span class="hljs-built_in">move</span>(c));<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;c: &quot;</span> &lt;&lt; c &lt;&lt; <span class="hljs-string">&quot; addr: &quot;</span> &lt;&lt; &amp;c &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>上例中的 <strong>b</strong> 就是一个右值引用，它接受了一个右值 <strong>c</strong>。在 <code>main()</code> 中，<strong>c</strong> 被转化为<strong>右值引用</strong>传入 <code>func()</code>，因此，<code>func()</code> 中的 <strong>b</strong> 其实就是 <code>main()</code> 中的 <strong>c</strong> 别名，它们指向的是同一块内存区域。需要注意的是，<code>func()</code> 中的 <strong>b</strong> 其实是一个左值，<strong>换句话说，右值引用如果绑定了一个右值，它会延长这个右值的生命周期。</strong> 这种生命周期的延长意味着，尽管原始表达式产生的值是一个右值，<strong>一旦它被一个右值引用所绑定，它就不再是一个”即将销毁的临时值”，而更像是一个普通的变量。</strong> 这允许开发者在保证效率的同时，也能够更灵活地控制这些值。</p>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ 1.cxx -o main -std=c++14<br>./main<br>b: 10 addr: 0x16ba16e28<br>11<br>c: 11 addr: 0x16ba16e28<br></code></pre></td></tr></table></figure>
+<p>我们需要注意的是，<code>main()</code> 中的 <strong>c</strong> 被转换成了右值引用，但是它的状态没有发生任何改变。它在 <strong>func</strong> 中被修改，并在 <strong>func</strong> 返回后仍然保持有效。<code>std::move</code> 只是告诉编译器一个对象可以被“安全地”当作右值来使用，这样就允许在移动语义上下文中使用该对象。</p>
+<h3 id="（二）右值的分类"><a href="#（二）右值的分类" class="headerlink" title="（二）右值的分类"></a>（二）右值的分类</h3><p>　　1. 纯右值(prvalue)：用于识别临时变量和一些不与对象关联的值。<strong>函数返回值为非引用类型、表达式临时值(如1+3)、lambda表达式</strong>等。</p>
+<p>　　2. 将亡值(xvalue)：是与右值引用相关的表达式，通常指将要被移动的对象。如，函数返回类型为<code>T&amp;&amp;</code>、<code>std::move</code>的返回值、转换为<code>T&amp;&amp;</code>的类型转换函数的返回值（注意，这些都是与右值引用相关的表达式）或临时对象。</p>
+<p>表格形式：</p>
+<table>
+<thead>
+<tr>
+<th>类型分类</th>
+<th>特征</th>
+<th>绑定规则和类型安全转换</th>
+<th>实例和特殊情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>左值 (lvalue)</strong></td>
+<td>存在变量、函数调用产生的对象，有固定地址。</td>
+<td>可绑定到左值引用，例如 <code>int&amp; x = a;</code></td>
+<td>变量 <code>int a = 10;</code> 函数调用（返回引用）例如 <code>int&amp; foo();</code></td>
+</tr>
+<tr>
+<td><strong>纯右值 (prvalue)</strong></td>
+<td>不适宜被移动，不具有可识别的地址。</td>
+<td>可绑定到右值引用或 const 左值引用，例如 <code>int&amp;&amp; x = 5;</code></td>
+<td>字面量例如 <code>42</code>，表达式例如 <code>a + b</code>，函数调用（返回非引用）例如 <code>int foo();</code></td>
+</tr>
+<tr>
+<td><strong>将亡值 (xvalue)</strong></td>
+<td>适宜被移动，具有地址但对象即将被销毁。</td>
+<td>可绑定到右值引用，例如使用 <code>std::move</code> 例如 <code>int&amp;&amp; x = std::move(a);</code></td>
+<td>通过 <code>std::move</code> 生成的将亡值，例如 <code>std::move(a)</code>；使用移动构造函数或移动赋值操作时，传递的实际参数。</td>
+</tr>
+<tr>
+<td><strong>泛左值 (glvalue)</strong></td>
+<td>概括左值和将亡值，即拥有特定身份（地址）且可能即将被销毁。</td>
+<td>可以绑定到左值引用或右值引用，取决于上下文。</td>
+<td>例如使用 <code>decltype</code> 捕获引用时，<code>decltype((a)) x = a;</code> 捕获的是 <code>a</code> 的引用。</td>
+</tr>
+</tbody></table>
+<h2 id="二、左值引用与右值引用"><a href="#二、左值引用与右值引用" class="headerlink" title="二、左值引用与右值引用"></a>二、左值引用与右值引用</h2><h3 id="（一）概述-1"><a href="#（一）概述-1" class="headerlink" title="（一）概述"></a>（一）概述</h3><p>　　1. 左值引用和右值引用都属于引用类型。无论是声明一个左值引用还是右值引用<strong>都必须立即进行初始化</strong>（今天考试刚考到）。</p>
+<p>　　2. 左值引用都是左值。<strong>但具名的右值引用是左值，而匿名的右值引用是右值</strong>（比如上面的 func 中的 b，虽然它是右值引用，但是它是一个左值）。</p>
+<h3 id="（二）可绑定的值类型-设T是个具体类型"><a href="#（二）可绑定的值类型-设T是个具体类型" class="headerlink" title="（二）可绑定的值类型(设T是个具体类型)"></a>（二）可绑定的值类型(设T是个具体类型)</h3><p>　　1. 左值引用（<strong>T&amp;<strong>）：</strong>只能绑定到左值（非常量左值）</strong></p>
+<p>　　2. 右值引用（<strong>T&amp;&amp;<strong>）：</strong>只能绑定到右值（非常量右值）</strong></p>
+<p>　　3. 常量左值引用（<code>const T&amp;</code>）：常量左值引用是个“万能”的引用类型：<strong>它既可以绑定到左值也可以绑定到右值，它像右值引用一样可以延长右值的生命期</strong>。不过相比于右值引用所引用的右值，<strong>常量左值引用的右值在它的“余生”中只能是只读的</strong>。对于这点，可以参考这个例子：
+　　</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">int</span> &amp;b)</span> </span>&#123;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;b: &quot;</span> &lt;&lt; b &lt;&lt; <span class="hljs-string">&quot; addr: &quot;</span> &lt;&lt; &amp;b &lt;&lt; std::endl;<br>    b++; <span class="hljs-comment">// 会报错</span><br>    std::cout &lt;&lt; b &lt;&lt; std::endl;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-type">int</span> c = <span class="hljs-number">10</span>;<br>    <span class="hljs-built_in">func</span>(std::<span class="hljs-built_in">move</span>(c));<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;c: &quot;</span> &lt;&lt; c &lt;&lt; <span class="hljs-string">&quot; addr: &quot;</span> &lt;&lt; &amp;c &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>编译出错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">g++ 2.cxx -o main -std=c++14<br>2.cxx:4:6: error: cannot assign to variable <span class="hljs-string">&#x27;b&#x27;</span> with const-qualified <span class="hljs-built_in">type</span> <span class="hljs-string">&#x27;const int &amp;&#x27;</span><br>    b++;<br>    ~^<br>2.cxx:2:22: note: variable <span class="hljs-string">&#x27;b&#x27;</span> declared const here<br>void func(const int &amp;b) &#123;<br>          ~~~~~~~~~~~^<br>1 error generated.<br></code></pre></td></tr></table></figure>
+
+<p>　　4. 常量右值引用(<code>const T&amp;&amp;</code>)：可绑定到右值或常量右值。由于移动语义需要右值可以被修改，因此常量右值引用没有实际用处。如果需要引用右值且让其不可更改，则常量左值引用就足够了。</p>
+<h2 id="三、万能引用（universal-reference）"><a href="#三、万能引用（universal-reference）" class="headerlink" title="三、万能引用（universal reference）"></a>三、万能引用（universal reference）</h2><h3 id="（一）T-的含义"><a href="#（一）T-的含义" class="headerlink" title="（一）T&amp;&amp;的含义"></a>（一）T&amp;&amp;的含义</h3><p>　　1. 当T是一个具体的类型时，<code>T&amp;&amp;</code> 表示右值引用，只能绑定到右值。</p>
+<p>　　2. 当涉及<strong>T类型推导</strong>时，<code>T&amp;&amp;</code> 为万能引用。<strong>若用右值初始化万能引用，则T&amp;&amp;为右值引用。若用左值初始化万能引用，则T&amp;&amp;为左值引用。但不管哪种情况，T&amp;&amp;都是一种引用类型</strong>。</p>
+<h3 id="（二）万能引用"><a href="#（二）万能引用" class="headerlink" title="（二）万能引用"></a>（二）万能引用</h3><p>  　　1. <code>T&amp;&amp;</code>是万能引用的两个条件：</p>
+<p>　　　　（1）<strong>必须涉及类型推导</strong>；</p>
+<p>　　　　（2）声明的形式也必须正好形如 <code>T&amp;&amp;</code> 。<strong>并且该形式被限定死了，任何对其修饰都将剥夺T&amp;&amp;成为万能引用的资格</strong>。</p>
+<p>  　　2. 万能引用使用的场景</p>
+<p>　　　　（1）函数模板形参<br>　　　　<br>（2）<code>auto&amp;&amp;</code></p>
+<p>一个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;vector&gt;</span></span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Widget</span> &#123;&#125;;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func1</span><span class="hljs-params">(Widget &amp;&amp;param)</span></span>&#123;&#125;; <span class="hljs-comment">// param为右值引用类型(不涉及类型推导)</span><br><br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func2</span><span class="hljs-params">(T &amp;&amp;param)</span> </span>&#123;&#125; <span class="hljs-comment">// param为万能引用（涉及类型推导）</span><br><br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func3</span><span class="hljs-params">(std::vector&lt;T&gt; &amp;&amp;param)</span> </span>&#123;<br>&#125;<br><br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> T&gt;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">func4</span><span class="hljs-params">(<span class="hljs-type">const</span> T &amp;&amp;param)</span> </span>&#123;&#125;<br><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">class</span> <span class="hljs-title class_">T</span>&gt; <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyVector</span> &#123;<br>  <span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">push_back</span><span class="hljs-params">(T &amp;&amp;x)</span> </span>&#123;<br>    &#125; <span class="hljs-comment">// x为右值引用。因为当定义一个MyVector对象后，T己确定。当调用该函数时T的类型不用再推导！</span><br><br>    <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">class</span>... Args&gt;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">emplace_back</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">        Args</span></span><br><span class="hljs-params"><span class="hljs-function">            &amp;&amp;...args)</span></span>&#123;&#125;; <span class="hljs-comment">// args为万能引用，因为Args独立于T的类型，当调用该函数时，需推导Args的类型。</span><br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br><br>    Widget w;<br>    <span class="hljs-built_in">func2</span>(w);            <span class="hljs-comment">// 万能引用, func2(T&amp;&amp; param)，param为Widget&amp;（左值引用）</span><br>    <span class="hljs-built_in">func2</span>(std::<span class="hljs-built_in">move</span>(w)); <span class="hljs-comment">// 万能引用, param为Widget&amp;&amp;，是个右值引用。</span><br><br><br>    <span class="hljs-type">int</span> x = <span class="hljs-number">0</span>;<br>    Widget &amp;&amp;var1 = <span class="hljs-built_in">Widget</span>(); <span class="hljs-comment">// var1为右值引用（不涉及类型推导）</span><br>    <span class="hljs-keyword">auto</span> &amp;&amp;var2 = var1; <span class="hljs-comment">//万能引用，auto&amp;&amp;被推导为Widget&amp;（左值引用）</span><br>    <span class="hljs-keyword">auto</span> &amp;&amp;var3 = x; <span class="hljs-comment">//万能引用，被推导为int&amp;;(左值引用）</span><br><br>    <span class="hljs-comment">// 3. 计算任意函数的执行时间：auto&amp;&amp;用于lambda表达式形参（C++14）</span><br>    <span class="hljs-keyword">auto</span> timefunc = [](<span class="hljs-keyword">auto</span> &amp;&amp;func, <span class="hljs-keyword">auto</span> &amp;&amp;...params) &#123;<br>        <span class="hljs-comment">//计时器启动</span><br><br>        <span class="hljs-comment">//调用func(param...)函数</span><br>        std::forward&lt;<span class="hljs-keyword">decltype</span>(func)&gt;(<br>            func)( <span class="hljs-comment">//根据func的左右值特性来调用相应的重载&amp;或&amp;&amp;版本的成员函数</span><br>            std::forward&lt;<span class="hljs-keyword">decltype</span>(params)&gt;(params)... <span class="hljs-comment">//保持参数的左/右值特性</span><br>        );<br><br>        <span class="hljs-comment">//计时器停止并记录流逝的时间</span><br>    &#125;;<br><br>    <span class="hljs-built_in">timefunc</span>(func1, std::<span class="hljs-built_in">move</span>(w)); <span class="hljs-comment">//计算func1函数的执行时间</span><br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在你提供的代码中，<strong>main</strong> 函数涉及到万能引用的语句如下：</p>
+<ol>
+<li><p><code>func2(w);</code> 和 <code>func2(std::move(w));</code> — 这里的 <code>func2</code> 函数模板参数 <code>T&amp;&amp;</code> 是一个万能引用。它可以绑定到左值和右值。在这两个调用中，第一次调用时 <code>T</code> 被推导为 <code>Widget&amp;</code>（因为 <code>w</code> 是一个左值），而第二次调用时 <code>T</code> 被推导为 <code>Widget</code>（因为 <code>std::move(w)</code> 产生一个右值）。</p>
+</li>
+<li><p><code>auto &amp;&amp;var2 = var1;</code> — 这里使用了 <code>auto&amp;&amp;</code>，它也是一个万能引用。<code>var1</code> 是一个左值（尽管它本身是一个绑定到临时对象的右值引用），所以 <code>var2</code> 被推导为 <code>Widget&amp;</code>。</p>
+</li>
+<li><p><code>auto &amp;&amp;var3 = x;</code> — 这同样使用了 <code>auto&amp;&amp;</code>，这是一个万能引用。由于 <code>x</code> 是一个左值，<code>var3</code> 被推导为 <code>int&amp;</code>。</p>
+</li>
+<li><p>在 <code>timefunc</code> lambda 表达式的定义中，参数列表 <code>(auto &amp;&amp;func, auto &amp;&amp;...params)</code> 使用了万能引用。这里 <code>auto&amp;&amp;</code> 用于单个参数和参数包，允许这个 lambda 接受任意数量的任意类型的参数，并保持他们的值类别（左值或右值）。</p>
+</li>
+</ol>
+<p>这些例子展示了万能引用在模板类型推导中的强大功能，尤其是在<strong>泛型编程和函数重载解析</strong>中的应用。通过万能引用，可以写出更灵活的函数和模板，使得它们能够同时接受左值和右值，而无需重载函数。</p>
+<h2 id="四、参考"><a href="#四、参考" class="headerlink" title="四、参考"></a>四、参考</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/5iedu/p/11308158.html">这里</a>。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C++：左值（引用）&amp;右值（引用）</div>
+      <div>http://blog.luliang.online/2024/05/10/C++：左值（引用）&amp;右值（引用）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/05/11/C++%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%EF%BC%88std!move%EF%BC%89/" title="C++：移动语义（std::move）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">C++：移动语义（std::move）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/10/C++%E5%B9%B6%E5%8F%91%EF%BC%9A%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%EF%BC%88%E4%BA%8C%EF%BC%89/" title="C++并发：线程函数传参（二）">
+                        <span class="hidden-mobile">C++并发：线程函数传参（二）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

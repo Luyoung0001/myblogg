@@ -1,0 +1,888 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Solutions for Xiyou Linux Group 2021 Interview Questions Thanks to Zhilu for re-entering the original title. Good people live in peace.    This topic is only a limited reference for Xiyou Linux Inte">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solutions for Xiyou Linux Group 2021 Interview Questions">
+<meta property="og:url" content="http://blog.luliang.online/2022/11/16/Solutions%20for%20Xiyou%20Linux%20Group%202021%20Interview%20Questions/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="Solutions for Xiyou Linux Group 2021 Interview Questions Thanks to Zhilu for re-entering the original title. Good people live in peace.    This topic is only a limited reference for Xiyou Linux Inte">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-16T09:37:21.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.773Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Solutions for Xiyou Linux Group 2021 Interview Questions - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Solutions for Xiyou Linux Group 2021 Interview Questions"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-16 17:37" pubdate>
+          2022年11月16日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Solutions for Xiyou Linux Group 2021 Interview Questions</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h1 id="Solutions-for-Xiyou-Linux-Group-2021-Interview-Questions"><a href="#Solutions-for-Xiyou-Linux-Group-2021-Interview-Questions" class="headerlink" title="Solutions for Xiyou Linux Group 2021 Interview Questions"></a>Solutions for Xiyou Linux Group 2021 Interview Questions</h1><blockquote>
+<p>Thanks to <a target="_blank" rel="noopener" href="https://github.com/L33Z22L11">Zhilu</a> for re-entering the original title. Good people live in peace.</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>This topic is only a limited reference for <code>Xiyou Linux Interest Group</code> 2021 new interview questions.</li>
+<li>The <code>#include</code> directive has been omitted from the program source code of the test questions to save layout.</li>
+<li>The program source code in this test question is only used to examine the basics of C language and should not be used as an example of C language code style.</li>
+<li>The difficulty of the question has nothing to do with the serial number.</li>
+<li>All topics assume <code>x86_64 GNU/Linux</code> environment is compiled and run.</li>
+</ul>
+<p>Copyright © Xiyou Linux Group, All Rights Reserved.<br>This exam is licensed under the <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</p>
+</blockquote>
+<h2 id="1-Size-and-length-don’t-mean-the-same-thing"><a href="#1-Size-and-length-don’t-mean-the-same-thing" class="headerlink" title="1. Size and length don’t mean the same thing"></a>1. Size and length don’t mean the same thing</h2><blockquote>
+<p>What are the similarities and differences between <code>sizeof()</code> and <code>strlen()</code>?</p>
+<p>How do their results differ for different parameters? Please try an example.</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">char</span> s[] = <span class="hljs-string">&quot;I love Linux\0\0\0&quot;</span>;<br>  <span class="hljs-type">int</span> a = <span class="hljs-keyword">sizeof</span>(s);<br>  <span class="hljs-type">int</span> b = <span class="hljs-built_in">strlen</span>(s);<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d %d\n&quot;</span>, a, b);<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>a is equal to the size of the string array, which is 15</li>
+<li>b is equal to the length of the string s with size 12</li>
+</ul>
+</blockquote>
+<h2 id="2-The-size-of-the-box-is-related-to-the-order-in-which-the-items-are-loaded"><a href="#2-The-size-of-the-box-is-related-to-the-order-in-which-the-items-are-loaded" class="headerlink" title="2. The size of the box is related to the order in which the items are loaded"></a>2. The size of the box is related to the order in which the items are loaded</h2><blockquote>
+<p>Both <code>test1</code> and <code>test2</code> contain: 1 <code>short</code>, 1 <code>int</code>, 1 <code>double</code>, so are <code>sizeof(t1)</code> and <code>sizeof(t2)</code> equal? Why is this?</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test1</span> &#123;</span><br>  <span class="hljs-type">int</span> a;<br>  <span class="hljs-type">short</span> b;<br>  <span class="hljs-type">double</span> c;<br>&#125;;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test2</span> &#123;</span><br>  <span class="hljs-type">short</span> b;<br>  <span class="hljs-type">int</span> a;<br>  <span class="hljs-type">double</span> c;<br>&#125;;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test1</span> <span class="hljs-title">t1</span>;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test2</span> <span class="hljs-title">t2</span>;</span><br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;sizeof (t1) : %d\n&quot;</span>, <span class="hljs-keyword">sizeof</span>(t1));<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;sizeof(t2): %d\n&quot;</span>, <span class="hljs-keyword">sizeof</span>(t2));<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>The answer is stated below:</strong></p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test1</span> &#123;</span><br>    <span class="hljs-type">int</span> a;<br>    <span class="hljs-type">short</span> b;<br>    <span class="hljs-type">double</span> c;<br>&#125;;<br><span class="hljs-comment">// 4 + 2 + (2) + 8 = 16</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test2</span> &#123;</span><br>    <span class="hljs-type">short</span> b;<br>    <span class="hljs-type">int</span> a;<br>    <span class="hljs-type">double</span> c;<br>&#125;;<br><span class="hljs-comment">// 2 + (2) + 4 + 8 = 16</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test1</span> <span class="hljs-title">t1</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">test2</span> <span class="hljs-title">t2</span>;</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;sizeof (t1) : %d\n&quot;</span>, <span class="hljs-keyword">sizeof</span>(t1));<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;sizeof(t2): %d\n&quot;</span>, <span class="hljs-keyword">sizeof</span>(t2));<br>    <span class="hljs-comment">// So each value is 16!</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="3-Oh-it’s-a-function-again"><a href="#3-Oh-it’s-a-function-again" class="headerlink" title="3. Oh, it’s a function again"></a>3. Oh, it’s a function again</h2><blockquote>
+<p>You must be familiar with the concept of function under the teaching of advanced mathematics teacher. So do you understand functions in computer programming? Please write a <code>func</code> function that outputs the value of each element in the two-dimensional array <code>arr</code>.</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">func</span><span class="hljs-params">(<span class="hljs-type">int</span> *p)</span>&#123;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++)&#123;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-number">13</span>; j++) &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d &quot;</span>, *((p+i*<span class="hljs-number">10</span>)+j));<br>        &#125;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">int</span> arr[<span class="hljs-number">10</span>][<span class="hljs-number">13</span>];<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-number">13</span>; j++) &#123;<br>      arr[i][j] = rand();<br>    &#125;<br>  &#125;<br>  func((<span class="hljs-type">int</span>*)arr);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="4-Can’t-you-change-the-variable-name"><a href="#4-Can’t-you-change-the-variable-name" class="headerlink" title="4. Can’t you change the variable name?"></a>4. Can’t you change the variable name?</h2><blockquote>
+<ul>
+<li>Please briefly discuss the difference between <code>pass-by-value</code> and <code>pass-by-reference</code> in combination with the following procedure.</li>
+<li>Briefly talk about your understanding of the life cycle of variables in C language.</li>
+</ul>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> ver = <span class="hljs-number">123</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func1</span><span class="hljs-params">(<span class="hljs-type">int</span> ver)</span> &#123;<br>  ver++;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ver = %d\n&quot;</span>, ver);<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func2</span><span class="hljs-params">(<span class="hljs-type">int</span> *pr)</span> &#123;<br>  *pr = <span class="hljs-number">1234</span>;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;*pr = %d\n&quot;</span>, *pr);<br>  pr = <span class="hljs-number">5678</span>;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ver = %d\n&quot;</span>, ver);<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-type">int</span> a = <span class="hljs-number">0</span>;<br>  <span class="hljs-type">int</span> ver = <span class="hljs-number">1025</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> a = <span class="hljs-number">3</span>; a &lt; <span class="hljs-number">4</span>; a++) &#123;<br>    <span class="hljs-type">static</span> <span class="hljs-type">int</span> a = <span class="hljs-number">5</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a = %d\n&quot;</span>, a);<br>    a = ver;<br>    func1(ver);<br>    <span class="hljs-type">int</span> ver = <span class="hljs-number">7</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ver = %d\n&quot;</span>, ver);<br>    func2(&amp;ver);<br>  &#125;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a = %d\tver = %d\n&quot;</span>, a, ver);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> ver = <span class="hljs-number">123</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func1</span><span class="hljs-params">(<span class="hljs-type">int</span> ver)</span> &#123;<br>    ver++;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ver = %d\n&quot;</span>, ver);<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func2</span><span class="hljs-params">(<span class="hljs-type">int</span>* pr)</span> &#123;<br>    *pr = <span class="hljs-number">1234</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;*pr = %d\n&quot;</span>, *pr);<br>    <span class="hljs-comment">// 1234</span><br>    pr = <span class="hljs-number">5678</span>; <span class="hljs-comment">//Type mismatches</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ver = %d\n&quot;</span>, ver); <span class="hljs-comment">// 123</span><br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">int</span> ver = <span class="hljs-number">1025</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> a = <span class="hljs-number">3</span>; a &lt; <span class="hljs-number">4</span>; a++) &#123;<br>        <span class="hljs-type">static</span> <span class="hljs-type">int</span> a = <span class="hljs-number">5</span>;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a = %d\n&quot;</span>, a);<br>        a = ver; <span class="hljs-comment">// 3</span><br>        func1(ver); <span class="hljs-comment">// 4</span><br>        <span class="hljs-type">int</span> ver = <span class="hljs-number">7</span>;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ver = %d\n&quot;</span>, ver);<br>        <span class="hljs-comment">// 7</span><br>        func2(&amp;ver);<br>    &#125;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a = %d\tver = %d\n&quot;</span>, a, ver);<br>    <span class="hljs-comment">// 0, 1025</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="5-Matryoshka-is-so-much-fun"><a href="#5-Matryoshka-is-so-much-fun" class="headerlink" title="5. Matryoshka is so much fun!"></a>5. Matryoshka is so much fun!</h2><blockquote>
+<p>Please explain how the following procedure accomplishes the summation?</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">unsigned</span> <span class="hljs-title function_">sum</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> n)</span> &#123;<br>	<span class="hljs-keyword">return</span> n ? sum(n - <span class="hljs-number">1</span>) + n : <span class="hljs-number">0</span>;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%u\n&quot;</span>, sum(<span class="hljs-number">100</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>This is actually a recursive function call, thus implementing the summation. Specifically, a tail recursion.</li>
+</ul>
+</blockquote>
+<h2 id="6-Wrong-arithmetic"><a href="#6-Wrong-arithmetic" class="headerlink" title="6. Wrong arithmetic?"></a>6. Wrong arithmetic?</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">func</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">short</span> a = <span class="hljs-number">-2</span>;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> b = <span class="hljs-number">1</span>;<br>  b += a;<br>  <span class="hljs-type">int</span> c = <span class="hljs-number">-1</span>;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> d = c * <span class="hljs-number">256</span>;<br>  c &lt;&lt;= <span class="hljs-number">4</span>;<br>  <span class="hljs-type">int</span> e = <span class="hljs-number">2</span>;<br>  e = ~e | <span class="hljs-number">6</span>;<br>  d = (d &amp; <span class="hljs-number">0xff</span>) + <span class="hljs-number">0x2022</span>;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a=0x%hx\tb=0x%x\td=0x%hx\te=0x%x\n&quot;</span>, a, b, d, e);<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;c=Ox%hhx\t\n&quot;</span>, (<span class="hljs-type">signed</span> <span class="hljs-type">char</span>)c);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>The answer is stated below:</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">func</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>    <span class="hljs-type">short</span> a = <span class="hljs-number">-2</span>;<br>    <span class="hljs-comment">// -a = 0000 0000 0000 0010</span><br>    <span class="hljs-comment">// So the complement of a is: 1111 1111 1111 1110</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> b = <span class="hljs-number">1</span>;<br>    b += a;<br>    <span class="hljs-comment">// b = 1-2 = -1 = 1111 1111 1111 1111 1111 1111 1111 1111</span><br>    <span class="hljs-type">int</span> c = <span class="hljs-number">-1</span>;<br>    <span class="hljs-comment">// -c = 0000 0000 0000 0000 0000 0000 0000 0001</span><br>    <span class="hljs-comment">// So the complement of c is: 1111 1111 1111 1111 1111 1111 1111 1111</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> d = c * <span class="hljs-number">256</span>;<br>    <span class="hljs-comment">// c*256 is -256, and 256 = 0000 0000 0000 0000 0000 0001 0000 0000</span><br>    <span class="hljs-comment">// So the complement of -256 is:1111 1111 1111 1111 1111 1111 0000 0000</span><br>    <span class="hljs-comment">// d is of type unsigned short, only two bytes, so only the lower 16 bits are taken, that is: 1111 1111 0000 0000</span><br>    c &lt;&lt;= <span class="hljs-number">4</span>;<br>    <span class="hljs-comment">// c is shifted left by 4 bits, that is: 1111 1111 1111 1111 1111 1111 1111 0000</span><br>    <span class="hljs-type">int</span> e = <span class="hljs-number">2</span>;<br>    e = ~e | <span class="hljs-number">6</span>;<br>    <span class="hljs-comment">// e = 0000 0000 0000 0000 0000 0000 0000 0010</span><br>    <span class="hljs-comment">// ~e = 1111 1111 1111 1111 1111 1111 1111 1101</span><br>    <span class="hljs-comment">// ~e | 6 = 1111 1111 1111 1111 1111 1111 1111 1101 | 0000 0000 0000 0000</span><br>    <span class="hljs-comment">// 0000 0000 0000 0110 = 1111 1111 1111 1111 1111 1111 1111 1111</span><br>    d = (d &amp; <span class="hljs-number">0xff</span>) + <span class="hljs-number">0x2022</span>;<br>    <span class="hljs-comment">// d &amp; 0xff = 1111 1111 0000 0000 &amp; 0000 0000 1111 1111 = 0x0000</span><br>    <span class="hljs-comment">// 0x0000 + 0x2022 = 0x2022</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;a=0x%hx\tb=0x%x\td=0x%hx\te=0x%x\n&quot;</span>, a, b, d, e);<br>    <span class="hljs-comment">// a = 1111 1111 1111 1110 = 0xfffe</span><br>    <span class="hljs-comment">// b = 1111 1111 1111 1111 1111 1111 1111 1111 = 0xffffffff</span><br>    <span class="hljs-comment">// d = 0x2022</span><br>    <span class="hljs-comment">// e = 1111 1111 1111 1111 1111 1111 1111 1111 = 0xffffffff</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;c=Ox%hhx\t\n&quot;</span>, (<span class="hljs-type">signed</span> <span class="hljs-type">char</span>)c);<br>    <span class="hljs-comment">// c = 1111 0000 = 0xf0</span><br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    func();<br>    <span class="hljs-comment">// a=0xfffe        b=0xffffffff    d=0x2022        e=0xffffffff</span><br>    <span class="hljs-comment">// c=Oxf0</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="7-The-feud-between-pointers-and-arrays"><a href="#7-The-feud-between-pointers-and-arrays" class="headerlink" title="7. The feud between pointers and arrays"></a>7. The feud between pointers and arrays</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>][<span class="hljs-number">3</span>] = &#123;&#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;, &#123;<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>&#125;, &#123;<span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>&#125;&#125;;<br>  <span class="hljs-type">int</span>(*b)[<span class="hljs-number">3</span>] = a;<br>  ++b;<br>  b[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>] = <span class="hljs-number">10</span>;<br>  <span class="hljs-type">int</span> *ptr = (<span class="hljs-type">int</span> *)(&amp;a + <span class="hljs-number">1</span>);<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d %d %d \n&quot;</span>, a[<span class="hljs-number">2</span>][<span class="hljs-number">1</span>], **(a + <span class="hljs-number">1</span>), *(ptr - <span class="hljs-number">1</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>The answer is stated below:</strong></p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> a[<span class="hljs-number">3</span>][<span class="hljs-number">3</span>] = &#123;&#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;, &#123;<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>&#125;, &#123;<span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>&#125;&#125;;<br>    <span class="hljs-type">int</span>(*b)[<span class="hljs-number">3</span>] = a;<br>    ++b;<br>    b[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>] = <span class="hljs-number">10</span>; <span class="hljs-comment">// a[2][1] = 10;</span><br>    <span class="hljs-type">int</span>* ptr = (<span class="hljs-type">int</span>*)(&amp;a + <span class="hljs-number">1</span>);<br>    <span class="hljs-comment">// Pointer ptr points to the next address unit of the last element of the array a</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d %d %d \n&quot;</span>, a[<span class="hljs-number">2</span>][<span class="hljs-number">1</span>], **(a + <span class="hljs-number">1</span>), *(ptr - <span class="hljs-number">1</span>));<br>    <span class="hljs-comment">// 10, 4, 9</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="8-Transposition-technique"><a href="#8-Transposition-technique" class="headerlink" title="8. Transposition technique"></a>8. Transposition technique</h2><blockquote>
+<p>There are three variables <code>a</code>, <code>b</code>, <code>c</code> and 4 similar functions below.</p>
+<ul>
+<li>Can you tell if it is syntactically correct to call each of these 5 functions using the values or addresses of these three variables as arguments?</li>
+<li>Please find the error in the code below.</li>
+<li>Is there a difference between <code>const int</code> and <code>int const</code>? If there are differences, talk about their differences.</li>
+<li>Is there a difference between <code>const int *</code> and <code>int const *</code>? If there are differences, talk about their differences.</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>There is no difference between <code>const int</code> and <code>int const</code>.</li>
+<li>There is a difference between <code>const int *</code> and <code>int const *</code>. The former declares a pointer, and the value of the variable pointed to by the pointer cannot be changed, while the latter declares a pointer, which cannot be modified.</li>
+</ul>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> a = <span class="hljs-number">1</span>;<br><span class="hljs-type">int</span> <span class="hljs-type">const</span> b = <span class="hljs-number">2</span>;<br><span class="hljs-type">const</span> <span class="hljs-type">int</span> c = <span class="hljs-number">3</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">funco</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> &#123;<br>  n += <span class="hljs-number">1</span>;<br>  n = a;<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func1</span><span class="hljs-params">(<span class="hljs-type">int</span> *n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func2</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">int</span> *n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func3</span><span class="hljs-params">(<span class="hljs-type">int</span> *<span class="hljs-type">const</span> n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">func4</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">int</span> *<span class="hljs-type">const</span> n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>The answer is stated below:</strong></p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> a = <span class="hljs-number">1</span>;<br><span class="hljs-type">int</span> <span class="hljs-type">const</span> b = <span class="hljs-number">2</span>;<br><span class="hljs-type">const</span> <span class="hljs-type">int</span> c = <span class="hljs-number">3</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">funco</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> &#123;<br>  n += <span class="hljs-number">1</span>;<br>  n = a;<br>&#125;<br><span class="hljs-comment">// no errors</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">func1</span><span class="hljs-params">(<span class="hljs-type">int</span> *n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br><span class="hljs-comment">// no errors</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">func2</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">int</span> *n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br><span class="hljs-comment">// const int *n, declares a pointer, the variable pointed to by this pointer cannot be modified.</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">func3</span><span class="hljs-params">(<span class="hljs-type">int</span> *<span class="hljs-type">const</span> n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br><span class="hljs-comment">// int *const n declares a pointer, the value of this pointer cannot be modified, which means that it always points to the same piece of memory.</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">func4</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">int</span> *<span class="hljs-type">const</span> n)</span> &#123;<br>  *n += <span class="hljs-number">1</span>;<br>  n = &amp;a;<br>&#125;<br><span class="hljs-comment">// const int *const n declares a pointer, the memory pointed to by this pointer cannot be modified;</span><br><span class="hljs-comment">// The content it points to can&#x27;t be modified either.</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="9-I-heard-that-flipping-the-case-of-letters-does-not-affect-the-reading-of-English"><a href="#9-I-heard-that-flipping-the-case-of-letters-does-not-affect-the-reading-of-English" class="headerlink" title="9. I heard that flipping the case of letters does not affect the reading of English?"></a>9. I heard that flipping the case of letters does not affect the reading of English?</h2><blockquote>
+<p>Please write the <code>convert</code> function to convert uppercase letters to lowercase letters and lowercase letters to uppercase letters in the string as a parameter. Returns the new string resulting from the conversion.</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">char</span> *<span class="hljs-title function_">convert</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *s)</span>&#123;<br>    <span class="hljs-type">char</span> *ret = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>)*(<span class="hljs-built_in">strlen</span>(s)+<span class="hljs-number">1</span>));<br>    ret[<span class="hljs-built_in">strlen</span>(s)] = <span class="hljs-string">&#x27;\0&#x27;</span>; <span class="hljs-comment">// string terminator</span><br>    <span class="hljs-built_in">strcpy</span>(ret, s);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">strlen</span>(s); i++) &#123;<br>        <span class="hljs-keyword">if</span> (ret[i] &gt;= <span class="hljs-string">&#x27;A&#x27;</span> &amp;&amp; ret[i] &lt;= <span class="hljs-string">&#x27;Z&#x27;</span>) &#123;<br>            ret[i] = ret[i] + <span class="hljs-number">32</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ret[i] &gt;= <span class="hljs-string">&#x27;a&#x27;</span> &amp;&amp; ret[i] &lt;= <span class="hljs-string">&#x27;z&#x27;</span>) &#123;<br>            ret[i] = ret[i] - <span class="hljs-number">32</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> ret;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">char</span> *str = <span class="hljs-string">&quot;XiyouLinux Group 2022&quot;</span>;<br>  <span class="hljs-type">char</span> *temp = convert(str);<br>  <span class="hljs-built_in">puts</span>(temp);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="10-How-to-exchange-gifts"><a href="#10-How-to-exchange-gifts" class="headerlink" title="10. How to exchange gifts"></a>10. How to exchange gifts</h2><blockquote>
+<ul>
+<li>Please judge the right and wrong of the following three <code>Swap</code>, and analyze their advantages and disadvantages respectively.</li>
+<li>A:The first two are two-number exchange implemented by macro definitions, and the last one is to define a function implementation to implement two-number exchange, but the latter is wrong.</li>
+<li>Do you know what <code>do &#123;...&#125; while(0)</code> does here?</li>
+<li>A: The effect is to loop only once, which is equivalent to only one statement</li>
+<li>Do you have any other way to implement <code>Swap</code> functionality?<br><strong>The last answer is stated below:</strong><br><code>void Swap4(int *a, int *b)&#123;  int temp = *a;  *a = *b;  *b = temp; &#125; </code></li>
+</ul>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> Swap1(a, b, t) \</span><br><span class="hljs-meta">  do &#123;                 \</span><br><span class="hljs-meta">    t = a;             \</span><br><span class="hljs-meta">    a = b;             \</span><br><span class="hljs-meta">    b = t;             \</span><br><span class="hljs-meta">  &#125; while (0)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> Swap2(a, b) \</span><br><span class="hljs-meta">  do &#123;              \</span><br><span class="hljs-meta">    int t = a;      \</span><br><span class="hljs-meta">    a = b;          \</span><br><span class="hljs-meta">    b = t;          \</span><br><span class="hljs-meta">  &#125; while (0)</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">Swap3</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> &#123;<br>  <span class="hljs-type">int</span> t = a;<br>  a = b;<br>  b = t;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="11-It-is-said-that-there-is-a-thing-called-a-parameter"><a href="#11-It-is-said-that-there-is-a-thing-called-a-parameter" class="headerlink" title="11. It is said that there is a thing called a parameter"></a>11. It is said that there is a thing called a parameter</h2><blockquote>
+<p>Do you know the meaning of <code>argc</code> and <code>argv</code>? Please explain the procedure below. Can you traverse <code>argv</code> without using <code>argc</code>？</p>
+</blockquote>
+<blockquote>
+<p>That is bery easy! Here it is.</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;argc = %d\n&quot;</span>, argc);<br>  <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">strlen</span>(*argv); i++)&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, argv[i]);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;argc = %d\n&quot;</span>, argc);<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; argc; i++)<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, argv[i]);<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>argc is the number of parameters, here is a signed Integer type. Its value represents the number of parameters entered when executing the program.</li>
+<li>If it is run directly, its value is 1. After entering the loop,  its value will overflow, the conditional statement will be executed.</li>
+<li>If your program is a.out, if you run the program on the command line, (First, you should use the cd command to enter the directory where the a.out file is located on the command line)</li>
+<li>The running command is: .&#x2F;a.out Linux hello</li>
+<li>Then, the value of argc is 3, argv[0] is “a.out”, argv[1] is “Linux”, and argv[2] is “hello”.</li>
+</ul>
+</blockquote>
+<h2 id="12-People-left-the-building-empty"><a href="#12-People-left-the-building-empty" class="headerlink" title="12. People left the building empty"></a>12. People left the building empty</h2><blockquote>
+<p>Is there any error in this code? Talk about the similarities and differences between static variables and other variables.</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> *<span class="hljs-title function_">func1</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">static</span> <span class="hljs-type">int</span> n = <span class="hljs-number">0</span>;<br>  n = <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">return</span> &amp;n;<br>&#125;<br><span class="hljs-type">int</span> *<span class="hljs-title function_">func2</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">int</span> *p = (<span class="hljs-type">int</span> *)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br>  *p = <span class="hljs-number">3</span>;<br>  <span class="hljs-keyword">return</span> p;<br>&#125;<br><span class="hljs-type">int</span> *<span class="hljs-title function_">func3</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">int</span> n = <span class="hljs-number">4</span>;<br>  <span class="hljs-keyword">return</span> &amp;n;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  *func1() = <span class="hljs-number">4</span>;<br>  *func2() = <span class="hljs-number">5</span>;<br>  *func3() = <span class="hljs-number">6</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    *func1() = <span class="hljs-number">4</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>, *func1() = <span class="hljs-number">4</span>);<br>    <span class="hljs-comment">// static variables can be modified.</span><br>    *func2() = <span class="hljs-number">5</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>, *func2() = <span class="hljs-number">5</span>);<br>    <span class="hljs-comment">// This can be modified.</span><br>    *func3() = <span class="hljs-number">6</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>, *func3() = <span class="hljs-number">6</span>);<br>    <span class="hljs-comment">// This can be modified.</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="13-Strange-outputs"><a href="#13-Strange-outputs" class="headerlink" title="13. Strange outputs"></a>13. Strange outputs</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>  <span class="hljs-type">int</span> data[] = &#123;<span class="hljs-number">0x636c6557</span>, <span class="hljs-number">0x20656d6f</span>, <span class="hljs-number">0x78206f74</span>,<br>                <span class="hljs-number">0x756f7969</span>, <span class="hljs-number">0x6e694c20</span>, <span class="hljs-number">0x67207875</span>,<br>                <span class="hljs-number">0x70756f72</span>, <span class="hljs-number">0x32303220</span>, <span class="hljs-number">0x00000a31</span>&#125;;<br>  <span class="hljs-built_in">puts</span>((<span class="hljs-type">const</span> <span class="hljs-type">char</span>*)data);<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>Welcome to xiyou Linux group 2021&#x2F;n (0a is a newline)</li>
+<li>The computer circuit processes the low-order byte first, which is more efficient, because the calculation starts from the low-order byte.</li>
+<li>So, the computer’s internal processing is little-endian.</li>
+<li>Inside computers, little endian is widely used to store data inside modern CPUs,</li>
+<li>In other scenarios, such as network transfers and file storage, big endian is used.</li>
+</ul>
+</blockquote>
+<h2 id="14-Please-talk-about-your-understanding-of-the-process-from-“C-source-file-to-exe-file”"><a href="#14-Please-talk-about-your-understanding-of-the-process-from-“C-source-file-to-exe-file”" class="headerlink" title="14. Please talk about your understanding of the process from “C source file to exe file”"></a>14. Please talk about your understanding of the process from “C source file to exe file”</h2><blockquote>
+<ul>
+<li>From source files to executable files generally need to go through several steps: preprocessing -&gt; compile -&gt; assembly -&gt; link these four processes.</li>
+<li>Preprocessing: Preprocessing is equivalent to converting the source code into a new c program according to the preprocessing command, but usually with an i extension.</li>
+<li>Compile: Translate the resulting i file into assembly code, usually with an s extension.</li>
+<li>Assembly: Translate assembly files into machine instructions and package them into o files for relocatable object programs</li>
+</ul>
+</blockquote>
+<h2 id="15-Optional-Heap-and-Stack"><a href="#15-Optional-Heap-and-Stack" class="headerlink" title="15. (Optional) Heap and Stack"></a>15. (Optional) Heap and Stack</h2><blockquote>
+<p>Do you understand the stack and heap in your program? What is the difference between them in use? Please briefly explain.</p>
+</blockquote>
+<blockquote>
+<ol>
+<li>Different storage content<br>Stack: When a function is called, the stack stores each parameter (local variable) in the function. At the bottom of the stack is the next instruction after the function call.<br>Heap: Generally, one byte is used to store the size of the heap at the head of the heap. The specific content of the heap is arranged by the programmer.</li>
+<li>Different management methods<br>Stack: The system automatically allocates space, and the system automatically releases the space. For example, declare a local variable “int b” in a function. The system automatically creates space for b in the stack, and the stack space is automatically released when the corresponding life cycle ends.<br>Heap: requires the programmer to manually apply for and release manually, and specify the size. In the C language, the malloc function is applied, the free function is released, and new and delete are implemented in C++.</li>
+<li>Different size of space<br>Stack: The acquisition space is small. Under Windows, the general size is 1M or 2M. When the remaining stack space is insufficient, the allocation fails overflow.<br>Heap: The space obtained is related to the effective virtual memory of the system, which is more flexible and larger.</li>
+<li>Can different fragments be produced?<br>Stack: No fragmentation, continuous space.<br>Heap: The storage method of linked list is adopted, which will cause fragmentation.</li>
+<li>Different growth directions<br>Stack: A data structure that extends to a lower address and is a contiguous area of ​​memory.<br>Heap: A data structure that extends to high addresses and is a discontinuous area of ​​memory. This is because the system uses a linked list to store free memory addresses, which are naturally discontinuous, and the traversal direction of the linked list is from low addresses to high addresses.</li>
+<li>Different distribution methods<br>Stack: There are 2 allocation methods - static allocation and dynamic allocation. Static is done by the compiler, such as local variables; dynamic is done by the alloca function, and the compiler will do the deallocation.<br>Heap: All are dynamically allocated, there is no statically allocated heap.</li>
+<li>Different distribution efficiency<br>Stack: automatically allocated by the system, faster. But the programmer is out of control.<br>Heap: The memory allocated by new is generally slow and prone to memory fragmentation, but it is convenient to use.</li>
+</ol>
+</blockquote>
+<h2 id="16-Optional-Multiple-files"><a href="#16-Optional-Multiple-files" class="headerlink" title="16. (Optional) Multiple files"></a>16. (Optional) Multiple files</h2><blockquote>
+<p>How a program can use a function in another file without using any header file.</p>
+<ul>
+<li>A : Just VC!</li>
+</ul>
+</blockquote>
+<h2 id="17-Optional-GNU-Linux-and-files"><a href="#17-Optional-GNU-Linux-and-files" class="headerlink" title="17.(Optional) GNU/Linux and files"></a>17.(Optional) <code>GNU/Linux</code> and files</h2><blockquote>
+<ul>
+<li>Do you know how to use the command line to create files and execute files under <code>GNU/Linux</code><br>folder?</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>touch a.c; gcc a.c -o a; .&#x2F;a</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>Do you know the meaning of each column of the command ls under <code>GNU/Linux</code>?</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>Because Linux is a multi-user and multi-tasking system, a file may be used by many people at the same time, so we must set the permissions of each file. The order of the file’s permission positions is (take -rwxr-xr-x as an example) : <strong>rwx(Owner)r-x(Group)r-x(Other)</strong></li>
+<li>The permissions represented by this example are: readable, writable, and executable by the user; readable, non-writable, and executable by users in the same group; readable, non-writable, and executable by other users. In addition, the execution part of some program attributes is not X, but S, which means that the user who executes the program can temporarily have the same power as the owner to execute the program. It generally appears in the system management and other commands or programs, and when the user executes it, it has the root identity.​​</li>
+<li>The second column indicates the number of files. If it is a file, then the number is naturally. If it is a directory, then its number is the number of files in the directory.​​</li>
+<li>The third field indicates the owner of the file or directory. If the user is currently in his own Home, then this column is probably its account name.​​</li>
+<li>The fourth column indicates the group to which it belongs. Each user can have more than one group, but most users should belong to only one group. Only when the system administrator wants to give a user special permissions, he may give him another group.​​</li>
+<li>The fifth column indicates the file size. The file size is represented by bytes, and the empty directory is generally 1024 bytes. Of course, you can use other parameters to make the file display unit different. For example, using ls -k is to display the size unit of a file in kb, but generally we still use byte. main.​​</li>
+<li>The sixth field indicates the creation date. It is expressed in the format of “month, day, time”, such as Aug 15 5:46 means 5:46 am on August 15th.​​</li>
+<li>The seventh column indicates the file name. We can display hidden filenames with ls -a.</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>Do you know how to check the access time, modification time and change time of files under <code>GNU/Linux</code>? And briefly talk about their differences.</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>Accesstime: Read the content of the file once, and the time will be updated. For example, use the <strong>less</strong> command or the <strong>more</strong> command on this file. (Commands such as <strong>ls</strong> and <strong>stat</strong> do not modify file access time)</li>
+<li>Modifytime: modifying the file content once will update the time. For example, after using tools such as <strong>vim</strong> to change the file content and save it, the file modification time changes. To see the file access time use the <strong>ls -ul</strong> command.</li>
+<li>Change time : Changing the attributes of the file will update the time, such as using the chmod command to change the file attributes, or executing other commands that implicitly change the attributes of the file such as file size and so on.</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>Congratulations, you have completed the whole set of interview questions. Come and participate in the interview of the Xiyou Linux Group!</li>
+<li>West Post Linux Interest Group Interview Time:</li>
+<li>October 25, 2021 to October 31, 2021 at 8pm.</li>
+<li>I heard that if you come for the interview earlier, you will leave a better impression on us.<br>We are waiting for you at FZ103!</li>
+</ul>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Tests-for-Basic-Knowledge-of-C/" class="category-chain-item">Tests for Basic Knowledge of C</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AE%97%E6%B3%95/" class="print-no-link">#算法</a>
+      
+        <a href="/tags/linux/" class="print-no-link">#linux</a>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Solutions for Xiyou Linux Group 2021 Interview Questions</div>
+      <div>http://blog.luliang.online/2022/11/16/Solutions for Xiyou Linux Group 2021 Interview Questions/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/11/16/Solutions%20for%20Xiyou%20Linux%20Group%202020%20Interview%20Questions/" title="Solutions for Xiyou Linux Group 2020 Interview Questions">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Solutions for Xiyou Linux Group 2020 Interview Questions</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/15/Solutions%20for%20Xiyou%20Linux%20Group%202022%20Interview%20Questions/" title="Solutions for Xiyou Linux Group 2022 Interview Questions">
+                        <span class="hidden-mobile">Solutions for Xiyou Linux Group 2022 Interview Questions</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

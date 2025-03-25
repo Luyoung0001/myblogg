@@ -1,0 +1,752 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文是 xv6 book 第七章的翻译，以下将开始翻译。 一、（翻译）第七章 调度任何操作系统可能会运行比计算机 CPU 数量更多的进程，因此需要一个计划来在这些进程之间进行 CPU 的时间共享。理想情况下，共享对于用户进程应该是透明的。常见的方法是通过将进程复用到硬件 CPU 上，为每个进程提供其拥有独立虚拟 CPU 的假象。本章将解释 xv6 如何实现这种复用。 7.1 复用xv6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 book Chapter7 中文翻译">
+<meta property="og:url" content="http://blog.luliang.online/2023/12/04/xv6%20book%20Chapter7%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文是 xv6 book 第七章的翻译，以下将开始翻译。 一、（翻译）第七章 调度任何操作系统可能会运行比计算机 CPU 数量更多的进程，因此需要一个计划来在这些进程之间进行 CPU 的时间共享。理想情况下，共享对于用户进程应该是透明的。常见的方法是通过将进程复用到硬件 CPU 上，为每个进程提供其拥有独立虚拟 CPU 的假象。本章将解释 xv6 如何实现这种复用。 7.1 复用xv6">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7e0ba4c47dce4f8c965c6e3b02f000ff_1720253703115.png?token=ANB4BCMDB72NSPTC5FHLDMDGRD6UO">
+<meta property="article:published_time" content="2023-12-04T12:57:29.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.776Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="xv6">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7e0ba4c47dce4f8c965c6e3b02f000ff_1720253703115.png?token=ANB4BCMDB72NSPTC5FHLDMDGRD6UO">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>xv6 book Chapter7 中文翻译 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="xv6 book Chapter7 中文翻译"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-04 20:57" pubdate>
+          2023年12月4日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          78 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">xv6 book Chapter7 中文翻译</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文是 <strong>xv6 book</strong> 第七章的翻译，以下将开始翻译。</p>
+<h2 id="一、（翻译）第七章-调度"><a href="#一、（翻译）第七章-调度" class="headerlink" title="一、（翻译）第七章 调度"></a>一、（翻译）第七章 调度</h2><p>任何操作系统可能会运行比计算机 CPU 数量更多的进程，因此需要一个计划来在这些进程之间进行 CPU 的时间共享。理想情况下，共享对于用户进程应该是透明的。常见的方法是通过将进程复用到硬件 CPU 上，为每个进程提供其拥有独立虚拟 CPU 的假象。本章将解释 xv6 如何实现这种复用。</p>
+<h3 id="7-1-复用"><a href="#7-1-复用" class="headerlink" title="7.1 复用"></a>7.1 复用</h3><p>xv6 通过在两种情况下将每个 CPU 从一个进程切换到另一个进程来进行复用。首先，在进程等待设备或管道 I&#x2F;O 完成、等待子进程退出或在睡眠系统调用中等待时，xv6 的睡眠和唤醒机制会进行切换。其次，xv6 定期强制进行切换，以处理长时间计算而不休眠的进程。这种复用创建了每个进程拥有独立 CPU 的假象，就像 xv6 利用内存分配器和硬件页表创造了每个进程拥有独立内存的假象一样。</p>
+<p>实现复用面临一些挑战。首先，如何从一个进程切换到另一个进程？尽管上下文切换的思想很简单，但实现起来是 xv6 中一些最不透明的代码。其次，如何以对用户进程透明的方式强制切换？xv6 使用标准技术，使用定时器中断驱动上下文切换。第三，许多 CPU 可能同时在进程之间进行切换，需要一种锁定计划来避免竞态条件。第四，进程退出时必须释放其内存和其他资源，但进程本身无法全部完成这些工作，因为（例如）它无法在仍在使用内核栈时释放自己的内核栈。第五，多核机器的每个核心必须记住它正在执行的进程，以便系统调用影响正确的进程的内核状态。最后，睡眠和唤醒允许进程放弃 CPU 并等待事件的发生，并允许另一个进程唤醒第一个进程。需要小心以避免导致唤醒通知丢失的竞态条件。xv6 试图尽可能简单地解决这些问题，但最终产生的代码仍然很棘手。</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/7e0ba4c47dce4f8c965c6e3b02f000ff_1720253703115.png?token=ANB4BCMDB72NSPTC5FHLDMDGRD6UO" alt="在这里插入图片描述"></p>
+<center><b><font size ='3'>图 7.1：从一个用户进程切换到另一个用户进程。 在此示例中，xv6 使用一个 CPU 运行
+（因此有一个调度程序线程）</font></b></center></font>
+
+<h3 id="7-2-代码：上下文切换"><a href="#7-2-代码：上下文切换" class="headerlink" title="7.2 代码：上下文切换"></a>7.2 代码：上下文切换</h3><p><strong>图 7.1</strong> 概述了从一个用户进程切换到另一个的步骤：从旧进程的内核线程进行用户-内核转换（系统调用或中断）、切换到当前 CPU 的调度器线程、切换到新进程的内核线程，最后返回到用户级进程的陷阱返回。xv6 的调度器每个 CPU 都有一个专用的线程（保存的寄存器和堆栈），因为调度器在旧进程的内核栈上执行是不安全的：其他核心可能唤醒该进程并运行它，如果在两个不同的核心上使用相同的栈将是灾难性的。本节将研究在内核线程和调度器线程之间进行切换的机制。</p>
+<p>从一个线程切换到另一个涉及到保存旧线程的 CPU 寄存器，并恢复新线程先前保存的寄存器；保存和恢复堆栈指针和程序计数器意味着 CPU 将切换堆栈并切换执行的代码。</p>
+<p>函数 <strong>swtch</strong> 执行了内核线程切换的保存和恢复工作。<strong>swtch</strong> 并不直接了解线程；它只是保存和恢复被称为上下文的寄存器集。当一个进程需要释放 CPU 时，该进程的内核线程调用 <strong>swtch</strong> 来保存自己的上下文并返回到先前保存在进程的 <code>struct proc</code> 或 CPU 的 <code>struct cpu</code> 中的调度器上下文中。每个上下文包含在一个结构体 <strong>context</strong> 中（<code>kernel/proc.h</code>:2）。<strong>swtch</strong> 接受两个参数：<code>struct context *old</code> 和 <code>struct context *new</code>。它将当前寄存器保存在 <strong>old</strong> 中，从 <strong>new</strong> 加载寄存器，并返回。</p>
+<p>让我们跟踪一个进程通过 <strong>swtch</strong> 进入调度器。在第 4 章中我们看到，中断结束时的一种可能性是 <strong>usertrap</strong> 调用 <strong>yield</strong>。<strong>yield</strong> 反过来调用 <strong>sched</strong>，<strong>sched</strong> 又调用 <strong>swtch</strong> 来保存当前上下文在 <code>p-&gt;context</code> 中，并切换到先前保存在 <code>cpu-&gt;scheduler</code>（<code>kernel/proc.c</code>:509）中的调度器上下文。</p>
+<p><strong>swtch</strong>（<code>kernel/swtch.S</code>:3）仅保存了被调用保存的寄存器；调用者保存的寄存器由调用的 C 代码保存在堆栈上（如果需要）。<strong>swtch</strong> 知道结构体 <strong>context</strong> 中每个寄存器字段的偏移量。它不保存程序计数器。相反，<strong>swtch</strong> 保存了 <strong>ra</strong> 寄存器，它保存了从中调用 <strong>swtch</strong> 的返回地址。现在 <strong>swtch</strong> 从新上下文中恢复寄存器值，这些值是由之前的 <strong>swtch</strong> 保存的。当 <strong>swtch</strong> 返回时，它返回到恢复的 <strong>ra</strong> 寄存器指向的指令，也就是新线程之前调用 <strong>swtch</strong> 的指令。另外，它返回到新线程的堆栈上。</p>
+<p>在我们的例子中，<strong>sched</strong> 调用 <strong>swtch</strong> 切换到 <code>cpu-&gt;scheduler</code>，每个 CPU 的调度器上下文。该上下文是由 <strong>scheduler</strong> 的 <strong>swtch</strong> 调用（<code>kernel/proc.c</code>:475）保存的。当我们跟踪的 <strong>swtch</strong> 返回时，它返回到 <strong>scheduler</strong> 而不是 <strong>sched</strong>，并且其堆栈指针指向当前 CPU 的调度器堆栈。</p>
+<h3 id="7-3-代码：调度"><a href="#7-3-代码：调度" class="headerlink" title="7.3 代码：调度"></a>7.3 代码：调度</h3><p>上一节我们看了 <strong>swtch</strong> 的底层细节；现在让我们将 <strong>swtch</strong> 视作一个给定的函数，来研究从一个进程的内核线程通过调度器到另一个进程的切换。调度器以每个 CPU 一个特殊线程的形式存在，每个线程运行调度器函数。这个函数负责选择下一个要运行的进程。想要释放 CPU 的进程必须获取其自己的进程锁 <code>p-&gt;lock</code>，释放它持有的任何其他锁，更新自己的状态（<code>p-&gt;state</code>），然后调用 <strong>sched</strong>。遵循这一约定的有 <strong>yield</strong>（<code>kernel/proc.c</code>:515）以及稍后我们将要查看的 <strong>Sleep</strong> 和 <strong>Exit</strong>。<strong>sched</strong> 再次检查这些条件（<code>kernel/proc.c</code>:499-504），以及这些条件的含义：由于持有锁，中断应该被禁用。最后，sched 调用 swtch 将当前上下文保存在 <code>p-&gt;context</code> 中，并切换到 <code>cpu-&gt;scheduler</code> 中的调度器上下文。<strong>swtch</strong> 返回到调度器的堆栈，就像调度器的 <strong>swtch</strong> 已经返回一样。调度器继续 <strong>for</strong> 循环，找到一个要运行的进程，切换到它，循环重复。</p>
+<p>我们刚刚看到，在调用 <strong>swtch</strong> 时 xv6 会持有 <code>p-&gt;lock</code>：调用 <strong>swtch</strong> 的调用者必须已经持有锁，并且控制权会传递给切换到的代码。这个约定在锁的使用上比较不寻常；通常获得锁的线程也负责释放锁，这样更容易推理正确性。对于上下文切换来说，必须打破这个约定，因为 <code>p-&gt;lock</code> 保护了进程状态和上下文字段上的不变量，而在 <strong>swtch</strong> 执行期间这些不变量是不成立的。如果在 <strong>swtch</strong> 执行期间没有持有 <code>p-&gt;lock</code>，可能会出现问题：在 <strong>swtch</strong> 使该进程停止使用自己的内核栈之前，另一个 CPU 可能会决定在 <strong>yield</strong> 将其状态设置为 <strong>RUNNABLE</strong> 之后运行该进程。结果将是两个 CPU 在同一个堆栈上运行，这是不正确的。</p>
+<p>内核线程总是在 <strong>sched</strong> 释放 CPU，并始终切换到调度器中的同一个位置，这（几乎）总是切换到之前调用 <strong>sched</strong> 的某个内核线程。因此，如果打印出 xv6 切换线程的行号，会观察到以下简单的模式：(<code>kernel/proc.c</code>:475)，(<code>kernel/proc.c</code>:509)，(<code>kernel/proc.c</code>:475)，(<code>kernel/proc.c</code>:509)，以此类推。这种样式化地在两个线程之间切换的过程有时被称为协程；在这个例子中，<strong>sched</strong> 和 <strong>scheduler</strong> 是彼此的协程。</p>
+<p>有一种情况下，调度器对 <strong>swtch</strong> 的调用并不会最终返回 <strong>sched</strong>。当首次调度一个新进程时，它会开始执行 <strong>forkret</strong>（<code>kernel/proc.c</code>:527）。<strong>forkret</strong> 的存在是为了释放 <code>p-&gt;lock</code>；否则，新进程可能会从 <strong>usertrapret</strong> 开始执行。</p>
+<p>调度器（<code>kernel/proc.c</code>:457）运行一个简单的循环：寻找要运行的进程，运行它直到它放弃 CPU，然后重复这个过程。调度器遍历进程表，寻找一个可运行的进程，也就是具有 <code>p-&gt;state == RUNNABLE</code> 的进程。一旦找到一个进程，它设置每个 CPU 的当前进程变量 <code>c-&gt;proc</code>，将进程标记为 <strong>RUNNING</strong>，然后调用 <strong>swtch</strong> 开始运行它（<code>kernel/proc.c</code>:470-475）。</p>
+<p>思考调度代码结构的一种方式是，它强制执行有关每个进程的一组不变量，并在这些不变量不成立时持有 <code>p-&gt;lock</code>。其中一个不变量是，如果一个进程处于 <strong>RUNNING</strong> 状态，定时器中断的 <strong>yield</strong> 必须能够安全地切换出该进程；这意味着 CPU 寄存器必须保存进程的寄存器值（即 swtch 尚未将它们移动到上下文），并且 <code>c-&gt;proc</code> 必须引用该进程。另一个不变量是，如果一个进程是 <strong>RUNNABLE</strong> 的，空闲 CPU 的调度器必须能够安全地运行它；这意味着 <code>p-&gt;context</code> 必须保存进程的寄存器（即它们实际上并不在真正的寄存器中），没有 CPU 在执行进程的内核栈上的代码，并且没有 CPU 的 <code>c-&gt;proc</code> 指向该进程。请注意，这些属性通常在持有 <code>p-&gt;lock</code> 时是不成立的。</p>
+<p>维护上述不变量是为什么 xv6 经常在一个线程中获取 <code>p-&gt;lock</code> 并在另一个线程中释放它的原因，例如在 <strong>yield</strong> 中获取，在 <strong>scheduler</strong> 中释放。一旦 <strong>yield</strong> 开始修改运行中进程的状态使其变为 <strong>RUNNABLE</strong>，锁必须保持持有状态直到这些不变量被恢复：最早正确的释放点是在 <strong>scheduler</strong>（在自己的堆栈上运行）清除 <code>c-&gt;proc</code> 之后。同样地，一旦 <strong>scheduler</strong> 开始将一个 <strong>RUNNABLE</strong> 进程转换为 <strong>RUNNING</strong>，直到内核线程完全运行（例如在 <strong>swtch</strong> 之后，比如在 <strong>yield</strong> 中）锁都不能被释放。</p>
+<p><code>p-&gt;lock</code> 还保护其他内容：<strong>exit</strong> 和 <strong>wait</strong> 之间的相互作用、避免丢失唤醒的机制（参见第 7.5 节）以及进程退出和其他进程读取或写入其状态之间的竞争（例如，<strong>exit</strong> 系统调用查看 <code>p-&gt;pid</code> 并设置 <code>p-&gt;killed</code> (<code>kernel/proc.c</code>:611)）。也许值得考虑是否可以分解 <code>p-&gt;lock</code>  的不同功能，以提高清晰度和性能。</p>
+<h3 id="7-4-代码-mycpu-和-myproc"><a href="#7-4-代码-mycpu-和-myproc" class="headerlink" title="7.4 代码: mycpu 和 myproc"></a>7.4 代码: mycpu 和 myproc</h3><p>在许多情况下，xv6 需要指向当前进程的 <strong>proc</strong> 结构的指针。在单处理器上，可以有一个指向当前 <strong>proc</strong> 的全局变量。但在多核机器上就行不通了，因为每个核心执行不同的进程。解决这个问题的方法是利用每个核心都有自己的一组寄存器这一事实；我们可以使用其中一个寄存器来帮助查找每个核心的信息。</p>
+<p>xv6 为每个 CPU 维护一个 <code>struct cpu</code> 结构（<code>kernel/proc.h</code>:22），记录了当前在该 CPU 上运行的进程（如果有的话），CPU 调度器线程的保存寄存器，以及管理中断禁用所需的嵌套自旋锁计数。函数 <code>mycpu</code>（<code>kernel/proc.c</code>:60）返回当前 CPU 的 <code>struct cpu</code> 指针。RISC-V 对其 CPU 进行编号，每个 CPU 都有一个 <strong>hartid</strong>。xv6 确保每个 CPU 的 <strong>hartid</strong> 存储在该 CPU 的 <strong>tp</strong> 寄存器中，位于内核中。这允许 <strong>mycpu</strong> 使用 <strong>tp</strong> 来索引一个 <strong>cpu</strong> 结构数组，以找到正确的 CPU。</p>
+<p>确保 CPU 的 <strong>tp</strong> 始终保存 CPU 的 <strong>hartid</strong> 有点复杂。<strong>mstart</strong> 在 CPU 的启动序列早期在机器模式下设置 <strong>tp</strong> 寄存器（<code>kernel/start.c</code>:46）。<strong>usertrapret</strong> 将 <strong>tp</strong> 保存在跳转页中，因为用户进程可能修改 <strong>tp</strong>。最后，<strong>uservec</strong> 在从用户空间进入内核时恢复了保存的 <strong>tp</strong>（<code>kernel/trampoline.S</code>:70）。</p>
+<p>编译器保证永远不会使用 <strong>tp</strong> 寄存器。如果 RISC-V 允许 xv6 直接读取当前的 <strong>hartid</strong>，那将更方便，但这只允许在机器模式下，而不是在监管者模式下。<br><strong>cpuid</strong> 和 <strong>mycpu</strong> 的返回值是不稳定的：如果计时器中断并导致线程放弃 CPU 并移动到另一个 CPU，先前返回的值将不再正确。为了避免这个问题，xv6 要求调用者禁用中断，并且仅在使用返回的 <code>struct cpu</code> 后才启用它们。</p>
+<p>函数 <code>myproc</code>（<code>kernel/proc.c</code>:68）返回运行在当前 CPU 上的 <code>struct proc</code> 指针。<strong>myproc</strong> 禁用中断，调用 <strong>mycpu</strong>，从 <code>struct cpu</code> 中获取当前进程指针（<code>c-&gt;proc</code>），然后启用中断。即使启用了中断，<strong>myproc</strong> 的返回值也是安全的使用；如果计时器中断将调用进程移动到另一个 CPU，它的 <code>struct proc</code> 指针仍将保持不变。</p>
+<h3 id="7-5-睡眠和唤醒"><a href="#7-5-睡眠和唤醒" class="headerlink" title="7.5 睡眠和唤醒"></a>7.5 睡眠和唤醒</h3><p>调度和锁有助于隐藏一个进程对另一个进程的存在，但到目前为止，我们还没有帮助进程有意识地相互交互的抽象。许多机制被发明来解决这个问题。xv6 使用了一种称为睡眠和唤醒的机制，它允许一个进程在等待事件发生时进入睡眠，另一个进程在事件发生后唤醒它。睡眠和唤醒通常被称为序列协调或条件同步机制。</p>
+<p>举个例子，我们考虑一个称为信号量的同步机制 [4]，它用于协调生产者和消费者。信号量维护一个计数并提供两种操作。“V”操作（用于生产者）增加计数。“P”操作（用于消费者）等待直到计数不为零，然后将其减少并返回。如果只有一个生产者线程和一个消费者线程，并且它们在不同的 CPU 上执行，并且编译器没有过于激进地进行优化，那么这种实现就是正确的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">semaphore</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">spinlock</span> <span class="hljs-title">lock</span>;</span><br>    <span class="hljs-type">int</span> count;<br>&#125;;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">V</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span> &#123;<br>    acquire(&amp;s-&gt;lock);<br>    s-&gt;count += <span class="hljs-number">1</span>;<br>    release(&amp;s-&gt;lock);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">P</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span> &#123;<br>    <span class="hljs-keyword">while</span>(s-&gt;count == <span class="hljs-number">0</span>)<br>        ;<br>    acquire(&amp;s-&gt;lock);<br>    s-&gt;count -= <span class="hljs-number">1</span>;<br>    release(&amp;s-&gt;lock);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这个实现方式很昂贵。如果生产者很少活动，消费者将会花费大部分时间在 <strong>while</strong> 循环中自旋，希望 <strong>count</strong> 不为零。消费者的 CPU 可以找到比繁忙等待更有成效的工作，通过反复轮询 <code>s-&gt;count</code>。避免忙碌等待需要一种方法，让消费者能够让出 CPU，并且在 V 增加 <strong>count</strong> 后恢复运行。</p>
+<p>以下是朝着这个方向迈出的一步，尽管我们会看到这还不够。让我们想象一对调用，<strong>sleep</strong> 和 <strong>wakeup</strong>，它们的工作方式如下。<code>sleep</code>(<strong>chan</strong>) 在任意值 <strong>chan</strong>（称为等待通道）上睡眠。<strong>sleep</strong> 使调用进程进入睡眠状态，释放 CPU 进行其他工作。<strong>wakeup</strong>(<strong>chan</strong>) 唤醒所有在 <strong>chan</strong> 上睡眠的进程（如果有的话），导致它们的 <strong>sleep</strong> 调用返回。如果没有进程在 <strong>chan</strong> 上等待，<strong>wakeup</strong> 什么都不做。我们可以改变信号量的实现以使用 <strong>sleep</strong> 和 <strong>wakeup</strong>（在下面黄色标出了更改的部分）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">V</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span> &#123;<br>    acquire(&amp;s-&gt;lock);<br>    s-&gt;count += <span class="hljs-number">1</span>;<br>    wakeup(s);	<span class="hljs-comment">// 黄色</span><br>    release(&amp;s-&gt;lock);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">P</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span> &#123;<br>    <span class="hljs-keyword">while</span>(s-&gt;count == <span class="hljs-number">0</span>)<br>        sleep(s);	<span class="hljs-comment">// 黄色</span><br>    acquire(&amp;s-&gt;lock);<br>    s-&gt;count -= <span class="hljs-number">1</span>;<br>    release(&amp;s-&gt;lock);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>P 现在放弃了 CPU 而不是自旋，这很好。然而，设计带有这种接口的 <strong>sleep</strong> 和 <strong>wakeup</strong> 却并不直接，会出现被称为失去唤醒的问题。假设 P 在第 212 行发现 <code>s-&gt;count == 0</code>。在 P 处于第 212 行和第 213 行之间时，在另一个 CPU 上运行了 V：它将 <code>s-&gt;count</code> 更改为非零，并调用了 <strong>wakeup</strong>，但 <strong>wakeup</strong> 发现没有进程在睡眠，因此什么也没做。现在 P 继续执行第 213 行：它调用了 <strong>sleep</strong> 并进入了睡眠状态。这引发了一个问题：P 正在等待一个已经发生的 V 调用。除非我们很幸运并且生产者再次调用 V，否则即使计数是非零的，消费者也会永远等待。</p>
+<p>问题的根源在于当 V 在恰到好处的时刻运行时，违反了只有当 <code>s-&gt;count == 0</code> 时 P 才会进入睡眠状态这个不变量。保护不变量的一个错误方法是将 P 中的锁获取操作（下面用黄色突出显示）移动，以便其对计数的检查和调用 sleep 是原子性的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">V</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span><br>&#123;<br>    acquire(&amp;s-&gt;lock);<br>    s-&gt;count += <span class="hljs-number">1</span>;<br>    wakeup(s);<br>    release(&amp;s-&gt;lock);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">P</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span><br>&#123;<br>    acquire(&amp;s-&gt;lock);	<span class="hljs-comment">// 黄色</span><br>    <span class="hljs-keyword">while</span>(s-&gt;count == <span class="hljs-number">0</span>)<br>        sleep(s);<br>    s-&gt;count -= <span class="hljs-number">1</span>;<br>    release(&amp;s-&gt;lock);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这个版本的 P 看起来能避免丢失唤醒的问题，因为锁阻止了 V 在第 313 和 314 行之间执行。它确实做到了这一点，但也导致了死锁：P 在睡眠时持有了锁，所以 V 将永远阻塞，等待锁被释放。</p>
+<p>我们将通过改变 <strong>sleep</strong> 的接口来修复上述方案：调用者必须将条件锁传递给 <strong>sleep</strong>，这样在调用进程被标记为睡眠并等待睡眠通道时，<strong>sleep</strong> 可以释放锁。这个锁会强制并发的 V 等待，直到 P 完成自己的休眠动作，以便唤醒可以找到正在睡眠的消费者并唤醒它。一旦消费者再次醒来，<strong>sleep</strong> 会重新获取锁然后返回。我们的新的正确的 <code>sleep/wakeup</code> 方案可以这样使用（变更以黄色突出显示）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">V</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span><br>&#123;<br>    acquire(&amp;s-&gt;lock);<br>    s-&gt;count += <span class="hljs-number">1</span>;<br>    wakeup(s);<br>    release(&amp;s-&gt;lock);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">P</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> semaphore *s)</span><br>&#123;<br>    acquire(&amp;s-&gt;lock);<br>    <span class="hljs-keyword">while</span>(s-&gt;count == <span class="hljs-number">0</span>)<br>        sleep(s, &amp;s-&gt;lock);	<span class="hljs-comment">// 黄色</span><br>    s-&gt;count -= <span class="hljs-number">1</span>;<br>    release(&amp;s-&gt;lock);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这个锁使得 P 在检查 <code>c-&gt;count</code> 并调用 <strong>sleep</strong> 之间阻止了 V 尝试唤醒它。但是需要注意的是，我们需要 <strong>sleep</strong> 在原子性地释放 <code>s-&gt;lock</code> 并将消费进程置于睡眠状态。</p>
+<h3 id="7-6-代码：Sleep-和-Wakeup"><a href="#7-6-代码：Sleep-和-Wakeup" class="headerlink" title="7.6 代码：Sleep 和 Wakeup"></a>7.6 代码：Sleep 和 Wakeup</h3><p>让我们来看看 <strong>sleep</strong> 的实现（<code>kernel/proc.c</code>:548）和 <strong>wakeup</strong> 的实现（<code>kernel/proc.c</code>:582）。基本思想是让 <strong>sleep</strong> 标记当前进程为 <strong>SLEEPING</strong>，然后调用 <strong>sched</strong> 释放 CPU；<strong>wakeup</strong> 寻找在给定等待通道上睡眠的进程，并将其标记为 <strong>RUNNABLE</strong>。调用 <strong>sleep</strong> 和 <strong>wakeup</strong> 的程序可以使用任何彼此方便的数字作为通道。xv6 经常使用与等待相关的内核数据结构的地址。</p>
+<p><strong>sleep</strong> 获取了 <code>p-&gt;lock</code>（<code>kernel/proc.c</code>: 559）。现在要进入睡眠状态的进程同时持有 <code>p-&gt;lock</code> 和 <code>lk</code>。在调用者中（例如 P）持有 <code>lk</code> 是必要的：它确保没有其他进程（例如运行 V 的进程）可以开始调用 <strong>wakeup</strong>(<strong>chan</strong>)。现在 <strong>sleep</strong> 持有 <code>p-&gt;lock</code>，释放 <code>lk</code> 是安全的：其他进程可能开始调用 <strong>wakeup</strong>(<strong>chan</strong>)，但 <strong>wakeup</strong> 将等待获取 <code>p-&gt;lock</code>，因此将等到 <strong>sleep</strong> 完成将进程置于睡眠状态，防止 <strong>wakeup</strong> 错过 <strong>sleep</strong>。</p>
+<p>有一个小的复杂性：如果 <code>lk</code> 和 <code>p-&gt;lock</code> 是同一个锁，那么如果试图获取 <code>p-&gt;lock</code>，<strong>sleep</strong> 就会与自身发生死锁。但是如果调用 <strong>sleep</strong> 的进程已经持有 <code>p-&gt;lock</code>，则它不需要做任何额外的操作以防止错过并发的 <strong>wakeup</strong>。这种情况发生在 <strong>wait</strong>（<code>kernel/proc.c</code>:582）调用 <strong>sleep</strong> 时使用 <code>p-&gt;lock</code>。</p>
+<p>现在 <strong>sleep</strong> 持有 <code>p-&gt;lock</code> 且没有其他锁，它可以通过记录睡眠通道、将进程状态更改为 <strong>SLEEPING</strong> 并调用 <strong>sched</strong> 将进程置于睡眠状态（<code>kernel/proc.c</code>:564-567）。很快就会明白为什么在标记进程为 <strong>SLEEPING</strong> 之后才释放 <code>p-&gt;lock</code> 是至关重要的。</p>
+<p>在某个时候，一个进程将获取条件锁，设置睡眠进程正在等待的条件，并调用 <strong>wakeup</strong>(<strong>chan</strong>)。重要的是 <strong>wakeup</strong> 在持有条件锁的情况下被调用。<strong>wakeup</strong> 遍历进程表（<code>kernel/proc.c</code>:582）。它获取每个它检查的进程的 <code>p-&gt;lock</code>，因为它可能会操纵该进程的状态，并且 <code>p-&gt;lock</code> 确保 <strong>sleep</strong> 和 <strong>wakeup</strong> 不会错过彼此。当 <strong>wakeup</strong> 找到处于 <strong>SLEEPING</strong> 状态且通道匹配的进程时，它将该进程的状态更改为 <strong>RUNNABLE</strong>。下次调度器运行时，它将看到该进程已准备好运行。</p>
+<p>为什么 <strong>sleep</strong> 和 <strong>wakeup</strong> 的锁定规则确保睡眠进程不会错过唤醒？在睡眠进程检查条件之前，它持有条件锁或自己的 <code>p-&gt;lock</code>，或者两者都持有，直到它被标记为 <strong>SLEEPING</strong> 之后。调用 <strong>wakeup</strong> 的进程在其循环中同时持有这两个锁。因此，唤醒者要么在消费线程检查条件之前使条件为真；要么唤醒的 <strong>wakeup</strong> 严格在被标记为 <strong>SLEEPING</strong> 之后检查睡眠线程。然后 <strong>wakeup</strong> 将看到睡眠进程并唤醒它（除非有其他事件先唤醒它）。</p>
+<p>有时会出现多个进程在同一个通道上睡眠的情况；例如，从管道中读取的多个进程。一次 <strong>wakeup</strong> 调用会将它们全部唤醒。其中一个将首先运行并获取使用 <strong>sleep</strong> 时调用的锁，并且（在管道的情况下）读取管道中等待的任何数据。其他进程将发现，尽管被唤醒，但没有数据可读取。从它们的角度来看，唤醒是“虚假的”，它们必须再次进入睡眠状态。因此，<strong>sleep</strong> 总是在循环中调用以检查条件。</p>
+<p>如果两个 <strong>sleep&#x2F;wakeup</strong> 的使用意外地选择了相同的通道，也不会造成任何损害：它们会看到虚假的唤醒，但如上所述的循环将容忍这个问题。<strong>sleep&#x2F;wakeup</strong> 的很多魅力在于它既轻量化（不需要创建特殊的数据结构作为睡眠通道），又提供了一层间接性（调用者不需要知道与哪个特定的进程进行交互）。</p>
+<p>7.7 代码：管道</p>
+<p>一个更复杂的例子是 xv6 使用 <strong>sleep</strong> 和 <strong>wakeup</strong> 来同步生产者和消费者的管道实现。我们在第一章看到了管道的接口：写入管道一端的字节被复制到内核缓冲区，然后可以从管道的另一端进行读取。未来的章节将审查围绕管道的文件描述符支持，但现在让我们来看一下 <strong>pipewrite</strong> 和 <strong>piperead</strong> 的实现。</p>
+<p>每个管道由一个 <code>struct pipe</code> 表示，其中包含一个锁和一个数据缓冲区。字段 <strong>nread</strong> 和 <strong>nwrite</strong> 计算从缓冲区读取的字节总数和写入的总数。缓冲区是循环的：在 <code>buf[PIPESIZE-1]</code> 之后写入的下一个字节是 <code>buf[0]</code>。计数不是循环的。这个约定让实现能够区分满缓冲区（<code>nwrite == nread+PIPESIZE</code>）和空缓冲区（<code>nwrite == nread</code>），但这意味着索引到缓冲区必须使用 <code>buf[nread % PIPESIZE]</code> 而不是仅仅是 <code>buf[nread]</code>（对于 <strong>nwrite</strong> 也是类似）。</p>
+<p>假设在两个不同的 CPU 上同时调用 <strong>piperead</strong> 和 <strong>pipewrite</strong>。<strong>pipewrite</strong>（<code>kernel/pipe.c</code>:77）首先获取管道的锁，该锁保护计数、数据和它们相关的不变量。然后 <code>piperead</code>（<code>kernel/pipe.c</code>:103）尝试获取锁，但无法获取。它在 <code>acquire</code>（<code>kernel/spinlock.c</code>:22）中旋转等待锁。在 <strong>piperead</strong> 等待时，<strong>pipewrite</strong> 循环处理被写入的字节（<code>addr[0..n-1]</code>），依次将每个字节添加到管道中（<code>kernel/pipe.c</code>:95）。在此循环期间，可能发生缓冲区填满的情况（<code>kernel/pipe.c</code>:85）。在这种情况下，<strong>pipewrite</strong> 调用 <strong>wakeup</strong> 来通知任何正在睡眠的读取器有数据在缓冲区中等待，并且然后在 <code>&amp;pi-&gt;nwrite</code> 上睡眠等待读取器将一些字节从缓冲区中取出。<strong>sleep</strong> 在将 <strong>pipewrite</strong> 进程置于睡眠状态时释放了 <code>pi-&gt;lock</code>。</p>
+<p>现在 <code>pi-&gt;lock</code> 可用了，<strong>piperead</strong> 设法获取它并进入了临界区：它发现 <code>pi-&gt;nread != pi-&gt;nwrite</code>（<code>kernel/pipe.c</code>:110）（因为 <strong>pipewrite</strong> 进入睡眠是因为 <code>pi-&gt;nwrite == pi-&gt;nread+PIPESIZE</code>（<code>kernel/pipe.c</code>:85）），所以它继续执行 <strong>for</strong> 循环，从管道中复制数据（<code>kernel/pipe.c</code>:117），并将 <strong>nread</strong> 增加复制的字节数。现在有了这么多字节可供写入，因此 <strong>piperead</strong> 在返回之前调用 <strong>wakeup</strong>（<code>kernel/pipe.c</code>:124）唤醒任何正在睡眠的写入器。<strong>wakeup</strong> 找到了在 <code>&amp;pi-&gt;nwrite</code> 上睡眠的进程，这个进程在管道填满时停止了。它将该进程标记为 <strong>RUNNABLE</strong>。</p>
+<p>管道代码为读取器和写入器使用了单独的睡眠通道（<code>pi-&gt;nread</code> 和 <code>pi-&gt;nwrite</code>）；在极少出现大量读取器和写入器等待同一管道的情况下，这可能使系统更加高效。管道代码在一个循环中睡眠检查睡眠条件；如果有多个读取器或写入器，除了第一个唤醒的进程外，其余的都会发现条件仍然为 <strong>false</strong>，并再次进入睡眠状态。</p>
+<h3 id="7-8-代码：等待、退出和终止"><a href="#7-8-代码：等待、退出和终止" class="headerlink" title="7.8 代码：等待、退出和终止"></a>7.8 代码：等待、退出和终止</h3><p><strong>sleep</strong> 和 <strong>wakeup</strong> 可用于许多种等待方式。一个有趣的例子，介绍于第一章，是子进程的退出与其父进程的等待之间的交互。在子进程死亡时，父进程可能已经在等待中，或者正在执行其他操作；在后一种情况下，后续对 <strong>wait</strong> 的调用必须观察到子进程的死亡，也许是在调用 <strong>exit</strong> 之后相当长的时间。xv6 记录子进程的终止状态直到 <strong>wait</strong> 观察到它时，是通过 <strong>exit</strong> 将调用者置于 <strong>ZOMBIE</strong> 状态，保持在那里，直到父进程的 <strong>wait</strong> 发现它，将子进程状态更改为 <strong>UNUSED</strong>，复制子进程的退出状态，并将子进程的进程 ID 返回给父进程。如果父进程在子进程之前退出，则父进程将子进程交给 <strong>init</strong> 进程，后者永远调用 <strong>wait</strong>；因此每个子进程都有一个父进程来清理它的残留。</p>
+<p>主要的实现挑战在于父子进程的 <strong>wait</strong> 和 <strong>exit</strong> 之间以及 <strong>exit</strong> 与 <strong>exit</strong> 之间的竞争和死锁可能性。<strong>wait</strong> 使用调用进程的 <code>p-&gt;lock</code> 作为条件锁以避免丢失唤醒，并在开始时获取该锁（<code>kernel/proc.c</code>:398）。然后它扫描进程表。如果找到 <strong>ZOMBIE</strong> 状态的子进程，它将释放该子进程的资源和其 <strong>proc</strong> 结构，将子进程的退出状态复制到 <strong>wait</strong> 提供的地址（如果不为 <strong>0</strong>），然后返回子进程的进程 ID。如果 wait 找到子进程但没有任何子进程已退出，则它调用 <strong>sleep</strong> 等待其中一个退出（<code>kernel/proc.c</code>:445），然后再次扫描。这里，条件锁在 <strong>sleep</strong> 中被释放是等待进程的 <code>p-&gt;lock</code>，即上述提到的特殊情况。注意，<strong>wait</strong> 经常持有两个锁；在尝试获取任何子进程的锁之前，它会先获取自己的锁；因此，为了避免死锁，整个 xv6 必须遵守相同的锁定顺序（父进程，然后子进程）。</p>
+<p><strong>wait</strong> 查看每个进程的 <code>np-&gt;parent</code> 来查找其子进程。它在不持有 <code>np-&gt;lock</code> 的情况下使用 <code>np-&gt;parent</code>，这违反了通常的共享变量必须由锁保护的规则。可能 <strong>np</strong> 是当前进程的祖先，在这种情况下，获取 <code>np-&gt;lock</code> 可能导致死锁，因为那将违反上述的顺序。在这种情况下，在没有锁的情况下检查 <code>np-&gt;parent</code> 似乎是安全的；进程的 <strong>parent</strong> 字段只能由其父进程更改，因此如果 <code>np-&gt;parent==p</code> 成立，除非当前进程更改它，否则值不会改变。</p>
+<p><strong>exit</strong>（<code>kernel/proc.c</code>:333）记录退出状态，释放一些资源，将任何子进程交给 <strong>init</strong> 进程，唤醒等待中的父进程，将调用者标记为僵尸进程，并永久性地让出 CPU。最后的顺序有点棘手。退出进程必须在将其状态设置为 <strong>ZOMBIE</strong> 并唤醒父进程之前持有其父进程的锁，因为父进程的锁是 <strong>wait</strong> 中防止丢失唤醒的条件锁。子进程也必须持有自己的 <code>p-&gt;lock</code>，否则父进程可能在其仍在运行时看到它处于 <strong>ZOMBIE</strong> 状态并将其释放。锁获取顺序对于避免死锁非常重要：因为 <strong>wait</strong> 在获取父进程的锁之前先获取子进程的锁，所以 <strong>exit</strong> 必须使用相同的顺序。</p>
+<p><strong>exit</strong> 调用了一个专门的 <strong>wakeup</strong> 函数，<strong>wakeup1</strong>，它只唤醒父进程，仅在其处于 <strong>wait</strong> 状态时才唤醒（<code>kernel/proc.c</code>:598）。在子进程将状态设置为 <strong>ZOMBIE</strong> 之前唤醒父进程可能看起来不正确，但是是安全的：虽然 <strong>wakeup1</strong> 可能导致父进程运行，但是 <strong>wait</strong> 中的循环不能检查子进程，直到子进程的 <code>p-&gt;lock</code> 被 <strong>scheduler</strong> 释放，因此 <strong>wait</strong> 不能在 <strong>exit</strong> 将其状态设置为 <strong>ZOMBIE</strong> 之后很久之前查看退出进程（<code>kernel/proc.c</code>:386）。</p>
+<p>虽然 <strong>exit</strong> 允许进程终止自身，但是 <strong>kill</strong>（<code>kernel/proc.c</code>:611）允许一个进程请求另一个进程终止。直接摧毁受害者进程对 <strong>kill</strong> 来说太复杂了，因为受害者可能正在另一个 CPU 上执行，也许正在执行对内核数据结构敏感的一系列更新。因此 <strong>kill</strong> 做的很少：它只是设置受害者的 <code>p-&gt;killed</code>，并且如果其正在睡眠，则唤醒它。最终，受害者将进入或离开内核，此时 <strong>usertrap</strong> 中的代码将根据 <code>p-&gt;killed</code> 的设置调用 <strong>exit</strong>。如果受害者在用户空间运行，它将很快通过发出系统调用或者因为计时器（或其他设备）中断而进入内核。</p>
+<p>如果受害者进程处于睡眠状态，<strong>kill</strong> 的调用将导致受害者从睡眠中返回。这可能是危险的，因为正在等待的条件可能不为真。但是，xv6 对 <strong>sleep</strong> 的调用始终包裹在一个 <strong>while</strong> 循环中，在 <strong>sleep</strong> 返回后重新测试条件。一些对 <strong>sleep</strong> 的调用也在循环中测试 <code>p-&gt;killed</code>，如果设置了就放弃当前活动。这只有在放弃时是正确的情况下才会这样做。例如，管道读取和写入代码在 <strong>killed</strong> 标志被设置时返回；最终代码会返回到 <strong>trap</strong>，再次检查标志并退出。</p>
+<p>一些 xv6 的 <strong>sleep</strong> 循环不检查 <code>p-&gt;killed</code>，因为代码处于多步系统调用的中间，应该是原子的。<strong>virtio</strong> 驱动程序（<code>kernel/virtio_disk.c</code>:242）就是一个例子：它不检查 <code>p-&gt;killed</code>，因为磁盘操作可能是一组必须按顺序完成的写操作之一，以便文件系统处于正确的状态。等待磁盘 <strong>I&#x2F;O</strong> 的进程直到完成当前系统调用并且 <strong>usertrap</strong> 看到 <strong>killed</strong> 标志时才会退出。</p>
+<h3 id="7-9-现实情况"><a href="#7-9-现实情况" class="headerlink" title="7.9 现实情况"></a>7.9 现实情况</h3><p>xv6的调度器实现了一种简单的调度策略，即逐个运行每个进程。这个策略被称为循环轮转。真实的操作系统实现了更复杂的策略，例如，允许进程具有优先级。其想法是，一个可运行的高优先级进程将被调度程序优先于可运行的低优先级进程。这些策略可能会很快变得复杂，因为通常存在着竞争的目标：例如，操作系统可能还想要保证公平性和高吞吐量。此外，复杂的策略可能会导致意想不到的交互，比如优先级反转和车队现象。优先级反转可能会发生在低优先级和高优先级进程共享一个锁时，当低优先级进程获取该锁时，会阻止高优先级进程取得进展。当许多高优先级进程等待获取共享锁的低优先级进程时，长时间的等待进程车队可能形成；一旦车队形成，它可以持续很长时间。为了避免这类问题，在复杂的调度器中需要额外的机制。</p>
+<p><strong>sleep</strong>和<strong>wakeup</strong>是一种简单有效的同步方法，但还有许多其他方法。所有这些方法中的第一个挑战是避免我们在本章开头看到的“丢失唤醒”问题。原始的<strong>Unix</strong>内核的<strong>sleep</strong>只是禁用了中断，这足够因为<strong>Unix</strong>运行在单CPU系统上。因为xv6运行在多处理器上，它在<strong>sleep</strong>中添加了一个显式的锁。<strong>FreeBSD</strong>的<strong>msleep</strong>采用相同的方法。Plan 9的<strong>sleep</strong>使用了一个回调函数，在进入睡眠之前在持有调度锁的情况下运行；该函数作为睡眠条件的最后一次检查，以避免丢失唤醒。Linux内核的<strong>sleep</strong>使用了一个名为等待队列的显式进程队列，而不是等待通道；该队列有自己的内部锁。</p>
+<p>在<strong>wakeup</strong>中扫描整个进程列表以查找具有匹配<strong>chan</strong>的进程是低效的。更好的解决方案是在<strong>sleep</strong>和<strong>wakeup</strong>中将<strong>chan</strong>替换为一个数据结构，该数据结构保存在该结构上睡眠的进程列表，例如Linux的等待队列。Plan 9的<strong>sleep</strong>和<strong>wakeup</strong>将该结构称为会面点或<strong>Rendez</strong>。许多线程库将相同的结构称为条件变量；在那种情况下，操作<strong>sleep</strong>和<strong>wakeup</strong>称为<strong>wait</strong>和<strong>signal</strong>。所有这些机制都具有相同的特点：睡眠条件由某种在睡眠期间原子地丢弃的锁保护。</p>
+<p><strong>wakeup</strong>的实现唤醒所有在特定通道上等待的进程，可能会有许多进程在等待特定通道。操作系统将调度所有这些进程，它们将竞争检查睡眠条件。像这样行为的进程有时被称为雷鸣般的群体，最好避免。大多数条件变量对唤醒有两个原语：<strong>signal</strong>，唤醒一个进程，和<strong>broadcast</strong>，唤醒所有等待的进程。</p>
+<p>信号量通常用于同步。计数通常对应于管道缓冲区中可用字节数或进程拥有的僵尸子进程数量之类的东西。在抽象的一部分中使用显式计数避免了“丢失唤醒”问题：有明确的唤醒次数计数。计数还避免了虚假唤醒和雷鸣般的群体问题。</p>
+<p>终止进程并清理它们在 xv6 中引入了很多复杂性。在大多数操作系统中，这更加复杂，因为例如，受害进程可能深深地睡眠在内核中，解开它的堆栈需要非常小心的编程。许多操作系统使用显式的异常处理机制，如 <strong>longjmp</strong> 来解开堆栈。此外，还有其他事件可能导致正在睡眠的进程被唤醒，即使它等待的事件尚未发生。例如，当Unix进程正在睡眠时，另一个进程可能向其发送信号。在这种情况下，进程将从被中断的系统调用返回，值为**-1<strong>，并将错误代码设置为</strong>EINTR**。应用程序可以检查这些值并决定如何处理。xv6不支持信号，因此不会出现这种复杂性。</p>
+<p>xv6对 <strong>kill</strong> 的支持并不完全令人满意：有一些sleep循环可能应该检查 <code>p-&gt;killed</code> 。一个相关的问题是，即使对于检查 <code>p-&gt;killed</code>的 <strong>sleep</strong> 循环，也存在<strong>sleep</strong>和<strong>kill</strong>之间的竞争；后者可能设置 <code>p-&gt;killed</code> ，并在受害者的循环检查<code>p-&gt;killed</code>之后但在调用<strong>sleep</strong>之前尝试唤醒受害者。如果出现这个问题，受害者直到它等待的条件发生时才会注意到 <code>p-&gt;killed</code> 。这可能会相当晚（例如，当<strong>virtio</strong>驱动程序返回受害者正在等待的磁盘块时）或永远不会发生（例如，如果受害者正在等待来自控制台的输入，但用户没有输入任何内容）。</p>
+<p>真实的操作系统会在常数时间内使用显式的空闲进程结构体列表而不是在 <strong>allocproc</strong> 中进行线性搜索来找到空闲的进程结构体。xv6 出于简单起见使用线性扫描。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+        <a href="/tags/xv6/" class="print-no-link">#xv6</a>
+      
+        <a href="/tags/%E7%BF%BB%E8%AF%91/" class="print-no-link">#翻译</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>xv6 book Chapter7 中文翻译</div>
+      <div>http://blog.luliang.online/2023/12/04/xv6 book Chapter7 中文翻译/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/06/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第五章）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第五章）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/04/xv6%20book%20Chapter6%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" title="xv6 book Chapter6 中文翻译">
+                        <span class="hidden-mobile">xv6 book Chapter6 中文翻译</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

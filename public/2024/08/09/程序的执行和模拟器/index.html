@@ -1,0 +1,851 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="freestanding 运行时环境示例程序： 1234567#include &lt;stdint.h&gt;void _start() &#123;    volatile uint8_t* p &#x3D; (uint8_t*)(uintptr_t)0x10000000;    *p &#x3D; &#x27;A&#x27;;    while (1)        ;&#125;  编译：rv32gcc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序的执行和模拟器">
+<meta property="og:url" content="http://blog.luliang.online/2024/08/09/%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E5%92%8C%E6%A8%A1%E6%8B%9F%E5%99%A8/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="freestanding 运行时环境示例程序： 1234567#include &lt;stdint.h&gt;void _start() &#123;    volatile uint8_t* p &#x3D; (uint8_t*)(uintptr_t)0x10000000;    *p &#x3D; &#x27;A&#x27;;    while (1)        ;&#125;  编译：rv32gcc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-09T03:22:33.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.778Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="模拟器">
+<meta property="article:tag" content="二进制程序">
+<meta property="article:tag" content="程序">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>程序的执行和模拟器 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="程序的执行和模拟器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-09 11:22" pubdate>
+          2024年8月9日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">程序的执行和模拟器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="freestanding-运行时环境"><a href="#freestanding-运行时环境" class="headerlink" title="freestanding 运行时环境"></a>freestanding 运行时环境</h2><p>示例程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-type">void</span> _start() &#123;<br>    <span class="hljs-keyword">volatile</span> <span class="hljs-type">uint8_t</span>* p = (<span class="hljs-type">uint8_t</span>*)(<span class="hljs-type">uintptr_t</span>)<span class="hljs-number">0x10000000</span>;<br>    *p = <span class="hljs-string">&#x27;A&#x27;</span>;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>编译：<code>rv32gcc -ffreestanding -nostdlib -Wl,-Ttext=0x80000000 -O2 a.c</code>:</p>
+<p>命令解析：</p>
+<h3 id="ffreestanding"><a href="#ffreestanding" class="headerlink" title="-ffreestanding"></a>-ffreestanding</h3><ul>
+<li>指示编译器，代码是在“自由环境”（freestanding environment）下运行的，这意味着标准库可能不完全可用，程序不能依赖标准启动环境。这常用于系统软件开发，如操作系统内核。</li>
+</ul>
+<h3 id="nostdlib"><a href="#nostdlib" class="headerlink" title="-nostdlib"></a>-nostdlib</h3><ul>
+<li>禁止链接器链接标准启动文件和标准库。这个选项确保不会将标准库的任何部分链接到最终的可执行文件中，这对于需要直接控制程序运行环境的系统级编程至关重要。</li>
+</ul>
+<h3 id="Wl-Ttext-0x80000000"><a href="#Wl-Ttext-0x80000000" class="headerlink" title="-Wl,-Ttext&#x3D;0x80000000"></a>-Wl,-Ttext&#x3D;0x80000000</h3><ul>
+<li>这是一个向链接器传递参数的选项。<code>-Wl,option</code> 表示将 <code>option</code> 传递给链接器。这里的 <code>-Ttext=0x80000000</code> 设置程序的入口地址（即 <code>.text</code> 段开始的位置）为 <code>0x80000000</code>。这通常用于指定程序在内存中的加载位置，是嵌入式系统和操作系统内核中常见的需求。</li>
+</ul>
+<h3 id="O2"><a href="#O2" class="headerlink" title="-O2"></a>-O2</h3><ul>
+<li>启用优化级别为 2。这是一种中等程度的优化，能够在不影响编译时间太多的前提下，提高程序的运行效率。这种优化级别会尝试不改变程序行为的前提下，提高程序的执行速度和&#x2F;或减少占用的内存空间。</li>
+</ul>
+<p>运行：<code>qemu-system-riscv32 -nographic -M virt -bios none -kernel a.out</code>:</p>
+<h3 id="qemu-system-riscv32"><a href="#qemu-system-riscv32" class="headerlink" title="qemu-system-riscv32"></a>qemu-system-riscv32</h3><ul>
+<li>这是 QEMU 的一个变体，专门用于模拟 32位的 RISC-V 架构。</li>
+</ul>
+<h3 id="nographic"><a href="#nographic" class="headerlink" title="-nographic"></a>-nographic</h3><ul>
+<li>这个选项指示 QEMU 在没有图形界面的情况下运行，所有的输出都会发送到控制台。这对于运行服务器或无头系统（没有显示器、键盘等外围设备的系统）非常有用。</li>
+</ul>
+<h3 id="M-virt"><a href="#M-virt" class="headerlink" title="-M virt"></a>-M virt</h3><ul>
+<li><code>-M</code> 参数用于指定模拟的机器类型。在这里，<code>virt</code> 是一个为各种客户端操作系统提供足够支持的通用 RISC-V 系统。这种类型的虚拟机提供了基本的设备和是进行各种测试的理想选择。</li>
+</ul>
+<h3 id="bios-none"><a href="#bios-none" class="headerlink" title="-bios none"></a>-bios none</h3><ul>
+<li>此参数指定不使用任何 BIOS。这意味着 QEMU 不会尝试从任何传统的 BIOS 固件启动，这通常用于直接启动裸机应用或特定的操作系统，这些操作系统不依赖于传统 BIOS 启动。</li>
+</ul>
+<h3 id="kernel-a-out"><a href="#kernel-a-out" class="headerlink" title="-kernel a.out"></a>-kernel a.out</h3><ul>
+<li><code>-kernel</code> 用于直接加载并启动一个内核或可执行文件。这里的 <code>a.out</code> 是要被加载的文件，通常是一个编译好的内核或应用程序。这使得可以直接在模拟环境中测试编译后的程序。</li>
+</ul>
+<p>这个程序是往0x10000000中写入了一个字符，这是因为0x10000000 是 virt 机器串口地址，因此想要打印出这个字符，必须加上参数-M virt。</p>
+<h2 id="怎么结束程序？"><a href="#怎么结束程序？" class="headerlink" title="怎么结束程序？"></a>怎么结束程序？</h2><p>在qemu-system-riscv32中的virt机器模型中, 往一个特殊的地址写入一个特殊的字符即可结束QEMU的运行。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-type">void</span> _start() &#123;<br>    <span class="hljs-keyword">volatile</span> <span class="hljs-type">uint8_t</span>* p = (<span class="hljs-type">uint8_t</span>*)(<span class="hljs-type">uintptr_t</span>)<span class="hljs-number">0x10000000</span>;<br>    *p = <span class="hljs-string">&#x27;A&#x27;</span>;<br>    <span class="hljs-keyword">volatile</span> <span class="hljs-type">uint32_t</span>* <span class="hljs-built_in">exit</span> = (<span class="hljs-type">uint32_t</span>*)(<span class="hljs-type">uintptr_t</span>)<span class="hljs-number">0x100000</span>;<br>    *<span class="hljs-built_in">exit</span> = <span class="hljs-number">0x5555</span>;  <span class="hljs-comment">// magic number</span><br>    _start();<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ qemu-system-riscv32 -nographic -M virt -bios none -kernel a.out<br>A%<br></code></pre></td></tr></table></figure>
+
+<h2 id="自制-freestanding-运行时环境"><a href="#自制-freestanding-运行时环境" class="headerlink" title="自制 freestanding 运行时环境"></a>自制 freestanding 运行时环境</h2><ul>
+<li>程序从地址0开始执行</li>
+<li>只支持两条指令<ul>
+<li>addi指令</li>
+<li>ebreak指令</li>
+<li><ul>
+<li>寄存器a0&#x3D;0时, 输出寄存器a1低8位的字符</li>
+</ul>
+</li>
+<li><ul>
+<li>寄存器a0&#x3D;1时, 结束运行</li>
+</ul>
+</li>
+<li>ABI Mnemonic</li>
+</ul>
+</li>
+</ul>
+<p>示例代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">ebreak</span><span class="hljs-params">(<span class="hljs-type">long</span> arg0, <span class="hljs-type">long</span> arg1)</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(</span><br><span class="hljs-params">        <span class="hljs-string">&quot;addi a0, x0, %0;&quot;</span></span><br><span class="hljs-params">        <span class="hljs-string">&quot;addi a1, x0, %1;&quot;</span></span><br><span class="hljs-params">        <span class="hljs-string">&quot;ebreak&quot;</span></span><br><span class="hljs-params">        :</span><br><span class="hljs-params">        : <span class="hljs-string">&quot;i&quot;</span>(arg0), <span class="hljs-string">&quot;i&quot;</span>(arg1))</span>;<br>&#125;<br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">putch</span><span class="hljs-params">(<span class="hljs-type">char</span> ch)</span> &#123;<br>    ebreak(<span class="hljs-number">0</span>, ch);<br>&#125;<br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">halt</span><span class="hljs-params">(<span class="hljs-type">int</span> code)</span> &#123;<br>    ebreak(<span class="hljs-number">1</span>, code);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br><br><span class="hljs-type">void</span> _start() &#123;<br>    putch(<span class="hljs-string">&#x27;A&#x27;</span>);<br>    halt(<span class="hljs-number">0</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>编译、查看反汇编：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">rv32gcc -ffreestanding -nostdlib -static -Wl,-Ttext=0 -O2 -o prog a.c<br>rvobjdump -M no-aliases -d prog<br><br>prog:     file format elf32-littleriscv<br><br><br>Disassembly of section .text:<br><br>00000000 &lt;_start&gt;:<br>   0:   00000513                addi    a0,zero,0<br>   4:   04100593                addi    a1,zero,65<br>   8:   00100073                ebreak<br>   c:   00100513                addi    a0,zero,1<br>  10:   00000593                addi    a1,zero,0<br>  14:   00100073                ebreak<br>  18:   0000006f                jal     zero,18 &lt;_start+0x18&gt;<br></code></pre></td></tr></table></figure>
+
+
+<p>可以看到确实只有两种汇编指令addi、ebreak。事实上，这一点都不神奇，因为 gcc 支持在 c 中插入汇编代码，上面的程序除了汇编逻辑，没有任何其他逻辑。展开之后，自然就只有那两种汇编指令了（jal 是跳转指令，不用考虑）。</p>
+<h2 id="怎么让这个程序运行呢？"><a href="#怎么让这个程序运行呢？" class="headerlink" title="怎么让这个程序运行呢？"></a>怎么让这个程序运行呢？</h2><p>我们可以找一个真实的 RISCV CPU 直接在裸机上运行，也可以在虚拟机比如 qemu-system-riscv32 上运行（事实上，这是刚做的事情，现在自己写一个程序来运行它），还可以自己写一个模拟器，来运行它。</p>
+<p>如果想要在qemu-system-riscv32 运行它，必须对源程序做一些改造，比如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">ebreak</span><span class="hljs-params">(<span class="hljs-type">long</span> arg0, <span class="hljs-type">long</span> arg1)</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(</span><br><span class="hljs-params">        <span class="hljs-string">&quot;addi a0, x0, %0;&quot;</span></span><br><span class="hljs-params">        <span class="hljs-string">&quot;addi a1, x0, %1;&quot;</span></span><br><span class="hljs-params">        <span class="hljs-string">&quot;ebreak&quot;</span></span><br><span class="hljs-params">        :</span><br><span class="hljs-params">        : <span class="hljs-string">&quot;i&quot;</span>(arg0), <span class="hljs-string">&quot;i&quot;</span>(arg1))</span>;<br>&#125;<br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">putch</span><span class="hljs-params">(<span class="hljs-type">char</span> ch)</span> &#123;<br>    ebreak(<span class="hljs-number">0</span>, ch);<br>&#125;<br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">halt</span><span class="hljs-params">(<span class="hljs-type">int</span> code)</span> &#123;<br>    ebreak(<span class="hljs-number">1</span>, code);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>        ;<br>&#125;<br><br><span class="hljs-type">void</span> _start() &#123;<br>    <span class="hljs-comment">// 将字符 &#x27;A&#x27; 写入内存地址 0x10000000</span><br>    <span class="hljs-type">char</span>* ptr = (<span class="hljs-type">char</span>*)<span class="hljs-number">0x10000000</span>;<br>    *ptr = <span class="hljs-string">&#x27;A&#x27;</span>;<br><br>    putch(<span class="hljs-string">&#x27;A&#x27;</span>);<br>    halt(<span class="hljs-number">0</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ rv32gcc -ffreestanding -nostdlib -static -Wl,-Ttext=0x80000000 -O2 -o prog b.c<br><br>$ qemu-system-riscv32 -nographic -M virt -bios none -kernel prog<br><br>A<br></code></pre></td></tr></table></figure>
+
+<h2 id="YEMU"><a href="#YEMU" class="headerlink" title="YEMU"></a>YEMU</h2><p>可以读取指令，然后分析指令，然后运行指令，顺便将 PC++。以上全部用 C语言进行语义模拟，就得到了一个模拟器，看起来很简单。这有点像用22世纪的 CPU 模拟 20 世界 80 年代的 8086，效率非常低，但是却能说明模拟器工作的方式。</p>
+<h3 id="ISA-状态机"><a href="#ISA-状态机" class="headerlink" title="ISA 状态机"></a>ISA 状态机</h3><ul>
+<li>状态集合S&#x3D;{&lt;R,M&gt;}：</li>
+<li><ul>
+<li>R&#x3D;{PC,x0,x1,x2,…}</li>
+</ul>
+</li>
+<li><ul>
+<li>RISC-V手册 -&gt; 2.1 Programmers’ Model for Base Integer ISA</li>
+</ul>
+</li>
+<li><ul>
+<li>PC &#x3D; 程序计数器 &#x3D; 当前执行的指令位置</li>
+</ul>
+</li>
+<li><ul>
+<li>M &#x3D; 内存</li>
+</ul>
+</li>
+<li><ul>
+<li>RISC-V手册 -&gt; 1.4 Memory</li>
+</ul>
+</li>
+<li>激励事件E&#x3D;{指令}</li>
+<li><ul>
+<li>执行PC指向的指令</li>
+</ul>
+</li>
+<li>状态转移规则next:S×E→S</li>
+<li><ul>
+<li>指令的语义(semantics)</li>
+</ul>
+</li>
+<li>初始状态S0&#x3D;&lt;R0,M0&gt;</li>
+</ul>
+<p>换句话说，就是初始状态、状态转移(具体状态转移函数)、状态集合。</p>
+<p>如果要用 C语言来模拟，那就得：</p>
+<ul>
+<li>用C语言变量实现寄存器和内存；</li>
+<li>用C语言语句实现指令的语义：</li>
+<li><ul>
+<li>指令采用符号化表示 -&gt; 汇编模拟器</li>
+</ul>
+</li>
+<li><ul>
+<li>指令采用编码表示 -&gt; 传统的(二进制)指令集模拟器</li>
+</ul>
+</li>
+</ul>
+<h3 id="实现寄存器和内存"><a href="#实现寄存器和内存" class="headerlink" title="实现寄存器和内存"></a>实现寄存器和内存</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-type">uint32_t</span> R[<span class="hljs-number">32</span>], PC; <span class="hljs-comment">// according to the RISC-V manual</span><br><span class="hljs-type">uint8_t</span> M[<span class="hljs-number">64</span>];      <span class="hljs-comment">// 64-Byte memory</span><br></code></pre></td></tr></table></figure>
+<p>这里内存为 64 字节的无符号数，至于为什么，这个和 pa1 中用无符号数作表达式一样，因为无符号数没有溢出的概念，如果换成有符号数，会 UB。</p>
+<h3 id="用语句实现指令的语义"><a href="#用语句实现指令的语义" class="headerlink" title="用语句实现指令的语义"></a>用语句实现指令的语义</h3><p>指令周期(instruction cycle): 执行一条指令的步骤：</p>
+<ul>
+<li>取指(fetch): 从PC所指示的内存位置读取一条指令；</li>
+<li>译码(decode): 按手册解析指令的操作码(opcode)和操作数(operand)；</li>
+<li>执行(execute): 按解析出的操作码, 对操作数进行处理；</li>
+<li><ul>
+<li>若写入&lt;R,M&gt;, 则更新状态</li>
+</ul>
+</li>
+<li>更新PC: 让PC指向下一条指令；</li>
+<li><ul>
+<li>更新状态</li>
+</ul>
+</li>
+</ul>
+<p>RTFM 之后，发现这两条指令的定义为：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs txt"> 31           20 19 15 14 12 11  7 6       0<br>+---------------+-----+-----+-----+---------+<br>|   imm[11:0]   | rs1 | 000 | rd  | 0010011 |    ADDI<br>+---------------+-----+-----+-----+---------+<br>+---------------+-----+-----+-----+---------+<br>| 000000000001  |00000| 000 |00000| 1110011 |   EBREAK<br>+---------------+-----+-----+-----+---------+<br></code></pre></td></tr></table></figure>
+<p>因此，首先得判断指令，然后执行指令，一个不成熟的实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><br><span class="hljs-type">void</span> <span class="hljs-title function_">inst_cycle</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">uint32_t</span> inst = *(<span class="hljs-type">uint32_t</span>*)&amp;M[PC];<br>    <span class="hljs-keyword">if</span> (((inst &amp; <span class="hljs-number">0x7f</span>) == <span class="hljs-number">0x13</span>) &amp;&amp; ((inst &gt;&gt; <span class="hljs-number">12</span>) &amp; <span class="hljs-number">0x7</span>) == <span class="hljs-number">0</span>) &#123;  <span class="hljs-comment">// addi</span><br>        <span class="hljs-keyword">if</span> (((inst &gt;&gt; <span class="hljs-number">7</span>) &amp; <span class="hljs-number">0x1f</span>) != <span class="hljs-number">0</span>) &#123;<br>            R[(inst &gt;&gt; <span class="hljs-number">7</span>) &amp; <span class="hljs-number">0x1f</span>] =<br>                R[(inst &gt;&gt; <span class="hljs-number">15</span>) &amp; <span class="hljs-number">0x1f</span>] +<br>                (((inst &gt;&gt; <span class="hljs-number">20</span>) &amp; <span class="hljs-number">0x7ff</span>) - ((inst &amp; <span class="hljs-number">0x80000000</span>) ? <span class="hljs-number">4096</span> : <span class="hljs-number">0</span>));<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (inst == <span class="hljs-number">0x00100073</span>) &#123;  <span class="hljs-comment">// ebreak</span><br>        <span class="hljs-keyword">if</span> (R[<span class="hljs-number">10</span>] == <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-built_in">putchar</span>(R[<span class="hljs-number">11</span>] &amp; <span class="hljs-number">0xff</span>);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (R[<span class="hljs-number">10</span>] == <span class="hljs-number">1</span>) &#123;<br>            halt = <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Unsupported ebreak command\n&quot;</span>);<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Unsupported instuction\n&quot;</span>);<br>    &#125;<br>    PC += <span class="hljs-number">4</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>判断是哪一条指令，要看这个指令的特征，比如 addi 的特征就是最低 7 位为 0x13 并且 12~14 位 为 0x0。判断出来后，就要取出 rd,这是目标寄存器，不能为 0；接着就是计算了，这里需要注意，<code>(inst &amp; 0x80000000) ? 4096 : 0</code>：这里检查指令的最高位（第 31 位），即立即数的符号位。在 RISC-V 中，立即数使用的是补码表示。如果符号位为 1（即 inst &amp; 0x80000000 为真），表示这是一个负数，那么需要进行符号扩展。在这种情况下，将整个立即数扩展为 32 位负数，而 -4096（二进制为 1111 0000 0000 0000，补码表示的 -4096）正是扩展这 12 位为全 32 位所需的值。这个数值补充了高位的 1 们，完成从 12 位到 32 位的扩展。</p>
+<p>至于 ebreak，R[10]其实就是 a0, R[11]就是a1。a0 为 0,输出a1的低八位；a0为 1，终止程序。可以看到以上所有语义都是由 C 语言进行模拟的。至于初始状态的定义，自然就是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">R[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;<br>PC = <span class="hljs-number">0</span>;<br>M = 程序;<span class="hljs-comment">//ABI</span><br></code></pre></td></tr></table></figure>
+
+<p>因此就有了第一版的 YEMU：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdbool.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">uint32_t</span> R[<span class="hljs-number">32</span>], PC;<br><span class="hljs-type">uint8_t</span> M[<span class="hljs-number">64</span>] = &#123;<br>    <span class="hljs-number">0x13</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x93</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x10</span>, <span class="hljs-number">0x04</span>, <span class="hljs-number">0x73</span>, <span class="hljs-number">0x00</span>,<br>    <span class="hljs-number">0x10</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x13</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x10</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x93</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>,<br>    <span class="hljs-number">0x73</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x10</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x6f</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>,<br>&#125;;<br><span class="hljs-type">bool</span> halt = <span class="hljs-literal">false</span>;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">inst_cycle</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">uint32_t</span> inst = *(<span class="hljs-type">uint32_t</span>*)&amp;M[PC];<br>    <span class="hljs-keyword">if</span> (((inst &amp; <span class="hljs-number">0x7f</span>) == <span class="hljs-number">0x13</span>) &amp;&amp; ((inst &gt;&gt; <span class="hljs-number">12</span>) &amp; <span class="hljs-number">0x7</span>) == <span class="hljs-number">0</span>) &#123;  <span class="hljs-comment">// addi</span><br>        <span class="hljs-keyword">if</span> (((inst &gt;&gt; <span class="hljs-number">7</span>) &amp; <span class="hljs-number">0x1f</span>) != <span class="hljs-number">0</span>) &#123;<br>            R[(inst &gt;&gt; <span class="hljs-number">7</span>) &amp; <span class="hljs-number">0x1f</span>] =<br>                R[(inst &gt;&gt; <span class="hljs-number">15</span>) &amp; <span class="hljs-number">0x1f</span>] +<br>                (((inst &gt;&gt; <span class="hljs-number">20</span>) &amp; <span class="hljs-number">0x7ff</span>) - ((inst &amp; <span class="hljs-number">0x80000000</span>) ? <span class="hljs-number">4096</span> : <span class="hljs-number">0</span>));<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (inst == <span class="hljs-number">0x00100073</span>) &#123;  <span class="hljs-comment">// ebreak</span><br>        <span class="hljs-keyword">if</span> (R[<span class="hljs-number">10</span>] == <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-built_in">putchar</span>(R[<span class="hljs-number">11</span>] &amp; <span class="hljs-number">0xff</span>);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (R[<span class="hljs-number">10</span>] == <span class="hljs-number">1</span>) &#123;<br>            halt = <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Unsupported ebreak command\n&quot;</span>);<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Unsupported instuction\n&quot;</span>);<br>    &#125;<br>    PC += <span class="hljs-number">4</span>;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    PC = <span class="hljs-number">0</span>;<br>    R[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;  <span class="hljs-comment">// can be omitted since uninitialized global variables are</span><br>               <span class="hljs-comment">// initialized with 0</span><br>    <span class="hljs-keyword">while</span> (!halt) &#123;<br>        inst_cycle();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ rvobjdump -M no-aliases -d prog<br><br>prog:     file format elf32-littleriscv<br><br><br>Disassembly of section .text:<br><br>00000000 &lt;_start&gt;:<br>   0:   00000513                addi    a0,zero,0<br>   4:   04100593                addi    a1,zero,65<br>   8:   00100073                ebreak<br>   c:   00100513                addi    a0,zero,1<br>  10:   00000593                addi    a1,zero,0<br>  14:   00100073                ebreak<br>  18:   0000006f                jal     zero,18 &lt;_start+0x18&gt;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">uint8_t</span> M[<span class="hljs-number">64</span>] = &#123;<br>    <span class="hljs-number">0x13</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x93</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x10</span>, <span class="hljs-number">0x04</span>, <span class="hljs-number">0x73</span>, <span class="hljs-number">0x00</span>,<br>    <span class="hljs-number">0x10</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x13</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x10</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x93</span>, <span class="hljs-number">0x05</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>,<br>    <span class="hljs-number">0x73</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x10</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x6f</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>,<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>之所以 uint32_t 取的字符和原来的指令逆序，是因为计算机遵从小端序列：低地址内存中的数据，放在数据（uint32_t、数组等）的低位。对于内存中的指令：0x00000513，0x13位于高地址，放在数组高位，这里需要注意。</p>
+<h3 id="执行"><a href="#执行" class="headerlink" title="执行"></a>执行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ gcc yemu.c -o yemu<br><br>$ ./yemu prog<br>A%<br><br></code></pre></td></tr></table></figure>
+
+<p>可以看见，工作很正常。</p>
+<h3 id="改进程序，从文件读入程序"><a href="#改进程序，从文件读入程序" class="headerlink" title="改进程序，从文件读入程序"></a>改进程序，从文件读入程序</h3><p>这样才是一个正常的工作流程，谁都不可能有把一个二进制文件一个一个写入数组的精力：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c">...<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>* argv[])</span> &#123;<br>    PC = <span class="hljs-number">0</span>;<br>    R[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;<br>    FILE* fp = fopen(argv[<span class="hljs-number">1</span>], <span class="hljs-string">&quot;r&quot;</span>);<br>    fread(M, <span class="hljs-number">1</span>, <span class="hljs-number">1024</span>, fp);<br>    fclose(fp);<br>    <span class="hljs-keyword">while</span> (!halt) &#123;<br>        inst_cycle();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在运行 prog 之前，必须将里面的指令序列抽取到 prog.bin，毕竟：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ riscv64-linux-gnu-objcopy -j .text -O binary prog prog.bin<br><br>$ ll<br>total 56K<br>-rw-rw-r-- 1 luyoung luyoung  224 Aug  9 10:31 a.c<br>-rwxrwxr-x 1 luyoung luyoung 9.4K Aug  9 10:31 a.out<br>-rw-rw-r-- 1 luyoung luyoung  351 Aug  9 11:48 b.c<br>-rwxrwxr-x 1 luyoung luyoung 5.1K Aug  9 11:48 prog<br>-rwxrwxr-x 1 luyoung luyoung   28 Aug  9 11:58 prog.bin<br>-rwxrwxr-x 1 luyoung luyoung  17K Aug  9 11:57 yemu<br>-rw-rw-r-- 1 luyoung luyoung 1.2K Aug  9 11:57 yemu.c<br><br>$ ./yemu prog.bin<br>A%<br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，prog 和 prog.bin 的大小差距很大。</p>
+<h3 id="运行更复杂的程序"><a href="#运行更复杂的程序" class="headerlink" title="运行更复杂的程序"></a>运行更复杂的程序</h3><p>我们用 yemu 执行的程序只能输出一个字符，我们可以尝试输出得更多一点：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> _start() &#123;<br>  putch(<span class="hljs-string">&#x27;H&#x27;</span>); putch(<span class="hljs-string">&#x27;e&#x27;</span>); putch(<span class="hljs-string">&#x27;l&#x27;</span>); putch(<span class="hljs-string">&#x27;l&#x27;</span>); putch(<span class="hljs-string">&#x27;o&#x27;</span>); putch(<span class="hljs-string">&#x27;,&#x27;</span>); putch(<span class="hljs-string">&#x27; &#x27;</span>);<br>  putch(<span class="hljs-string">&#x27;R&#x27;</span>); putch(<span class="hljs-string">&#x27;I&#x27;</span>); putch(<span class="hljs-string">&#x27;S&#x27;</span>); putch(<span class="hljs-string">&#x27;C&#x27;</span>); putch(<span class="hljs-string">&#x27;-&#x27;</span>); putch(<span class="hljs-string">&#x27;V&#x27;</span>); putch(<span class="hljs-string">&#x27;!&#x27;</span>);<br>  putch(<span class="hljs-string">&#x27;\n&#x27;</span>);<br>  halt(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>重新编写 prog，编译，抽取指令序列，运行 yemu：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">luyoung at luyoungUbt <span class="hljs-keyword">in</span> ~/ysyx_details/预学习阶段/slides/程序的执行和模拟器 (main●●)<br>$ rv32gcc -ffreestanding -nostdlib -static -Wl,-Ttext=0 -O2 -o prog b.c<br><br>luyoung at luyoungUbt <span class="hljs-keyword">in</span> ~/ysyx_details/预学习阶段/slides/程序的执行和模拟器 (main●●)<br>$ riscv64-linux-gnu-objcopy -j .text -O binary prog prog.bin<br><br>luyoung at luyoungUbt <span class="hljs-keyword">in</span> ~/ysyx_details/预学习阶段/slides/程序的执行和模拟器 (main●●)<br>$ ./yemu prog.bin<br>Hello, RISC-V!<br></code></pre></td></tr></table></figure>
+
+<p>至于其它编程技巧，用宏增强代码复用，就不累赘了。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="print-no-link">#模拟器</a>
+      
+        <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/" class="print-no-link">#二进制程序</a>
+      
+        <a href="/tags/%E7%A8%8B%E5%BA%8F/" class="print-no-link">#程序</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>程序的执行和模拟器</div>
+      <div>http://blog.luliang.online/2024/08/09/程序的执行和模拟器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/12/NEMU%E4%BB%A3%E7%A0%81%E5%AF%BC%E8%AF%BB/" title="NEMU 代码导读">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NEMU 代码导读</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/08/%E4%BB%8E%20C%E8%AF%AD%E8%A8%80%E5%88%B0%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/" title="从C语言到二进制程序">
+                        <span class="hidden-mobile">从C语言到二进制程序</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

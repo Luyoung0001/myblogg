@@ -1,0 +1,742 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言事实上，一个成熟的 debugger 是不会利用 break 0xADDR 类似的命令来打断点的，这个需要改进，使得它可以直接利用函数名、行数等来打断点。这就需要生成编译信息，只需要在编译的时候，在目标文件中加以下参数： 12# 添加编译器标志set(CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -g -O0 -gdwarf-2&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="debugger（三）：dwarf 文件">
+<meta property="og:url" content="http://blog.luliang.online/2024/06/10/debugger%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9Adwarf%20%E6%96%87%E4%BB%B6/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言事实上，一个成熟的 debugger 是不会利用 break 0xADDR 类似的命令来打断点的，这个需要改进，使得它可以直接利用函数名、行数等来打断点。这就需要生成编译信息，只需要在编译的时候，在目标文件中加以下参数： 12# 添加编译器标志set(CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -g -O0 -gdwarf-2&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-10T13:46:30.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.773Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="debugger">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>debugger（三）：dwarf 文件 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="debugger（三）：dwarf 文件"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-10 21:46" pubdate>
+          2024年6月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">debugger（三）：dwarf 文件</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>事实上，一个成熟的 <strong>debugger</strong> 是不会利用 <code>break 0xADDR</code> 类似的命令来打断点的，这个需要改进，使得它可以直接利用<strong>函数名、行数</strong>等来打断点。这就需要生成编译信息，只需要在编译的时候，在目标文件中加以下参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 添加编译器标志</span><br><span class="hljs-built_in">set</span>(CMAKE_CXX_FLAGS <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;CMAKE_CXX_FLAGS&#125;</span> -g -O0 -gdwarf-2&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>这样，目标文件就携带了 dwarf 格式的 debug info（我们还禁止了优化，这有利于调试）。</p>
+<h2 id="一、ELF-DWARF"><a href="#一、ELF-DWARF" class="headerlink" title="一、ELF &amp; DWARF"></a>一、ELF &amp; DWARF</h2><h3 id="DWARF-和-ELF-的关系与区别"><a href="#DWARF-和-ELF-的关系与区别" class="headerlink" title="DWARF 和 ELF 的关系与区别"></a>DWARF 和 ELF 的关系与区别</h3><p><strong>DWARF</strong>：</p>
+<ul>
+<li>DWARF 是一种关于调试信息的标准格式，用于在编译时生成的调试信息中描述程序的各种数据结构。<strong>这包括但不限于变量的名称、类型、存储位置，函数的名称、参数列表和源代码中的行号</strong>。</li>
+<li>DWARF 是与平台无关的，这意味着它可以用在各种不同的操作系统和硬件上。</li>
+</ul>
+<p>**ELF (Executable and Linkable Format)**：</p>
+<ul>
+<li>ELF 是一种常用的文件格式，用于定义在类 Unix 系统（如 Linux）上运行的可执行文件、可重定位的代码和共享库。</li>
+<li>ELF 文件包含程序的代码和数据，并定义了一个文件结构，这个结构描述了如何在运行时将程序加载到内存中。</li>
+</ul>
+<p><strong>关系与区别</strong>：</p>
+<ul>
+<li>DWARF 信息通常被嵌入到 ELF 文件中（在 <code>.debug</code> 节），作为程序的一部分。这意味着 ELF 文件作为容器，包含了执行程序所需的机器代码和（如果编译时指定）调试信息。</li>
+<li>在调试过程中，<strong>调试器利用 ELF 文件中的 DWARF 信息来提供程序执行的详细视图，比如变量值、程序执行的当前行等</strong>。</li>
+<li>虽然 DWARF 和 ELF 通常一起使用，<strong>但它们是独立的标准：DWARF 关注于描述调试数据，ELF 关注于程序的布局和执行</strong>。</li>
+</ul>
+<h2 id="二、DWARF-line-table-DWARF-debug-info"><a href="#二、DWARF-line-table-DWARF-debug-info" class="headerlink" title="二、DWARF line table &amp; DWARF debug info"></a>二、DWARF line table &amp; DWARF debug info</h2><p>在讨论 DWARF 格式的调试信息时，编译单元（Compilation Unit, CU）和行表（Line Table）是两个核心概念。这些信息极大地促进了源码级调试，使调试器能够有效地将执行的机器代码映射回源代码。下面详细介绍这两个概念：</p>
+<h3 id="编译单元（Compilation-Unit-CU）"><a href="#编译单元（Compilation-Unit-CU）" class="headerlink" title="编译单元（Compilation Unit, CU）"></a>编译单元（Compilation Unit, CU）</h3><p>编译单元通常指的是单个源文件及其相关包含的文件（通过预处理器展开）在编译过程中形成的单元。在 DWARF 调试信息中，每个编译单元生成一组特定的调试信息记录，这些记录描述了该源文件中定义的数据结构、函数、变量、类型等。</p>
+<h4 id="编译单元的主要内容包括："><a href="#编译单元的主要内容包括：" class="headerlink" title="编译单元的主要内容包括："></a>编译单元的主要内容包括：</h4><ol>
+<li><strong>全局变量和类型定义</strong>：全局作用域中定义的变量和类型。</li>
+<li><strong>局部变量和类型定义</strong>：函数内部定义的变量和类型。</li>
+<li><strong>子程序信息</strong>：包括函数和方法的定义，如函数名、返回类型、参数信息以及函数内的代码结构。</li>
+<li><strong>源文件和目录信息</strong>：描述编译单元对应的源文件和其在文件系统中的位置。</li>
+</ol>
+<p>编译单元的信息对于调试器来说至关重要，因为它们提供了代码结构的详细视图，使得调试器可以准确地知道在任何时刻程序正在执行的代码部分。</p>
+<h3 id="行表（Line-Table）"><a href="#行表（Line-Table）" class="headerlink" title="行表（Line Table）"></a>行表（Line Table）</h3><p>行表是 DWARF 调试信息中的一部分，它为编译单元中的每一行源代码提供一个或多个对应的机器指令的映射。这允许调试器将正在执行的机器指令精确地对应到源代码中的具体行。</p>
+<h4 id="行表的关键作用："><a href="#行表的关键作用：" class="headerlink" title="行表的关键作用："></a>行表的关键作用：</h4><ol>
+<li><strong>源代码到机器代码的映射</strong>：行表记录了源代码行与生成的机器代码之间的对应关系。这包括代码地址的起始点和源代码行号。</li>
+<li><strong>断点设置</strong>：当在源代码中设置断点时，调试器使用行表来确定应该在哪个具体的机器指令地址上设置断点。</li>
+<li><strong>步进和步过操作</strong>：在单步执行（步进）和执行至下一行（步过）时，调试器利用行表来确定执行流程应该停留或跳过的代码段。</li>
+</ol>
+<p>行表通常包含以下信息：</p>
+<ul>
+<li><strong>地址</strong>：对应机器代码的开始地址。</li>
+<li><strong>行号</strong>：源代码中的行号。</li>
+<li><strong>文件名</strong>：源代码的文件名，尤其是在项目中包含多个文件时。</li>
+<li><strong>其他标志</strong>：如是否是语句的开始、是否是基本块的开始等。</li>
+</ul>
+<p>而 CU 就是 debug info 的基本组成，每一个 CU（事实上就是一个源代码文件）组成 debug info段的一部分。编译单元是调试信息的构建块，每个编译单元封装了一个源文件的所有相关调试信息。这种组织方式不仅有助于维护信息的结构性和可查询性，也使得调试过程更为高效和直观。</p>
+<p>假设一个可执行程序（包含了 DWARF 格式的调试信息）包含了很多的源代码文件，它的 debug_info 可能如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs bash">objdump --dwarf=info hello<br>hello:     file format elf64-x86-64<br><br>Contents of the .debug_info section:<br><br>  Compilation Unit @ offset 0x0:<br>   Length:        0x2612 (32-bit)<br>   Version:       2<br>   Abbrev Offset: 0x0<br>   Pointer Size:  8<br> &lt;0&gt;&lt;b&gt;: Abbrev Number: 1 (DW_TAG_compile_unit)<br>    &lt;c&gt;   DW_AT_producer    : (indirect string, offset: 0x109b): GNU C++17 11.4.0 -mtune=generic -march=x86-64 -g -gdwarf-2 -O0 -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection<br>    &lt;10&gt;   DW_AT_language    : 4	(C++)<br>    &lt;11&gt;   DW_AT_name        : (indirect string, offset: 0x4ba): /home/luyoung/mydebugger/examples/hello.cpp<br>    &lt;15&gt;   DW_AT_comp_dir    : (indirect string, offset: 0x154): /home/luyoung/mydebugger/build/examples<br>    &lt;19&gt;   DW_AT_low_pc      : 0x1189<br>    &lt;21&gt;   DW_AT_high_pc     : 0x1220<br>    &lt;29&gt;   DW_AT_stmt_list   : 0x0<br> &lt;1&gt;&lt;2d&gt;: Abbrev Number: 2 (DW_TAG_namespace)<br>    &lt;2e&gt;   DW_AT_name        : std<br>    &lt;32&gt;   DW_AT_decl_file   : 6<br>    &lt;33&gt;   DW_AT_decl_line   : 278<br>    &lt;35&gt;   DW_AT_decl_column : 11<br>    &lt;36&gt;   DW_AT_sibling     : &lt;0xbab&gt;<br> &lt;2&gt;&lt;3a&gt;: Abbrev Number: 3 (DW_TAG_namespace)<br>    &lt;3b&gt;   DW_AT_name        : (indirect string, offset: 0x859): __cxx11<br>    &lt;3f&gt;   DW_AT_decl_file   : 6<br>    &lt;40&gt;   DW_AT_decl_line   : 302<br>    &lt;42&gt;   DW_AT_decl_column : 65<br>    &lt;43&gt;   DW_AT_export_symbols: 1<br> &lt;2&gt;&lt;44&gt;: Abbrev Number: 4 (DW_TAG_imported_module)<br> .<br> .<br> .<br>  &lt;2&gt;&lt;25f2&gt;: Abbrev Number: 0<br> &lt;1&gt;&lt;25f3&gt;: Abbrev Number: 88 (DW_TAG_subprogram)<br>    &lt;25f4&gt;   DW_AT_external    : 1<br>    &lt;25f5&gt;   DW_AT_name        : (indirect string, offset: 0x6b3): main<br>    &lt;25f9&gt;   DW_AT_decl_file   : 1<br>    &lt;25fa&gt;   DW_AT_decl_line   : 2<br>    &lt;25fb&gt;   DW_AT_decl_column : 5<br>    &lt;25fc&gt;   DW_AT_type        : &lt;0xd3d&gt;<br>    &lt;2600&gt;   DW_AT_low_pc      : 0x1189<br>    &lt;2608&gt;   DW_AT_high_pc     : 0x11b1<br>    &lt;2610&gt;   DW_AT_frame_base  : 0xc0 (location list)<br>    &lt;2614&gt;   DW_AT_GNU_all_tail_call_sites: 1<br> &lt;1&gt;&lt;2615&gt;: Abbrev Number: 0<br></code></pre></td></tr></table></figure>
+
+<p>这些信息很难看，非常不利于人类阅读，因此我们可以利用更好的工具来理解这些信息，这些工具对这些信息进行了组织，比如 dwarfdump：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><code class="hljs bash"><br>.debug_info<br><br>COMPILE_UNIT&lt;header overall offset = 0x00000000&gt;:<br>&lt; 0&gt;&lt;0x0000000b&gt;  DW_TAG_compile_unit<br>                    DW_AT_producer              GNU C++17 11.4.0 -mtune=generic -march=x86-64 -g -gdwarf-2 -O0 -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection<br>                    DW_AT_language              DW_LANG_C_plus_plus<br>                    DW_AT_name                  /home/luyoung/mydebugger/examples/hello.cpp<br>                    DW_AT_comp_dir              /home/luyoung/mydebugger/build/examples<br>                    DW_AT_low_pc                0x00001189<br>                    DW_AT_high_pc               0x00001220<br>                    DW_AT_stmt_list             0x00000000<br><br>LOCAL_SYMBOLS:<br>&lt; 1&gt;&lt;0x0000002d&gt;    DW_TAG_namespace<br>                      DW_AT_name                  std<br>                      DW_AT_decl_file             0x00000006 /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h<br>                      DW_AT_decl_line             0x00000116<br>                      DW_AT_decl_column           0x0000000b<br>                      DW_AT_sibling               &lt;0x00000bab&gt;<br>&lt; 2&gt;&lt;0x0000003a&gt;      DW_TAG_namespace<br>.<br>.<br>.<br>.debug_line: line number info <span class="hljs-keyword">for</span> a single cu<br>Source lines (from CU-DIE at .debug_info offset 0x0000000b):<br><br>            NS new statement, BB new basic block, ET end of text sequence<br>            PE prologue end, EB epilogue begin<br>            IS=val ISA number, DI=val discriminator value<br>&lt;pc&gt;        [lno,col] NS BB ET PE EB IS= DI= uri: <span class="hljs-string">&quot;filepath&quot;</span><br>0x00001189  [   2,12] NS uri: <span class="hljs-string">&quot;/home/luyoung/mydebugger/examples/hello.cpp&quot;</span><br>0x00001191  [   3,16] NS<br>0x000011aa  [   4,10] NS<br>0x000011af  [   5, 1] NS<br>0x000011b1  [   5, 1] NS<br>0x000011c3  [   5, 1] NS<br>0x000011c9  [   5, 1] DI=0x1<br>0x000011d2  [  74,25] NS uri: <span class="hljs-string">&quot;/usr/include/c++/11/iostream&quot;</span><br>0x00001204  [   5, 1] NS uri: <span class="hljs-string">&quot;/home/luyoung/mydebugger/examples/hello.cpp&quot;</span><br>0x00001207  [   5, 1] NS<br>0x0000120f  [   5, 1] NS<br>0x00001220  [   5, 1] NS ET<br>.<br>.<br>.<br>.debug_str<br>name at offset 0x00000000, length    6 is <span class="hljs-string">&#x27;getenv&#x27;</span><br>name at offset 0x00000007, length   16 is <span class="hljs-string">&#x27;__isoc99_vwscanf&#x27;</span><br>name at offset 0x00000018, length   13 is <span class="hljs-string">&#x27;uint_fast16_t&#x27;</span><br>name at offset 0x00000026, length    7 is <span class="hljs-string">&#x27;__debug&#x27;</span><br>name at offset 0x0000002e, length   17 is <span class="hljs-string">&#x27;int_p_cs_precedes&#x27;</span><br>name at offset 0x00000040, length   42 is <span class="hljs-string">&#x27;_ZNSt15__exception_ptr13exception_ptrC4EPv&#x27;</span><br>name at offset 0x0000006b, length    8 is <span class="hljs-string">&#x27;strtoull&#x27;</span><br>name at offset 0x00000074, length   16 is <span class="hljs-string">&#x27;__uint_least64_t&#x27;</span><br>name at offset 0x00000085, length    7 is <span class="hljs-string">&#x27;wcsxfrm&#x27;</span><br>name at offset 0x0000008d, length   51 is <span class="hljs-string">&#x27;_ZNSt15__exception_ptr13exception_ptr10_M_releaseEv&#x27;</span><br>name at offset 0x000000c1, length   14 is <span class="hljs-string">&#x27;~exception_ptr&#x27;</span><br>name at offset 0x000000d0, length    4 is <span class="hljs-string">&#x27;atol&#x27;</span><br>name at offset 0x000000d5, length    9 is <span class="hljs-string">&#x27;_shortbuf&#x27;</span><br>name at offset 0x000000df, length   10 is <span class="hljs-string">&#x27;_IO_lock_t&#x27;</span><br>name at offset 0x000000ea, length    7 is <span class="hljs-string">&#x27;setvbuf&#x27;</span><br>name at offset 0x000000f2, length    9 is <span class="hljs-string">&#x27;gp_offset&#x27;</span><br>.<br>.<br>.<br>.debug_aranges<br><br>COMPILE_UNIT&lt;header overall offset = 0x00000000&gt;:<br>&lt; 0&gt;&lt;0x0000000b&gt;  DW_TAG_compile_unit<br>                    DW_AT_producer              GNU C++17 11.4.0 -mtune=generic -march=x86-64 -g -gdwarf-2 -O0 -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection<br>                    DW_AT_language              DW_LANG_C_plus_plus<br>                    DW_AT_name                  /home/luyoung/mydebugger/examples/hello.cpp<br>                    DW_AT_comp_dir              /home/luyoung/mydebugger/build/examples<br>                    DW_AT_low_pc                0x00001189<br>                    DW_AT_high_pc               0x00001220<br>                    DW_AT_stmt_list             0x00000000<br><br><br>arange starts at 0x00001189, length of 0x00000097, cu_die_offset = 0x0000000b<br>arange end<br><br>.debug_frame is not present<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，<strong>dwarfdump</strong> 输出的信息更好理解，它对信息进行了分类整理。还必须要理解的是，这里的 <strong>pc</strong> 地址都是 <strong>offset</strong>，在使用的时候需要加上 <strong>load_addr</strong>，另外：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;pc&gt;        [lno,col] NS BB ET PE EB IS= DI= uri: <span class="hljs-string">&quot;filepath&quot;</span><br>0x00001189  [   2,12] NS uri: <span class="hljs-string">&quot;/home/luyoung/mydebugger/examples/hello.cpp&quot;</span><br>0x00001191  [   3,16] NS<br>0x000011aa  [   4,10] NS<br>0x000011af  [   5, 1] NS<br>0x000011b1  [   5, 1] NS<br>0x000011c3  [   5, 1] NS<br>0x000011c9  [   5, 1] DI=0x1<br>0x000011d2  [  74,25] NS uri: <span class="hljs-string">&quot;/usr/include/c++/11/iostream&quot;</span><br>0x00001204  [   5, 1] NS uri: <span class="hljs-string">&quot;/home/luyoung/mydebugger/examples/hello.cpp&quot;</span><br>0x00001207  [   5, 1] NS<br>0x0000120f  [   5, 1] NS<br>0x00001220  [   5, 1] NS ET<br></code></pre></td></tr></table></figure>
+<p>和源代码相对应，这为源代码 level 调试提供了基础：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cpp">#<span class="hljs-number">1</span> <span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br>#<span class="hljs-number">2</span> <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>#<span class="hljs-number">3</span>  std::cerr &lt;&lt; <span class="hljs-string">&quot;hello,world0.\n&quot;</span>;<br>#<span class="hljs-number">4</span>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>#<span class="hljs-number">5</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果我们想在源代码第三行处打断点，就应该把地址定在 <code>0x00001191</code>，这也可以在 elf 中找到依据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">0000000000001189 &lt;main&gt;:<br>    1189:       f3 0f 1e fa             endbr64<br>    118d:       55                      push   %rbp<br>    118e:       48 89 e5                mov    %rsp,%rbp<br>    1191:       48 8d 05 6c 0e 00 00    lea    0xe6c(%rip),%rax        <span class="hljs-comment"># 2004 &lt;_IO_stdin_used+0x4&gt;</span><br>    1198:       48 89 c6                mov    %rax,%rsi<br>    119b:       48 8d 05 7e 2e 00 00    lea    0x2e7e(%rip),%rax        <span class="hljs-comment"># 4020 &lt;_ZSt4cerr@GLIBCXX_3.4&gt;</span><br>    11a2:       48 89 c7                mov    %rax,%rdi<br>    11a5:       e8 d6 fe ff ff          call   1080 &lt;_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@plt&gt;<br>    11aa:       b8 00 00 00 00          mov    <span class="hljs-variable">$0x0</span>,%eax<br>    11af:       5d                      pop    %rbp<br>    11b0:       c3<br></code></pre></td></tr></table></figure>
+
+<p>另外还可以看到，编译单元中的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">COMPILE_UNIT&lt;header overall offset = 0x00000000&gt;:<br>&lt; 0&gt;&lt;0x0000000b&gt;  DW_TAG_compile_unit<br>...<br>                    DW_AT_low_pc                0x00001189<br>                    DW_AT_high_pc               0x00001220<br>                    DW_AT_stmt_list             0x00000000<br>                    ...<br></code></pre></td></tr></table></figure>
+
+<p>它们的 <strong>DW_AT_low_pc</strong>和 <strong>DW_AT_high_pc</strong> 和 line table 中的范围一致，因此这也是重要的信息。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C/debugger/" class="category-chain-item">debugger</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/debugger/" class="print-no-link">#debugger</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>debugger（三）：dwarf 文件</div>
+      <div>http://blog.luliang.online/2024/06/10/debugger（三）：dwarf 文件/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/10/debugger%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%BA%90%E4%BB%A3%E7%A0%81/" title="debugger（四）：源代码">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">debugger（四）：源代码</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/10/debugger%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E8%AF%BB%E3%80%81%E5%86%99%E5%86%85%E5%AD%98%E4%BB%A5%E5%8F%8A%E5%AF%84%E5%AD%98%E5%99%A8/" title="debugger（二）：读、写内存以及寄存器">
+                        <span class="hidden-mobile">debugger（二）：读、写内存以及寄存器</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

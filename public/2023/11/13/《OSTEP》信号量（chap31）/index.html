@@ -1,0 +1,723 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言本文是对《OSTEP》第三十一章的实践与总结。 一、信号量以下各个版本都是一个生产者-消费者模型，基于信号量实现，并且逐渐完善。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768#i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《OSTEP》信号量（chap31）">
+<meta property="og:url" content="http://blog.luliang.online/2023/11/13/%E3%80%8AOSTEP%E3%80%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88chap31%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言本文是对《OSTEP》第三十一章的实践与总结。 一、信号量以下各个版本都是一个生产者-消费者模型，基于信号量实现，并且逐渐完善。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768#i">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/99c48ab024d14f309e5a0db4e8417e64_1720253717123.png?token=ANB4BCLAN3VN3QWJJS2WG2TGRD6VC">
+<meta property="article:published_time" content="2023-11-13T10:32:25.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.776Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="学习">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/99c48ab024d14f309e5a0db4e8417e64_1720253717123.png?token=ANB4BCLAN3VN3QWJJS2WG2TGRD6VC">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>《OSTEP》信号量（chap31） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《OSTEP》信号量（chap31）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-13 18:32" pubdate>
+          2023年11月13日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《OSTEP》信号量（chap31）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文是对《OSTEP》第三十一章的实践与总结。</p>
+<h2 id="一、信号量"><a href="#一、信号量" class="headerlink" title="一、信号量"></a>一、信号量</h2><p>以下各个版本都是一个生产者-消费者模型，基于信号量实现，并且逐渐完善。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;semaphore.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MAX 10</span><br><br><span class="hljs-type">int</span> buffer[MAX];<br><span class="hljs-type">int</span> fill = <span class="hljs-number">0</span>;<br><span class="hljs-type">int</span> use = <span class="hljs-number">0</span>;<br><br><span class="hljs-comment">// 生产行为</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">(<span class="hljs-type">int</span> value)</span> &#123;<br>    buffer[fill] = value;<br>    fill = (fill + <span class="hljs-number">1</span>) % MAX;<br>&#125;<br><br><span class="hljs-comment">// 消费行为</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">get</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> temp = buffer[use];<br>    use = (use + <span class="hljs-number">1</span>) % MAX;<br>    <span class="hljs-keyword">return</span> temp;<br>&#125;<br><span class="hljs-type">sem_t</span> *empty;<br><span class="hljs-type">sem_t</span> *full;<br><br><span class="hljs-comment">// 生产者</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">producer</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    <span class="hljs-type">int</span> loops = *((<span class="hljs-type">int</span> *)arg);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; loops; i++) &#123;<br>        sem_wait(empty);<br>        put(i);<br>        sem_post(full);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><span class="hljs-comment">// 消费者</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">consumer</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    <span class="hljs-type">int</span> value = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">int</span> loops = *((<span class="hljs-type">int</span> *)arg);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; loops; i++) &#123;<br>        sem_wait(full);<br>        value = get();<br>        sem_post(empty);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;消费:%d\n&quot;</span>, value);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// sem_init(&amp;empty, 0, MAX);</span><br>    <span class="hljs-comment">// sem_init(&amp;full, 0, 0);</span><br>    <span class="hljs-comment">// 以上写法已经在 macOS 中废弃</span><br>    empty = sem_open(<span class="hljs-string">&quot;empty&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, MAX);<br>    full = sem_open(<span class="hljs-string">&quot;full&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, <span class="hljs-number">0</span>);<br>    <span class="hljs-type">pthread_t</span> p1, p2;<br>    <span class="hljs-type">int</span> loop = <span class="hljs-number">10</span>;<br>    pthread_create(&amp;p1, <span class="hljs-literal">NULL</span>, producer, &amp;loop);<br>    pthread_create(&amp;p2, <span class="hljs-literal">NULL</span>, consumer, &amp;loop);<br><br>    pthread_join(p1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p2, <span class="hljs-literal">NULL</span>);<br><br>    sem_close(empty);<br>    sem_close(full);<br><br>    sem_unlink(<span class="hljs-string">&quot;empty&quot;</span>);<br>    sem_unlink(<span class="hljs-string">&quot;full&quot;</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** chap31_信号量 % ./a<br>消费:0<br>消费:1<br>消费:2<br>消费:3<br>消费:4<br>消费:5<br>消费:6<br>消费:7<br>消费:8<br>消费:9<br></code></pre></td></tr></table></figure>
+<p>可以看到在单线程下（一个生产者线程，一个消费者线程）运行得很好。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>...<br>    <span class="hljs-type">pthread_t</span> p1, p2, p3;<br>    <span class="hljs-type">int</span> loop1 = <span class="hljs-number">10</span>;<br>    <span class="hljs-type">int</span> loop3 = <span class="hljs-number">10</span>;<br>    pthread_create(&amp;p1, <span class="hljs-literal">NULL</span>, producer, &amp;loop1);<br>    pthread_create(&amp;p2, <span class="hljs-literal">NULL</span>, producer, &amp;loop1);<br>    pthread_create(&amp;p3, <span class="hljs-literal">NULL</span>, consumer, &amp;loop3);<br>...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** chap31_信号量 % ./a<br>消费:0<br>消费:1<br>消费:2<br>消费:3<br>消费:4<br>消费:5<br>消费:0<br>消费:6<br>消费:1<br>消费:7<br></code></pre></td></tr></table></figure>
+<p><em><strong>运行结果可能看不出什么</strong></em>，但是生产者产生的<strong>值会被覆盖</strong>。这个情况是怎么发生的呢？</p>
+<p>假设两个生产者（Pa和Pb）几乎同时调用<code>put()</code>。当Pa先运行，在f1行先加入第一条数据（fill&#x3D;0），假设Pa在将fill计数器更新为1之前被中断，Pb开始运行，也在f1行给缓冲区的0位置加入一条数据，这意味着那里的老数据被覆盖。</p>
+<p>因此，我们的解决思路是将 <code>put()</code>修饰成一个临界区。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">sem_t</span> *empty;<br><span class="hljs-type">sem_t</span> *full;<br><span class="hljs-type">sem_t</span> *mutex;<br><br><span class="hljs-comment">// 生产者</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">producer</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    <span class="hljs-type">int</span> loops = *((<span class="hljs-type">int</span> *)arg);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; loops; i++) &#123;<br>        sem_wait(mutex);<br>        sem_wait(empty);<br>        put(i);<br>        sem_post(full);<br>        sem_post(mutex);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><span class="hljs-comment">// 消费者</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">consumer</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    <span class="hljs-type">int</span> value = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">int</span> loops = *((<span class="hljs-type">int</span> *)arg);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; loops; i++) &#123;<br>        sem_wait(full);<br>        value = get();<br>        sem_post(empty);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;消费:%d\n&quot;</span>, value);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span>&#123;<br>	...<br>	mutex = sem_open(<span class="hljs-string">&quot;mutex&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, <span class="hljs-number">1</span>);<br>	...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** chap31_信号量 % ./a<br>消费:0<br>消费:1<br>消费:2<br>消费:0<br>消费:3<br>消费:1<br>消费:4<br>消费:2<br>消费:5<br>消费:3<br></code></pre></td></tr></table></figure>
+<p>那如果继续增加一个消费者呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;semaphore.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MAX 10</span><br><br><span class="hljs-type">int</span> buffer[MAX];<br><span class="hljs-type">int</span> fill = <span class="hljs-number">0</span>;<br><span class="hljs-type">int</span> use = <span class="hljs-number">0</span>;<br><br><span class="hljs-comment">// 生产行为</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">(<span class="hljs-type">int</span> value)</span> &#123;<br>    buffer[fill] = value;<br>    fill = (fill + <span class="hljs-number">1</span>) % MAX;<br>&#125;<br><br><span class="hljs-comment">// 消费行为</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">get</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> temp = buffer[use];<br>    use = (use + <span class="hljs-number">1</span>) % MAX;<br>    <span class="hljs-keyword">return</span> temp;<br>&#125;<br><span class="hljs-type">sem_t</span> *empty;<br><span class="hljs-type">sem_t</span> *full;<br><span class="hljs-type">sem_t</span> *mutex;<br><br><span class="hljs-comment">// 生产者</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">producer</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    <span class="hljs-type">int</span> loops = *((<span class="hljs-type">int</span> *)arg);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; loops; i++) &#123;<br><br>        sem_wait(empty);<br>        sem_wait(mutex);<br>        put(i);<br>        sem_post(mutex);<br>        sem_post(full);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><span class="hljs-comment">// 消费者</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">consumer</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    <span class="hljs-type">int</span> value = <span class="hljs-number">0</span>;<br>    <span class="hljs-type">int</span> loops = *((<span class="hljs-type">int</span> *)arg);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; loops; i++) &#123;<br><br>        sem_wait(full);<br>        value = get();<br>        sem_post(empty);<br><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;消费:%d\n&quot;</span>, value);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    empty = sem_open(<span class="hljs-string">&quot;empty&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, MAX);<br>    full = sem_open(<span class="hljs-string">&quot;full&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, <span class="hljs-number">0</span>);<br>    mutex = sem_open(<span class="hljs-string">&quot;mutex&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, <span class="hljs-number">1</span>);<br>    <span class="hljs-type">pthread_t</span> p1, p2, p3, p4;<br>    <span class="hljs-type">int</span> loop1 = <span class="hljs-number">3</span>;<br>    <span class="hljs-type">int</span> loop2 = <span class="hljs-number">3</span>;<br>    pthread_create(&amp;p1, <span class="hljs-literal">NULL</span>, producer, &amp;loop1);<br>    pthread_create(&amp;p2, <span class="hljs-literal">NULL</span>, producer, &amp;loop1);<br>    pthread_create(&amp;p3, <span class="hljs-literal">NULL</span>, consumer, &amp;loop2);<br>    pthread_create(&amp;p4, <span class="hljs-literal">NULL</span>, consumer, &amp;loop2);<br><br>    pthread_join(p1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p2, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p3, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p4, <span class="hljs-literal">NULL</span>);<br><br>    sem_close(empty);<br>    sem_close(full);<br>    sem_close(mutex);<br><br>    sem_unlink(<span class="hljs-string">&quot;empty&quot;</span>);<br>    sem_unlink(<span class="hljs-string">&quot;full&quot;</span>);<br>    sem_unlink(<span class="hljs-string">&quot;mutex&quot;</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** chap31_信号量 % ./a<br>消费:0<br>消费:0<br>消费:1<br>消费:2<br>消费:1<br>消费:3<br>消费:2<br>消费:3<br>消费:5<br>消费:4<br>消费:6<br>消费:5<br>消费:7<br>消费:6<br>消费:4<br>消费:7<br>消费:8<br>消费:9<br>消费:8<br>消费:9<br></code></pre></td></tr></table></figure>
+
+<p>运行得非常好，有一个问题，会不会出现重复消费行为（把一个值消费两次）？看起来好像会。<br>但是记得 full 信号量，初始值为 0，这意味着每次只允许一个线程进行消费。这不仅和生产者达成了正确的执行序列，而且还间接得使得每次只能有一个线程在 <code>get()</code>。</p>
+<h2 id="二、读写锁"><a href="#二、读写锁" class="headerlink" title="二、读写锁"></a>二、读写锁</h2><p>以下是利用信号量来实现一个读写锁。<br>数据在有线程读时，不能写。这意味着第一个线程读的时候，直接将写者锁占有，最后一个读者将写锁释放。以下是代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;semaphore.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><br><span class="hljs-comment">// 读取的空间</span><br><span class="hljs-type">char</span> space[<span class="hljs-number">10</span>] = <span class="hljs-string">&quot;hello&quot;</span>;<br><br><span class="hljs-comment">// 读者写者锁</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">rwlock_t</span> &#123;</span><br>    <span class="hljs-type">sem_t</span> *lock;<br>    <span class="hljs-type">sem_t</span> *writelock;<br>    <span class="hljs-type">int</span> readers;<br>&#125; <span class="hljs-type">rwlock_t</span>;<br><br><span class="hljs-comment">// 初始化</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">rwlock_init</span><span class="hljs-params">(<span class="hljs-type">rwlock_t</span> *rw)</span> &#123;<br>    rw-&gt;readers = <span class="hljs-number">0</span>;<br>    rw-&gt;lock = sem_open(<span class="hljs-string">&quot;rw_lock&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, <span class="hljs-number">1</span>);<br>    rw-&gt;writelock = sem_open(<span class="hljs-string">&quot;rw_writelock&quot;</span>, O_CREAT, S_IRUSR | S_IWUSR, <span class="hljs-number">1</span>);<br>&#125;<br><span class="hljs-comment">// 获得读锁(实际上就不需要上锁,上锁只是为了修改 rw)</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">rwlock_acquire_readlock</span><span class="hljs-params">(<span class="hljs-type">rwlock_t</span> *rw)</span> &#123;<br>    sem_wait(rw-&gt;lock);<br>    rw-&gt;readers++;<br>    <span class="hljs-keyword">if</span> (rw-&gt;readers == <span class="hljs-number">1</span>) &#123;<br>        sem_wait(rw-&gt;writelock); <span class="hljs-comment">// 第一个读者需要抢占写锁</span><br>    &#125;<br>    sem_post(rw-&gt;lock);<br>&#125;<br><span class="hljs-comment">// 释放读锁(实际上就不需要上锁,上锁只是为了修改 rw)</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">rwlock_release_readlock</span><span class="hljs-params">(<span class="hljs-type">rwlock_t</span> *rw)</span> &#123;<br>    sem_wait(rw-&gt;lock);<br>    rw-&gt;readers--;<br>    <span class="hljs-keyword">if</span> (rw-&gt;readers == <span class="hljs-number">0</span>) &#123;<br>        sem_post(rw-&gt;writelock); <span class="hljs-comment">// 最后一个读者需要释放写锁</span><br>    &#125;<br>    sem_post(rw-&gt;lock);<br>&#125;<br><span class="hljs-comment">// 获得写锁</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">rwlock_acquire_writelock</span><span class="hljs-params">(<span class="hljs-type">rwlock_t</span> *rw)</span> &#123; sem_wait(rw-&gt;writelock); &#125;<br><span class="hljs-comment">// 释放写锁</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">rwlock_release_writelock</span><span class="hljs-params">(<span class="hljs-type">rwlock_t</span> *rw)</span> &#123; sem_post(rw-&gt;writelock); &#125;<br><br><span class="hljs-type">rwlock_t</span> rwlock;<br><br><span class="hljs-comment">// 写线程</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">write_t</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    rwlock_acquire_writelock(&amp;rwlock);<br>    <span class="hljs-built_in">strcpy</span>(space, arg);<br>    rwlock_release_writelock(&amp;rwlock);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><span class="hljs-comment">// 读线程</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">read_t</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span> &#123;<br>    rwlock_acquire_readlock(&amp;rwlock);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, space);<br>    rwlock_release_readlock(&amp;rwlock);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>    rwlock_init(&amp;rwlock);<br>    <span class="hljs-type">char</span> arg[<span class="hljs-number">10</span>] = <span class="hljs-string">&quot;1111111&quot;</span>;<br>    <span class="hljs-comment">// 创建 5 个读线程和 5 个写线程</span><br>    <span class="hljs-type">pthread_t</span> p_r1, p_r2, p_r3, p_r4, p_r5;<br>    <span class="hljs-type">pthread_t</span> p_w1, p_w2, p_w3, p_w4, p_w5;<br><br>    pthread_create(&amp;p_r1, <span class="hljs-literal">NULL</span>, <span class="hljs-type">read_t</span>, <span class="hljs-literal">NULL</span>);<br>    pthread_create(&amp;p_r2, <span class="hljs-literal">NULL</span>, <span class="hljs-type">read_t</span>, <span class="hljs-literal">NULL</span>);<br><br>    pthread_create(&amp;p_w1, <span class="hljs-literal">NULL</span>, <span class="hljs-type">write_t</span>, arg);<br>    arg[<span class="hljs-number">2</span>] = <span class="hljs-string">&#x27;2&#x27;</span>;<br>    pthread_create(&amp;p_w2, <span class="hljs-literal">NULL</span>, <span class="hljs-type">write_t</span>, arg);<br><br>    arg[<span class="hljs-number">5</span>] = <span class="hljs-string">&#x27;5&#x27;</span>;<br>    pthread_create(&amp;p_w5, <span class="hljs-literal">NULL</span>, <span class="hljs-type">write_t</span>, arg);<br><br>    pthread_create(&amp;p_r3, <span class="hljs-literal">NULL</span>, <span class="hljs-type">read_t</span>, <span class="hljs-literal">NULL</span>);<br>    pthread_create(&amp;p_r4, <span class="hljs-literal">NULL</span>, <span class="hljs-type">read_t</span>, <span class="hljs-literal">NULL</span>);<br>    arg[<span class="hljs-number">3</span>] = <span class="hljs-string">&#x27;3&#x27;</span>;<br>    pthread_create(&amp;p_w3, <span class="hljs-literal">NULL</span>, <span class="hljs-type">write_t</span>, arg);<br>    arg[<span class="hljs-number">4</span>] = <span class="hljs-string">&#x27;4&#x27;</span>;<br>    pthread_create(&amp;p_w4, <span class="hljs-literal">NULL</span>, <span class="hljs-type">write_t</span>, arg);<br>    pthread_create(&amp;p_r5, <span class="hljs-literal">NULL</span>, <span class="hljs-type">read_t</span>, <span class="hljs-literal">NULL</span>);<br><br>    pthread_join(p_r1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_r2, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_r3, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_r4, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_r5, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_w1, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_w2, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_w3, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_w4, <span class="hljs-literal">NULL</span>);<br>    pthread_join(p_w5, <span class="hljs-literal">NULL</span>);<br>    sem_close(rwlock.lock);<br>    sem_close(rwlock.writelock);<br><br>    sem_unlink(<span class="hljs-string">&quot;rw_lock&quot;</span>);<br>    sem_unlink(<span class="hljs-string">&quot;rw_writelock&quot;</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">****** chap31_信号量 % ./a<br>hello<br>hello<br>1121151<br>1121151<br>1123451<br></code></pre></td></tr></table></figure>
+
+<p>可以顺利运行。</p>
+<h2 id="三、哲学家就餐问题"><a href="#三、哲学家就餐问题" class="headerlink" title="三、哲学家就餐问题"></a>三、哲学家就餐问题</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;semaphore.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-comment">// 模拟四位哲学家就餐,使得他们能顺利就餐,并且不会有人挨饿.</span><br><span class="hljs-comment">// 拿到餐具的人,吃完饭后就立即放下餐具,让给其他人(看起来不是那么卫生)</span><br><br><span class="hljs-comment">// 设置餐具</span><br><br><span class="hljs-type">sem_t</span> forks[<span class="hljs-number">5</span>];<br><span class="hljs-comment">// 初始化这些叉子</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">forks_init</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>        sem_init(&amp;forks[i],<span class="hljs-number">0</span>,<span class="hljs-number">1</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 假设哲学家编号为 p,则他拿的叉子(左右两个叉子)编号应该为:</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">left</span><span class="hljs-params">(<span class="hljs-type">int</span> p)</span>&#123;<br>    <span class="hljs-keyword">return</span> p;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">right</span><span class="hljs-params">(<span class="hljs-type">int</span> p)</span>&#123;<br>    <span class="hljs-keyword">return</span> (p+<span class="hljs-number">1</span>)%<span class="hljs-number">5</span>;<br>&#125;<br><br><span class="hljs-comment">// 拿到叉子,准备吃饭</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">getforks</span><span class="hljs-params">(<span class="hljs-type">int</span> p)</span>&#123;<br>    <span class="hljs-keyword">if</span>(p == <span class="hljs-number">4</span>)&#123;<br>        sem_wait(&amp;forks[right(p)]);<br>        sem_wait(&amp;forks[left(p)]);<br>        <span class="hljs-comment">// 拿到了两个叉子就能吃饭了</span><br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d号哲学家开始就餐.\n&quot;</span>,p);<br>        sleep(<span class="hljs-number">2</span>);<br>    &#125;<span class="hljs-keyword">else</span>&#123;<br>    sem_wait(&amp;forks[left(p)]);<br>    sem_wait(&amp;forks[right(p)]);<br>    <span class="hljs-comment">// 拿到了两个叉子就能吃饭了</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d号哲学家开始就餐.\n&quot;</span>,p);<br>    sleep(<span class="hljs-number">2</span>);<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 放下餐具</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">putforks</span><span class="hljs-params">(<span class="hljs-type">int</span> p)</span>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d号哲学家完成就餐,并放下了叉子.\n&quot;</span>,p);<br>    sem_post(&amp;forks[left(p)]);<br>    sem_post(&amp;forks[right(p)]);<br>&#125;<br><br><span class="hljs-comment">// 就餐</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">eat</span><span class="hljs-params">(<span class="hljs-type">void</span> *arg)</span>&#123;<br>    <span class="hljs-type">int</span> p = *((<span class="hljs-type">int</span>*)arg);<br>    getforks(p);<br>    putforks(p);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span>&#123;<br>    forks_init();<br>    <span class="hljs-type">pthread_t</span> p[<span class="hljs-number">5</span>];<br>    <span class="hljs-type">int</span> i0 = <span class="hljs-number">0</span>;<br>    pthread_create(&amp;p[<span class="hljs-number">0</span>],<span class="hljs-literal">NULL</span>,eat,&amp;i0);<br>    <span class="hljs-type">int</span> i1 = <span class="hljs-number">1</span>;<br>    pthread_create(&amp;p[<span class="hljs-number">1</span>],<span class="hljs-literal">NULL</span>,eat,&amp;i1);<br>    <span class="hljs-type">int</span> i2 = <span class="hljs-number">2</span>;<br>    pthread_create(&amp;p[<span class="hljs-number">2</span>],<span class="hljs-literal">NULL</span>,eat,&amp;i2);<br>    <span class="hljs-type">int</span> i3 = <span class="hljs-number">3</span>;<br>    pthread_create(&amp;p[<span class="hljs-number">3</span>],<span class="hljs-literal">NULL</span>,eat,&amp;i3);<br>    <span class="hljs-type">int</span> i4 = <span class="hljs-number">4</span>;<br>    pthread_create(&amp;p[<span class="hljs-number">4</span>],<span class="hljs-literal">NULL</span>,eat,&amp;i4);<br><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)&#123;<br>        pthread_join(p[i],<span class="hljs-literal">NULL</span>);<br>        sem_close(&amp;forks[i]);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果（这里是在 Linux 平台）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">******:~/OSTEP_notes_linux_version/chap31_信号量<span class="hljs-comment"># gcc -o a phi_eat.c -lrt -lpthread</span><br>******:~/OSTEP_notes_linux_version/chap31_信号量<span class="hljs-comment"># ./a</span><br>0号哲学家开始就餐.<br>2号哲学家开始就餐.<br>0号哲学家完成就餐,并放下了叉子.<br>2号哲学家完成就餐,并放下了叉子.<br>4号哲学家开始就餐.<br>1号哲学家开始就餐.<br>4号哲学家完成就餐,并放下了叉子.<br>1号哲学家完成就餐,并放下了叉子.<br>3号哲学家开始就餐.<br>3号哲学家完成就餐,并放下了叉子.<br></code></pre></td></tr></table></figure>
+<p>可以看到所有的哲学家都能顺利完成就餐。这里解决的核心思路就是，最后一个哲学家拿刀叉的顺序和别的哲学家不一样，这在理论上不会造成死锁。<br>试分析一下（p 代表哲学家，f 代表叉子），易知假设在 t 时刻是一个环形等待：</p>
+<ul>
+<li>p0 占据 f0 请求 f1;</li>
+<li>p1 占据 f1 请求 f2;</li>
+<li>p2 占据 f2 请求 f3;</li>
+<li>p3 占据 f3 请求 f0;</li>
+</ul>
+<p>画出资源配置图之后，很容易求出它的可达性矩阵：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/99c48ab024d14f309e5a0db4e8417e64_1720253717123.png?token=ANB4BCLAN3VN3QWJJS2WG2TGRD6VC" alt="在这里插入图片描述"></p>
+<p>因此，可达性矩阵为：<br>$$<br>  P &#x3D;  \left(<br>   \begin{matrix}<br>   1 &amp; 1 &amp; 1 &amp; 1  \<br>      1 &amp; 1 &amp; 1 &amp; 1  \<br>   1 &amp; 1 &amp; 1 &amp; 1  \<br>     1 &amp; 1 &amp; 1 &amp; 1  \<br>  \end{matrix}<br>  \right)<br>$$<br>强分图也就是:<br>$$<br>  P\bigwedge P^T &#x3D;  \left(<br>   \begin{matrix}<br>   1 &amp; 1 &amp; 1 &amp; 1  \<br>      1 &amp; 1 &amp; 1 &amp; 1  \<br>   1 &amp; 1 &amp; 1 &amp; 1  \<br>     1 &amp; 1 &amp; 1 &amp; 1  \<br>  \end{matrix}<br>  \right)<br>$$</p>
+<p>因此，在 t 时刻处于死锁状态，这与我们的经验相一致。</p>
+<h2 id="四、实现一个信号量"><a href="#四、实现一个信号量" class="headerlink" title="四、实现一个信号量"></a>四、实现一个信号量</h2><p>这里利用锁和条件变量来实现一个信号量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><br><span class="hljs-comment">// 自己定义信号量</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> &#123;</span><br>    <span class="hljs-type">int</span> value;<br>    <span class="hljs-type">pthread_cond_t</span> cond;<br>    <span class="hljs-type">pthread_mutex_t</span> lock;<br>&#125;<span class="hljs-type">zem_t</span>;<br><br><span class="hljs-comment">// 初始化</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">zem_init</span><span class="hljs-params">(<span class="hljs-type">zem_t</span> *zem,<span class="hljs-type">int</span> value)</span>&#123;<br>    zem-&gt;value = value;<br>    pthread_cond_init(&amp;zem-&gt;cond,<span class="hljs-literal">NULL</span>);<br>    pthread_mutex_init(&amp;zem-&gt;lock,<span class="hljs-literal">NULL</span>);<br>&#125;<br><br><span class="hljs-comment">// wait</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">zem_wait</span><span class="hljs-params">(<span class="hljs-type">zem_t</span> *zem)</span>&#123;<br>    pthread_mutex_lock(&amp;zem-&gt;lock);<br>    <span class="hljs-keyword">while</span>(zem-&gt;value &lt;= <span class="hljs-number">0</span>)&#123;<br>        pthread_cond_wait(&amp;zem-&gt;cond,&amp;zem-&gt;lock);<br>    &#125;<br>    zem-&gt;value--;<br>    pthread_mutex_unlock(&amp;zem-&gt;lock);<br>&#125;<br><br><span class="hljs-comment">// post</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">zem_post</span><span class="hljs-params">(<span class="hljs-type">zem_t</span> *zem)</span>&#123;<br>    pthread_mutex_lock(&amp;zem-&gt;lock);<br>    zem-&gt;value++;<br>    pthread_cond_signal(&amp;zem-&gt;cond);<br>    pthread_mutex_unlock(&amp;zem-&gt;lock);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这确实是相当优雅。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0/" class="print-no-link">#学习</a>
+      
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《OSTEP》信号量（chap31）</div>
+      <div>http://blog.luliang.online/2023/11/13/《OSTEP》信号量（chap31）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/11/18/xv6%20book%20Chapter3%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" title="xv6 book Chapter3 中文翻译">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">xv6 book Chapter3 中文翻译</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/11/11/%E3%80%8AOSTEP%E3%80%8B%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%EF%BC%88chap30%EF%BC%89/" title="《OSTEP》条件变量（chap30）">
+                        <span class="hidden-mobile">《OSTEP》条件变量（chap30）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

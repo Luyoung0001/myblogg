@@ -1,0 +1,902 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="nemu首先研究 nemu 的构建方式。 直接看 nemu 的 Makefile(~&#x2F;ysyx-workbench&#x2F;nemu&#x2F;Makefile): 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nemu、am项目构建">
+<meta property="og:url" content="http://blog.luliang.online/2024/08/23/nemu_am%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="nemu首先研究 nemu 的构建方式。 直接看 nemu 的 Makefile(~&#x2F;ysyx-workbench&#x2F;nemu&#x2F;Makefile): 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/nemu_makefile.png">
+<meta property="article:published_time" content="2024-08-23T03:22:33.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.775Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="NEMU">
+<meta property="article:tag" content="PA2">
+<meta property="article:tag" content="AM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/nemu_makefile.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>nemu、am项目构建 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="nemu、am项目构建"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-23 11:22" pubdate>
+          2024年8月23日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">nemu、am项目构建</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="nemu"><a href="#nemu" class="headerlink" title="nemu"></a>nemu</h2><p>首先研究 nemu 的构建方式。</p>
+<p>直接看 nemu 的 Makefile(~&#x2F;ysyx-workbench&#x2F;nemu&#x2F;Makefile):</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment">#***************************************************************************************</span><br><span class="hljs-comment"># Copyright (c) 2014-2022 Zihao Yu, Nanjing University</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># NEMU is licensed under Mulan PSL v2.</span><br><span class="hljs-comment"># You can use this software according to the terms and conditions of the Mulan PSL v2.</span><br><span class="hljs-comment"># You may obtain a copy of Mulan PSL v2 at:</span><br><span class="hljs-comment">#          http://license.coscl.org.cn/MulanPSL2</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># THIS SOFTWARE IS PROVIDED ON AN &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OF ANY KIND,</span><br><span class="hljs-comment"># EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,</span><br><span class="hljs-comment"># MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># See the Mulan PSL v2 for more details.</span><br><span class="hljs-comment">#**************************************************************************************/</span><br><br><span class="hljs-comment"># Sanity check</span><br><span class="hljs-comment"># 环境检查</span><br><span class="hljs-comment"># 条件的检查：ifeq 判断 $(wildcard $(NEMU_HOME)/src/nemu-main.c) 的结果是否为空。空结果表示 nemu-main.c 文件在指定目录下不存在。</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">wildcard</span> <span class="hljs-variable">$(NEMU_HOME)</span>/src/nemu-main.c)</span>,)<br>  <span class="hljs-variable">$(<span class="hljs-built_in">error</span> NEMU_HOME=<span class="hljs-variable">$(NEMU_HOME)</span> is not a NEMU repo)</span><br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment"># Include variables and rules generated by menuconfig</span><br><span class="hljs-comment"># 导入一些配置文件（自动生成）</span><br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf<br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf.cmd<br><br><span class="hljs-comment"># 定义函数：去掉上双引号&quot;&quot;</span><br>remove_quote = <span class="hljs-variable">$(<span class="hljs-built_in">patsubst</span> &quot;%&quot;,%,$(1)</span>)<br><br><span class="hljs-comment"># Extract variabls from menuconfig</span><br>GUEST_ISA ?= <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ISA)</span>)</span><br>ENGINE ?= <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ENGINE)</span>)</span><br>NAME    = <span class="hljs-variable">$(GUEST_ISA)</span>-nemu-<span class="hljs-variable">$(ENGINE)</span><br><br><span class="hljs-comment"># Include all filelist.mk to merge file lists</span><br>FILELIST_MK = <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L ./src -name &quot;filelist.mk&quot;)</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(FILELIST_MK)</span><br><br><span class="hljs-comment"># Filter out directories and files in blacklist to obtain the final set of source files</span><br>DIRS-BLACKLIST-y += $(DIRS-BLACKLIST)<br>SRCS-BLACKLIST-y += $(SRCS-BLACKLIST) <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L $(DIRS-BLACKLIST-y)</span> -name <span class="hljs-string">&quot;*.c&quot;</span>)<br>SRCS-y += <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L $(DIRS-y)</span> -name <span class="hljs-string">&quot;*.c&quot;</span>)<br>SRCS = <span class="hljs-variable">$(<span class="hljs-built_in">filter</span>-out $(SRCS-BLACKLIST-y)</span>,$(SRCS-y))<br><br><span class="hljs-comment"># Extract compiler and options from menuconfig</span><br>CC = <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_CC)</span>)</span><br>CFLAGS_BUILD += -g<br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_CC_OPT)</span>)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_LTO)</span>,-flto,)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_DEBUG)</span>,-Og -ggdb3,)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_ASAN)</span>,-fsanitize=address,)</span><br>CFLAGS_TRACE += -DITRACE_COND=<span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_ITRACE_COND)</span>,$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ITRACE_COND)</span>)</span>,true)<br>CFLAGS  += <span class="hljs-variable">$(CFLAGS_BUILD)</span> <span class="hljs-variable">$(CFLAGS_TRACE)</span> -D__GUEST_ISA__=<span class="hljs-variable">$(GUEST_ISA)</span> -DCALL_BATCH_MODE<br>LDFLAGS += <span class="hljs-variable">$(CFLAGS_BUILD)</span><br><br><span class="hljs-comment"># Include rules for menuconfig</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/scripts/config.mk<br><br><span class="hljs-keyword">ifdef</span> CONFIG_TARGET_AM<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/Makefile<br>LINKAGE += <span class="hljs-variable">$(ARCHIVES)</span><br><span class="hljs-keyword">else</span><br><span class="hljs-comment"># Include rules to build NEMU</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/scripts/native.mk<br><span class="hljs-keyword">endif</span><br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，这个 Makefile 做的事情就是定义了一些变量，甚至设置了一些宏，然后还包含了一些Makeifile文件:</p>
+<ul>
+<li>include $(NEMU_HOME)&#x2F;scripts&#x2F;config.mk</li>
+<li>include $(NEMU_HOME)&#x2F;scripts&#x2F;native.mk</li>
+</ul>
+<p>继续分析$(NEMU_HOME)&#x2F;scripts&#x2F;config.mk：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment">#***************************************************************************************</span><br><span class="hljs-comment"># Copyright (c) 2014-2022 Zihao Yu, Nanjing University</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># NEMU is licensed under Mulan PSL v2.</span><br><span class="hljs-comment"># You can use this software according to the terms and conditions of the Mulan PSL v2.</span><br><span class="hljs-comment"># You may obtain a copy of Mulan PSL v2 at:</span><br><span class="hljs-comment">#          http://license.coscl.org.cn/MulanPSL2</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># THIS SOFTWARE IS PROVIDED ON AN &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OF ANY KIND,</span><br><span class="hljs-comment"># EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,</span><br><span class="hljs-comment"># MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># See the Mulan PSL v2 for more details.</span><br><span class="hljs-comment">#**************************************************************************************/</span><br><br>COLOR_RED := <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> echo &quot;\033[1;31m&quot;)</span><br>COLOR_END := <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> echo &quot;\033[0m&quot;)</span><br><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">wildcard</span> .config)</span>,)<br><span class="hljs-variable">$(<span class="hljs-built_in">warning</span> <span class="hljs-variable">$(COLOR_RED)</span>Warning: .config does not exists!<span class="hljs-variable">$(COLOR_END)</span>)</span><br><span class="hljs-variable">$(<span class="hljs-built_in">warning</span> <span class="hljs-variable">$(COLOR_RED)</span>To build the project, first run &#x27;make menuconfig&#x27;.<span class="hljs-variable">$(COLOR_END)</span>)</span><br><span class="hljs-keyword">endif</span><br><br>Q            := @<br>KCONFIG_PATH := <span class="hljs-variable">$(NEMU_HOME)</span>/tools/kconfig<br>FIXDEP_PATH  := <span class="hljs-variable">$(NEMU_HOME)</span>/tools/fixdep<br>Kconfig      := <span class="hljs-variable">$(NEMU_HOME)</span>/Kconfig<br>rm-distclean += <span class="hljs-keyword">include</span>/generated <span class="hljs-keyword">include</span>/config .config .config.old<br>silent := -s<br><br>CONF   := <span class="hljs-variable">$(KCONFIG_PATH)</span>/build/conf<br>MCONF  := <span class="hljs-variable">$(KCONFIG_PATH)</span>/build/mconf<br>FIXDEP := <span class="hljs-variable">$(FIXDEP_PATH)</span>/build/fixdep<br><br><span class="hljs-variable">$(CONF)</span>:<br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MAKE)</span> <span class="hljs-variable">$(silent)</span> -C <span class="hljs-variable">$(KCONFIG_PATH)</span> NAME=conf<br><br><span class="hljs-variable">$(MCONF)</span>:<br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MAKE)</span> <span class="hljs-variable">$(silent)</span> -C <span class="hljs-variable">$(KCONFIG_PATH)</span> NAME=mconf<br><br><span class="hljs-variable">$(FIXDEP)</span>:<br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MAKE)</span> <span class="hljs-variable">$(silent)</span> -C <span class="hljs-variable">$(FIXDEP_PATH)</span><br><br><span class="hljs-section">menuconfig: <span class="hljs-variable">$(MCONF)</span> <span class="hljs-variable">$(CONF)</span> <span class="hljs-variable">$(FIXDEP)</span></span><br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MCONF)</span> <span class="hljs-variable">$(Kconfig)</span><br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(CONF)</span> <span class="hljs-variable">$(silent)</span> --syncconfig <span class="hljs-variable">$(Kconfig)</span><br><br><span class="hljs-section">savedefconfig: <span class="hljs-variable">$(CONF)</span></span><br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$&lt;</span> <span class="hljs-variable">$(silent)</span> --<span class="hljs-variable">$@</span>=configs/defconfig <span class="hljs-variable">$(Kconfig)</span><br><br><span class="hljs-section">%defconfig: <span class="hljs-variable">$(CONF)</span> <span class="hljs-variable">$(FIXDEP)</span></span><br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$&lt;</span> <span class="hljs-variable">$(silent)</span> --defconfig=configs/<span class="hljs-variable">$@</span> <span class="hljs-variable">$(Kconfig)</span><br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$&lt;</span> <span class="hljs-variable">$(silent)</span> --syncconfig <span class="hljs-variable">$(Kconfig)</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: menuconfig savedefconfig defconfig</span><br><br><span class="hljs-comment"># Help text used by make help</span><br><span class="hljs-section">help:</span><br>	@echo  &#x27;  menuconfig	  - Update current config utilising a menu based program&#x27;<br>	@echo  &#x27;  savedefconfig   - Save current config as configs/defconfig (minimal config)&#x27;<br><br><span class="hljs-section">distclean: clean</span><br>	-@rm -rf $(rm-distclean)<br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: help distclean</span><br><br><span class="hljs-keyword">define</span> call_fixdep<br>	@<span class="hljs-variable">$(FIXDEP)</span> $(1) $(2) unused &gt; $(1).tmp<br>	@mv $(1).tmp $(1)<br><span class="hljs-keyword">endef</span><br><br></code></pre></td></tr></table></figure>
+
+<p>这个Makefile为NEMU项目提供了一个完整的构建和配置管理框架，支持配置文件的生成和管理，自动化构建工具的编译，以及项目的清理工作。这有助于项目维护者和用户方便地管理和构建项目，同时确保配置的一致性和项目的可重建性。</p>
+<p>继续分析$(NEMU_HOME)&#x2F;scripts&#x2F;native.mk：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment">#***************************************************************************************</span><br><span class="hljs-comment"># Copyright (c) 2014-2022 Zihao Yu, Nanjing University</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># NEMU is licensed under Mulan PSL v2.</span><br><span class="hljs-comment"># You can use this software according to the terms and conditions of the Mulan PSL v2.</span><br><span class="hljs-comment"># You may obtain a copy of Mulan PSL v2 at:</span><br><span class="hljs-comment">#          http://license.coscl.org.cn/MulanPSL2</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># THIS SOFTWARE IS PROVIDED ON AN &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OF ANY KIND,</span><br><span class="hljs-comment"># EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,</span><br><span class="hljs-comment"># MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># See the Mulan PSL v2 for more details.</span><br><span class="hljs-comment">#**************************************************************************************/</span><br><br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/../Makefile<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/scripts/build.mk<br><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/tools/difftest.mk<br><br><span class="hljs-section">compile_git:</span><br>	<span class="hljs-variable">$(<span class="hljs-built_in">call</span> git_commit, &quot;compile NEMU&quot;)</span><br><span class="hljs-variable">$(BINARY)</span>:: compile_git<br><br><span class="hljs-comment"># Some convenient rules</span><br><span class="hljs-comment"># 使用override确保即使ARGS通过命令行被设置，这条追加操作也会生效，从而保证$(ARGS_DIFF)中的额外参数被包含在内。</span><br><span class="hljs-keyword">override</span> ARGS ?= --log=<span class="hljs-variable">$(BUILD_DIR)</span>/nemu-log.txt<br><span class="hljs-keyword">override</span> ARGS += <span class="hljs-variable">$(ARGS_DIFF)</span><br><br><span class="hljs-comment"># Command to execute NEMU</span><br><span class="hljs-comment"># 可以手动指定 img</span><br>IMG ?=<br>NEMU_EXEC := <span class="hljs-variable">$(BINARY)</span> <span class="hljs-variable">$(ARGS)</span> <span class="hljs-variable">$(IMG)</span><br><br><span class="hljs-section">run-env: <span class="hljs-variable">$(BINARY)</span> <span class="hljs-variable">$(DIFF_REF_SO)</span></span><br><br><span class="hljs-section">run: run-env</span><br>	<span class="hljs-variable">$(<span class="hljs-built_in">call</span> git_commit, &quot;run NEMU&quot;)</span><br>	<span class="hljs-variable">$(NEMU_EXEC)</span><br><br><span class="hljs-section">gdb: run-env</span><br>	<span class="hljs-variable">$(<span class="hljs-built_in">call</span> git_commit, &quot;gdb NEMU&quot;)</span><br>	gdb -s <span class="hljs-variable">$(BINARY)</span> --args <span class="hljs-variable">$(NEMU_EXEC)</span><br><br>clean-tools = <span class="hljs-variable">$(<span class="hljs-built_in">dir</span> $(<span class="hljs-built_in">shell</span> find ./tools -maxdepth 2 -mindepth 2 -name &quot;Makefile&quot;)</span>)<br><span class="hljs-section">$(clean-tools):</span><br>	-@<span class="hljs-variable">$(MAKE)</span> -s -C <span class="hljs-variable">$@</span> clean<br><span class="hljs-section">clean-tools: $(clean-tools)</span><br><span class="hljs-section">clean-all: clean distclean clean-tools</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: run gdb run-env clean-tools clean-all $(clean-tools)</span><br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，这个文件是真正构建 nemu 的文件，但是它依然包含了一下文件：</p>
+<ul>
+<li>-include $(NEMU_HOME)&#x2F;..&#x2F;Makefile</li>
+<li>include $(NEMU_HOME)&#x2F;scripts&#x2F;build.mk</li>
+<li>include $(NEMU_HOME)&#x2F;tools&#x2F;difftest.mk</li>
+</ul>
+<p>继续分析$(NEMU_HOME)&#x2F;..&#x2F;Makefile：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs Makefile">...<br>...<br><span class="hljs-comment"># DO NOT modify the following code!!!</span><br><br>TRACER = tracer-ysyx<br>GITFLAGS = -q --author=&#x27;<span class="hljs-variable">$(TRACER)</span> &lt;tracer@ysyx.org&gt;&#x27; --no-verify --allow-empty<br><br>YSYX_HOME = <span class="hljs-variable">$(NEMU_HOME)</span>/..<br>WORK_BRANCH = <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> git rev-parse --abbrev-ref HEAD)</span><br>WORK_INDEX = <span class="hljs-variable">$(YSYX_HOME)</span>/.git/index.<span class="hljs-variable">$(WORK_BRANCH)</span><br>TRACER_BRANCH = <span class="hljs-variable">$(TRACER)</span><br><br>LOCK_DIR = <span class="hljs-variable">$(YSYX_HOME)</span>/.git/<br><br><span class="hljs-comment"># prototype: git_soft_checkout(branch)</span><br><span class="hljs-keyword">define</span> git_soft_checkout<br>	git checkout --detach -q &amp;&amp; git reset --soft $(1) -q -- &amp;&amp; git checkout $(1) -q --<br><span class="hljs-keyword">endef</span><br><br><span class="hljs-comment"># prototype: git_commit(msg)</span><br><span class="hljs-keyword">define</span> git_commit<br>	-@flock <span class="hljs-variable">$(LOCK_DIR)</span> <span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(YSYX_HOME)</span> .git_commit MSG=&#x27;$(1)&#x27;<br>	-@sync <span class="hljs-variable">$(LOCK_DIR)</span><br><span class="hljs-keyword">endef</span><br><br><span class="hljs-section">.git_commit:</span><br>	-@while (test -e .git/index.lock); do sleep 0.1; done;               `<span class="hljs-comment"># wait for other git instances`</span><br>	-@git branch <span class="hljs-variable">$(TRACER_BRANCH)</span> -q 2&gt;/dev/null || true                 `<span class="hljs-comment"># create tracer branch if not existent`</span><br>	-@cp -a .git/index <span class="hljs-variable">$(WORK_INDEX)</span>                                     `<span class="hljs-comment"># backup git index`</span><br>	-@<span class="hljs-variable">$(<span class="hljs-built_in">call</span> git_soft_checkout, <span class="hljs-variable">$(TRACER_BRANCH)</span>)</span>                        `<span class="hljs-comment"># switch to tracer branch`</span><br>	-@git add . -A --ignore-errors                                       `<span class="hljs-comment"># add files to commit`</span><br>	-@(echo <span class="hljs-string">&quot;&gt; <span class="hljs-variable">$(MSG)</span>&quot;</span> &amp;&amp; echo <span class="hljs-variable">$(STUID)</span> <span class="hljs-variable">$(STUNAME)</span> &amp;&amp; uname -a &amp;&amp; uptime `<span class="hljs-comment"># generate commit msg`) \</span><br>	                | git commit -F - <span class="hljs-variable">$(GITFLAGS)</span>                        `<span class="hljs-comment"># commit changes in tracer branch`</span><br>	-@<span class="hljs-variable">$(<span class="hljs-built_in">call</span> git_soft_checkout, <span class="hljs-variable">$(WORK_BRANCH)</span>)</span>                          `<span class="hljs-comment"># switch to work branch`</span><br>	-@mv <span class="hljs-variable">$(WORK_INDEX)</span> .git/index                                        `<span class="hljs-comment"># restore git index`</span><br><br><span class="hljs-section">.clean_index:</span><br>	rm -f <span class="hljs-variable">$(WORK_INDEX)</span><br><br><span class="hljs-section">_default:</span><br>	@echo <span class="hljs-string">&quot;Please run &#x27;make&#x27; under subprojects.&quot;</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: .git_commit .clean_index _default</span><br><br></code></pre></td></tr></table></figure>
+
+<p>这个文件定义了函数git_commit、git_soft_checkout。其中commit通过一系列复杂的Git操作支持一个环境，它为代码提交提供了一个自动化的环境，包括自动添加学生的身份信息、系统信息和运行时间到提交信息中。</p>
+<p>继续分析：$(NEMU_HOME)&#x2F;scripts&#x2F;build.mk：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs Makefile">.DEFAULT_GOAL = app<br><br><span class="hljs-comment"># Add necessary options if the target is a shared library</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(SHARE)</span>,1)<br>SO = -so<br>CFLAGS  += -fPIC -fvisibility=hidden<br>LDFLAGS += -shared -fPIC<br><span class="hljs-keyword">endif</span><br><br>WORK_DIR  = <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> pwd)</span><br>BUILD_DIR = <span class="hljs-variable">$(WORK_DIR)</span>/build<br><br>INC_PATH := <span class="hljs-variable">$(WORK_DIR)</span>/<span class="hljs-keyword">include</span> <span class="hljs-variable">$(INC_PATH)</span><br>OBJ_DIR  = <span class="hljs-variable">$(BUILD_DIR)</span>/obj-<span class="hljs-variable">$(NAME)</span><span class="hljs-variable">$(SO)</span><br>BINARY   = <span class="hljs-variable">$(BUILD_DIR)</span>/<span class="hljs-variable">$(NAME)</span><span class="hljs-variable">$(SO)</span><br><br><span class="hljs-comment"># Compilation flags</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(CC)</span>,clang)<br>CXX := clang++<br><span class="hljs-keyword">else</span><br>CXX := g++<br><span class="hljs-keyword">endif</span><br>LD := <span class="hljs-variable">$(CXX)</span><br>INCLUDES = <span class="hljs-variable">$(<span class="hljs-built_in">addprefix</span> -I, <span class="hljs-variable">$(INC_PATH)</span>)</span><br>CFLAGS  := -O2 -MMD -Wall -Werror <span class="hljs-variable">$(INCLUDES)</span> <span class="hljs-variable">$(CFLAGS)</span><br>LDFLAGS := -O2 <span class="hljs-variable">$(LDFLAGS)</span><br><br>OBJS = $(SRCS:%.c=<span class="hljs-variable">$(OBJ_DIR)</span>/%.o) $(CXXSRC:%.cc=<span class="hljs-variable">$(OBJ_DIR)</span>/%.o)<br><br><span class="hljs-comment"># Compilation patterns</span><br><span class="hljs-variable">$(OBJ_DIR)</span>/%.o: %.c<br>	@echo + CC <span class="hljs-variable">$&lt;</span><br>	@mkdir -p <span class="hljs-variable">$(<span class="hljs-built_in">dir</span> <span class="hljs-variable">$@</span>)</span><br>	@<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> -c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$&lt;</span><br>	<span class="hljs-variable">$(<span class="hljs-built_in">call</span> call_fixdep, $(@:.o=.d)</span>, <span class="hljs-variable">$@</span>)<br><br><span class="hljs-variable">$(OBJ_DIR)</span>/%.o: %.cc<br>	@echo + CXX <span class="hljs-variable">$&lt;</span><br>	@mkdir -p <span class="hljs-variable">$(<span class="hljs-built_in">dir</span> <span class="hljs-variable">$@</span>)</span><br>	@<span class="hljs-variable">$(CXX)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$(CXXFLAGS)</span> -c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$&lt;</span><br>	<span class="hljs-variable">$(<span class="hljs-built_in">call</span> call_fixdep, $(@:.o=.d)</span>, <span class="hljs-variable">$@</span>)<br><br><span class="hljs-comment"># Depencies</span><br><span class="hljs-keyword">-include</span> $(OBJS:.o=.d)<br><br><span class="hljs-comment"># Some convenient rules</span><br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: app clean</span><br><br><span class="hljs-section">app: <span class="hljs-variable">$(BINARY)</span></span><br><br><span class="hljs-variable">$(BINARY)</span>:: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(ARCHIVES)</span><br>	@echo + LD <span class="hljs-variable">$@</span><br>	@<span class="hljs-variable">$(LD)</span> -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LDFLAGS)</span> <span class="hljs-variable">$(ARCHIVES)</span> <span class="hljs-variable">$(LIBS)</span><br><br><span class="hljs-section">clean:</span><br>	-rm -rf <span class="hljs-variable">$(BUILD_DIR)</span><br><br></code></pre></td></tr></table></figure>
+<p>这个Makefile提供了一个完整的构建系统，支持从源代码到最终可执行文件或库的整个编译和链接过程，同时具备条件编译和依赖管理功能。</p>
+<p>至于$(NEMU_HOME)&#x2F;tools&#x2F;difftest.mk，就不看了，因为这是后面的内容。</p>
+<p>因此以上整体包含以下几个文件：</p>
+<ul>
+<li>~&#x2F;ysyx-workbench&#x2F;nemu&#x2F;Makefile</li>
+<li><ul>
+<li>$(NEMU_HOME)&#x2F;scripts&#x2F;config.mk</li>
+</ul>
+</li>
+<li><ul>
+<li>$(NEMU_HOME)&#x2F;scripts&#x2F;native.mk</li>
+</ul>
+</li>
+<li><ul>
+<li><ul>
+<li>$(NEMU_HOME)&#x2F;..&#x2F;Makefile</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><ul>
+<li><ul>
+<li>$(NEMU_HOME)&#x2F;scripts&#x2F;build.mk</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><ul>
+<li><ul>
+<li>$(NEMU_HOME)&#x2F;tools&#x2F;difftest.mk</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>以上文件最终都会被包含到~&#x2F;ysyx-workbench&#x2F;nemu&#x2F;Makefile 中。</p>
+<h3 id="menuconfig"><a href="#menuconfig" class="headerlink" title="menuconfig"></a>menuconfig</h3><p>这是一个非常重要的伪目标：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">wildcard</span> .config)</span>,)<br><span class="hljs-variable">$(<span class="hljs-built_in">warning</span> <span class="hljs-variable">$(COLOR_RED)</span>Warning: .config does not exists!<span class="hljs-variable">$(COLOR_END)</span>)</span><br><span class="hljs-variable">$(<span class="hljs-built_in">warning</span> <span class="hljs-variable">$(COLOR_RED)</span>To build the project, first run &#x27;make menuconfig&#x27;.<span class="hljs-variable">$(COLOR_END)</span>)</span><br><span class="hljs-keyword">endif</span><br><br>Q            := @<br>KCONFIG_PATH := <span class="hljs-variable">$(NEMU_HOME)</span>/tools/kconfig<br>FIXDEP_PATH  := <span class="hljs-variable">$(NEMU_HOME)</span>/tools/fixdep<br>Kconfig      := <span class="hljs-variable">$(NEMU_HOME)</span>/Kconfig<br>rm-distclean += <span class="hljs-keyword">include</span>/generated <span class="hljs-keyword">include</span>/config .config .config.old<br>silent := -s<br><br>CONF   := <span class="hljs-variable">$(KCONFIG_PATH)</span>/build/conf<br>MCONF  := <span class="hljs-variable">$(KCONFIG_PATH)</span>/build/mconf<br>FIXDEP := <span class="hljs-variable">$(FIXDEP_PATH)</span>/build/fixdep<br><br><span class="hljs-variable">$(CONF)</span>:<br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MAKE)</span> <span class="hljs-variable">$(silent)</span> -C <span class="hljs-variable">$(KCONFIG_PATH)</span> NAME=conf<br><br><span class="hljs-variable">$(MCONF)</span>:<br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MAKE)</span> <span class="hljs-variable">$(silent)</span> -C <span class="hljs-variable">$(KCONFIG_PATH)</span> NAME=mconf<br><br><span class="hljs-variable">$(FIXDEP)</span>:<br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MAKE)</span> <span class="hljs-variable">$(silent)</span> -C <span class="hljs-variable">$(FIXDEP_PATH)</span><br><br><span class="hljs-section">menuconfig: <span class="hljs-variable">$(MCONF)</span> <span class="hljs-variable">$(CONF)</span> <span class="hljs-variable">$(FIXDEP)</span></span><br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MCONF)</span> <span class="hljs-variable">$(Kconfig)</span><br>	<span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(CONF)</span> <span class="hljs-variable">$(silent)</span> --syncconfig <span class="hljs-variable">$(Kconfig)</span><br></code></pre></td></tr></table></figure>
+
+<p>从这里看出，这个为目标依赖于$(MCONF)、$(CONF)、$(FIXDEP)，因此在 make menuconfig 的时候，会有以下操作：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(MCONF)</span> <span class="hljs-variable">$(Kconfig)</span><br><span class="hljs-variable">$(Q)</span><span class="hljs-variable">$(CONF)</span> <span class="hljs-variable">$(silent)</span> --syncconfig <span class="hljs-variable">$(Kconfig)</span><br></code></pre></td></tr></table></figure>
+
+<p>此时mconf将会解析nemu&#x2F;Kconfig中的描述, 以菜单树的形式展示各种配置选项, 供开发者进行选择；</p>
+<p>运行命令conf –syncconfig nemu&#x2F;Kconfig, 此时conf将会解析nemu&#x2F;Kconfig中的描述, 并读取选择结果nemu&#x2F;.config, 结合两者来生成如下文件:</p>
+<ul>
+<li>可以被包含到C代码中的宏定义(nemu&#x2F;include&#x2F;generated&#x2F;autoconf.h), 这些宏的名称都是形如CONFIG_xxx的形式</li>
+<li>可以被包含到Makefile中的变量定义(nemu&#x2F;include&#x2F;config&#x2F;auto.conf)</li>
+<li>可以被包含到Makefile中的, 和”配置描述文件”相关的依赖规则(nemu&#x2F;include&#x2F;config&#x2F;auto.conf.cmd), 为了阅读代码, 我们可以不必关心它</li>
+<li>通过时间戳来维护配置选项变化的目录树nemu&#x2F;include&#x2F;config&#x2F;, 它会配合另一个工具nemu&#x2F;tools&#x2F;fixdep来使用, 用于在更新配置选项后节省不必要的文件编译, 为了阅读代码, 我们可以不必关心它。</li>
+</ul>
+<p>换句话说，我们首先得定义Kconfig，这是最关键的文件，它会被解析且配合我们的选择生成的 nemu&#x2F;.config 文件，生成nemu&#x2F;include&#x2F;config&#x2F;auto.conf以及可以被包含到Makefile中的, 和”配置描述文件”相关的依赖规则 nemu&#x2F;include&#x2F;config&#x2F;auto.conf.cmd。</p>
+<p>因此，我们生成后，只需要关注包含到Makefile中的：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment"># Include variables and rules generated by menuconfig</span><br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf<br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf.cmd<br></code></pre></td></tr></table></figure>
+
+<p>比如auto.conf：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment">#</span><br><span class="hljs-comment"># Automatically generated file; DO NOT EDIT.</span><br><span class="hljs-comment"># NEMU Configuration Menu</span><br><span class="hljs-comment">#</span><br>CONFIG_DIFFTEST_REF_NAME=<span class="hljs-string">&quot;none&quot;</span><br>CONFIG_ENGINE=<span class="hljs-string">&quot;interpreter&quot;</span><br>CONFIG_PC_RESET_OFFSET=0<br>CONFIG_TARGET_NATIVE_ELF=y<br>CONFIG_MSIZE=0x8000000<br>CONFIG_CC_O2=y<br>CONFIG_MODE_SYSTEM=y<br>CONFIG_MEM_RANDOM=y<br>CONFIG_ITRACE=y<br>CONFIG_ISA_riscv=y<br>CONFIG_TRACE_END=10000<br>CONFIG_MBASE=0x80000000<br>CONFIG_TIMER_GETTIMEOFDAY=y<br>CONFIG_ENGINE_INTERPRETER=y<br>CONFIG_CC_OPT=<span class="hljs-string">&quot;-O2&quot;</span><br>CONFIG_RT_CHECK=y<br>CONFIG_ITRACE_COND=<span class="hljs-string">&quot;true&quot;</span><br>CONFIG_PMEM_MALLOC=y<br>CONFIG_CC=<span class="hljs-string">&quot;gcc&quot;</span><br>CONFIG_DIFFTEST_REF_PATH=<span class="hljs-string">&quot;none&quot;</span><br>CONFIG_TRACE_START=0<br>CONFIG_CC_GCC=y<br>CONFIG_TRACE=y<br>CONFIG_ISA=<span class="hljs-string">&quot;riscv32&quot;</span><br><br></code></pre></td></tr></table></figure>
+
+<p>由于该文件被首先包含，因此后面包含的其它文件，都可以引用该变量。</p>
+<h3 id="run"><a href="#run" class="headerlink" title="run"></a>run</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment"># Command to execute NEMU</span><br>IMG ?=<br>NEMU_EXEC := <span class="hljs-variable">$(BINARY)</span> <span class="hljs-variable">$(ARGS)</span> <span class="hljs-variable">$(IMG)</span><br><span class="hljs-section">run-env: <span class="hljs-variable">$(BINARY)</span> <span class="hljs-variable">$(DIFF_REF_SO)</span></span><br><span class="hljs-section">run: run-env</span><br>	<span class="hljs-variable">$(<span class="hljs-built_in">call</span> git_commit, &quot;run NEMU&quot;)</span><br>	<span class="hljs-variable">$(NEMU_EXEC)</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，如果没有设置 IMG 的变量，那么 IMG 就是用默认值空。</p>
+<p>通过打印信息：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">run: run-env</span><br>	@echo <span class="hljs-variable">$(NEMU_EXEC)</span><br>	@echo <span class="hljs-string">&quot;over&quot;</span><br>	<span class="hljs-variable">$(<span class="hljs-built_in">call</span> git_commit, &quot;run NEMU&quot;)</span><br>	<span class="hljs-variable">$(NEMU_EXEC)</span><br><br></code></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">make run<br>make[1]: Entering directory <span class="hljs-string">&#x27;/home/luyoung/ysyx-workbench&#x27;</span><br>make[1]: Leaving directory <span class="hljs-string">&#x27;/home/luyoung/ysyx-workbench&#x27;</span><br>/home/luyoung/ysyx-workbench/nemu/build/riscv32-nemu-interpreter --<span class="hljs-built_in">log</span>=/home/luyoung/ysyx-workbench/nemu/build/nemu-log.txt<br>over<br>...<br></code></pre></td></tr></table></figure>
+
+<p>可以看到 $(BINARY): &#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;nemu&#x2F;build&#x2F;riscv32-nemu-interpreter、$(ARGS):–log&#x3D;&#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;nemu&#x2F;build&#x2F;nemu-log.txt $(IMG):。</p>
+<p>就是这样构建riscv32-nemu-interpreter的。</p>
+<p>因此，以上文件大致就是这样组织的：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/nemu_makefile.png"></p>
+<h2 id="am"><a href="#am" class="headerlink" title="am"></a>am</h2><p>接着看 am-kernels，这个工程将会构建镜像，并且引用 nemu 来执行镜像，看起来比 nemu 复杂一点。</p>
+<p>首先直接看 am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;Makefile ，它是我们执行程序的开始。</p>
+<h3 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: all run gdb clean latest $(ALL)</span><br><br>RESULT = .result<br><span class="hljs-variable">$(<span class="hljs-built_in">shell</span> &gt; <span class="hljs-variable">$(RESULT)</span>)</span><br><br>COLOR_RED   = \033[1;31m<br>COLOR_GREEN = \033[1;32m<br>COLOR_NONE  = \033[0m<br><br>ALL = <span class="hljs-variable">$(<span class="hljs-built_in">basename</span> $(<span class="hljs-built_in">notdir</span> $(<span class="hljs-built_in">shell</span> find tests/. -name &quot;*.c&quot;)</span>))<br><br><span class="hljs-section">all: $(addprefix Makefile., <span class="hljs-variable">$(ALL)</span>)</span><br>	@echo <span class="hljs-string">&quot;test list [$(words <span class="hljs-variable">$(ALL)</span>) item(s)]:&quot;</span> <span class="hljs-variable">$(ALL)</span><br><br><span class="hljs-variable">$(ALL)</span>: %: Makefile.%<br><br><span class="hljs-section">Makefile.%: tests/%.c latest</span><br>	@/bin/echo -e <span class="hljs-string">&quot;NAME = <span class="hljs-variable">$*</span>\nSRCS = <span class="hljs-variable">$&lt;</span>\ninclude $$&#123;AM_HOME&#125;/Makefile&quot;</span> &gt; <span class="hljs-variable">$@</span><br>	@if make -s -f <span class="hljs-variable">$@</span> ARCH=<span class="hljs-variable">$(ARCH)</span> <span class="hljs-variable">$(MAKECMDGOALS)</span>; then \<br>		printf <span class="hljs-string">&quot;[%14s] <span class="hljs-variable">$(COLOR_GREEN)</span>PASS<span class="hljs-variable">$(COLOR_NONE)\n</span>&quot;</span> <span class="hljs-variable">$*</span> &gt;&gt; <span class="hljs-variable">$(RESULT)</span>; \<br>	<span class="hljs-keyword">else</span> \<br>		printf <span class="hljs-string">&quot;[%14s] <span class="hljs-variable">$(COLOR_RED)</span>***FAIL***<span class="hljs-variable">$(COLOR_NONE)\n</span>&quot;</span> <span class="hljs-variable">$*</span> &gt;&gt; <span class="hljs-variable">$(RESULT)</span>; \<br>	fi<br>	-@rm -f Makefile.<span class="hljs-variable">$*</span><br><br><span class="hljs-section">run: all</span><br>	@cat <span class="hljs-variable">$(RESULT)</span><br>	@rm <span class="hljs-variable">$(RESULT)</span><br><br><span class="hljs-section">gdb: all</span><br><br><span class="hljs-section">clean:</span><br>	rm -rf Makefile.* build/<br><br><span class="hljs-section">latest:</span><br><br><br></code></pre></td></tr></table></figure>
+
+
+<p>如果 ALL 没有制定的话，它会找到这个文件夹中的所有文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs bash">find tests/. -name <span class="hljs-string">&quot;*.c&quot;</span><br>tests/./max.c<br>tests/./load-store.c<br>tests/./quick-sort.c<br>tests/./leap-year.c<br>tests/./add.c<br>tests/./mul-longlong.c<br>tests/./goldbach.c<br>tests/./matrix-mul.c<br>tests/./mersenne.c<br>tests/./bit.c<br>tests/./movsx.c<br>tests/./hello-str.c<br>tests/./add-longlong.c<br>tests/./wanshu.c<br>tests/./bubble-sort.c<br>tests/./crc32.c<br>tests/./switch.c<br>tests/./sub-longlong.c<br>tests/./string.c<br>tests/./shift.c<br>tests/./select-sort.c<br>tests/./mov-c.c<br>tests/./pascal.c<br>tests/./unalign.c<br>tests/./dummy.c<br>tests/./shuixianhua.c<br>tests/./recursion.c<br>tests/./min3.c<br>tests/./fact.c<br>tests/./fib.c<br>tests/./to-lower-case.c<br>tests/./div.c<br>tests/./prime.c<br>tests/./sum.c<br>tests/./if-else.c<br></code></pre></td></tr></table></figure>
+
+<p>然后去掉路径、扩展名，这样的设置通常用于构建项目中需要编译多个源文件的情况，ALL 变量提供了一个便于其他 Makefile 规则引用的目标列表。</p>
+<p>接着会创建一系列 Makefile.%，然后编译这个文件(以ALL&#x3D;bit 为例)：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Makefile">NAME = bit<br>SRCS = tests/bit.c<br><span class="hljs-keyword">include</span> /home/luyoung/ysyx-workbench/abstract-machine/Makefile<br><br></code></pre></td></tr></table></figure>
+
+<p>可以看到这个文件依然包含了一个 Makefile：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment"># Makefile for AbstractMachine Kernels and Libraries</span><br><br><span class="hljs-comment">### *Get a more readable version of this Makefile* by `make html` (requires python-markdown)</span><br><span class="hljs-section">html:</span><br>	cat Makefile | sed &#x27;s/^\([^<span class="hljs-comment">#]\)/    \1/g&#x27; | markdown_py &gt; Makefile.html</span><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: html</span><br><br><span class="hljs-comment">## 1. Basic Setup and Checks</span><br><br><span class="hljs-comment">### Default to create a bare-metal kernel image</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(MAKECMDGOALS)</span>,)<br>  MAKECMDGOALS  = image<br>  .DEFAULT_GOAL = image<br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment">### Override checks when `make clean/clean-all/html`</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">findstring</span> <span class="hljs-variable">$(MAKECMDGOALS)</span>,clean|clean-all|html)</span>,)<br><br><span class="hljs-comment">### Print build info message</span><br><span class="hljs-variable">$(info # Building <span class="hljs-variable">$(NAME)</span>-<span class="hljs-variable">$(MAKECMDGOALS)</span> [<span class="hljs-variable">$(ARCH)</span>])</span><br><br><span class="hljs-comment">### Check: environment variable `$AM_HOME` looks sane</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">wildcard</span> <span class="hljs-variable">$(AM_HOME)</span>/am/include/am.h)</span>,)<br>  <span class="hljs-variable">$(<span class="hljs-built_in">error</span> $$AM_HOME must be an AbstractMachine repo)</span><br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment">### Check: environment variable `$ARCH` must be in the supported list</span><br>ARCHS = <span class="hljs-variable">$(<span class="hljs-built_in">basename</span> $(<span class="hljs-built_in">notdir</span> $(<span class="hljs-built_in">shell</span> ls <span class="hljs-variable">$(AM_HOME)</span>/scripts/*.mk)</span>))<br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">filter</span> <span class="hljs-variable">$(ARCHS)</span>, <span class="hljs-variable">$(ARCH)</span>)</span>, )<br>  <span class="hljs-variable">$(<span class="hljs-built_in">error</span> Expected $$ARCH in &#123;<span class="hljs-variable">$(ARCHS)</span>&#125;, Got &quot;<span class="hljs-variable">$(ARCH)</span>&quot;)</span><br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment">### Extract instruction set architecture (`ISA`) and platform from `$ARCH`. Example: `ARCH=x86_64-qemu -&gt; ISA=x86_64; PLATFORM=qemu`</span><br>ARCH_SPLIT = <span class="hljs-variable">$(<span class="hljs-built_in">subst</span> -, ,<span class="hljs-variable">$(ARCH)</span>)</span><br>ISA        = <span class="hljs-variable">$(<span class="hljs-built_in">word</span> 1,<span class="hljs-variable">$(ARCH_SPLIT)</span>)</span><br>PLATFORM   = <span class="hljs-variable">$(<span class="hljs-built_in">word</span> 2,<span class="hljs-variable">$(ARCH_SPLIT)</span>)</span><br><br><span class="hljs-comment">### Check if there is something to build</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">flavor</span> SRCS)</span>, undefined)<br>  <span class="hljs-variable">$(<span class="hljs-built_in">error</span> Nothing to build)</span><br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment">### Checks end here</span><br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment">## 2. General Compilation Targets</span><br><br><span class="hljs-comment">### Create the destination directory (`build/$ARCH`)</span><br>WORK_DIR  = <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> pwd)</span><br>DST_DIR   = <span class="hljs-variable">$(WORK_DIR)</span>/build/<span class="hljs-variable">$(ARCH)</span><br><span class="hljs-variable">$(<span class="hljs-built_in">shell</span> mkdir -p <span class="hljs-variable">$(DST_DIR)</span>)</span><br><br><span class="hljs-comment">### Compilation targets (a binary image or archive)</span><br>IMAGE_REL = build/<span class="hljs-variable">$(NAME)</span>-<span class="hljs-variable">$(ARCH)</span><br>IMAGE     = <span class="hljs-variable">$(<span class="hljs-built_in">abspath</span> <span class="hljs-variable">$(IMAGE_REL)</span>)</span><br>ARCHIVE   = <span class="hljs-variable">$(WORK_DIR)</span>/build/<span class="hljs-variable">$(NAME)</span>-<span class="hljs-variable">$(ARCH)</span>.a<br><br><span class="hljs-comment">### Collect the files to be linked: object files (`.o`) and libraries (`.a`)</span><br>OBJS      = <span class="hljs-variable">$(<span class="hljs-built_in">addprefix</span> <span class="hljs-variable">$(DST_DIR)</span>/, $(<span class="hljs-built_in">addsuffix</span> .o, $(<span class="hljs-built_in">basename</span> <span class="hljs-variable">$(SRCS)</span>)</span>))<br>LIBS     := <span class="hljs-variable">$(<span class="hljs-built_in">sort</span> <span class="hljs-variable">$(LIBS)</span> am klib)</span> <span class="hljs-comment"># lazy evaluation (&quot;=&quot;) causes infinite recursions</span><br>LINKAGE   = <span class="hljs-variable">$(OBJS)</span> \<br>  <span class="hljs-variable">$(<span class="hljs-built_in">addsuffix</span> -<span class="hljs-variable">$(ARCH)</span>.a, $(<span class="hljs-built_in">join</span> \</span><br><span class="hljs-variable">    $(<span class="hljs-built_in">addsuffix</span> /build/, $(<span class="hljs-built_in">addprefix</span> <span class="hljs-variable">$(AM_HOME)</span>/, <span class="hljs-variable">$(LIBS)</span>)</span>), \<br>    <span class="hljs-variable">$(LIBS)</span> ))<br><br><span class="hljs-comment">## 3. General Compilation Flags</span><br><br><span class="hljs-comment">### (Cross) compilers, e.g., mips-linux-gnu-g++</span><br>AS        = <span class="hljs-variable">$(CROSS_COMPILE)</span>gcc<br>CC        = <span class="hljs-variable">$(CROSS_COMPILE)</span>gcc<br>CXX       = <span class="hljs-variable">$(CROSS_COMPILE)</span>g++<br>LD        = <span class="hljs-variable">$(CROSS_COMPILE)</span>ld<br>AR        = <span class="hljs-variable">$(CROSS_COMPILE)</span>ar<br>OBJDUMP   = <span class="hljs-variable">$(CROSS_COMPILE)</span>objdump<br>OBJCOPY   = <span class="hljs-variable">$(CROSS_COMPILE)</span>objcopy<br>READELF   = <span class="hljs-variable">$(CROSS_COMPILE)</span>readelf<br><br><span class="hljs-comment">### Compilation flags</span><br>INC_PATH += <span class="hljs-variable">$(WORK_DIR)</span>/<span class="hljs-keyword">include</span> <span class="hljs-variable">$(<span class="hljs-built_in">addsuffix</span> /include/, $(<span class="hljs-built_in">addprefix</span> <span class="hljs-variable">$(AM_HOME)</span>/, <span class="hljs-variable">$(LIBS)</span>)</span>)<br>INCFLAGS += <span class="hljs-variable">$(<span class="hljs-built_in">addprefix</span> -I, <span class="hljs-variable">$(INC_PATH)</span>)</span><br><br>ARCH_H := arch/<span class="hljs-variable">$(ARCH)</span>.h<br>CFLAGS   += -O2 -MMD -Wall -Werror <span class="hljs-variable">$(INCFLAGS)</span> \<br>            -D__ISA__=\<span class="hljs-string">&quot;<span class="hljs-variable">$(ISA)\&quot;</span> -D__ISA_$(shell echo <span class="hljs-variable">$(ISA)</span> | tr a-z A-Z)__ \</span><br><span class="hljs-string">            -D__ARCH__=<span class="hljs-variable">$(ARCH)</span> -D__ARCH_$(shell echo <span class="hljs-variable">$(ARCH)</span> | tr a-z A-Z | tr - _) \</span><br><span class="hljs-string">            -D__PLATFORM__=<span class="hljs-variable">$(PLATFORM)</span> -D__PLATFORM_$(shell echo <span class="hljs-variable">$(PLATFORM)</span> | tr a-z A-Z | tr - _) \</span><br><span class="hljs-string">            -DARCH_H=\&quot;<span class="hljs-variable">$(ARCH_H)\&quot;</span> \</span><br><span class="hljs-string">            -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector \</span><br><span class="hljs-string">            -Wno-main -U_FORTIFY_SOURCE -fvisibility=hidden</span><br><span class="hljs-string">CXXFLAGS +=  <span class="hljs-variable">$(CFLAGS)</span> -ffreestanding -fno-rtti -fno-exceptions</span><br><span class="hljs-string">ASFLAGS  += -MMD <span class="hljs-variable">$(INCFLAGS)</span></span><br><span class="hljs-string">LDFLAGS  += -z noexecstack</span><br><span class="hljs-string"></span><br><span class="hljs-string">## 4. Arch-Specific Configurations</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Paste in arch-specific configurations (e.g., from `scripts/x86_64-qemu.mk`)</span><br><span class="hljs-string">-include <span class="hljs-variable">$(AM_HOME)</span>/scripts/<span class="hljs-variable">$(ARCH)</span>.mk</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Fall back to native gcc/binutils if there is no cross compiler</span><br><span class="hljs-string">ifeq ($(wildcard $(shell which <span class="hljs-variable">$(CC)</span>)),)</span><br><span class="hljs-string">  $(info #  <span class="hljs-variable">$(CC)</span> not found; fall back to default gcc and binutils)</span><br><span class="hljs-string">  CROSS_COMPILE :=</span><br><span class="hljs-string">endif</span><br><span class="hljs-string"></span><br><span class="hljs-string">## 5. Compilation Rules</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (compile): a single `.c` -&gt; `.o` (gcc)</span><br><span class="hljs-string"><span class="hljs-variable">$(DST_DIR)</span>/%.o: %.c</span><br><span class="hljs-string">	@mkdir -p $(dir <span class="hljs-variable">$@</span>) &amp;&amp; echo + CC <span class="hljs-variable">$&lt;</span></span><br><span class="hljs-string">	@<span class="hljs-variable">$(CC)</span> -std=gnu11 <span class="hljs-variable">$(CFLAGS)</span> -c -o <span class="hljs-variable">$@</span> $(realpath <span class="hljs-variable">$&lt;</span>)</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (compile): a single `.cc` -&gt; `.o` (g++)</span><br><span class="hljs-string"><span class="hljs-variable">$(DST_DIR)</span>/%.o: %.cc</span><br><span class="hljs-string">	@mkdir -p $(dir <span class="hljs-variable">$@</span>) &amp;&amp; echo + CXX <span class="hljs-variable">$&lt;</span></span><br><span class="hljs-string">	@<span class="hljs-variable">$(CXX)</span> -std=c++17 <span class="hljs-variable">$(CXXFLAGS)</span> -c -o <span class="hljs-variable">$@</span> $(realpath <span class="hljs-variable">$&lt;</span>)</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (compile): a single `.cpp` -&gt; `.o` (g++)</span><br><span class="hljs-string"><span class="hljs-variable">$(DST_DIR)</span>/%.o: %.cpp</span><br><span class="hljs-string">	@mkdir -p $(dir <span class="hljs-variable">$@</span>) &amp;&amp; echo + CXX <span class="hljs-variable">$&lt;</span></span><br><span class="hljs-string">	@<span class="hljs-variable">$(CXX)</span> -std=c++17 <span class="hljs-variable">$(CXXFLAGS)</span> -c -o <span class="hljs-variable">$@</span> $(realpath <span class="hljs-variable">$&lt;</span>)</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (compile): a single `.S` -&gt; `.o` (gcc, which preprocesses and calls as)</span><br><span class="hljs-string"><span class="hljs-variable">$(DST_DIR)</span>/%.o: %.S</span><br><span class="hljs-string">	@mkdir -p $(dir <span class="hljs-variable">$@</span>) &amp;&amp; echo + AS <span class="hljs-variable">$&lt;</span></span><br><span class="hljs-string">	@<span class="hljs-variable">$(AS)</span> <span class="hljs-variable">$(ASFLAGS)</span> -c -o <span class="hljs-variable">$@</span> $(realpath <span class="hljs-variable">$&lt;</span>)</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (recursive make): build a dependent library (am, klib, ...)</span><br><span class="hljs-string"><span class="hljs-variable">$(LIBS)</span>: %:</span><br><span class="hljs-string">	@<span class="hljs-variable">$(MAKE)</span> -s -C <span class="hljs-variable">$(AM_HOME)</span>/<span class="hljs-variable">$*</span> archive</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (link): objects (`*.o`) and libraries (`*.a`) -&gt; `IMAGE.elf`, the final ELF binary to be packed into image (ld)</span><br><span class="hljs-string"><span class="hljs-variable">$(IMAGE)</span>.elf: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LIBS)</span></span><br><span class="hljs-string">	@echo + LD &quot;</span>-&gt;<span class="hljs-string">&quot; <span class="hljs-variable">$(IMAGE_REL)</span>.elf</span><br><span class="hljs-string">	@<span class="hljs-variable">$(LD)</span> <span class="hljs-variable">$(LDFLAGS)</span> -o <span class="hljs-variable">$(IMAGE)</span>.elf --start-group <span class="hljs-variable">$(LINKAGE)</span> --end-group</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (archive): objects (`*.o`) -&gt; `ARCHIVE.a` (ar)</span><br><span class="hljs-string"><span class="hljs-variable">$(ARCHIVE)</span>: <span class="hljs-variable">$(OBJS)</span></span><br><span class="hljs-string">	@echo + AR &quot;</span>-&gt;<span class="hljs-string">&quot; $(shell realpath <span class="hljs-variable">$@</span> --relative-to .)</span><br><span class="hljs-string">	@<span class="hljs-variable">$(AR)</span> rcs <span class="hljs-variable">$(ARCHIVE)</span> <span class="hljs-variable">$(OBJS)</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">### Rule (`#include` dependencies): paste in `.d` files generated by gcc on `-MMD`</span><br><span class="hljs-string">-include $(addprefix <span class="hljs-variable">$(DST_DIR)</span>/, $(addsuffix .d, $(basename <span class="hljs-variable">$(SRCS)</span>)))</span><br><span class="hljs-string"></span><br><span class="hljs-string">## 6. Miscellaneous</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Build order control</span><br><span class="hljs-string">image: image-dep</span><br><span class="hljs-string">archive: <span class="hljs-variable">$(ARCHIVE)</span></span><br><span class="hljs-string">image-dep: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LIBS)</span></span><br><span class="hljs-string">	@echo \# Creating image [<span class="hljs-variable">$(ARCH)</span>]</span><br><span class="hljs-string">.PHONY: image image-dep archive run <span class="hljs-variable">$(LIBS)</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">### Clean a single project (remove `build/`)</span><br><span class="hljs-string">clean:</span><br><span class="hljs-string">	rm -rf Makefile.html <span class="hljs-variable">$(WORK_DIR)</span>/build/</span><br><span class="hljs-string">.PHONY: clean</span><br><span class="hljs-string"></span><br><span class="hljs-string">### Clean all sub-projects within depth 2 (and ignore errors)</span><br><span class="hljs-string">CLEAN_ALL = $(dir $(shell find . -mindepth 2 -name Makefile))</span><br><span class="hljs-string">clean-all: <span class="hljs-variable">$(CLEAN_ALL)</span> clean</span><br><span class="hljs-string"><span class="hljs-variable">$(CLEAN_ALL)</span>:</span><br><span class="hljs-string">	-@<span class="hljs-variable">$(MAKE)</span> -s -C <span class="hljs-variable">$@</span> clean</span><br><span class="hljs-string">.PHONY: clean-all <span class="hljs-variable">$(CLEAN_ALL)</span></span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
+
+<p>通过 Makefile 可以看到：</p>
+<ul>
+<li><p>如果MAKECMDGOALS 没有被定义，那么MAKECMDGOALS&#x3D;image。</p>
+</li>
+<li><p>如果MAKECMDGOALS 不为一些特殊目标，比如 clean：</p>
+</li>
+<li><ul>
+<li>打印信息，比如# Building bit-run [riscv32-nemu]</li>
+</ul>
+</li>
+<li><ul>
+<li>环境检查</li>
+</ul>
+</li>
+<li><ul>
+<li>检查 ARCH 是否在列表中</li>
+</ul>
+</li>
+<li><ul>
+<li>提取 ARCH</li>
+</ul>
+</li>
+<li><ul>
+<li>检查被编译目标</li>
+</ul>
+</li>
+<li><p>设置工作目录WORK_DIR: &#x2F;am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;</p>
+</li>
+<li><p>设置目标目录DST_DIR: &#x2F;am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;build&#x2F;riscv-nemu&#x2F;</p>
+</li>
+<li><p>设置编译目标IMAGE_REL: build&#x2F;bit-riscv32-nemu</p>
+</li>
+<li><p>设置镜像IMAGE: &#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;build&#x2F;bit-riscv32-nemu（这里使用的绝对路径）</p>
+</li>
+<li><p>收集要被连接的文件：</p>
+</li>
+<li><ul>
+<li>OBJS: &#x2F;am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;build&#x2F;riscv-nemu&#x2F;bit.o</li>
+</ul>
+</li>
+<li><ul>
+<li>LIBS: am klib</li>
+</ul>
+</li>
+<li><ul>
+<li>LINKAGE: &#x2F;am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;build&#x2F;riscv-nemu&#x2F;bit.o &#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;abstract-machine&#x2F;am&#x2F;build&#x2F;am-riscv32-nemu.a &#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;abstract-machine&#x2F;kilb&#x2F;build&#x2F;klib-riscv32-nemu.a</li>
+</ul>
+</li>
+<li><p>交叉编译变量</p>
+</li>
+<li><p>编译标志:</p>
+</li>
+<li><ul>
+<li>INC_PATH: &#x2F;am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;include &#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;abstract-machine&#x2F;am&#x2F;include&#x2F; &#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;abstract-machine&#x2F;klib&#x2F;include&#x2F;</li>
+</ul>
+</li>
+<li><ul>
+<li>INCFLAGS: -I$(INC_PATH)</li>
+</ul>
+</li>
+<li><ul>
+<li>ARCH_H: arch&#x2F;riscv32-nemu.h</li>
+</ul>
+</li>
+<li><ul>
+<li>CFLAGS</li>
+</ul>
+</li>
+<li><ul>
+<li>CXXFLAGS</li>
+</ul>
+</li>
+<li><ul>
+<li>ASFLAGS</li>
+</ul>
+</li>
+<li><ul>
+<li>LDFLAGS</li>
+</ul>
+</li>
+</ul>
+<p>接着又导入了一个非常重要的可包含文件：&#x2F;home&#x2F;luyoung&#x2F;ysyx-workbench&#x2F;abstract-machine&#x2F;scripts&#x2F;riscv32-nemu.mk:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/isa/riscv.mk<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/platform/nemu.mk<br>CFLAGS  += -DISA_H=\<span class="hljs-string">&quot;riscv/riscv.h\&quot;</span><br><span class="hljs-string">COMMON_CFLAGS += -march=rv32im_zicsr -mabi=ilp32   # overwrite</span><br><span class="hljs-string">LDFLAGS       += -melf32lriscv                     # overwrite</span><br><span class="hljs-string"></span><br><span class="hljs-string">AM_SRCS += riscv/nemu/start.S \</span><br><span class="hljs-string">           riscv/nemu/cte.c \</span><br><span class="hljs-string">           riscv/nemu/trap.S \</span><br><span class="hljs-string">           riscv/nemu/vme.c</span><br><span class="hljs-string"></span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
+
+<p>这里又包含了两个可导入文件：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Makefile">CROSS_COMPILE := riscv64-linux-gnu-<br>COMMON_CFLAGS := -fno-pic -march=rv64g -mcmodel=medany -mstrict-align<br>CFLAGS        += <span class="hljs-variable">$(COMMON_CFLAGS)</span> -static<br>ASFLAGS       += <span class="hljs-variable">$(COMMON_CFLAGS)</span> -O0<br>LDFLAGS       += -melf64lriscv<br><br><span class="hljs-comment"># overwrite ARCH_H defined in $(AM_HOME)/Makefile</span><br>ARCH_H := arch/riscv.h<br></code></pre></td></tr></table></figure>
+
+<p>它补充了CROSS_COMPILE的定义（注意延迟赋值和立即赋值的区别）。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs Makefile">AM_SRCS := platform/nemu/trm.c \<br>           platform/nemu/ioe/ioe.c \<br>           platform/nemu/ioe/timer.c \<br>           platform/nemu/ioe/input.c \<br>           platform/nemu/ioe/gpu.c \<br>           platform/nemu/ioe/audio.c \<br>           platform/nemu/ioe/disk.c \<br>           platform/nemu/mpe.c<br><br>CFLAGS    += -fdata-sections -ffunction-sections<br>LDFLAGS   += -T <span class="hljs-variable">$(AM_HOME)</span>/scripts/linker.ld \<br>             --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0<br>LDFLAGS   += --gc-sections -e _start<br>NEMUFLAGS += -l <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> dirname <span class="hljs-variable">$(IMAGE)</span>.elf)</span>/nemu-log.txt<br><br>CFLAGS += -DMAINARGS=\<span class="hljs-string">&quot;<span class="hljs-variable">$(mainargs)\&quot;</span></span><br><span class="hljs-string">CFLAGS += -I<span class="hljs-variable">$(AM_HOME)</span>/am/src/platform/nemu/include</span><br><span class="hljs-string">.PHONY: <span class="hljs-variable">$(AM_HOME)</span>/am/src/platform/nemu/trm.c</span><br><span class="hljs-string"></span><br><span class="hljs-string">image: <span class="hljs-variable">$(IMAGE)</span>.elf</span><br><span class="hljs-string">	@<span class="hljs-variable">$(OBJDUMP)</span> -d <span class="hljs-variable">$(IMAGE)</span>.elf &gt; <span class="hljs-variable">$(IMAGE)</span>.txt</span><br><span class="hljs-string">	@echo + OBJCOPY &quot;</span>-&gt;<span class="hljs-string">&quot; <span class="hljs-variable">$(IMAGE_REL)</span>.bin</span><br><span class="hljs-string">	@<span class="hljs-variable">$(OBJCOPY)</span> -S --set-section-flags .bss=alloc,contents -O binary <span class="hljs-variable">$(IMAGE)</span>.elf <span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">run: image</span><br><span class="hljs-string">	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> run ARGS=&quot;</span><span class="hljs-variable">$(NEMUFLAGS)</span><span class="hljs-string">&quot; IMG=<span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">gdb: image</span><br><span class="hljs-string">	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> gdb ARGS=&quot;</span><span class="hljs-variable">$(NEMUFLAGS)</span><span class="hljs-string">&quot; IMG=<span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
+
+<p>这个文件在编译目标文件.bin，然后继续编译 nemu，通过 nemu 运行.bin</p>
+<p>再回到am 的 Makefile:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment">### Build order control</span><br><span class="hljs-section">image: image-dep</span><br><span class="hljs-section">archive: <span class="hljs-variable">$(ARCHIVE)</span></span><br><span class="hljs-section">image-dep: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LIBS)</span></span><br>	@echo \<span class="hljs-comment"># Creating image [$(ARCH)]</span><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: image image-dep archive run $(LIBS)</span><br><br><span class="hljs-comment">### Clean a single project (remove `build/`)</span><br><span class="hljs-section">clean:</span><br>	rm -rf Makefile.html <span class="hljs-variable">$(WORK_DIR)</span>/build/<br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean</span><br><br><span class="hljs-comment">### Clean all sub-projects within depth 2 (and ignore errors)</span><br>CLEAN_ALL = <span class="hljs-variable">$(<span class="hljs-built_in">dir</span> $(<span class="hljs-built_in">shell</span> find . -mindepth 2 -name Makefile)</span>)<br><span class="hljs-section">clean-all: <span class="hljs-variable">$(CLEAN_ALL)</span> clean</span><br><span class="hljs-variable">$(CLEAN_ALL)</span>:<br>	-@<span class="hljs-variable">$(MAKE)</span> -s -C <span class="hljs-variable">$@</span> clean<br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean-all $(CLEAN_ALL)</span><br></code></pre></td></tr></table></figure>
+
+<p>这里在引入目标 image 之后，确定了一下依赖关系。</p>
+<p>到这里事情就比较清晰了：nemu负责构建模拟器，am负责构建镜像文件，并且强大的am可以适配不同的isa和platform。而从运行层次上来说，nemu负责跟host打交道，am负责跟platform（在这里是nemu）打交道。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/RISCV/PA/" class="category-chain-item">PA</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NEMU/" class="print-no-link">#NEMU</a>
+      
+        <a href="/tags/PA2/" class="print-no-link">#PA2</a>
+      
+        <a href="/tags/AM/" class="print-no-link">#AM</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>nemu、am项目构建</div>
+      <div>http://blog.luliang.online/2024/08/23/nemu_am项目构建/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/26/4th_semester_%E6%80%BB%E7%BB%93/" title="大二下学期学习总结">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">大二下学期学习总结</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/22/%E7%A8%8B%E5%BA%8F_RTE_AM/" title="程序, 运行时环境与AM">
+                        <span class="hidden-mobile">程序, 运行时环境与AM</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

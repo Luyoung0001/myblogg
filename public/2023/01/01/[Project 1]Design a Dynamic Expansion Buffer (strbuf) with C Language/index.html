@@ -1,0 +1,676 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Here is it!1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192939495969798">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Design a Dynamic Expansion Buffer (strbuf) with C Language">
+<meta property="og:url" content="http://blog.luliang.online/2023/01/01/[Project%201]Design%20a%20Dynamic%20Expansion%20Buffer%20(strbuf)%20with%20C%20Language/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="Here is it!1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192939495969798">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-01T11:23:31.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.773Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="开发语言">
+<meta property="article:tag" content="c语言">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Design a Dynamic Expansion Buffer (strbuf) with C Language - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Design a Dynamic Expansion Buffer (strbuf) with C Language"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-01 19:23" pubdate>
+          2023年1月1日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          9 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Design a Dynamic Expansion Buffer (strbuf) with C Language</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="Here-is-it"><a href="#Here-is-it" class="headerlink" title="Here is it!"></a>Here is it!</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;ctype.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;strbuf.h&quot;</span></span><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">strbuf</span> <span class="hljs-title">strbuf</span>;</span><br><span class="hljs-comment">/*Initialize the structure. The second parameter can be zero or a bigger number</span><br><span class="hljs-comment">to allocate memory, in case you want to prevent further reallocs.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_init</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">size_t</span> alloc)</span> &#123;<br>    sb-&gt;len = <span class="hljs-number">0</span>;<br>    sb-&gt;alloc = alloc;<br>    <span class="hljs-keyword">if</span> (alloc)<br>        sb-&gt;buf = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * alloc);<br>&#125;<br><span class="hljs-comment">/*Release a string buffer and the memory it used. You should not use the string</span><br><span class="hljs-comment"> * buffer after using this function, unless you initialize it again.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_release</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb)</span> &#123;<br>    <span class="hljs-keyword">if</span> (sb-&gt;alloc &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">free</span>(sb-&gt;buf);       <span class="hljs-comment">// release the buf</span><br>        strbuf_init(sb, <span class="hljs-number">0</span>);  <span class="hljs-comment">// init it again</span><br>    &#125;<br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">    strbuf sb;</span><br><span class="hljs-comment">    strbuf_init(&amp;sb,10);</span><br><span class="hljs-comment">    sb-&gt;len = 5;</span><br><span class="hljs-comment">    sb-&gt;buf = &quot;hello&quot;</span><br><span class="hljs-comment">    strbuf_release(&amp;sb);</span><br><span class="hljs-comment">    */</span><br>&#125;<br><span class="hljs-comment">/*Determine the amount of allocated but unused memory.*/</span><br><span class="hljs-type">size_t</span> <span class="hljs-title function_">strbuf_avail</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> strbuf* sb)</span> &#123;<br>    <span class="hljs-comment">// &#x27;\0&#x27;</span><br>    <span class="hljs-keyword">return</span> (<span class="hljs-type">size_t</span>)(sb-&gt;alloc - sb-&gt;len - <span class="hljs-number">1</span>);<br>&#125;<br><span class="hljs-comment">/*Set the length of the buffer to a given value. This function does not allocate</span><br><span class="hljs-comment"> * new memory, so you should not perform a strbuf_setlen() to a length that is</span><br><span class="hljs-comment"> * larger than len + strbuf_avail(). strbuf_setlen() is just meant as a please</span><br><span class="hljs-comment"> * fix invariants from this strbuf I just messed with.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_setlen</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">size_t</span> len)</span> &#123;<br>    <span class="hljs-keyword">if</span> (len &gt; sb-&gt;len + strbuf_avail(sb))<br>        <span class="hljs-keyword">return</span>;<br>    sb-&gt;len = len;<br>    sb-&gt;buf[len] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>&#125;<br><span class="hljs-comment">/*Attach a string to a buffer. You should specify the string to attach, the</span><br><span class="hljs-comment">current length of the string and the amount of allocated memory. The amount must</span><br><span class="hljs-comment">be larger than the string length, because the string you pass is supposed to be</span><br><span class="hljs-comment">a NUL-terminated string. This string must be malloc()ed, and after attaching,</span><br><span class="hljs-comment">the pointer cannot be relied upon anymore, and neither be free()d directly.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_attach</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">void</span>* str, <span class="hljs-type">size_t</span> len, <span class="hljs-type">size_t</span> alloc)</span> &#123;<br>    sb-&gt;alloc = alloc;<br>    sb-&gt;len = len;<br>    sb-&gt;buf = (<span class="hljs-type">char</span>*)str;<br>&#125;<br><span class="hljs-comment">/*Swap the contents of two string buffers.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_swap</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* a, <span class="hljs-keyword">struct</span> strbuf* b)</span> &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">strbuf</span> <span class="hljs-title">temp</span> =</span> *a;<br>    *a = *b;<br>    *b = temp;<br>&#125;<br><span class="hljs-comment">/*Detach the string from the strbuf and returns it; you now own the storage the</span><br><span class="hljs-comment"> * string occupies and it is your responsibility from then on to release it with</span><br><span class="hljs-comment"> * free(3) when you are done with it.*/</span><br><span class="hljs-type">char</span>* <span class="hljs-title function_">strbuf_detach</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">size_t</span>* sz)</span> &#123;<br>    *sz = sb-&gt;alloc;<br>    <span class="hljs-keyword">return</span> sb-&gt;buf;<br>&#125;<br><span class="hljs-comment">/*Compare two buffers. Returns an integer less than, equal to, or greater than</span><br><span class="hljs-comment"> * zero if the first buffer is found, respectively, to be less than, to match,</span><br><span class="hljs-comment"> * or be greater than the second buffer.*/</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">strbuf_cmp</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> strbuf* first, <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> strbuf* second)</span> &#123;<br>    <span class="hljs-keyword">if</span> (first-&gt;len &gt; second-&gt;len) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (first-&gt;len &lt; second-&gt;len) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>&#125;<br><span class="hljs-comment">/*Empty the buffer by setting the size of it to zero.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_reset</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb)</span> &#123;<br>    (*sb).len = <span class="hljs-number">0</span>;<br>    *(*sb).buf = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>&#125;<br><br><span class="hljs-comment">// Part 2B</span><br><br><span class="hljs-comment">/*Ensure that at least this amount of unused memory is available after len. This</span><br><span class="hljs-comment"> * is used when you know a typical size for what you will add and want to avoid</span><br><span class="hljs-comment"> * repetitive automatic resizing of the underlying buffer. This is never a</span><br><span class="hljs-comment"> * needed operation, but can be critical for performance in some cases.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_grow</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">size_t</span> extra)</span> &#123;<br>    <span class="hljs-comment">// int new_alloc = sb-&gt;alloc + extra;</span><br>    <span class="hljs-comment">// sb-&gt;alloc = new_alloc;</span><br>    <span class="hljs-comment">// char* ret = (char*)malloc(sizeof(char) * new_alloc);</span><br>    <span class="hljs-comment">// for (int i = 0; i &lt; sb-&gt;len; i++) &#123;</span><br>    <span class="hljs-comment">//     ret[i] = sb-&gt;buf[i];</span><br>    <span class="hljs-comment">// &#125;</span><br>    <span class="hljs-comment">// ret[sb-&gt;len] = &#x27;\0&#x27;;</span><br>    <span class="hljs-comment">// sb-&gt;buf = ret;</span><br>    sb-&gt;buf = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">realloc</span>(sb-&gt;buf, sb-&gt;len + extra + <span class="hljs-number">1</span>);<br>    sb-&gt;alloc = sb-&gt;len + extra + <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-comment">/*Add data of given length to the buffer.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_add</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">const</span> <span class="hljs-type">void</span>* data, <span class="hljs-type">size_t</span> len)</span> &#123;<br>    <span class="hljs-keyword">if</span> (len == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">return</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (sb-&gt;len + len &gt;= sb-&gt;alloc) &#123;<br>        strbuf_grow(sb, len);<br>    &#125;<br>    <span class="hljs-built_in">memcpy</span>(sb-&gt;buf + sb-&gt;len, data, len);<br>    sb-&gt;len += len;<br>    sb-&gt;buf[sb-&gt;len] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>&#125;<br><span class="hljs-comment">/*Add a single character to the buffer.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_addch</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">int</span> c)</span> &#123;<br>    <span class="hljs-comment">// change ch into a string</span><br>    <span class="hljs-type">char</span>* s = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>));<br>    s[<span class="hljs-number">0</span>] = c;<br>    strbuf_add(sb, s, <span class="hljs-number">1</span>);<br>    <span class="hljs-built_in">free</span>(s);<br>&#125;<br><span class="hljs-comment">/*Add a NUL-terminated string to the buffer.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_addstr</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">const</span> <span class="hljs-type">char</span>* s)</span> &#123;<br>    <span class="hljs-comment">// counting the length of s</span><br>    <span class="hljs-type">int</span> p = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span> (s[p] != <span class="hljs-string">&#x27;\0&#x27;</span>) &#123;<br>        p++;<br>    &#125;<br>    strbuf_add(sb, s, p);<br>&#125;<br><span class="hljs-comment">/*Copy the contents of an other buffer at the end of the current one.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_addbuf</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> strbuf* sb2)</span> &#123;<br>    <span class="hljs-type">char</span>* s1 = sb2-&gt;buf;<br>    strbuf_addstr(sb, s1);<br>&#125;<br><br><span class="hljs-comment">/*Remove the bytes between pos..pos+len and replace it with the given data.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_splice</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb,</span><br><span class="hljs-params">                   <span class="hljs-type">size_t</span> pos,</span><br><span class="hljs-params">                   <span class="hljs-type">size_t</span> len,</span><br><span class="hljs-params">                   <span class="hljs-type">const</span> <span class="hljs-type">void</span>* data,</span><br><span class="hljs-params">                   <span class="hljs-type">size_t</span> dlen)</span> &#123;<br>    <span class="hljs-keyword">if</span> (dlen &gt;= len)<br>        strbuf_grow(sb, dlen - len);<br>    memmove(sb-&gt;buf + pos + dlen, sb-&gt;buf + pos + len, sb-&gt;len - pos - len);<br>    <span class="hljs-comment">/* it is better than memcpy()</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">    const char dest[] = &quot;oldstring&quot;;</span><br><span class="hljs-comment">    memmove(&amp;dest[1], &amp;dest[2], 4); // odstrring</span><br><span class="hljs-comment">    */</span><br>    <span class="hljs-comment">// 01234567 2 3 aaa 3</span><br>    <span class="hljs-comment">// 01234/567 01234/567 --&gt;01234567</span><br><br>    <span class="hljs-built_in">memcpy</span>(sb-&gt;buf + pos, data, dlen);<br>    <span class="hljs-comment">// 01aaa567</span><br>    strbuf_setlen(sb, sb-&gt;len + dlen - len);<br>    <span class="hljs-comment">// 01aaa567</span><br>&#125;<br><span class="hljs-comment">/*Insert data to the given position of the buffer. The remaining contents will</span><br><span class="hljs-comment"> * be shifted, not overwritten.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_insert</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb,</span><br><span class="hljs-params">                   <span class="hljs-type">size_t</span> pos,</span><br><span class="hljs-params">                   <span class="hljs-type">const</span> <span class="hljs-type">void</span>* data,</span><br><span class="hljs-params">                   <span class="hljs-type">size_t</span> len)</span> &#123;<br>    strbuf_splice(sb, pos, <span class="hljs-number">0</span>, data, len);<br>&#125;<br><span class="hljs-comment">/*Remove given amount of data from a given position of the buffer.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_remove</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">size_t</span> pos, <span class="hljs-type">size_t</span> len)</span> &#123;<br>    strbuf_splice(sb, pos, len, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>);<br>&#125;<br><span class="hljs-comment">// Part 2C</span><br><span class="hljs-comment">/*Strip whitespace from the front of a string.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_ltrim</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb)</span> &#123;<br>    <span class="hljs-type">char</span>* b = sb-&gt;buf;<br>    <span class="hljs-keyword">while</span> (sb-&gt;len &gt; <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-built_in">isspace</span>(*b)) &#123;<br>        b++;<br>        sb-&gt;len--;<br>    &#125;<br>    memmove(sb-&gt;buf, b, sb-&gt;len);<br>    sb-&gt;buf[sb-&gt;len] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>&#125;<br><span class="hljs-comment">/*Strip whitespace from the end of a string.*/</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">strbuf_rtrim</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb)</span> &#123;<br>    <span class="hljs-keyword">while</span> (sb-&gt;len &gt; <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-built_in">isspace</span>((<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span>)sb-&gt;buf[sb-&gt;len - <span class="hljs-number">1</span>])) &#123;<br>        sb-&gt;len--;<br>    &#125;<br>    sb-&gt;buf[sb-&gt;len] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>&#125;<br><span class="hljs-comment">/*Read the contents of a given file descriptor. The third argument can be used</span><br><span class="hljs-comment"> * to give a hint about the file size, to avoid reallocs.*/</span><br><span class="hljs-type">ssize_t</span> <span class="hljs-title function_">strbuf_read</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, <span class="hljs-type">int</span> fd, <span class="hljs-type">size_t</span> hint)</span> &#123;<br>    FILE* file = fdopen(fd, <span class="hljs-string">&quot;r&quot;</span>);<br>    <span class="hljs-type">char</span> ch;<br>    <span class="hljs-keyword">if</span> ((ch = fgetc(file)) == EOF)<br>        <span class="hljs-keyword">return</span> sb-&gt;len;<br>    sb-&gt;buf[sb-&gt;len++] = ch;<br><br>    <span class="hljs-comment">// big enough for the file</span><br>    sb-&gt;alloc &lt;&lt;= <span class="hljs-number">13</span>;<br>    sb-&gt;buf = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">realloc</span>(sb-&gt;buf, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * (sb-&gt;alloc));<br>    <span class="hljs-keyword">while</span> ((ch = fgetc(file)) != EOF) &#123;<br>        sb-&gt;buf[sb-&gt;len] = ch;<br>        sb-&gt;len++;<br>    &#125;<br>    sb-&gt;buf[sb-&gt;len] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> sb-&gt;len;<br>&#125;<br><br><span class="hljs-comment">/*Read a line from a FILE* pointer. The second argument specifies the line</span><br><span class="hljs-comment"> * terminator character, typically \n.*/</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">strbuf_getline</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> strbuf* sb, FILE* fp)</span> &#123;<br>    <span class="hljs-type">int</span> ch;<br>    <span class="hljs-keyword">while</span> ((ch = fgetc(fp)) != EOF) &#123;<br>        <span class="hljs-keyword">if</span> (ch != <span class="hljs-string">&#x27;\n&#x27;</span>) &#123;<br>            strbuf_grow(sb, <span class="hljs-number">1</span>);<br>            sb-&gt;buf[sb-&gt;len++] = ch;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>    sb-&gt;buf[sb-&gt;len] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-comment">// CHALLENGE</span><br><br><span class="hljs-keyword">struct</span> strbuf** <span class="hljs-title function_">strbuf_split_buf</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>* str,</span><br><span class="hljs-params">                                 <span class="hljs-type">size_t</span> len,</span><br><span class="hljs-params">                                 <span class="hljs-type">int</span> terminator,</span><br><span class="hljs-params">                                 <span class="hljs-type">int</span> max)</span> &#123;<br>    strbuf** ans = (strbuf**)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(strbuf*) * (max + <span class="hljs-number">1</span>));<br><br>    <span class="hljs-comment">/* this is a possible way:</span><br><span class="hljs-comment">    char *p = (char*)str,*q = (char*)(str+len-1); // points to the last elem</span><br><span class="hljs-comment">    // off the heads and tails</span><br><span class="hljs-comment">    while (*p == terminator) &#123;</span><br><span class="hljs-comment">        p++;</span><br><span class="hljs-comment">    &#125;</span><br><span class="hljs-comment">    while (*q == terminator) &#123;</span><br><span class="hljs-comment">        q--;</span><br><span class="hljs-comment">    &#125;</span><br><span class="hljs-comment">    int pointer = 0;</span><br><span class="hljs-comment">    for (char* t = p; t &lt;= q+1; t++) &#123;</span><br><span class="hljs-comment">        if (*t == terminator || t == q+1) &#123;</span><br><span class="hljs-comment">    */</span><br><br>    <span class="hljs-comment">// set 2 pointers</span><br>    <span class="hljs-type">char</span> *p = (<span class="hljs-type">char</span>*)str,<br>         *q = (<span class="hljs-type">char</span>*)(str + len);  <span class="hljs-comment">// points to the last elem&#x27;s next position</span><br>    <span class="hljs-comment">// off the heads</span><br>    <span class="hljs-keyword">while</span> (*p == terminator) &#123;<br>        p++;<br>    &#125;<br>    <span class="hljs-type">int</span> pointer = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span>* t = p; t &lt;= q; t++) &#123;<br>        <span class="hljs-keyword">if</span> (*t == terminator || t == q) &#123;<br>            <span class="hljs-type">int</span> length = t - p;  <span class="hljs-comment">// the last strbuf-&gt;len could be right, so q</span><br>                                 <span class="hljs-comment">// must points to the last elem&#x27;s next position</span><br>            ans[pointer] = (strbuf*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(strbuf));<br>            <span class="hljs-comment">// value it</span><br>            ans[pointer]-&gt;len = length;<br>            ans[pointer]-&gt;alloc = length + <span class="hljs-number">1</span>;<br>            ans[pointer]-&gt;buf =<br>                (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * (length + <span class="hljs-number">1</span>));  <span class="hljs-comment">// 1 for &#x27;\0&#x27;</span><br><br>            <span class="hljs-built_in">memcpy</span>(ans[pointer]-&gt;buf, p, length);<br>            ans[pointer++]-&gt;buf[length] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>            <span class="hljs-keyword">while</span> (*t == terminator &amp;&amp; t &lt;= q) &#123;<br>                t++;<br>            &#125;<br>            <span class="hljs-comment">// set a new start</span><br>            p = t;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (pointer == max)<br>            <span class="hljs-keyword">break</span>;<br>    &#125;<br>    ans[pointer] = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-keyword">return</span> ans;<br>&#125;<br><span class="hljs-type">bool</span> <span class="hljs-title function_">strbuf_begin_judge</span><span class="hljs-params">(<span class="hljs-type">char</span>* target_str, <span class="hljs-type">const</span> <span class="hljs-type">char</span>* str, <span class="hljs-type">int</span> len)</span> &#123;<br>    <span class="hljs-keyword">if</span> (len == <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strlen</span>(str) &gt; len) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">strlen</span>(str); i++) &#123;<br>        <span class="hljs-keyword">if</span> (str[i] != target_str[i]) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><span class="hljs-type">char</span>* <span class="hljs-title function_">strbuf_get_mid_buf</span><span class="hljs-params">(<span class="hljs-type">char</span>* target_buf, <span class="hljs-type">int</span> begin, <span class="hljs-type">int</span> end, <span class="hljs-type">int</span> len)</span> &#123;<br>    <span class="hljs-keyword">if</span> (begin &gt;= len || end &gt;= len)<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">char</span>* ret = (<span class="hljs-type">char</span>*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">char</span>) * (end - begin + <span class="hljs-number">1</span>));<br><br>    <span class="hljs-built_in">memcpy</span>(ret, target_buf + begin, end - begin);<br>    ret[end - begin] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>    <span class="hljs-keyword">return</span> ret;<br>&#125; <span class="hljs-comment">// for success.</span><br></code></pre></td></tr></table></figure>
+<p><em>This text is over, thank you for reading~</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Tests-for-Basic-Knowledge-of-C/" class="category-chain-item">Tests for Basic Knowledge of C</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#开发语言</a>
+      
+        <a href="/tags/c%E8%AF%AD%E8%A8%80/" class="print-no-link">#c语言</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Design a Dynamic Expansion Buffer (strbuf) with C Language</div>
+      <div>http://blog.luliang.online/2023/01/01/[Project 1]Design a Dynamic Expansion Buffer (strbuf) with C Language/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01/10/Analysis%20of%20the%20Location%20of%20Initialized!Uninitialized%20Global!Static!Local%20Variables!Constants%20in%20Mem/" title="Analysis of the Location of Initialized/Uninitialized Global/Static/Local Variables/Constants in Mem">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Analysis of the Location of Initialized/Uninitialized Global/Static/Local Variables/Constants in Mem</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/31/(1)%20DNS%20Protocol%20Analysis%20Based%20on%20Wireshark%20at%20the%20Application%20Layer/" title="(1) DNS Protocol Analysis Based on Wireshark at the Application Layer">
+                        <span class="hidden-mobile">(1) DNS Protocol Analysis Based on Wireshark at the Application Layer</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

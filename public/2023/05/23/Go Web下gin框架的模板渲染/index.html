@@ -1,0 +1,787 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言Gin框架是一个用于构建Web应用程序的轻量级Web框架，使用Go语言开发。它具有高性能、低内存占用和快速路由匹配的特点，旨在提供简单、快速的方式来开发可扩展的Web应用程序。Gin框架的设计目标是保持简单和易于使用，同时提供足够的灵活性和扩展性，使开发人员能够根据项目的需求进行定制。它提供了许多有用的功能，如中间件支持、路由组、请求参数解析、模板渲染等，使开发人员能够快速构建高效的W">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go Web下gin框架的模板渲染">
+<meta property="og:url" content="http://blog.luliang.online/2023/05/23/Go%20Web%E4%B8%8Bgin%E6%A1%86%E6%9E%B6%E7%9A%84%E6%A8%A1%E6%9D%BF%E6%B8%B2%E6%9F%93/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言Gin框架是一个用于构建Web应用程序的轻量级Web框架，使用Go语言开发。它具有高性能、低内存占用和快速路由匹配的特点，旨在提供简单、快速的方式来开发可扩展的Web应用程序。Gin框架的设计目标是保持简单和易于使用，同时提供足够的灵活性和扩展性，使开发人员能够根据项目的需求进行定制。它提供了许多有用的功能，如中间件支持、路由组、请求参数解析、模板渲染等，使开发人员能够快速构建高效的W">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3cc321ecf46846a6a2235ef9eee4e4ae_1720253815831.png?token=ANB4BCKIVDPQEZG2PCZHGW3GRD63M">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/00b20af54b554c749e19348a719ea21e_1720253815831.png?token=ANB4BCPSCA63REQ3SUA4BADGRD63O">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/99077711704548b5b9e6bc986b9082b0_1720253815831.png?token=ANB4BCMU6IIS3DBBTTCKH73GRD63Q">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c4d8d1fabd394634a2199abddc1a3235_1720253815831.png?token=ANB4BCMZO5EHYG32RMGRFH3GRD63U">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f75b1a70464743b18c786f893f9d09ff_1720253823252.png?token=ANB4BCLCBZWOOEPIZYE43TTGRD63Y">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c4f1ad3aceb5450388453349cbdca707_1720253823252.png?token=ANB4BCOCKKLF456XWHDT5HTGRD634">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cd783d95c55e4211bbd156985e3129eb_1720253823252.png?token=ANB4BCIMIO7VHQ7TEOT3ZIDGRD64A">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/0bf73972e1a9458f931d430a1b981ec5_1720253823252.png?token=ANB4BCIKRH7WV7RYERFW2M3GRD64E">
+<meta property="article:published_time" content="2023-05-23T14:16:27.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.770Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3cc321ecf46846a6a2235ef9eee4e4ae_1720253815831.png?token=ANB4BCKIVDPQEZG2PCZHGW3GRD63M">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Go Web下gin框架的模板渲染 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Go Web下gin框架的模板渲染"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-23 22:16" pubdate>
+          2023年5月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          33 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Go Web下gin框架的模板渲染</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>Gin框架是一个用于构建Web应用程序的轻量级Web框架，使用Go语言开发。它具有高性能、低内存占用和快速路由匹配的特点，旨在提供简单、快速的方式来开发可扩展的Web应用程序。<br>Gin框架的设计目标是保持简单和易于使用，同时提供足够的灵活性和扩展性，使开发人员能够根据项目的需求进行定制。它提供了许多有用的功能，如中间件支持、路由组、请求参数解析、模板渲染等，使开发人员能够快速构建高效的Web应用程序。<br>以下是Gin框架的一些主要特性：</p>
+<ul>
+<li><p>快速的性能：Gin框架采用了高性能的路由引擎，使请求路由匹配变得非常快速。</p>
+</li>
+<li><p>中间件支持：Gin框架支持中间件机制，允许你在请求处理过程中添加自定义的中间件，用于处理认证、日志记录、错误处理等功能。</p>
+</li>
+<li><p>路由组：Gin框架允许将路由按照逻辑组织成路由组，使代码结构更清晰，并且可以为不同的路由组添加不同的中间件。</p>
+</li>
+<li><p>请求参数解析：Gin框架提供了方便的方法来解析请求中的参数，包括查询字符串参数、表单参数、JSON参数等。</p>
+</li>
+<li><p>模板渲染：虽然Gin框架本身不提供模板引擎，但它与多种模板引擎库（如html&#x2F;template、pongo2等）集成，使你能够方便地进行模板渲染。</p>
+</li>
+<li><p>错误处理：Gin框架提供了内置的错误处理机制，可以捕获和处理应用程序中的错误，并返回适当的错误响应。</p>
+</li>
+</ul>
+<p>总体而言，Gin框架是一个简单、轻量级但功能强大的Web框架，非常适合构建高性能、可扩展的Web应用程序。它在Go语言社区中得到广泛的认可，并被许多开发人员用于构建各种类型的Web应用程序。</p>
+<h2 id="一、html-template"><a href="#一、html-template" class="headerlink" title="一、html&#x2F;template"></a>一、html&#x2F;template</h2><p><code>html/template</code>是Go语言标准库中的一个包，用于生成和渲染HTML模板。它提供了一种安全且灵活的方式来生成HTML输出，支持模板继承、变量替换、条件语句、循环结构等功能。</p>
+<p><code>html/template</code>包的主要目标是防止常见的Web安全漏洞，如跨站脚本攻击（XSS）。它通过自动进行HTML转义和编码来确保生成的HTML是安全的，并防止恶意用户注入恶意代码。</p>
+<p>使用<code>html/template</code>包可以将动态数据与静态HTML模板分离，使代码更易于维护和重用。你可以定义模板文件，然后将数据传递给模板进行渲染，最后生成最终的HTML输出。</p>
+<h3 id="（一）初次渲染"><a href="#（一）初次渲染" class="headerlink" title="（一）初次渲染"></a>（一）初次渲染</h3><p>先创建一个名为 <code>hello.tmpl</code>的文件：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go">&lt;!DOCTYPE html&gt;<br>&lt;html lang=<span class="hljs-string">&quot;zh-CN&quot;</span>&gt;<br>&lt;head&gt;<br>    &lt;title&gt;Hello&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;p&gt;hello, &#123;&#123;.&#125;&#125;&lt;/p&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+<p>这里的<code>&#123;&#123;.&#125;&#125;</code>中的<code>.</code>就代表了我们要填充的东东，接着创建我们的<code>main.go</code>函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;html/template&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">sayHello</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;<br>	<span class="hljs-comment">// 请勿刻舟求剑,用绝对地址</span><br>	t, err := template.ParseFiles(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap1/hello.tmpl&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;http server failed:%V&quot;</span>, err)<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	<span class="hljs-comment">// 渲染模板</span><br>	err = t.Execute(w, <span class="hljs-string">&quot;小王子!&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;http server failed:%V&quot;</span>, err)<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	http.HandleFunc(<span class="hljs-string">&quot;/hello&quot;</span>, sayHello)<br>	err := http.ListenAndServe(<span class="hljs-string">&quot;:9000&quot;</span>, <span class="hljs-literal">nil</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;http server failed:%V&quot;</span>, err)<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>使用<code>html/template</code>进行HTML模板渲染的一般步骤如下：</p>
+<ul>
+<li><p>定义模板：<br>首先，你需要定义HTML模板。可以在代码中直接定义模板字符串，也可以将模板保存在独立的文件中。比如我们创建了模板：<code>hello.tmpl</code>；</p>
+</li>
+<li><p>创建模板对象：<br>使用template.New()函数创建一个模板对象。你可以选择为模板对象指定一个名称，以便在渲染过程中引用它。</p>
+</li>
+<li><p>解析模板：<br>使用模板对象的Parse()或ParseFiles()方法解析模板内容。如果模板内容保存在单独的文件中，可以使用ParseFiles()方法解析文件内容并关联到模板对象。</p>
+</li>
+<li><p>渲染模板：<br>创建一个用于存储模板数据的数据结构，并将数据传递给模板对象的Execute()方法。该方法将渲染模板并将结果写入指定的输出位置（如os.Stdout或http.ResponseWriter）。</p>
+</li>
+</ul>
+<p>在浏览器中输入：<code>127.0.0.0:9000/hello</code>就可以看到结果：<strong>hello, 小王子!</strong></p>
+<h3 id="（二）传入其它数据进行渲染"><a href="#（二）传入其它数据进行渲染" class="headerlink" title="（二）传入其它数据进行渲染"></a>（二）传入其它数据进行渲染</h3><p>上次渲染，我们用的是这一句：<code>err = t.Execute(w, &quot;小王子!&quot;)</code>，可以看到我们传入了一个字符串而已。这次我们打算传点稍微不同的其它数据。继续编写模板<code>test.tmpl</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go">&lt;!DOCTYPE html&gt;<br>&lt;html lang=<span class="hljs-string">&quot;zh-CN&quot;</span>&gt;<br>&lt;head&gt;<br>    &lt;title&gt;Hello&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;p&gt;姓名: &#123;&#123;.Name&#125;&#125;&lt;/p&gt;<br>&lt;p&gt;年龄: &#123;&#123;.Age&#125;&#125;&lt;/p&gt;<br>&lt;p&gt;性别: &#123;&#123;.Gander&#125;&#125;&lt;/p&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+<p>可以看到，我们的模板稍微复杂起来了！继续编写 <code>main.go</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;html/template&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-keyword">type</span> User <span class="hljs-keyword">struct</span> &#123;<br>	Name   <span class="hljs-type">string</span><br>	Gander <span class="hljs-type">string</span> <span class="hljs-comment">// 首字母是否大小写,作为是否对外暴露的标识</span><br>	Age    <span class="hljs-type">int</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">sayHello</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;<br>	<span class="hljs-comment">// 定义模板</span><br>	u1 := User&#123;<br>		Name:   <span class="hljs-string">&quot;小王子&quot;</span>,<br>		Gander: <span class="hljs-string">&quot;男&quot;</span>,<br>		Age:    <span class="hljs-number">19</span>,<br>	&#125;<br>	<span class="hljs-comment">// 解析模板</span><br>	t, err := template.ParseFiles(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap2/test.tmpl&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;ParseFiles failed:%V&quot;</span>, err)<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	err = t.Execute(w, u1)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	http.HandleFunc(<span class="hljs-string">&quot;/hello&quot;</span>, sayHello)<br>	err := http.ListenAndServe(<span class="hljs-string">&quot;:9000&quot;</span>, <span class="hljs-literal">nil</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;http server failed:%V&quot;</span>, err)<br>		<span class="hljs-keyword">return</span><br>	&#125;<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>可以看到我们在里面定义了一个结构类型 User，传入了一个 User 对象 u1：<code>err = t.Execute(w, u1)</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> User <span class="hljs-keyword">struct</span> &#123;<br>	Name   <span class="hljs-type">string</span><br>	Gander <span class="hljs-type">string</span> <span class="hljs-comment">// 首字母是否大小写,作为是否对外暴露的标识</span><br>	Age    <span class="hljs-type">int</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>赶紧看看运行结果，可以看到结果符合预期：</p>
+<blockquote>
+<p>姓名: 小王子<br>年龄: 19<br>性别: 男</p>
+</blockquote>
+<h3 id="（三）定义函数参与渲染"><a href="#（三）定义函数参与渲染" class="headerlink" title="（三）定义函数参与渲染"></a>（三）定义函数参与渲染</h3><p>定义我们的模板：<code>f.tmpl</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go">&lt;!DOCTYPE html&gt;<br>&lt;html lang=<span class="hljs-string">&quot;zh-CN&quot;</span>&gt;<br>&lt;head&gt;<br>    &lt;title&gt;hello&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&#123;&#123; kua . &#125;&#125;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+<p>可以看到，我们的模板里面有一个函数名字叫做 <code>kua</code>，没错，这就是我们要的函数。</p>
+<p>编写<code>main.go</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;html/template&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">f</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;<br>	<span class="hljs-comment">// 定义模板</span><br>	k := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(name <span class="hljs-type">string</span>)</span></span> (<span class="hljs-type">string</span>, <span class="hljs-type">error</span>) &#123;<br>		<span class="hljs-keyword">return</span> name + <span class="hljs-string">&quot;太棒了!&quot;</span>, <span class="hljs-literal">nil</span><br>	&#125;<br>	t := template.New(<span class="hljs-string">&quot;f.tmpl&quot;</span>)<br>	t.Funcs(template.FuncMap&#123;<br>		<span class="hljs-string">&quot;kua&quot;</span>: k,<br>	&#125;)<br>	<span class="hljs-comment">// 解析模板</span><br>	_, err := t.ParseFiles(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap3/f.tmpl&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	<span class="hljs-comment">// 渲染模板</span><br>	err = t.Execute(w, <span class="hljs-string">&quot;小王子&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	http.HandleFunc(<span class="hljs-string">&quot;/hello&quot;</span>, f)<br>	err := http.ListenAndServe(<span class="hljs-string">&quot;:9002&quot;</span>, <span class="hljs-literal">nil</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;http server failed:%V&quot;</span>, err)<br>		<span class="hljs-keyword">return</span><br>	&#125;<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>可以看到，我用了一个关键语句将函数kua 关联到了模板：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">t.Funcs(template.FuncMap&#123;<br>	<span class="hljs-string">&quot;kua&quot;</span>: k,<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>点击运行，可以看到结果：<strong>小王子太棒了!</strong></p>
+<h3 id="（四）c-HTML-渲染"><a href="#（四）c-HTML-渲染" class="headerlink" title="（四）c.HTML() 渲染"></a>（四）c.HTML() 渲染</h3><p>在Gin框架中，可以使用c.HTML()方法来进行HTML模板渲染。该方法接收HTTP状态码、模板名称和渲染所需的数据作为参数。</p>
+<p>编写模板<code>index.tmpl</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go">&lt;!DOCTYPE html&gt;<br>&lt;html lang=<span class="hljs-string">&quot;en&quot;</span>&gt;<br>&lt;head&gt;<br>    &lt;meta charset=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;<br>    &lt;meta name=<span class="hljs-string">&quot;viewport&quot;</span> content=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;<br>    &lt;meta http-equiv=<span class="hljs-string">&quot;X-UA-Compatible&quot;</span> content=<span class="hljs-string">&quot;ie=edge&quot;</span>&gt;<br>    &lt;title&gt;posts/index&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&#123;&#123;.title&#125;&#125;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+<p>可以看到我们只需渲染传入对象的 title 值，编写 <code>main.go</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	r.LoadHTMLFiles(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap4/index.tmpl&quot;</span>)<br>	r.GET(<span class="hljs-string">&quot;/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;你好,前端真是太有意思了！&quot;</span>,<br>		&#125;)<br>	&#125;)<br>	r.Run(<span class="hljs-string">&quot;:9091&quot;</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>首先，创建一个 gin.default()路由对象，然后给该对象载入已经写好的模板文件，之后就可以用 GET 函数进行请求了。<br>先看看 GET 是什么东西：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// GET is a shortcut for router.Handle(&quot;GET&quot;, path, handlers).</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(group *RouterGroup)</span></span> GET(relativePath <span class="hljs-type">string</span>, handlers ...HandlerFunc) IRoutes &#123;<br>	<span class="hljs-keyword">return</span> group.handle(http.MethodGet, relativePath, handlers)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>它说，GET 是<code>router.Handle(&quot;GET&quot;, path, handlers)</code>的一个捷径。再看看<code>router.Handle(&quot;GET&quot;, path, handlers)</code>是什么东西：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(group *RouterGroup)</span></span> handle(httpMethod, relativePath <span class="hljs-type">string</span>, handlers HandlersChain) IRoutes &#123;<br>	absolutePath := group.calculateAbsolutePath(relativePath)<br>	handlers = group.combineHandlers(handlers)<br>	group.engine.addRoute(httpMethod, absolutePath, handlers)<br>	<span class="hljs-keyword">return</span> group.returnObj()<br>&#125;<br><br><span class="hljs-comment">// Handle registers a new request handle and middleware with the given path and method.</span><br><span class="hljs-comment">// The last handler should be the real handler, the other ones should be middleware that can and should be shared among different routes.</span><br><span class="hljs-comment">// See the example code in GitHub.</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// For GET, POST, PUT, PATCH and DELETE requests the respective shortcut</span><br><span class="hljs-comment">// functions can be used.</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// This function is intended for bulk loading and to allow the usage of less</span><br><span class="hljs-comment">// frequently used, non-standardized or custom methods (e.g. for internal</span><br><span class="hljs-comment">// communication with a proxy).</span><br></code></pre></td></tr></table></figure>
+<p>原来就是做了一下中间处理，注册了一个新的请求句柄。它还说GET, POST, PUT, PATCH、DELETE 都有类似的捷径。之后在 handlers中放一个匿名函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;你好,前端真是太有意思了！&quot;</span>,<br>		&#125;)<br>	&#125;<br></code></pre></td></tr></table></figure>
+<p>这个函数就是用于渲染的函数。猜测<code>c.HTML()</code>依然是一个 shortcut:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// HTML renders the HTTP template specified by its file name.</span><br><span class="hljs-comment">// It also updates the HTTP code and sets the Content-Type as &quot;text/html&quot;.</span><br><span class="hljs-comment">// See http://golang.org/doc/articles/wiki/</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Context)</span></span> HTML(code <span class="hljs-type">int</span>, name <span class="hljs-type">string</span>, obj any) &#123;<br>	instance := c.engine.HTMLRender.Instance(name, obj)<br>	c.Render(code, instance)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以看到真正干活的还是 <code>Render()</code>。</p>
+<p>点击运行，结果为：<strong>你好,前端真是太有意思了!</strong></p>
+<h3 id="（五）从多个模板中选择一个进行渲染"><a href="#（五）从多个模板中选择一个进行渲染" class="headerlink" title="（五）从多个模板中选择一个进行渲染"></a>（五）从多个模板中选择一个进行渲染</h3><p>如果要渲染多个文件，该如何操作？比如我们通过输入不同的网站，服务器这时只需要选择不同的模板进行渲染就好。在这里创建了两个模板文件，<code>users/index.tmpl</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs go">&#123;&#123;define <span class="hljs-string">&quot;users/index.tmpl&quot;</span>&#125;&#125;<br>    &lt;!DOCTYPE html&gt;<br>    &lt;html lang=<span class="hljs-string">&quot;en&quot;</span>&gt;<br>    &lt;head&gt;<br>        &lt;meta charset=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;<br>        &lt;meta name=<span class="hljs-string">&quot;viewport&quot;</span> content=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;<br>        &lt;meta http-equiv=<span class="hljs-string">&quot;X-UA-Compatible&quot;</span> content=<span class="hljs-string">&quot;ie=edge&quot;</span>&gt;<br>        &lt;title&gt;users/index&lt;/title&gt;<br>    &lt;/head&gt;<br>    &lt;body&gt;<br>    &#123;&#123;.title&#125;&#125;<br>    &lt;/body&gt;<br>    &lt;/html&gt;<br>&#123;&#123;end&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p><code>posts/index.tmpl</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs go">&#123;&#123;define <span class="hljs-string">&quot;posts/index.tmpl&quot;</span>&#125;&#125;<br>    &lt;!DOCTYPE html&gt;<br>    &lt;html lang=<span class="hljs-string">&quot;en&quot;</span>&gt;<br>    &lt;head&gt;<br>        &lt;meta charset=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;<br>        &lt;meta name=<span class="hljs-string">&quot;viewport&quot;</span> content=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;<br>        &lt;meta http-equiv=<span class="hljs-string">&quot;X-UA-Compatible&quot;</span> content=<span class="hljs-string">&quot;ie=edge&quot;</span>&gt;<br>        &lt;title&gt;posts/index&lt;/title&gt;<br>    &lt;/head&gt;<br>    &lt;body&gt;<br>    &#123;&#123;.title&#125;&#125;<br>    &lt;/body&gt;<br>    &lt;/html&gt;<br>&#123;&#123;end&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>这里使用了<code>&#123;&#123;define "posts/index.tmpl"&#125;&#125;...&#123;&#123;end&#125;&#125;</code>结构，对模板文件进行了命名。<br>编写<code>main.go</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>	<span class="hljs-string">&quot;html/template&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br><br>	r.LoadHTMLGlob(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap5/templates/**/*&quot;</span>)<br>	r.GET(<span class="hljs-string">&quot;/posts/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;posts/index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;posts/index.tmpl&quot;</span>,<br>		&#125;)<br>	&#125;)<br>	r.GET(<span class="hljs-string">&quot;/users/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;users/index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;送你到百度！&quot;</span>,<br>		&#125;)<br>	&#125;)<br>	r.Run(<span class="hljs-string">&quot;:9091&quot;</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>我们在在浏览器地址栏输入<code>http://127.0.0.1:9091/users/index</code>可以得到：<strong>送你到百度!<strong>；而输入<code>http://127.0.0.1:9091/posts/index</code>可以得到：</strong>posts&#x2F;index.tmpl</strong>。</p>
+<h3 id="（六）加点东西，使得事情朝着有意思的方向进行！"><a href="#（六）加点东西，使得事情朝着有意思的方向进行！" class="headerlink" title="（六）加点东西，使得事情朝着有意思的方向进行！"></a>（六）加点东西，使得事情朝着有意思的方向进行！</h3><p>我们为了使得网页画面更有趣，这里使用了多个文件，分别是index.css、index.js。编写：<code>index.css</code>:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">body</span> &#123;<br>    <span class="hljs-attribute">background-color</span>: <span class="hljs-number">#00a7d0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>没错只有一句话。接下来编写 <code>index.js</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;Hello, Web!&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>没错，也只有一句话。然后，我们把 css、js 文件引入到 <code>index.tmpl</code>中：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs go">&#123;&#123;define <span class="hljs-string">&quot;users/index.tmpl&quot;</span>&#125;&#125;<br>    &lt;!DOCTYPE html&gt;<br>    &lt;html lang=<span class="hljs-string">&quot;en&quot;</span>&gt;<br>    &lt;head&gt;<br>        &lt;meta charset=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;<br>        &lt;meta name=<span class="hljs-string">&quot;viewport&quot;</span> content=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;<br>        &lt;meta http-equiv=<span class="hljs-string">&quot;X-UA-Compatible&quot;</span> content=<span class="hljs-string">&quot;ie=edge&quot;</span>&gt;<br>        &lt;link rel=<span class="hljs-string">&quot;stylesheet&quot;</span> href=<span class="hljs-string">&quot;/xxx/index.css&quot;</span>&gt;<br>        &lt;title&gt;users/index&lt;/title&gt;<br>    &lt;/head&gt;<br>    &lt;body&gt;<br>    &#123;&#123;.title&#125;&#125;<br><br>    &lt;script src=<span class="hljs-string">&quot;/xxx/index.js&quot;</span>&gt;&lt;/script&gt;<br>    &lt;/body&gt;<br>    &lt;/html&gt;<br>&#123;&#123;end&#125;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来写<code>main.go</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>	<span class="hljs-string">&quot;html/template&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	<span class="hljs-comment">// 加载静态文件</span><br>	r.Static(<span class="hljs-string">&quot;/xxx&quot;</span>, <span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap5/statics&quot;</span>)<br><br>	r.LoadHTMLGlob(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap5/templates/**/*&quot;</span>)<br>	r.GET(<span class="hljs-string">&quot;/posts/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;posts/index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;posts/index.tmpl&quot;</span>,<br>		&#125;)<br>	&#125;)<br>	r.GET(<span class="hljs-string">&quot;/users/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;users/index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;送你到百度!&quot;</span>,<br>		&#125;)<br>	&#125;)<br><br>	r.Run(<span class="hljs-string">&quot;:9091&quot;</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>因为我们要把 css、js 文件加载进去，因此要用 <code>r.Static()</code>函数把放置静态文件的目录加入进去。<strong>为了复用</strong>，第一个参数“&#x2F;xxx”的意思是，只要index.tmpl文件中存在“&#x2F;xxx”字段就直接指到我们设置的目录。<br>运行结果：首先 js 文件会首先渲染：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3cc321ecf46846a6a2235ef9eee4e4ae_1720253815831.png?token=ANB4BCKIVDPQEZG2PCZHGW3GRD63M" alt="在这里插入图片描述"><br>之后，css 文件会渲染：<img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/00b20af54b554c749e19348a719ea21e_1720253815831.png?token=ANB4BCPSCA63REQ3SUA4BADGRD63O" alt="在这里插入图片描述"></p>
+<p>可以看到这里出现了一个超链接，那是因为我们在这个字符后面插入了一个函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 添加自定义函数</span><br>	r.SetFuncMap(template.FuncMap&#123;<br>		<span class="hljs-string">&quot;safe&quot;</span>: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(str <span class="hljs-type">string</span>)</span></span> template.HTML &#123;<br>			<span class="hljs-keyword">return</span> template.HTML(str)<br>		&#125;,<br>	&#125;)<br></code></pre></td></tr></table></figure>
+<p>配合 <code>index.tmpl</code>,就可以了。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/99077711704548b5b9e6bc986b9082b0_1720253815831.png?token=ANB4BCMU6IIS3DBBTTCKH73GRD63Q" alt="在这里插入图片描述"></p>
+<h2 id="三、利用已有模板进行部署"><a href="#三、利用已有模板进行部署" class="headerlink" title="三、利用已有模板进行部署"></a>三、利用已有模板进行部署</h2><p>通过以上的例子，终于学会了在模板中插入大量的css、js 进行渲染了！<br>首先找到某个网站，比如<a target="_blank" rel="noopener" href="https://sc.chinaz.com/tag_moban/qianduan.html">站长之家</a>，下载一个模板：<img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c4d8d1fabd394634a2199abddc1a3235_1720253815831.png?token=ANB4BCMZO5EHYG32RMGRFH3GRD63U" alt="在这里插入图片描述"><br>选择第一个，下载之后解压：<img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f75b1a70464743b18c786f893f9d09ff_1720253823252.png?token=ANB4BCLCBZWOOEPIZYE43TTGRD63Y" alt="在这里插入图片描述"></p>
+<p>static 外面的<code> index.html</code>有用，其它都可以忽略。把 static 里面的文件夹复制到我们的工作目录：<img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c4f1ad3aceb5450388453349cbdca707_1720253823252.png?token=ANB4BCOCKKLF456XWHDT5HTGRD634" alt="在这里插入图片描述"><br>同时，把 <code>index.html</code>文件复制到 <code>posts</code>（无所谓，强迫症而已），就可以使用了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">r.GET(<span class="hljs-string">&quot;/home&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>	c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.html&quot;</span>, <span class="hljs-literal">nil</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>这样，在地址栏输入：<code>http://127.0.0.1:9091/home</code>，就可以看到效果了：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cd783d95c55e4211bbd156985e3129eb_1720253823252.png?token=ANB4BCIMIO7VHQ7TEOT3ZIDGRD64A" alt="在这里插入图片描述"><br>渲染的相当完美！这里会存在一些小细节，比如在 index.html文件中需要把 css<br>、js文件的地址进行变更，变更到你放置这些文件的地址：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/0bf73972e1a9458f931d430a1b981ec5_1720253823252.png?token=ANB4BCIKRH7WV7RYERFW2M3GRD64E" alt="在这里插入图片描述"><br>代码附上<code>main.go</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>	<span class="hljs-string">&quot;html/template&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	<span class="hljs-comment">// 加载静态文件</span><br>	r.Static(<span class="hljs-string">&quot;/xxx&quot;</span>, <span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap5/statics&quot;</span>)<br>	<span class="hljs-comment">// 添加自定义函数</span><br>	r.SetFuncMap(template.FuncMap&#123;<br>		<span class="hljs-string">&quot;safe&quot;</span>: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(str <span class="hljs-type">string</span>)</span></span> template.HTML &#123;<br>			<span class="hljs-keyword">return</span> template.HTML(str)<br>		&#125;,<br>	&#125;)<br>	r.LoadHTMLGlob(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap5/templates/**/*&quot;</span>)<br>	r.GET(<span class="hljs-string">&quot;/posts/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;posts/index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;posts/index.tmpl&quot;</span>,<br>		&#125;)<br>	&#125;)<br>	r.GET(<span class="hljs-string">&quot;/users/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;users/index.tmpl&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;&lt;a href=&#x27;https://www.baidu.com&#x27;&gt;送你到百度!&lt;/a&gt;&quot;</span>,<br>		&#125;)<br>	&#125;)<br>	r.GET(<span class="hljs-string">&quot;/home&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.html&quot;</span>, <span class="hljs-literal">nil</span>)<br>	&#125;)<br><br>	r.Run(<span class="hljs-string">&quot;:9091&quot;</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这意味着，我们以后要想写网页，根本不需要进行大量的无意义的编程，利用 ChatGPT，我们可以写出大量的优秀的css、js 网页，我们要做的只是进行适量的改动，这将极大地丰富我们的创造力！</p>
+<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><p>本文从简单到难，对Go Web中 gin 框架下的模板渲染进行了简单的阐述。</p>
+<p><em>全文完，感谢阅读！</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Golang-%E5%89%8D%E7%AB%AF/" class="category-chain-item">Golang 前端</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%BD%91%E7%BB%9C/" class="print-no-link">#网络</a>
+      
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
+      
+        <a href="/tags/%E5%90%8E%E7%AB%AF/" class="print-no-link">#后端</a>
+      
+        <a href="/tags/%E5%89%8D%E7%AB%AF/" class="print-no-link">#前端</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Go Web下gin框架的模板渲染</div>
+      <div>http://blog.luliang.online/2023/05/23/Go Web下gin框架的模板渲染/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/31/Go%20Web%E4%B8%8Bgin%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/" title="Go Web下gin框架使用（一）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Go Web下gin框架使用（一）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/08/%E3%80%90Golang%E3%80%91%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%8E%92%E5%BA%8F/" title="【Golang】多线程排序">
+                        <span class="hidden-mobile">【Golang】多线程排序</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

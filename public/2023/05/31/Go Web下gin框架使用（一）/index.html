@@ -1,0 +1,760 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言在前面，已经在这篇文章中详细地讨论了 gin 框架下的模板渲染问题，这篇文章主要对 gin 框架的使用进行讨论。 一、不同的路由以下可以选择不同的路由进行渲染： 12345678910111213141516171819202122r :&#x3D; gin.Default()	type usr struct &#123;		Name string &#96;json:&quot;name&quot;&#96;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go Web下gin框架使用（一）">
+<meta property="og:url" content="http://blog.luliang.online/2023/05/31/Go%20Web%E4%B8%8Bgin%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言在前面，已经在这篇文章中详细地讨论了 gin 框架下的模板渲染问题，这篇文章主要对 gin 框架的使用进行讨论。 一、不同的路由以下可以选择不同的路由进行渲染： 12345678910111213141516171819202122r :&#x3D; gin.Default()	type usr struct &#123;		Name string &#96;json:&quot;name&quot;&#96;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/44da9d6708e3483aa5f8049cac674e3d_1720253795679.png?token=ANB4BCOKRCNCIPE2PUGK5ELGRD62I">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e447b71e08984826a595298aa0ce5372_1720253795679.png?token=ANB4BCIV23UQMLOWNDEYD3DGRD62K">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/b5d5acdb0d02495188f446321f133e91_1720253801825.png?token=ANB4BCN5RXW7PHFDDC2ZZGDGRD62O">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d72813f6ec984957a556959e7bec45c9_1720253801825.png?token=ANB4BCNR4CNVISAJJFLGEYDGRD62S">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5704d896ef7a4787b235a8a9492cc42e_1720253801825.png?token=ANB4BCI6UYFDTSI5PCGJYSLGRD62W">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f6254b869b2048c494109628e2d16175_1720253801825.png?token=ANB4BCMN35KO3UCRW4GVVHLGRD62Y">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/44232e3d05224ac98c3bbfc992febebf_1720253801825.png?token=ANB4BCNED2MWCVJOZYBLE73GRD622">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/be804b5913dd41d4bd744ab9c1f9f33c_1720253809975.png?token=ANB4BCKVYISBHUHAHW4VGOLGRD624">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d2f2097da950441e81d1cadec4d7fa3f_1720253809975.png?token=ANB4BCI3ZXB5RYLXNBUCCULGRD63A">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/78ec14cd74554e8baa61a91c68e90ea4_1720253809975.png?token=ANB4BCMDXGWTJNSEM67J7VTGRD63C">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5fca271bf98746d491315b2172439267_1720253809975.png?token=ANB4BCPA6TNCD3TCTJGT6FDGRD63E">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/0fc913b8289942838077c76cf08d3a7f_1720253809975.png?token=ANB4BCOBMFJWQC243HWOTITGRD63G">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/83e6b7afbaa740bcb8c6ceea55da09b7_1720253815831.png?token=ANB4BCOU2WF63WOOL4BPHHTGRD63I">
+<meta property="article:published_time" content="2023-05-31T13:33:59.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.770Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/44da9d6708e3483aa5f8049cac674e3d_1720253795679.png?token=ANB4BCOKRCNCIPE2PUGK5ELGRD62I">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Go Web下gin框架使用（一） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Go Web下gin框架使用（一）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-31 21:33" pubdate>
+          2023年5月31日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Go Web下gin框架使用（一）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>在前面，已经在<a target="_blank" rel="noopener" href="http://t.csdn.cn/ey0jM">这篇文章</a>中详细地讨论了 gin 框架下的模板渲染问题，这篇文章主要对 gin 框架的使用进行讨论。</p>
+<h2 id="一、不同的路由"><a href="#一、不同的路由" class="headerlink" title="一、不同的路由"></a>一、不同的路由</h2><p>以下可以选择不同的路由进行渲染：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs go">r := gin.Default()<br>	<span class="hljs-keyword">type</span> usr <span class="hljs-keyword">struct</span> &#123;<br>		Name <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;name&quot;`</span><br>		Msg  <span class="hljs-type">string</span><br>		Age  <span class="hljs-type">int</span><br>	&#125;<br>	r.GET(<span class="hljs-string">&quot;/json&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		data := gin.H&#123;<br>			<span class="hljs-string">&quot;name&quot;</span>:    <span class="hljs-string">&quot;小王子!&quot;</span>,<br>			<span class="hljs-string">&quot;massage&quot;</span>: <span class="hljs-string">&quot;hello&quot;</span>,<br>			<span class="hljs-string">&quot;age&quot;</span>:     <span class="hljs-number">18</span>,<br>		&#125;<br>		c.JSON(http.StatusOK, data)<br>	&#125;)<br>	r.GET(<span class="hljs-string">&quot;/another_json&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		data := usr&#123;<br>			<span class="hljs-string">&quot;小王子!&quot;</span>,<br>			<span class="hljs-string">&quot;hello,golang!&quot;</span>,<br>			<span class="hljs-number">18</span>,<br>		&#125;<br>		c.JSON(http.StatusOK, data)<br>	&#125;)<br></code></pre></td></tr></table></figure>
+<p>当我们在浏览器中输入不同的 url （本例中仅仅是路径不同）时，服务器就会返回不同的数据，这是很好理解的。</p>
+<h3 id="（一）URL"><a href="#（一）URL" class="headerlink" title="（一）URL"></a>（一）URL</h3><p>URL是Uniform Resource Locator的缩写，它是用于标识互联网上资源位置的字符串。URL由几个组件组成，包括协议（如HTTP或HTTPS）、主机名、端口号（可选）、路径和查询参数（可选）。URL的主要目的是在网络上定位资源，如网页、图像、视频等。</p>
+<p>下面是一个URL的示例：<br><code>https://www.example.com:8080/path/to/resource?param1=value1&amp;param2=value2</code></p>
+<p>在这个示例中：</p>
+<ul>
+<li>协议是HTTP（或HTTPS，如果使用加密连接；</li>
+<li>主机名是<a target="_blank" rel="noopener" href="http://www.example.com;/">www.example.com；</a></li>
+<li>端口号是8080（在这个示例中是可选的，默认使用协议的默认端口）；</li>
+<li>路径是&#x2F;path&#x2F;to&#x2F;resource；</li>
+<li>查询参数是param1&#x3D;value1和param2&#x3D;value2（用于向服务器传递额外的信息）；</li>
+<li>URL在浏览器中用于访问网页，也在许多其他应用程序中用于定位网络资源。</li>
+</ul>
+<h2 id="二、查询参数的获取"><a href="#二、查询参数的获取" class="headerlink" title="二、查询参数的获取"></a>二、查询参数的获取</h2><p>当我们在浏览器中输入不同的参数事，服务器必须对这些参数进行获取和处理，这样才能正确处理用户的需求，返回用户想要的数据。比如我们在浏览器中输入：<code>https://www.google.com/search?q=你好</code>这个 <code>q=你好</code>就是参数字段。服务器获取到参数 q 后，就对<code>你好</code>进行查询，然后返回给用户，这样就完成了搜索。</p>
+<p>一下是一个gin框架下的参数获取示例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs go"><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	r.GET(<span class="hljs-string">&quot;/web&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">// 获取浏览器发送的 query 字段</span><br>		<span class="hljs-comment">// name := c.Query(&quot;query&quot;)</span><br>		<span class="hljs-comment">// http://127.0.0.1:9001/web?query=杨超越&amp;age=18</span><br>		name := c.DefaultQuery(<span class="hljs-string">&quot;query&quot;</span>, <span class="hljs-string">&quot;someone&quot;</span>)<br>		age := c.DefaultQuery(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>)<br>		c.JSON(http.StatusOK, gin.H&#123;<br>			<span class="hljs-string">&quot;name&quot;</span>: name,<br>			<span class="hljs-string">&quot;age&quot;</span>:  age,<br>		&#125;)<br>	&#125;)<br>	r.Run(<span class="hljs-string">&quot;:9001&quot;</span>)<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>main 函数的作用就是获取用户输入的 url 中的 <code>query参数</code>以及 <code>age 参数</code>，并处理。处理的过程具体为展示给用户他们输入的 <code>name</code>、<code>age</code>。运行结果为（杨超越 2023 年 5 月 31 日时的年龄为 24 岁，下面的年龄仅供参考）：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/44da9d6708e3483aa5f8049cac674e3d_1720253795679.png?token=ANB4BCOKRCNCIPE2PUGK5ELGRD62I" alt="在这里插入图片描述"></p>
+<h2 id="三、获取表单数据"><a href="#三、获取表单数据" class="headerlink" title="三、获取表单数据"></a>三、获取表单数据</h2><p>我们有时候会有让用户登录的需求，后台需要对用户输入的用户名以及登录密码进行判断和处理。实际上，一般返回这种数据就是表单数据的返回。在 gin 框架里有很方便的函数。以下是一个示例。</p>
+<h3 id="（一）表单数据的生成和处理"><a href="#（一）表单数据的生成和处理" class="headerlink" title="（一）表单数据的生成和处理"></a>（一）表单数据的生成和处理</h3><p>以下是一个网页 login.html，里面要求用户分别填写用户名以及密码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>login<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;/login&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span> <span class="hljs-attr">novalidate</span> <span class="hljs-attr">autocomplete</span>=<span class="hljs-string">&quot;off&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;username&quot;</span>&gt;</span>username:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;username&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;password&quot;</span>&gt;</span>password:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;password&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;登陆&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>这个html 文件有三个 type类型的数据，分别是type&#x3D;”text”、type&#x3D;”password”、type&#x3D;”submit”，他是用 post 方法进行提交的。main函数是这样渲染的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	r.LoadHTMLFiles(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap8/login.html&quot;</span>, <span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap8/index.html&quot;</span>)<br>	r.GET(<span class="hljs-string">&quot;/login&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;login.html&quot;</span>, <span class="hljs-literal">nil</span>)<br>	&#125;)<br>	r.POST(<span class="hljs-string">&quot;/login&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">// 获取 form 表单的数据</span><br>		<span class="hljs-comment">//username := c.PostForm(&quot;username&quot;)</span><br>		<span class="hljs-comment">//password := c.PostForm(&quot;password&quot;)</span><br>		<span class="hljs-comment">// 第二种方式</span><br>		username := c.DefaultPostForm(<span class="hljs-string">&quot;username&quot;</span>, <span class="hljs-string">&quot;用户名&quot;</span>)<br>		password := c.DefaultPostForm(<span class="hljs-string">&quot;password&quot;</span>, <span class="hljs-string">&quot;密码&quot;</span>)<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.html&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;Name&quot;</span>:     username,<br>			<span class="hljs-string">&quot;Password&quot;</span>: password,<br>		&#125;)<br>	&#125;)<br>	r.Run(<span class="hljs-string">&quot;:9001&quot;</span>)<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>首先，通过GET方法渲染上述 login.html文件，然后 login文件中文submit 将会把表单返回到 context类型的 c：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">r.GET(<span class="hljs-string">&quot;/login&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>	c.HTML(http.StatusOK, <span class="hljs-string">&quot;login.html&quot;</span>, <span class="hljs-literal">nil</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>之后，login 里面会用 POST 方法请求，在这个请求里，对该请求的处理方法是对另一个 html 文件进行渲染：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>index<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>hello,&#123;&#123; .Name &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>你的密码是&#123;&#123; .Password&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>这时，只需要把提价的数据从 c 中拿出来就好了：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 获取 form 表单的数据</span><br>		<span class="hljs-comment">//username := c.PostForm(&quot;username&quot;)</span><br>		<span class="hljs-comment">//password := c.PostForm(&quot;password&quot;)</span><br>		<span class="hljs-comment">// 第二种方式</span><br>		username := c.DefaultPostForm(<span class="hljs-string">&quot;username&quot;</span>, <span class="hljs-string">&quot;用户名&quot;</span>)<br>		password := c.DefaultPostForm(<span class="hljs-string">&quot;password&quot;</span>, <span class="hljs-string">&quot;密码&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>拿出来之后，就可以对我们的 html 文件进行渲染了：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go">c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.html&quot;</span>, gin.H&#123;<br>		<span class="hljs-string">&quot;Name&quot;</span>:     username,<br>		<span class="hljs-string">&quot;Password&quot;</span>: password,<br>	&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>运行结果为：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e447b71e08984826a595298aa0ce5372_1720253795679.png?token=ANB4BCIV23UQMLOWNDEYD3DGRD62K" alt="在这里插入图片描述"><br>我们输入数据之后，点击登陆，进行POST 请求，渲染的新的结果为：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/b5d5acdb0d02495188f446321f133e91_1720253801825.png?token=ANB4BCN5RXW7PHFDDC2ZZGDGRD62O" alt="在这里插入图片描述"></p>
+<p>为了更清晰地展示这一过程，这里会用 Postman这个软件进行模拟。</p>
+<h3 id="（二）Postman进行分析"><a href="#（二）Postman进行分析" class="headerlink" title="（二）Postman进行分析"></a>（二）Postman进行分析</h3><p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d72813f6ec984957a556959e7bec45c9_1720253801825.png?token=ANB4BCNR4CNVISAJJFLGEYDGRD62S" alt="在这里插入图片描述"></p>
+<p>我们在对这个 <code>url=http://127.0.0.1:9001/login</code>进行 GET 请求时，可以看到服务器进行的是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">r.GET(<span class="hljs-string">&quot;/login&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>	c.HTML(http.StatusOK, <span class="hljs-string">&quot;login.html&quot;</span>, <span class="hljs-literal">nil</span>)<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>如果我们把 GET 请求换成 POST 请求，这时候就应该进行的是index.html渲染：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go">r.POST(<span class="hljs-string">&quot;/login&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">// 获取 form 表单的数据</span><br>		<span class="hljs-comment">//username := c.PostForm(&quot;username&quot;)</span><br>		<span class="hljs-comment">//password := c.PostForm(&quot;password&quot;)</span><br>		<span class="hljs-comment">// 第二种方式</span><br>		username := c.DefaultPostForm(<span class="hljs-string">&quot;username&quot;</span>, <span class="hljs-string">&quot;用户名&quot;</span>)<br>		password := c.DefaultPostForm(<span class="hljs-string">&quot;password&quot;</span>, <span class="hljs-string">&quot;密码&quot;</span>)<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.html&quot;</span>, gin.H&#123;<br>			<span class="hljs-string">&quot;Name&quot;</span>:     username,<br>			<span class="hljs-string">&quot;Password&quot;</span>: password,<br>		&#125;)<br>	&#125;)<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5704d896ef7a4787b235a8a9492cc42e_1720253801825.png?token=ANB4BCI6UYFDTSI5PCGJYSLGRD62W" alt="在这里插入图片描述"><br>打开检查器，也可以看到它进行的是 POST 请求，携带的参数为：<img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/f6254b869b2048c494109628e2d16175_1720253801825.png?token=ANB4BCMN35KO3UCRW4GVVHLGRD62Y" alt="在这里插入图片描述"><br>渲染的是 index.html。<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/44232e3d05224ac98c3bbfc992febebf_1720253801825.png?token=ANB4BCNED2MWCVJOZYBLE73GRD622" alt="在这里插入图片描述"></p>
+<h2 id="四、路径参数"><a href="#四、路径参数" class="headerlink" title="四、路径参数"></a>四、路径参数</h2><p>路径参数和上面的参数不一样：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	r.GET(<span class="hljs-string">&quot;/user/:name/:age&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		name := c.Param(<span class="hljs-string">&quot;name&quot;</span>)<br>		age := c.Param(<span class="hljs-string">&quot;age&quot;</span>)<br>		c.JSON(http.StatusOK, gin.H&#123;<br>			<span class="hljs-string">&quot;name&quot;</span>: name,<br>			<span class="hljs-string">&quot;age&quot;</span>:  age,<br>		&#125;)<br>	&#125;)<br>	r.GET(<span class="hljs-string">&quot;/blog/:year/:month&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		year := c.Param(<span class="hljs-string">&quot;year&quot;</span>)<br>		month := c.Param(<span class="hljs-string">&quot;month&quot;</span>)<br>		c.JSON(http.StatusOK, gin.H&#123;<br>			<span class="hljs-string">&quot;year&quot;</span>:  year,<br>			<span class="hljs-string">&quot;month&quot;</span>: month,<br>		&#125;)<br>	&#125;)<br>	r.Run(<span class="hljs-string">&quot;:9001&quot;</span>)<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>运行一下：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/be804b5913dd41d4bd744ab9c1f9f33c_1720253809975.png?token=ANB4BCKVYISBHUHAHW4VGOLGRD624" alt="在这里插入图片描述"><br>可以看到，服务端会将 URL 的路径参数提取出来并进行处理：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go">r.GET(<span class="hljs-string">&quot;/user/:name/:age&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		name := c.Param(<span class="hljs-string">&quot;name&quot;</span>)<br>		age := c.Param(<span class="hljs-string">&quot;age&quot;</span>)<br>		c.JSON(http.StatusOK, gin.H&#123;<br>			<span class="hljs-string">&quot;name&quot;</span>: name,<br>			<span class="hljs-string">&quot;age&quot;</span>:  age,<br>		&#125;)<br>	&#125;)<br></code></pre></td></tr></table></figure>
+<h2 id="五、参数绑定"><a href="#五、参数绑定" class="headerlink" title="五、参数绑定"></a>五、参数绑定</h2><p>为了能够更方便的获取请求相关参数，提高开发效率，我们可以基于请求的Content-Type识别请求数据类型并利用反射机制自动提取请求中QueryString、form表单、JSON、XML等参数到结构体中。 下面的示例代码演示了.ShouldBind()强大的功能，它能够基于请求自动提取JSON、form表单和QueryString类型的数据，并把值绑定到指定的结构体对象：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">type</span> user <span class="hljs-keyword">struct</span> &#123;<br>		Username <span class="hljs-type">string</span> <span class="hljs-string">`form:&quot;username&quot; json:&quot;uname&quot;`</span><br>		Password <span class="hljs-type">string</span> <span class="hljs-string">`form:&quot;password&quot; json:&quot;pwd&quot;`</span><br>	&#125;<br>	r := gin.Default()<br>	r.GET(<span class="hljs-string">&quot;/user&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-keyword">var</span> u user<br>		err := c.ShouldBind(&amp;u) <span class="hljs-comment">// 按值传递</span><br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			c.JSON(http.StatusBadRequest, gin.H&#123;<br>				<span class="hljs-string">&quot;msg&quot;</span>:   <span class="hljs-string">&quot;请求的参数不正确!&quot;</span>,<br>				<span class="hljs-string">&quot;error&quot;</span>: err.Error(),<br>			&#125;)<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			c.JSON(http.StatusOK, gin.H&#123;<br>				<span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">&quot;ok!&quot;</span>,<br>				<span class="hljs-string">&quot;user&quot;</span>:    u,<br>			&#125;)<br>		&#125;<br><br>	&#125;)<br>	r.POST(<span class="hljs-string">&quot;/user&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-keyword">var</span> u user<br>		err := c.ShouldBind(&amp;u)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			c.JSON(http.StatusBadRequest, gin.H&#123;<br>				<span class="hljs-string">&quot;msg&quot;</span>:   <span class="hljs-string">&quot;请求的参数不正确!&quot;</span>,<br>				<span class="hljs-string">&quot;error&quot;</span>: err.Error(),<br>			&#125;)<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			c.JSON(http.StatusOK, gin.H&#123;<br>				<span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">&quot;ok!&quot;</span>,<br>				<span class="hljs-string">&quot;user&quot;</span>:    u,<br>			&#125;)<br>		&#125;<br><br>	&#125;)<br><br>	r.Run(<span class="hljs-string">&quot;:9001&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>看看这个请求的运行效果：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d2f2097da950441e81d1cadec4d7fa3f_1720253809975.png?token=ANB4BCI3ZXB5RYLXNBUCCULGRD63A" alt="在这里插入图片描述"><br><code>ShouldBind()</code>就是这么强大！</p>
+<h2 id="六、文件上传"><a href="#六、文件上传" class="headerlink" title="六、文件上传"></a>六、文件上传</h2><p>我们有时候需要对文件上传，上传文件在前端由用户进行操作，我们后端接收到用户文件上传的文件时，就对该文件进行一些可能的操作。<br>前端页面：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>index<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;/upload&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span> <span class="hljs-attr">enctype</span>=<span class="hljs-string">&quot;multipart/form-data&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;f1&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;upload&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br><br></code></pre></td></tr></table></figure>
+<p>这里通过 post 方法，将文件submit 到了context 类型的 c对象中，我们继续处理：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs go">r := gin.Default()<br>	r.LoadHTMLFiles(<span class="hljs-string">&quot;/Users/luliang/GoLand/gin_practice/chap11/index.html&quot;</span>)<br>	r.GET(<span class="hljs-string">&quot;/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.HTML(http.StatusOK, <span class="hljs-string">&quot;index.html&quot;</span>, <span class="hljs-literal">nil</span>)<br><br>	&#125;)<br>	r.POST(<span class="hljs-string">&quot;/upload&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">// 读取文件</span><br>		f, err := c.FormFile(<span class="hljs-string">&quot;f1&quot;</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			c.JSON(http.StatusBadRequest, gin.H&#123;<br>				<span class="hljs-string">&quot;error&quot;</span>: err.Error(),<br>			&#125;)<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-comment">// 将读取的文件保存到本地</span><br>			<span class="hljs-comment">// dsf := fmt.Sprintf(&quot;./%s&quot;, f.Filename)</span><br>			dsf := path.Join(<span class="hljs-string">&quot;./&quot;</span>, f.Filename)<br>			err = c.SaveUploadedFile(f, dsf)<br>			<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>				<span class="hljs-keyword">return</span><br>			&#125; <span class="hljs-comment">// 将文件 f 保存到 dsf 中</span><br>			c.JSON(http.StatusOK, gin.H&#123;<br>				<span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;OK&quot;</span>,<br>			&#125;)<br><br>		&#125;<br><br>	&#125;)<br></code></pre></td></tr></table></figure>
+<p>过程为，先通过 GET请求，访问到index.html：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/78ec14cd74554e8baa61a91c68e90ea4_1720253809975.png?token=ANB4BCMDXGWTJNSEM67J7VTGRD63C" alt="在这里插入图片描述">随便选一个文件：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/5fca271bf98746d491315b2172439267_1720253809975.png?token=ANB4BCPA6TNCD3TCTJGT6FDGRD63E" alt="在这里插入图片描述"><br>点击上传：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/0fc913b8289942838077c76cf08d3a7f_1720253809975.png?token=ANB4BCOBMFJWQC243HWOTITGRD63G" alt="在这里插入图片描述"><br>在这个过程中，我们对 context 的c进行获取文件，存储并发送了一个合适的响应：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs go">r.POST(<span class="hljs-string">&quot;/upload&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">// 读取文件</span><br>		f, err := c.FormFile(<span class="hljs-string">&quot;f1&quot;</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			c.JSON(http.StatusBadRequest, gin.H&#123;<br>				<span class="hljs-string">&quot;error&quot;</span>: err.Error(),<br>			&#125;)<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-comment">// 将读取的文件保存到本地</span><br>			<span class="hljs-comment">// dsf := fmt.Sprintf(&quot;./%s&quot;, f.Filename)</span><br>			dsf := path.Join(<span class="hljs-string">&quot;./&quot;</span>, f.Filename)<br>			err = c.SaveUploadedFile(f, dsf)<br>			<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>				<span class="hljs-keyword">return</span><br>			&#125; <span class="hljs-comment">// 将文件 f 保存到 dsf 中</span><br>			c.JSON(http.StatusOK, gin.H&#123;<br>				<span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;OK&quot;</span>,<br>			&#125;)<br><br>		&#125;<br>	&#125;)<br></code></pre></td></tr></table></figure>
+
+<h2 id="七、路由重定向"><a href="#七、路由重定向" class="headerlink" title="七、路由重定向"></a>七、路由重定向</h2><p>这个过程很简单，就是当用户访问了某些请求之后，我们可以将该请求转接到另一个 URL 上去，类似于 DNS 劫持：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	r.GET(<span class="hljs-string">&quot;/index&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">//c.JSON(http.StatusOK,gin.H&#123;</span><br>		<span class="hljs-comment">//	&quot;status&quot;:&quot;Ok&quot;,</span><br>		<span class="hljs-comment">//&#125;)</span><br>		c.Redirect(http.StatusMovedPermanently, <span class="hljs-string">&quot;https://www.google.com&quot;</span>)<br><br>	&#125;)<br>	r.GET(<span class="hljs-string">&quot;/a&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">// 跳转到 b</span><br>		c.Request.URL.Path = <span class="hljs-string">&quot;/b&quot;</span> <span class="hljs-comment">// 修改请求 URL</span><br>		r.HandleContext(c)        <span class="hljs-comment">// 继续处理 c</span><br><br>	&#125;)<br>	<span class="hljs-comment">// 处理所有的方法</span><br>	r.GET(<span class="hljs-string">&quot;/b&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		c.JSON(http.StatusOK, gin.H&#123;<br>			<span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;ok&quot;</span>,<br>		&#125;)<br><br>	&#125;)<br><br>	r.Run(<span class="hljs-string">&quot;:9001&quot;</span>)<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/83e6b7afbaa740bcb8c6ceea55da09b7_1720253815831.png?token=ANB4BCOU2WF63WOOL4BPHHTGRD63I" alt="在这里插入图片描述"><br>可以看到它重复定向到了<code>url=http://127.0.0.1:9001/a</code>。</p>
+<p><em>全文完，感谢阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Golang-%E5%89%8D%E7%AB%AF/" class="category-chain-item">Golang 前端</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%BD%91%E7%BB%9C/" class="print-no-link">#网络</a>
+      
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
+      
+        <a href="/tags/%E5%90%8E%E7%AB%AF/" class="print-no-link">#后端</a>
+      
+        <a href="/tags/%E5%89%8D%E7%AB%AF/" class="print-no-link">#前端</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Go Web下gin框架使用（一）</div>
+      <div>http://blog.luliang.online/2023/05/31/Go Web下gin框架使用（一）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月31日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/06/01/%E4%BB%A3%E6%95%B0%E5%85%A5%E9%97%A8%EF%BC%88%E3%80%87%EF%BC%89/" title="代数入门（〇）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">代数入门（〇）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/23/Go%20Web%E4%B8%8Bgin%E6%A1%86%E6%9E%B6%E7%9A%84%E6%A8%A1%E6%9D%BF%E6%B8%B2%E6%9F%93/" title="Go Web下gin框架的模板渲染">
+                        <span class="hidden-mobile">Go Web下gin框架的模板渲染</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

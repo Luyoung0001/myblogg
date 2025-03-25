@@ -1,0 +1,749 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言众所周知，http协议是无状态的，这对于服务器确认是哪一个客户端在发请求是不可能的，因此为了能确认到，通常方法是让客户端发送请求时带上身份信息。容易想到的方法就是客户端在提交信息时，带上自己的账户和密码。但是这样存在着严重的安全问题，可以改进的方法就是，服务器给一个确定的客户端返回一个唯一 id，客户端将这个 id 保存在本地，每次发送请求时只需要携带着这个 id，就可以做到较好的验证">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go Session的实现（一）">
+<meta property="og:url" content="http://blog.luliang.online/2023/09/02/go%20Session%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言众所周知，http协议是无状态的，这对于服务器确认是哪一个客户端在发请求是不可能的，因此为了能确认到，通常方法是让客户端发送请求时带上身份信息。容易想到的方法就是客户端在提交信息时，带上自己的账户和密码。但是这样存在着严重的安全问题，可以改进的方法就是，服务器给一个确定的客户端返回一个唯一 id，客户端将这个 id 保存在本地，每次发送请求时只需要携带着这个 id，就可以做到较好的验证">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3d30f872a44b423ea3b4291e44b03b6f_1720253724529.png?token=ANB4BCPJSZ2JN4DMHWXTND3GRD6V6">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/9cf6a34839ab41c48d301fce9d20bbc2_1720253732241.png?token=ANB4BCKNVYO3XI7EKLKKNA3GRD6WC">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c0cb43c384164d7488e221059700628d_1720253732241.png?token=ANB4BCIWCWXK4VXWU3RUZYLGRD6WG">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a0be6121e20c40a589d416ac57a960c8_1720253732241.png?token=ANB4BCOPRWF7X6WFVF7NO73GRD6WK">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/64944a7571734eec94151da19155adae_1720253732241.png?token=ANB4BCKKDZ2XGPQG5YSRPN3GRD6WM">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d825e884abc1476d8838eb9dd6a26f65_1720253732241.png?token=ANB4BCJWYAIJHU2ON774QJDGRD6WQ">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/fddcc1aeec694e888b9e80a838060eeb_1720253740236.png?token=ANB4BCKZJDPTJUGUVM3D7XLGRD6WS">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e4c865f50c6244068a7355819d1e7d0a_1720253740236.png?token=ANB4BCIMYN4NY7EGD5ULOMDGRD6WU">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/1924e7e8229441f082f5093c78716ca2_1720253740236.png?token=ANB4BCPRKGQEYXZHBPJNIDDGRD6WY">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/85d7535d88a445779d064e410ad113c2_1720253740236.png?token=ANB4BCM63PWD5SL4BO5UI7LGRD6W2">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/dc25f1a76b2a4badab350ab5c1f532fe_1720253740236.png?token=ANB4BCM7XEKRA4DG6X5OTB3GRD6W4">
+<meta property="article:published_time" content="2023-09-02T08:57:25.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.774Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3d30f872a44b423ea3b4291e44b03b6f_1720253724529.png?token=ANB4BCPJSZ2JN4DMHWXTND3GRD6V6">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>go Session的实现（一） - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="go Session的实现（一）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-02 16:57" pubdate>
+          2023年9月2日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">go Session的实现（一）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>众所周知，<strong>http协议是无状态的</strong>，这对于服务器确认是哪一个客户端在发请求是不可能的，因此为了能确认到，通常方法是让客户端发送请求时带上身份信息。容易想到的方法就是客户端在提交信息时，带上自己的账户和密码。但是这样存在着严重的安全问题，可以改进的方法就是，服务器给一个确定的客户端返回一个唯一 id，客户端将这个 id 保存在本地，每次发送请求时只需要携带着这个 id，就可以做到较好的验证（当然也存在着安全问题，这个后面再说）。</p>
+<p>这个方法就是 现今很成熟的 session、cookie 技术。session和cookie的目的相同，都是为了克服http协议无状态的缺陷，但完成的方法不同。<strong>session通过cookie</strong>，在客户端保存session id，而将用户的其他会话消息保存在服务端的session对象中。与此相对的，<strong>cookie需要将所有信息都保存在客户端</strong>。因此cookie存在着一定的安全隐患，例如本地cookie中保存的用户名密码被破译，或cookie被其他网站收集。</p>
+<p>本文将尝试着实现一个成熟的 go session，从而实现会话保持。<br><em><strong>思维导图如下：</strong></em><br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3d30f872a44b423ea3b4291e44b03b6f_1720253724529.png?token=ANB4BCPJSZ2JN4DMHWXTND3GRD6V6" alt="在这里插入图片描述"></p>
+<h2 id="一、架构设计"><a href="#一、架构设计" class="headerlink" title="一、架构设计"></a>一、架构设计</h2><h3 id="0、思维导图"><a href="#0、思维导图" class="headerlink" title="0、思维导图"></a>0、思维导图</h3><p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/9cf6a34839ab41c48d301fce9d20bbc2_1720253732241.png?token=ANB4BCKNVYO3XI7EKLKKNA3GRD6WC" alt="在这里插入图片描述"></p>
+<h3 id="1、管理器"><a href="#1、管理器" class="headerlink" title="1、管理器"></a>1、管理器</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Manager <span class="hljs-keyword">struct</span> &#123;<br>	cookieName  <span class="hljs-type">string</span><br>	lock        sync.Mutex<br>	provider    Provider<br>	maxLifeTime <span class="hljs-type">int64</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>其中 Provider 是一个接口：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Provider 接口</span><br><span class="hljs-keyword">type</span> Provider <span class="hljs-keyword">interface</span> &#123;<br>	SessionInit(sid <span class="hljs-type">string</span>) (Session, <span class="hljs-type">error</span>) <span class="hljs-comment">// SessionInit函数实现Session的初始化，操作成功则返回此新的Session变量</span><br>	SessionRead(sid <span class="hljs-type">string</span>) (Session, <span class="hljs-type">error</span>) <span class="hljs-comment">// SessionRead函数返回sid所代表的Session变量.如果不存在，那么将以sid为参数调用SessionInit函数创建并返回一个新的Session变量</span><br>	SessionDestroy(sid <span class="hljs-type">string</span>) <span class="hljs-type">error</span>         <span class="hljs-comment">// SessionDestroy函数用来销毁sid对应的Session变量</span><br>	SessionGC(maxLifeTime <span class="hljs-type">int64</span>)             <span class="hljs-comment">// SessionGC根据maxLifeTime来删除过期的数据</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里又定义了一个Provider 结构体，它实现了 Provider 接口：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Provider 实现接口 Provider</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionInit(sid <span class="hljs-type">string</span>) (session.Session, <span class="hljs-type">error</span>) &#123;<br>	<span class="hljs-comment">// 根据 sid 创建一个 SessionStore</span><br>	pder.lock.Lock()<br>	<span class="hljs-keyword">defer</span> pder.lock.Unlock()<br>	v := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">interface</span>&#123;&#125;]<span class="hljs-keyword">interface</span>&#123;&#125;)<br>	<span class="hljs-comment">// 同时更新两个字段</span><br>	newsess := &amp;SessionStore&#123;sid: sid, timeAccessed: time.Now(), value: v&#125;<br>	<span class="hljs-comment">// list 用于GC</span><br>	element := pder.list.PushBack(newsess)<br>	<span class="hljs-comment">// 存放 kv</span><br>	pder.sessions[sid] = element<br>	<span class="hljs-keyword">return</span> newsess, <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionRead(sid <span class="hljs-type">string</span>) (session.Session, <span class="hljs-type">error</span>) &#123;<br>	<span class="hljs-keyword">if</span> element, ok := pder.sessions[sid]; ok &#123;<br>		<span class="hljs-keyword">return</span> element.Value.(*SessionStore), <span class="hljs-literal">nil</span><br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		sess, err := pder.SessionInit(sid)<br>		<span class="hljs-keyword">return</span> sess, err<br>	&#125;<br>&#125;<br><br><span class="hljs-comment">// 服务端 session 销毁</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionDestroy(sid <span class="hljs-type">string</span>) <span class="hljs-type">error</span> &#123;<br>	<span class="hljs-keyword">if</span> element, ok := pder.sessions[sid]; ok &#123;<br>		<span class="hljs-built_in">delete</span>(pder.sessions, sid)<br>		pder.list.Remove(element)<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-comment">// 回收过期的 cookie</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionGC(maxlifetime <span class="hljs-type">int64</span>) &#123;<br>	pder.lock.Lock()<br>	<span class="hljs-keyword">defer</span> pder.lock.Unlock()<br><br>	<span class="hljs-keyword">for</span> &#123;<br>		element := pder.list.Back()<br>		<span class="hljs-keyword">if</span> element == <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">break</span><br>		&#125;<br>		<span class="hljs-keyword">if</span> (element.Value.(*SessionStore).timeAccessed.Unix() + maxlifetime) &lt; time.Now().Unix() &#123;<br>			<span class="hljs-comment">// 更新两者的值</span><br><br>			<span class="hljs-comment">// 垃圾回收</span><br>			pder.list.Remove(element)<br>			<span class="hljs-comment">// 删除 map 中的kv</span><br>			<span class="hljs-built_in">delete</span>(pder.sessions, element.Value.(*SessionStore).sid)<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-keyword">break</span><br>		&#125;<br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionUpdate(sid <span class="hljs-type">string</span>) <span class="hljs-type">error</span> &#123;<br>	pder.lock.Lock()<br>	<span class="hljs-keyword">defer</span> pder.lock.Unlock()<br>	<span class="hljs-keyword">if</span> element, ok := pder.sessions[sid]; ok &#123;<br>		<span class="hljs-comment">// 这里更新也就更新了个时间,这意味着 session 的生命得到了延长</span><br>		element.Value.(*SessionStore).timeAccessed = time.Now()<br>		pder.list.MoveToFront(element)<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>管理器 Manager 实现的方法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 创建 Session</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(manager *Manager)</span></span> SessionStart(w http.ResponseWriter, r *http.Request) (session Session) &#123;<br>	manager.lock.Lock()<br>	<span class="hljs-keyword">defer</span> manager.lock.Unlock()<br>	cookie, err := r.Cookie(manager.cookieName)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> || cookie.Value == <span class="hljs-string">&quot;&quot;</span> &#123;<br>		<span class="hljs-comment">// 查看是否为当前客户端注册过名为 gosessionid 的 cookie,如果没有注册过,就为客户端创建一个该 cookie</span><br><br>		<span class="hljs-comment">// 创建 sessionID</span><br>		sid := manager.sessionID()<br>		<span class="hljs-comment">// 创建一个 session 接口,这其实是一个 创建完成的 SessionStore ,SessionStore 实现了该接口</span><br>		session, _ = manager.provider.SessionInit(sid)<br>		<span class="hljs-comment">// 创建 cookie</span><br>		cookie := http.Cookie&#123;Name: manager.cookieName, Value: url.QueryEscape(sid), Path: <span class="hljs-string">&quot;/&quot;</span>, HttpOnly: <span class="hljs-literal">true</span>, MaxAge: <span class="hljs-type">int</span>(manager.maxLifeTime)&#125;<br>		http.SetCookie(w, &amp;cookie)<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		sid, _ := url.QueryUnescape(cookie.Value)<br>		session, _ = manager.provider.SessionRead(sid)<br>	&#125;<br>	<span class="hljs-keyword">return</span><br>&#125;<br><br><span class="hljs-comment">// Session 重置</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(manager *Manager)</span></span> SessionDestroy(w http.ResponseWriter, r *http.Request) &#123;<br>	cookie, err := r.Cookie(manager.cookieName)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> || cookie.Value == <span class="hljs-string">&quot;&quot;</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		manager.lock.Lock()<br>		<span class="hljs-keyword">defer</span> manager.lock.Unlock()<br>		err := manager.provider.SessionDestroy(cookie.Value)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>		expiration := time.Now()<br>		cookie := http.Cookie&#123;Name: manager.cookieName, Path: <span class="hljs-string">&quot;/&quot;</span>, HttpOnly: <span class="hljs-literal">true</span>, Expires: expiration, MaxAge: <span class="hljs-number">-1</span>&#125;<br>		http.SetCookie(w, &amp;cookie)<br>	&#125;<br>&#125;<br><br><span class="hljs-comment">// Session 回收</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(manager *Manager)</span></span> GC() &#123;<br>	manager.lock.Lock()<br>	<span class="hljs-keyword">defer</span> manager.lock.Unlock()<br>	manager.provider.SessionGC(manager.maxLifeTime)<br>	<span class="hljs-comment">// 每 20秒触发一次</span><br>	time.AfterFunc(time.Second*<span class="hljs-number">20</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123; manager.GC() &#125;)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、sessions存放"><a href="#2、sessions存放" class="headerlink" title="2、sessions存放"></a>2、sessions存放</h3><p>在 Provider 结构体中：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs go">sessions <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*list.Element <span class="hljs-comment">// 存放 sessionStores</span><br>list     *list.List               <span class="hljs-comment">// 用来做gc</span><br></code></pre></td></tr></table></figure>
+<p>sessions 中存放不同客户端的 session，而 list 中也会同时刷新，它用来回收过期的 session。<br>每一个session用 SessionStore 结构体来存储。</p>
+<p>Session 接口：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Session 接口</span><br><span class="hljs-keyword">type</span> Session <span class="hljs-keyword">interface</span> &#123;<br>	Set(key, value <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> <span class="hljs-comment">// 设置 session 的值</span><br>	Get(key <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-keyword">interface</span>&#123;&#125;  <span class="hljs-comment">// 获取 session 的值</span><br>	Delete(key <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span>     <span class="hljs-comment">// 删除 session 的值</span><br>	SessionID() <span class="hljs-type">string</span>                <span class="hljs-comment">// 返回当前 session 的 ID</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个接口，由 SessionStore 实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// SessionStore 结构体</span><br><br><span class="hljs-keyword">type</span> SessionStore <span class="hljs-keyword">struct</span> &#123;<br>	sid          <span class="hljs-type">string</span>                      <span class="hljs-comment">// session id唯一标识</span><br>	timeAccessed time.Time                   <span class="hljs-comment">// 最后访问时间</span><br>	value        <span class="hljs-keyword">map</span>[<span class="hljs-keyword">interface</span>&#123;&#125;]<span class="hljs-keyword">interface</span>&#123;&#125; <span class="hljs-comment">// 值</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// SessionStore 实现 Session 接口</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(st *SessionStore)</span></span> Set(key, value <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> &#123;<br>	st.value[key] = value<br>	err := pder.SessionUpdate(st.sid)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> err<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(st *SessionStore)</span></span> Get(key <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-keyword">interface</span>&#123;&#125; &#123;<br>	err := pder.SessionUpdate(st.sid)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>	&#125;<br>	<span class="hljs-keyword">if</span> v, ok := st.value[key]; ok &#123;<br>		<span class="hljs-keyword">return</span> v<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(st *SessionStore)</span></span> Delete(key <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> &#123;<br>	<span class="hljs-built_in">delete</span>(st.value, key)<br>	err := pder.SessionUpdate(st.sid)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> err<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(st *SessionStore)</span></span> SessionID() <span class="hljs-type">string</span> &#123;<br>	<span class="hljs-keyword">return</span> st.sid<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="二、实现细节"><a href="#二、实现细节" class="headerlink" title="二、实现细节"></a>二、实现细节</h2><h3 id="1、provider-注册表"><a href="#1、provider-注册表" class="headerlink" title="1、provider 注册表"></a>1、provider 注册表</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// provider 注册表</span><br><span class="hljs-keyword">var</span> provides = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]Provider)<br></code></pre></td></tr></table></figure>
+<p>任何一个 Maneger 在创建之前，都需要在 provider 注册表中注册。因此在创建一个全局注册表pder，并注册，这应该是 init 的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 创建全局 pder</span><br><span class="hljs-keyword">var</span> pder = &amp;Provider&#123;list: list.New()&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;<br>	pder.sessions = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*list.Element)<br>	session.Register(<span class="hljs-string">&quot;memory&quot;</span>, pder)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>注册器：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Register</span><span class="hljs-params">(name <span class="hljs-type">string</span>, provider Provider)</span></span> &#123;<br>	<span class="hljs-keyword">if</span> provider == <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-built_in">panic</span>(<span class="hljs-string">&quot;session: Register provide is nil&quot;</span>)<br>	&#125;<br>	<span class="hljs-keyword">if</span> _, dup := provides[name]; dup &#123;<br>		<span class="hljs-built_in">panic</span>(<span class="hljs-string">&quot;session: Register called twice for provide &quot;</span> + name)<br>	&#125;<br>	provides[name] = provider<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="2、全局管理器"><a href="#2、全局管理器" class="headerlink" title="2、全局管理器"></a>2、全局管理器</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> globalSessions *session.Manager<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;<br>	globalSessions, _ = session.NewManager(<span class="hljs-string">&quot;memory&quot;</span>, <span class="hljs-string">&quot;gosessionid&quot;</span>, <span class="hljs-number">3600</span>)<br>	<span class="hljs-keyword">go</span> globalSessions.GC()<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个管理器就是一个 cookie 管理器，它只对cookie名字为<code>gosessionid</code>的 cookie 负责。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewManager</span><span class="hljs-params">(provideName, cookieName <span class="hljs-type">string</span>, maxlifetime <span class="hljs-type">int64</span>)</span></span> (*Manager, <span class="hljs-type">error</span>) &#123;<br>	provider, ok := provides[provideName]<br>	<span class="hljs-keyword">if</span> !ok &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, fmt.Errorf(<span class="hljs-string">&quot;session: unknown provide %q (forgotten import?)&quot;</span>, provideName)<br>	&#125;<br>	<span class="hljs-keyword">return</span> &amp;Manager&#123;provider: provider, cookieName: cookieName, maxLifeTime: maxlifetime&#125;, <span class="hljs-literal">nil</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="3、案例演示"><a href="#3、案例演示" class="headerlink" title="3、案例演示"></a>3、案例演示</h3><p>现在已经初始化好了，就等着客户端访问了。<br>现在我们写一个很简单的计数器，前端访问的时候，自动+1：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">count</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>	sess := globalSessions.SessionStart(c.Writer, c.Request)<br>	ct := sess.Get(<span class="hljs-string">&quot;countnum&quot;</span>)<br>	<span class="hljs-keyword">if</span> ct == <span class="hljs-literal">nil</span> &#123;<br>		err := sess.Set(<span class="hljs-string">&quot;countnum&quot;</span>, <span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">// 更新</span><br>		err := sess.Set(<span class="hljs-string">&quot;countnum&quot;</span>, ct.(<span class="hljs-type">int</span>)+<span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>	&#125;<br>	t, err := template.ParseFiles(<span class="hljs-string">&quot;template/count.html&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(err)<br>	&#125;<br>	c.Writer.Header().Set(<span class="hljs-string">&quot;Content-Type&quot;</span>, <span class="hljs-string">&quot;text/html&quot;</span>)<br>	err = t.Execute(c.Writer, sess.Get(<span class="hljs-string">&quot;countnum&quot;</span>))<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当中的<code>count.html</code>这样写：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Count<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hi. Now count:&#123;&#123;.&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p><code>main.go</code>这样写：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	_ <span class="hljs-string">&quot;Go_Web/memory&quot;</span><br>	<span class="hljs-string">&quot;Go_Web/session&quot;</span><br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;github.com/gin-gonic/gin&quot;</span><br>	<span class="hljs-string">&quot;html/template&quot;</span><br>	<span class="hljs-string">&quot;net/http&quot;</span><br>)<br><br><span class="hljs-comment">// 全局 sessions 管理器</span><br><span class="hljs-keyword">var</span> globalSessions *session.Manager<br><br><span class="hljs-comment">// init 初始化</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;<br>	globalSessions, _ = session.NewManager(<span class="hljs-string">&quot;memory&quot;</span>, <span class="hljs-string">&quot;gosessionid&quot;</span>,<span class="hljs-number">20</span>)<br>	<span class="hljs-keyword">go</span> globalSessions.GC()<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">count</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>	sess := globalSessions.SessionStart(c.Writer, c.Request)<br>	ct := sess.Get(<span class="hljs-string">&quot;countnum&quot;</span>)<br>	<span class="hljs-keyword">if</span> ct == <span class="hljs-literal">nil</span> &#123;<br>		err := sess.Set(<span class="hljs-string">&quot;countnum&quot;</span>, <span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">// 更新</span><br>		err := sess.Set(<span class="hljs-string">&quot;countnum&quot;</span>, ct.(<span class="hljs-type">int</span>)+<span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>	&#125;<br>	t, err := template.ParseFiles(<span class="hljs-string">&quot;template/count.html&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(err)<br>	&#125;<br>	c.Writer.Header().Set(<span class="hljs-string">&quot;Content-Type&quot;</span>, <span class="hljs-string">&quot;text/html&quot;</span>)<br>	err = t.Execute(c.Writer, sess.Get(<span class="hljs-string">&quot;countnum&quot;</span>))<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	r := gin.Default()<br>	r.GET(<span class="hljs-string">&quot;/count&quot;</span>, count)<br>	err := r.Run(<span class="hljs-string">&quot;:9000&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>我们把 session 的过期时间设为 20 秒，这样可以 更快的看到过期效果。<br>现在把服务器启动，来看看整个过程。<br>编译运行之后，在浏览器访问 count:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/c0cb43c384164d7488e221059700628d_1720253732241.png?token=ANB4BCIWCWXK4VXWU3RUZYLGRD6WG" alt="在这里插入图片描述"></p>
+<p>看下 cookie:<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/a0be6121e20c40a589d416ac57a960c8_1720253732241.png?token=ANB4BCOPRWF7X6WFVF7NO73GRD6WK" alt="在这里插入图片描述"><br>可以继续点击，这个只要在 20 秒之内点击，cookie 就不回过期，因为每次发送请求都会更新 sessionStore:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">err := sess.Set(<span class="hljs-string">&quot;countnum&quot;</span>, ct.(<span class="hljs-type">int</span>)+<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// SessionStore 实现 Session 接口</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(st *SessionStore)</span></span> Set(key, value <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-type">error</span> &#123;<br>	st.value[key] = value<br>	err := pder.SessionUpdate(st.sid)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> err<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionUpdate(sid <span class="hljs-type">string</span>) <span class="hljs-type">error</span> &#123;<br>	pder.lock.Lock()<br>	<span class="hljs-keyword">defer</span> pder.lock.Unlock()<br>	<span class="hljs-keyword">if</span> element, ok := pder.sessions[sid]; ok &#123;<br>		<span class="hljs-comment">// 这里更新也就更新了个时间,这意味着 session 的生命得到了延长</span><br>		element.Value.(*SessionStore).timeAccessed = time.Now()<br>		pder.list.MoveToFront(element)<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/64944a7571734eec94151da19155adae_1720253732241.png?token=ANB4BCKKDZ2XGPQG5YSRPN3GRD6WM" alt="在这里插入图片描述"><br>不要点击等 20 秒等它过期，再点一下：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/d825e884abc1476d8838eb9dd6a26f65_1720253732241.png?token=ANB4BCJWYAIJHU2ON774QJDGRD6WQ" alt="在这里插入图片描述"><br>可以看到已经过期了，再查看下 cookie：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/fddcc1aeec694e888b9e80a838060eeb_1720253740236.png?token=ANB4BCKZJDPTJUGUVM3D7XLGRD6WS" alt="在这里插入图片描述"><br>可以看到 sessionId 并没有变，这是因为就算本地 cookie过期，当发送请求时，服务器依然会拿到这个 cookie。<br>session 过期的时候，服务器会执行：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 回收过期的 cookie</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionGC(maxlifetime <span class="hljs-type">int64</span>) &#123;<br>	pder.lock.Lock()<br>	<span class="hljs-keyword">defer</span> pder.lock.Unlock()<br><br>	<span class="hljs-keyword">for</span> &#123;<br>		element := pder.list.Back()<br>		<span class="hljs-keyword">if</span> element == <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">break</span><br>		&#125;<br>		<span class="hljs-keyword">if</span> (element.Value.(*SessionStore).timeAccessed.Unix() + maxlifetime) &lt; time.Now().Unix() &#123;<br>			<span class="hljs-comment">// 更新两者的值</span><br><br>			<span class="hljs-comment">// 垃圾回收</span><br>			pder.list.Remove(element)<br>			<span class="hljs-comment">// 删除 map 中的kv</span><br>			<span class="hljs-built_in">delete</span>(pder.sessions, element.Value.(*SessionStore).sid)<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-keyword">break</span><br>		&#125;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这意味着，pder 中的list 和 sessions 中都不存在 键为<code>countnum</code>的<code>sessionStore</code>。但是依然会执行：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs go">sid, _ := url.QueryUnescape(cookie.Value)<br>session, _ = manager.provider.SessionRead(sid)<br></code></pre></td></tr></table></figure>
+<p>SessionRead():</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pder *Provider)</span></span> SessionRead(sid <span class="hljs-type">string</span>) (session.Session, <span class="hljs-type">error</span>) &#123;<br>	<span class="hljs-keyword">if</span> element, ok := pder.sessions[sid]; ok &#123;<br>		<span class="hljs-keyword">return</span> element.Value.(*SessionStore), <span class="hljs-literal">nil</span><br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		sess, err := pder.SessionInit(sid)<br>		<span class="hljs-keyword">return</span> sess, err<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>执行SessionRead()的时候，由于 session 已经被删除，只能执行<code>pder.SessionInit(sid)</code>了，因此，服务器会创建一个和原来一样的 sessionId。之后count()自然就会执行<code>err := sess.Set(&quot;countnum&quot;, 1)</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go">ct := sess.Get(<span class="hljs-string">&quot;countnum&quot;</span>)<br>	<span class="hljs-keyword">if</span> ct == <span class="hljs-literal">nil</span> &#123;<br>		err := sess.Set(<span class="hljs-string">&quot;countnum&quot;</span>, <span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">// 更新</span><br>		err := sess.Set(<span class="hljs-string">&quot;countnum&quot;</span>, ct.(<span class="hljs-type">int</span>)+<span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>	&#125;<br></code></pre></td></tr></table></figure>
+<p>至此，整个过程就完了。</p>
+<h2 id="二、session-劫持"><a href="#二、session-劫持" class="headerlink" title="二、session 劫持"></a>二、session 劫持</h2><p>session劫持是一种广泛存在的比较严重的安全威胁，在session技术中，客户端和服务端通过session的标识符来维护会话， 但这个标识符很容易就能被嗅探到，从而被其他人利用。它是中间人攻击的一种类型。</p>
+<p>这个服务是靠着 sessionid维持的，所以一旦这个 sessionid 泄露，被另一个客户端获取，就可以冒名顶替干一些操作（把过期时间设置长一点）。<br>首先在 Chrome 中访问服务器的服务，点击到随便一个数字：</p>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/e4c865f50c6244068a7355819d1e7d0a_1720253740236.png?token=ANB4BCIMYN4NY7EGD5ULOMDGRD6WU" alt="在这里插入图片描述"><br>然后打开 cookie，复制：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/1924e7e8229441f082f5093c78716ca2_1720253740236.png?token=ANB4BCPRKGQEYXZHBPJNIDDGRD6WY" alt="在这里插入图片描述"><br>再打开FireFox，随便找一个 cookie 管理器，创建一个 cookie：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/85d7535d88a445779d064e410ad113c2_1720253740236.png?token=ANB4BCM63PWD5SL4BO5UI7LGRD6W2" alt="在这里插入图片描述"><br>保存，直接访问服务器count 服务：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/dc25f1a76b2a4badab350ab5c1f532fe_1720253740236.png?token=ANB4BCM7XEKRA4DG6X5OTB3GRD6W4" alt="在这里插入图片描述"><br>可以看到已经实现了“冒名顶替”。</p>
+<p><em>全文完，感谢阅读。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Golang-%E5%89%8D%E7%AB%AF-Web/" class="category-chain-item">Golang 前端 Web</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%BD%91%E7%BB%9C/" class="print-no-link">#网络</a>
+      
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
+      
+        <a href="/tags/%E5%90%8E%E7%AB%AF/" class="print-no-link">#后端</a>
+      
+        <a href="/tags/%E5%89%8D%E7%AB%AF/" class="print-no-link">#前端</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>go Session的实现（一）</div>
+      <div>http://blog.luliang.online/2023/09/02/go Session的实现（一）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E3%80%87%E7%AB%A0%EF%BC%89/" title="MIT 6.S081学习笔记（第〇章）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MIT 6.S081学习笔记（第〇章）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/01/gin%20%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84%20gin.Context/" title="gin 框架中的 gin.Context">
+                        <span class="hidden-mobile">gin 框架中的 gin.Context</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,790 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言本文是对 Linux101 这本及其优秀的 Linux 入门的一些心得体会，链接:Linux101 软件安装和文件操作apt建议用 apt 安装，apt 作为前端，它会自动处理软件包之间的依赖关系、升级软件包以至升级发行版，自动处理升级发行版所需的依赖关系等等。但是需要明白，真正执行安装软件的是 dpkg。 另外，dpkg -i 也可以安装软件，但是它不会处理依赖，如果安装报错，应该使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux101:最好的Linux 入门资料">
+<meta property="og:url" content="http://blog.luliang.online/2024/08/07/Linux101/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="前言本文是对 Linux101 这本及其优秀的 Linux 入门的一些心得体会，链接:Linux101 软件安装和文件操作apt建议用 apt 安装，apt 作为前端，它会自动处理软件包之间的依赖关系、升级软件包以至升级发行版，自动处理升级发行版所需的依赖关系等等。但是需要明白，真正执行安装软件的是 dpkg。 另外，dpkg -i 也可以安装软件，但是它不会处理依赖，如果安装报错，应该使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-07T09:22:33.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.770Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="Linux 入门">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Linux101:最好的Linux 入门资料 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Linux101:最好的Linux 入门资料"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-07 17:22" pubdate>
+          2024年8月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Linux101:最好的Linux 入门资料</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是对 Linux101 这本及其优秀的 Linux 入门的一些心得体会，链接:<a target="_blank" rel="noopener" href="https://101.ustclug.org/">Linux101</a></p>
+<h2 id="软件安装和文件操作"><a href="#软件安装和文件操作" class="headerlink" title="软件安装和文件操作"></a>软件安装和文件操作</h2><h3 id="apt"><a href="#apt" class="headerlink" title="apt"></a>apt</h3><p>建议用 apt 安装，apt 作为前端，它会自动处理软件包之间的依赖关系、升级软件包以至升级发行版，自动处理升级发行版所需的依赖关系等等。但是需要明白，真正执行安装软件的是 dpkg。</p>
+<p>另外，dpkg -i 也可以安装软件，但是它不会处理依赖，如果安装报错，应该使用 apt -f install 来处理依赖。因此为了方便，建议 apt install 软件。</p>
+<h3 id="tar"><a href="#tar" class="headerlink" title="tar"></a>tar</h3><p>tar 是打包工具，常见的操作如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ tar -c -f target.tar file1 file2 file3 <span class="hljs-comment"># 将 file1、file2、file3 打包为 target.tar</span><br>$ tar -cz -f target.tar.gz file1 file2 file3 <span class="hljs-comment"># 将 file1、file2、file3 打包，并使用 gzip 算法压缩，得到压缩文件 target.tar.gz</span><br>$ tar -xz -f target.tar.gz -C <span class="hljs-built_in">test</span>/ <span class="hljs-comment"># 将压缩文件 target.tar.gz 解压到 test 目录中</span><br></code></pre></td></tr></table></figure>
+<h3 id="man-tldr-too-long-didn’t-read"><a href="#man-tldr-too-long-didn’t-read" class="headerlink" title="man &amp; tldr(too long didn’t read)"></a>man &amp; tldr(too long didn’t read)</h3><p>这两个命令很好用，都是很好的命令解释工具。比如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs bash">tldr tldr<br>tldr<br>Display simple <span class="hljs-built_in">help</span> pages <span class="hljs-keyword">for</span> command-line tools from the tldr-pages project.Note: the --language and --list options are not required by the client specification, but most clients implement them.More information: https://github.com/tldr-pages/tldr/blob/main/CLIENT-SPECIFICATION.md<span class="hljs-comment">#command-line-interface.</span><br><br> - Print the tldr page <span class="hljs-keyword">for</span> a specific <span class="hljs-built_in">command</span> (hint: this is how you got here!):<br>   tldr &#123;&#123;<span class="hljs-built_in">command</span>&#125;&#125;<br><br> - Print the tldr page <span class="hljs-keyword">for</span> a specific subcommand:<br>   tldr &#123;&#123;<span class="hljs-built_in">command</span>&#125;&#125; &#123;&#123;subcommand&#125;&#125;<br><br> - Print the tldr page <span class="hljs-keyword">for</span> a <span class="hljs-built_in">command</span> <span class="hljs-keyword">in</span> the given [L]anguage (<span class="hljs-keyword">if</span> available, otherwise fall back to English):<br>   tldr --language &#123;&#123;language_code&#125;&#125; &#123;&#123;<span class="hljs-built_in">command</span>&#125;&#125;<br><br> - Print the tldr page <span class="hljs-keyword">for</span> a <span class="hljs-built_in">command</span> from a specific [p]latform:<br>   tldr --platform &#123;&#123;android|common|freebsd|linux|osx|netbsd|openbsd|sunos|windows&#125;&#125; &#123;&#123;<span class="hljs-built_in">command</span>&#125;&#125;<br><br> - [u]pdate the <span class="hljs-built_in">local</span> cache of tldr pages:<br>   tldr --update<br><br> - [l]ist all pages <span class="hljs-keyword">for</span> the current platform and common:<br>   tldr --list<br><br> - [l]ist all available subcommand pages <span class="hljs-keyword">for</span> a <span class="hljs-built_in">command</span>:<br>   tldr --list | grep &#123;&#123;<span class="hljs-built_in">command</span>&#125;&#125; | column<br></code></pre></td></tr></table></figure>
+<p>细节：为什么 apt 需要root 权限，因为在安装的时候，需要向系统目录写入二进制文件、用户手册等等，这里必须使用到 root 权限。同理 make install 一样，必须使用sudo:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ make<br>$ sudo make install<br></code></pre></td></tr></table></figure>
+<p>在这个过程中，make 命令会将编译好的二进制文件拷贝到相对应的安装目录，拷贝用户手册等。</p>
+<h3 id="vim"><a href="#vim" class="headerlink" title="vim"></a>vim</h3><p>这个只需要会用i、wq、q!、Esc就行了。</p>
+<h2 id="进程、前后台、服务与例行性任务"><a href="#进程、前后台、服务与例行性任务" class="headerlink" title="进程、前后台、服务与例行性任务"></a>进程、前后台、服务与例行性任务</h2><h3 id="常见的信号"><a href="#常见的信号" class="headerlink" title="常见的信号"></a>常见的信号</h3><ul>
+<li>SIGINT: 由 Ctrl c 产生</li>
+<li>SIGTERM: 由 kill <pid> or pkill <process name> 产生</li>
+<li>SIGKILL: 很强，kill -9</li>
+<li>SIGSTOP: Ctrl z 产生，停止进程</li>
+<li>SIGCOTN: fg、bg</li>
+<li>SIGHUP: 脱离会话的时候，会产生这个信号，要想继续执行，就必须得另开启会话</li>
+</ul>
+<p>另外需要注意的是，kill -9 并不能杀死僵尸进程，因为僵尸进程已经不是传统意义上的进程了，它只是一种数据存档，造成的影响就是占用 pid。</p>
+<h3 id="进程组"><a href="#进程组" class="headerlink" title="进程组"></a>进程组</h3><p>假设有一个 shell zsh，在 zsh 中输入 ls、cat等等命令，都会形成一个以 zsh 为组长的进程组。发给一个进程组的信号将被所有属于该组的进程接收，意义就是停止整个任务整体，比如终止掉 zsh，所有的进程都会收到 SIGHUP信号而终止，除非某些进程用 nohup 执行。</p>
+<h3 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h3><p>会话，是以用户登录而出现的概念。当用户进入shell，比如 zsh 中，就会以本 zsh 为会话首进程展开本次会话。事实上，zsh、进程组、会话组都是一个 id，这三个 id 相同。<br>前台 (foreground) 与后台 (background)，本质上决定了是否需要与用户交互，对于单独的一个 shell，只能有一个前台进程（组），其余进程只能在后台默默运行，上述中若干进程组，正是前台进程组和后台进程组的概称。这点很好理解，不能让两个进程同时占用前台，导致打印或者输入异常。</p>
+<h3 id="守护进程"><a href="#守护进程" class="headerlink" title="守护进程"></a>守护进程</h3><p>创建会话必须调用 setsid()。当登录到 zsh 中，zsh 本身就是一个 leader of this session，然而 zsh 中 fork 出来的其它进程是不能调用setsid()展开新的会话的：</p>
+<ul>
+<li>DESCRIPTION<br> setsid() creates a new session if the calling process is not a process group leader.  The calling<br> process is the leader of the new session (i.e., its session ID is made the same  as  its  process<br> ID).   The  calling  process  also becomes the process group leader of a new process group in the<br> session (i.e., its process group ID is made the same as its process ID).<br><br> The calling process will be the only process in the new process group and in the new session.<br><br> Initially, the new session has no controlling terminal.  For details of how a session acquires  a<br> controlling terminal, see credentials(7).</li>
+</ul>
+<p>所以想要创建一个独立的进程，方法就是在 shell 中创建一个进程 A，A 再创建一个 进程 B，然后 B 调用 setsid()开启新的会话，并成为绘画组组长，A 再退出。当然不打算退出 shell 的时候有更加直接的方法，比如：bash -c “ping localhost &amp;” &amp;。</p>
+<p>当 zsh fork 一个子进程 bash 的时候，bash 执行 ping localhost &amp; 之后退出，ping 由于 ping localhost &amp; 是 bash 的子进程，bash 退出后，按理说 ping localhost &amp; 也会结束，但是它是后台进程，后台进程并不会收到 bash 父进程退出的影响（在这种情况下，bash 并不是绘会话组组长，因此bash 退出，并不会影响它的后台子进程）。因此 ping 进程继续会执行，除非 zsh 结束。</p>
+<p>当在 Bash 或其他类 Unix 的 shell 中使用 <code>&amp;</code> 将命令置于后台运行时，这个后台进程具有一些特定的特点和行为模式。根据你的问题，我们主要关注后台进程的生命周期、它与父进程（如 Bash）的关系，以及父进程结束时会发生什么。这里是详细的解释：</p>
+<h3 id="后台进程的特点"><a href="#后台进程的特点" class="headerlink" title="后台进程的特点"></a>后台进程的特点</h3><ol>
+<li><p><strong>独立性</strong>：</p>
+<ul>
+<li>后台进程能够独立于终端运行，用户可以继续在同一个 shell 中执行其他命令，而后台进程则在不干扰前台（用户交互式）工作的情况下执行。</li>
+</ul>
+</li>
+<li><p><strong>与终端的关系</strong>：</p>
+<ul>
+<li>即使一个进程被放在后台执行，它通常仍然与启动它的 shell 绑定，接收同一个终端的输入和输出。这意味着它们依旧可以向终端输出数据（除非输出被重定向）。</li>
+</ul>
+</li>
+<li><p><strong>会话和进程组</strong>：</p>
+<ul>
+<li>后台进程通常属于启动它的 shell 所在的会话和进程组。这个会话管理着终端及其所有前台和后台进程，可以向它们发送信号。</li>
+</ul>
+</li>
+</ol>
+<h3 id="进程结束对后台进程的影响"><a href="#进程结束对后台进程的影响" class="headerlink" title="进程结束对后台进程的影响"></a>进程结束对后台进程的影响</h3><ul>
+<li><strong>父进程结束</strong>：<ul>
+<li>当启动后台进程的 Bash shell 正常结束时，通常对后台进程没有直接影响，因为后台进程已经在独立的子进程中运行。</li>
+<li>但是，如果终端的会话结束（例如关闭终端窗口），会话领导者（通常是最初启动的 shell）会收到 <code>SIGHUP</code>（挂断信号）。默认情况下，这会导致所有该会话下的子进程，包括后台进程，也接收到 <code>SIGHUP</code>，除非这些进程已经通过某种方式（如调用 <code>nohup</code> 或重写 <code>SIGHUP</code> 信号处理）明确地脱离了这种行为。</li>
+</ul>
+</li>
+</ul>
+<h3 id="使用-nohup-避免后台进程退出"><a href="#使用-nohup-避免后台进程退出" class="headerlink" title="使用 nohup 避免后台进程退出"></a>使用 <code>nohup</code> 避免后台进程退出</h3><ul>
+<li><strong><code>nohup</code> 命令</strong>：<ul>
+<li>如果你希望确保即使 Bash 结束或用户注销，后台进程如 <code>ping localhost</code> 也不会退出，可以使用 <code>nohup</code> 命令。<code>nohup</code> 可以防止进程接收到 <code>SIGHUP</code> 信号。</li>
+<li>示例命令：<code>nohup ping localhost &amp;</code></li>
+<li>这会启动 <code>ping localhost</code>，并确保即使终端关闭或用户注销，它也会继续运行。</li>
+</ul>
+</li>
+</ul>
+<p>当 Bash 执行 <code>ping localhost &amp;</code> 后，即使 Bash 结束，<code>ping localhost</code> 也不会自动退出，除非 Bash 所在的会话被关闭（例如关闭终端窗口）。在这种情况下，除非对 <code>SIGHUP</code> 信号有特别的处理，否则 <code>ping</code> 会因为接收到 <code>SIGHUP</code> 而退出。使用 <code>nohup</code> 是一种常见的防止这种情况发生的方法。</p>
+<h3 id="终端与控制台"><a href="#终端与控制台" class="headerlink" title="终端与控制台"></a>终端与控制台</h3><p>早期的终端：物理设备，控制台也是早期的概念，它是一种特殊的终端，它可以干其它终端不能干的事情，比如维修系统。</p>
+<p>现在的终端是指图形界面，用户要输入命令和接受信息必须使用终端模拟程序，比如 gnome_terminal。终端模拟器与 pty 建立联系，用户输入到终端模拟器中的字符转发给 pty的前端 、pty后端就是我们说的 tty，tty 拿到字符后，交给 shell 进行处理。具体看下：<br>进一步澄清这个过程中涉及的各个组件之间的关系和交互，以便更好地理解终端模拟器、pty（伪终端）、tty 和 shell 如何协同工作。</p>
+<h3 id="终端模拟器、pty、tty-和-shell-的关系"><a href="#终端模拟器、pty、tty-和-shell-的关系" class="headerlink" title="终端模拟器、pty、tty 和 shell 的关系"></a>终端模拟器、pty、tty 和 shell 的关系</h3><ol>
+<li><p><strong>终端模拟器（如 gnome-terminal）</strong>：</p>
+<ul>
+<li>终端模拟器是一个在图形用户界面中运行的应用程序，它模拟了传统的物理终端的功能。终端模拟器提供了用户与系统交互的界面，允许用户输入命令并显示输出。</li>
+</ul>
+</li>
+<li><p><strong>伪终端（pty）</strong>：</p>
+<ul>
+<li>伪终端是一种软件驱动的终端设备，它模拟了物理终端（tty）的行为。pty 通常分为主设备（pty master）和从设备（pty slave）。</li>
+<li>主设备由终端模拟器控制，而从设备提供一个接口，表现得像是一个真实的终端（tty）。</li>
+</ul>
+</li>
+<li><p><strong>连接 tty</strong>：</p>
+<ul>
+<li>在这里，tty 实际上是指由 pty 的从设备所模拟的那部分。在现代系统中，当我们通常谈论到 tty 时，往往实际上是指 pty 的从设备。</li>
+<li>终端模拟器通过 pty 与 shell 进行交互。用户在终端模拟器中的输入首先传递到 pty 的主设备，然后由主设备转发到从设备。</li>
+</ul>
+</li>
+<li><p><strong>Shell</strong>：</p>
+<ul>
+<li>Shell（如 bash、zsh 等）通常启动并运行在 pty 的从设备上。Shell 接收从 pty 从设备来的输入（用户的命令），执行这些命令，并将输出返回到同一个 pty 从设备。</li>
+<li>这些输出随后由 pty 的主设备接收，并通过终端模拟器显示给用户。</li>
+</ul>
+</li>
+</ol>
+<h3 id="过程概述"><a href="#过程概述" class="headerlink" title="过程概述"></a>过程概述</h3><ul>
+<li>当用户在终端模拟器（如 gnome-terminal）中键入命令时，这些输入数据被发送到伪终端的主设备。</li>
+<li>主设备将这些输入传递到从设备，从设备再将输入交给运行在其上的 shell。</li>
+<li>Shell 解析和执行命令，然后将结果输出回 pty 的从设备。</li>
+<li>输出数据由主设备接收，并通过终端模拟器展示给用户。</li>
+</ul>
+<p>需要明确，现代的 Linux&#x2F;Unix 系统中，通常说的 tty 实际上在很多情况下是指 pty 的从设备，特别是在涉及到图形界面中的终端模拟器时。通过这种方式，终端模拟器可以模拟出一个看似真实的终端（tty）环境，与用户的 shell 交互，而用户实际上是在使用由软件实现的伪终端。这个机制使得终端模拟器非常灵活和强大。</p>
+<h2 id="用户与用户组、文件权限、文件系统层次结构"><a href="#用户与用户组、文件权限、文件系统层次结构" class="headerlink" title="用户与用户组、文件权限、文件系统层次结构"></a>用户与用户组、文件权限、文件系统层次结构</h2><h3 id="用户"><a href="#用户" class="headerlink" title="用户"></a>用户</h3><p>可以在&#x2F;etc&#x2F;passwd 中修改用户登录的默认 shell，当然也可以用其它命令，比如 chsh：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs txt">root:x:0:0:root:/root:/bin/bash<br>daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin<br>bin:x:2:2:bin:/bin:/usr/sbin/nologin<br>（中间内容省略）<br>sshd:x:110:65534::/run/sshd:/usr/sbin/nologin<br>ustc:x:1000:1000:ustc:/home/ustc:/bin/bash<br>lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false<br>mysql:x:111:116:MySQL Server,,,:/nonexistent:/bin/false<br></code></pre></td></tr></table></figure>
+
+<p>我当时以 sudo 用户安装 zsh 的时候，由于粗心，chsh 输入错了 zsh 的路径，导致退出后没办法ssh 连接，后来才发现是默认 shell zsh在指定路径找不到，还好我还有一个 root 用户，不然只能重置云服务器了。</p>
+<p>当 sudo 组的用户利用 sudo 提权操作时，默认指定的是 root 用户。sudo 用户可以通过 su 来将 shell 提权到 root 权限，因此可以限制某用户禁止使用 su 命令。</p>
+<p>事实上，你可以添加很多拥有root 权限的组，比如 admin、AAA，只要你在 sudoers 中定义：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Allow members of group sudo to execute any command</span><br>%sudo   ALL=(ALL:ALL) ALL<br><br><span class="hljs-comment"># Allow members of group admin to execute any command</span><br>%admin   ALL=(ALL:ALL) ALL<br><br><span class="hljs-comment"># Allow members of group AAA to execute any command</span><br>%AAA   ALL=(ALL:ALL) ALL<br><br></code></pre></td></tr></table></figure>
+
+<p>当使用 sudo 提权时，其实使用的是root 用户的身份来执行命令的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ ~<br>$ sudo <span class="hljs-built_in">whoami</span><br>root<br>$ ~<br>$ <span class="hljs-built_in">whoami</span><br>luyoung<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="文件系统的特殊权限位"><a href="#文件系统的特殊权限位" class="headerlink" title="文件系统的特殊权限位"></a>文件系统的特殊权限位</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ <span class="hljs-built_in">ls</span> -l /usr/bin/passwd<br>-rwsr-xr-x 1 root root 59976 Feb  6  2024 /usr/bin/passwd<br><br></code></pre></td></tr></table></figure>
+<p>可以看到，该命令对于 root 用户有s 权限，事实上，还有一些命令也拥有 s 权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">luyoung at luyoungUbt <span class="hljs-keyword">in</span> /etc<br>$ <span class="hljs-built_in">ls</span> -l /usr/bin/su<br>-rwsr-xr-x 1 root root 55680 Apr  9 23:32 /usr/bin/su<br><br>luyoung at luyoungUbt <span class="hljs-keyword">in</span> /etc<br>$ <span class="hljs-built_in">ls</span> -l /usr/bin/sudo<br>-rwsr-xr-x 1 root root 232416 Apr  4  2023 /usr/bin/sudo<br></code></pre></td></tr></table></figure>
+
+<p>这代表此文件有 setuid 特殊权限位。在你执行 passwd 的时候，它的实际权限和 root 一样，只是它知道，执行它的人是你（而非 root），所以只提供修改你自己的密码的功能。</p>
+<h3 id="cd"><a href="#cd" class="headerlink" title="cd"></a>cd</h3><p>cd 是 shell 中的一个 build_in 命令，因此在 sudo cd 的时候，会提示找不到命令。cd 之所以会失败，是因为当前用户对该目录没有执行权限，想要 cd 进去，必须以 root 身份，ls 不是 build_in 命令，因此可以执行成功：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">luyoung at luyoungUbt <span class="hljs-keyword">in</span> /<br>$ <span class="hljs-built_in">ls</span> -l /root<br><span class="hljs-built_in">ls</span>: cannot open directory <span class="hljs-string">&#x27;/root&#x27;</span>: Permission denied<br><br>luyoung at luyoungUbt <span class="hljs-keyword">in</span> /<br>$ sudo <span class="hljs-built_in">ls</span> -l /root<br>total 4<br>drwx------ 5 root root 4096 May 18  2022 snap<br></code></pre></td></tr></table></figure>
+
+<p>另外，就算将 cd 设计成一个非 build in 命令也没用，shell 执行cd 后，改变的仅仅是子进程的目录，执行完成后返回 shell，依然在原目录。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Linux-%E5%9F%BA%E7%A1%80/" class="category-chain-item">Linux 基础</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux-%E5%85%A5%E9%97%A8/" class="print-no-link">#Linux 入门</a>
+      
+        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Linux101:最好的Linux 入门资料</div>
+      <div>http://blog.luliang.online/2024/08/07/Linux101/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/08/%E4%BB%8E%20C%E8%AF%AD%E8%A8%80%E5%88%B0%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/" title="从C语言到二进制程序">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">从C语言到二进制程序</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/05/PA1%E6%89%80%E6%9C%89%E6%84%9F%E6%82%9F%E4%B8%8E%E8%BF%87%E7%A8%8B/" title="PA1 感悟与过程">
+                        <span class="hidden-mobile">PA1 感悟与过程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

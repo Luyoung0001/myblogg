@@ -1,0 +1,754 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言Golang 是一种并发友好的语言，使用 goroutines 和 channels 可以轻松地实现多线程爬虫。具体地说，实现的是多协程。协程是一种比线程更轻量化的最小逻辑可运行单位，它不受操作系统调度，由用户调度。因此对于协程并发的控制，有较高的要求。 一、goroutine（Go 协程）Go 协程（Goroutine）是与其他函数同时运行的函数。可以认为 Go 协程是轻量级的线程，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Golang】多线程爬虫的实现">
+<meta property="og:url" content="http://blog.luliang.online/2023/05/05/%E3%80%90Golang%E3%80%91%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%88%AC%E8%99%AB%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言Golang 是一种并发友好的语言，使用 goroutines 和 channels 可以轻松地实现多线程爬虫。具体地说，实现的是多协程。协程是一种比线程更轻量化的最小逻辑可运行单位，它不受操作系统调度，由用户调度。因此对于协程并发的控制，有较高的要求。 一、goroutine（Go 协程）Go 协程（Goroutine）是与其他函数同时运行的函数。可以认为 Go 协程是轻量级的线程，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce4dae7e22114a1e950a37a9d8001568_1720253831933.png?token=ANB4BCOYU3QPKG5QPU4S4SLGRD64K">
+<meta property="article:published_time" content="2023-05-05T11:23:51.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.777Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="开发语言">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="爬虫">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce4dae7e22114a1e950a37a9d8001568_1720253831933.png?token=ANB4BCOYU3QPKG5QPU4S4SLGRD64K">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>【Golang】多线程爬虫的实现 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【Golang】多线程爬虫的实现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-05 19:23" pubdate>
+          2023年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          28 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">【Golang】多线程爬虫的实现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>Golang 是一种并发友好的语言，使用 goroutines 和 channels 可以轻松地实现多线程爬虫。具体地说，实现的是多协程。协程是一种比线程更轻量化的最小逻辑可运行单位，它不受操作系统调度，由用户调度。因此对于协程并发的控制，有较高的要求。</p>
+<h2 id="一、goroutine（Go-协程）"><a href="#一、goroutine（Go-协程）" class="headerlink" title="一、goroutine（Go 协程）"></a>一、goroutine（Go 协程）</h2><p>Go 协程（Goroutine）是与其他函数同时运行的函数。可以认为 Go 协程是轻量级的线程，由 Go 运行时来管理。在函数调用前加上 go 关键字，这次调用就会在一个新的 goroutine 中并发执行。当被调用的函数返回时，这个 goroutine 也自动结束。</p>
+<p>比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs go"><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">son</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">for</span> &#123;<br>		fmt.Printf(<span class="hljs-string">&quot;son says:hello, world!\n&quot;</span>)<br>		time.Sleep(time.Second)<br>	&#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">father</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">go</span> son()<br>	<span class="hljs-keyword">for</span> &#123;<br>		fmt.Printf(<span class="hljs-string">&quot;father says:你好，世界!\n&quot;</span>)<br>		time.Sleep(time.Second)<br>	&#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	father()<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<blockquote>
+<p>father says:你好，世界!<br>son says:hello, world!<br>son says:hello, world!<br>father says:你好，世界!<br>father says:你好，世界!<br>son says:hello, world!<br>…..</p>
+</blockquote>
+<p>在这个例子中，main() 函数里面执行 father()，而 father()中又开启了一个协程 son()，之后两个死循环分别执行。</p>
+<p>当然，如果主协程运行结束时子协程还没结束，那么就会被 kill 掉。需要注意的是，如果这个函数有返回值，那么这个返回值会被丢弃。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">go</span> loop()<br>	fmt.Println(<span class="hljs-string">&quot;hello,world!&quot;</span>)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10000</span>; i++ &#123;<br>		fmt.Println(i)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<blockquote>
+<p>hello,world!<br>0<br>1</p>
+</blockquote>
+<p> 可以看到，子协程刚打印了 0、1 之后 main()函数就结束了，这显然不符合我们的预期。我们有多种方法来解决这个问题。比如在主协程里面 sleep()，或者使用 channel、waitGroup 等。</p>
+<p>Go 协程（Goroutine）之间通过信道（channel）进行通信，简单的说就是多个协程之间通信的管道。信道可以防止多个协程访问共享内存时发生资源争抢的问题。Go 中的 channel 是 goroutine 之间的通信机制。这就是为什么我们之前说过 Go 实现并发的方式是：“<strong>不是通过共享内存通信，而是通过通信共享内存。</strong>”</p>
+<p>比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> (<br>	myMap = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-type">int</span>, <span class="hljs-number">10</span>)<br>)<br><br><span class="hljs-comment">// 计算n！并放入到map里</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">operation</span><span class="hljs-params">(n <span class="hljs-type">int</span>)</span></span> &#123;<br>	res := <span class="hljs-number">1</span><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">1</span>; i &lt;= n; i++ &#123;<br>		res *= i<br>	&#125;<br>	myMap[n] = res<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Test3</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-comment">//我们开启多个协程去完成这个任务</span><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">1</span>; i &lt;= <span class="hljs-number">200</span>; i++ &#123;<br>		<span class="hljs-keyword">go</span> operation(i)<br>	&#125;<br>	time.Sleep(time.Second * <span class="hljs-number">10</span>)<br>	fmt.Println(myMap)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	Test3()<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<blockquote>
+<p>fatal error: concurrent map writes<br>goroutine 42 [running]:</p>
+</blockquote>
+<p>这里产生了一个 fatal error，因为我们创建的 myMap 不支持同时访问，这有点像 Java 里面的非线程安全概念。因此我们需要一种“线程安全”的数据结构，就是 Go 中的channel。</p>
+<h2 id="二、channel-通道"><a href="#二、channel-通道" class="headerlink" title="二、channel(通道)"></a>二、channel(通道)</h2><p>channel 分为无缓冲和有缓冲的。无缓冲是同步的，例如make(chan int)，就是一个送信人去你家门口送信，你不在家他不走，你一定要接下信，他才会走，无缓冲保证信能到你手上。 有缓冲是异步的，例如make(chan int, 1)，就是一个送信人去你家仍到你家的信箱，转身就走，除非你的信箱满了，他必须等信箱空下来，有缓冲的保证信能进你家的邮箱。<br>换句话说，有缓存的channel使用环形数组实现，当缓存未满时，向channel发送消息不会阻塞，当缓存满时，发送操作会阻塞，直到其他goroutine从channel中读取消息；同理，当channel中消息不为空时，读取消息不会阻塞，当channel为空时，读取操作会阻塞，直至其他goroutine向channel发送消息。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 非缓存channel</span><br>ch := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-type">int</span>)<br><span class="hljs-comment">// 缓存channel</span><br>bch := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-type">int</span>, <span class="hljs-number">2</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p>channel和map类似，make创建了底层数据结构的引用，当赋值或参数传递时，只是拷贝了一个channel的引用，其指向同一channel对象，与其引用类型一样，channel的空值也为nil。使用&#x3D;&#x3D;可以对类型相同的channel进行比较，只有指向相同对象或同为nil时，结果为true。</p>
+<h3 id="2-1-channel-的初始化"><a href="#2-1-channel-的初始化" class="headerlink" title="2.1  channel 的初始化"></a>2.1  channel 的初始化</h3><p>channel在使用前，需要初始化，否则永远阻塞。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">ch := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-type">int</span>)<br>ch &lt;- x<br>y &lt;- ch<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-channel的关闭"><a href="#2-2-channel的关闭" class="headerlink" title="2.2 channel的关闭"></a>2.2 channel的关闭</h3><p>golang提供了内置的close函数，对channel进行关闭操作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 初始化channel</span><br>ch := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-type">int</span>)<br><span class="hljs-comment">// 关闭channel ch</span><br><span class="hljs-built_in">close</span>(ch)<br></code></pre></td></tr></table></figure>
+
+<p>关于channel的关闭，需要注意以下事项：</p>
+<ul>
+<li>关闭未初始化的channle(nil)会panic</li>
+<li>重复关闭同一channel会panic</li>
+<li>向以关闭channel发送消息会panic</li>
+<li>从已关闭channel读取数据，不会panic，若存在数据，则可以读出未被读取的消息，若已被读出，则获取的数据为零值，可以通过ok-idiom的方式，判断channel是否关闭</li>
+<li>channel的关闭操作，会产生广播消息，所有向channel读取消息的goroutine都会接受到消息</li>
+</ul>
+<h2 id="三、waitGroup-的使用"><a href="#三、waitGroup-的使用" class="headerlink" title="三、waitGroup 的使用"></a>三、waitGroup 的使用</h2><p>正常情况下，新激活的goroutine的结束过程是不可控制的，唯一可以保证终止goroutine的行为是main goroutine的终止。<br>也就是说，我们并不知道哪个goroutine什么时候结束。<br>但很多情况下，我们正需要知道goroutine是否完成。这需要借助sync包的WaitGroup来实现。<br>WatiGroup是sync包中的一个struct类型，用来收集需要等待执行完成的goroutine。下面是它的定义：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> WaitGroup <span class="hljs-keyword">struct</span> &#123;<br>        <span class="hljs-comment">// Has unexported fields.</span><br>&#125;<br>    A WaitGroup waits <span class="hljs-keyword">for</span> a collection of goroutines to finish. The main<br>    goroutine calls Add to set the number of goroutines to wait <span class="hljs-keyword">for</span>. Then each<br>    of the goroutines runs and calls Done when finished. At the same time, Wait<br>    can be used to block until all goroutines have finished.<br><br>A WaitGroup must not be copied after first use.<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(wg *WaitGroup)</span></span> Add(delta <span class="hljs-type">int</span>)<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(wg *WaitGroup)</span></span> Done()<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(wg *WaitGroup)</span></span> Wait()<br></code></pre></td></tr></table></figure>
+
+<p>waitGroup有三个方法：</p>
+<ul>
+<li>Add()：每次激活想要被等待完成的goroutine之前，先调用Add()，用来设置或添加要等待完成的goroutine数量。<br>例如Add(2)或者两次调用Add(1)都会设置等待计数器的值为2，表示要等待2个goroutine完成</li>
+<li>Done()：每次需要等待的goroutine在真正完成之前，应该调用该方法来人为表示goroutine完成了，该方法会对等待计数器减1。</li>
+<li>Wait()：在等待计数器减为0之前，Wait()会一直阻塞当前的goroutine<br>也就是说，Add()用来增加要等待的goroutine的数量，Done()用来表示goroutine已经完成了，减少一次计数器，Wait()用来等待所有需要等待的goroutine完成。</li>
+</ul>
+<p>比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">var</span> wg sync.WaitGroup <span class="hljs-comment">// 创建同步等待组对象</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-comment">//设置等待组中，要执行的goroutine的数量</span><br>	wg.Add(<span class="hljs-number">2</span>)<br>	<span class="hljs-keyword">go</span> fun1()<br>	<span class="hljs-keyword">go</span> fun2()<br>	fmt.Println(<span class="hljs-string">&quot;main进入阻塞状态,等待wg中的子goroutine结束&quot;</span>)<br>	wg.Wait() <span class="hljs-comment">//表示main goroutine进入等待，意味着阻塞</span><br>	fmt.Println(<span class="hljs-string">&quot;main解除阻塞&quot;</span>)<br><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">fun1</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">1</span>; i &lt;= <span class="hljs-number">10</span>; i++ &#123;<br>		fmt.Println(<span class="hljs-string">&quot;fun1.i:&quot;</span>, i)<br>	&#125;<br>	wg.Done() <span class="hljs-comment">//给wg等待中的执行的goroutine数量减1.同Add(-1)</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">fun2</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">defer</span> wg.Done()<br>	<span class="hljs-keyword">for</span> j := <span class="hljs-number">1</span>; j &lt;= <span class="hljs-number">10</span>; j++ &#123;<br>		fmt.Println(<span class="hljs-string">&quot;\tfun2.j,&quot;</span>, j)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<blockquote>
+<p>main进入阻塞状态,等待wg中的子goroutine结束 fun1.i: 1<br>        fun2.j, 1<br>        fun2.j, 2<br>        fun2.j, 3<br>        fun2.j, 4<br>        fun2.j, 5<br>        fun1.i: 2<br>        fun1.i: 3<br>        fun1.i: 4<br>        …<br>        main解除阻塞</p>
+</blockquote>
+<p>可以看到起到了很好的控制效果。<br>如果用第一个例子来说明，效果更好：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-keyword">var</span> wg sync.WaitGroup <span class="hljs-comment">// 创建同步等待组对象</span><br>	wg.Add(<span class="hljs-number">1</span>)<br>	<span class="hljs-keyword">go</span> loop(&amp;wg)<br>	wg.Wait()<br>	fmt.Println(<span class="hljs-string">&quot;hello,world!&quot;</span>)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">loop</span><span class="hljs-params">(wg *sync.WaitGroup)</span></span> &#123;<br>	<span class="hljs-keyword">defer</span> wg.Done()<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++ &#123;<br>		fmt.Println(i)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<blockquote>
+<p>0<br>1<br>…<br>99<br>hello,world!</p>
+</blockquote>
+<h2 id="四、爬虫"><a href="#四、爬虫" class="headerlink" title="四、爬虫"></a>四、爬虫</h2><p>爬虫的功能是爬取豆瓣top250的电影的数据，并将爬到的数据永久花存储。<br>思路是首先爬取所有的链接，这个链接的提取通过10 个并行的goroutine处理，然后存储到 channel 中。然后立即创建 250个 goroutine，每一个协程分别爬取一个链接。 再将爬到的数据存储到本地。</p>
+<h3 id="4-1-爬虫配置"><a href="#4-1-爬虫配置" class="headerlink" title="4.1 爬虫配置"></a>4.1 爬虫配置</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> SpiderConfig <span class="hljs-keyword">struct</span> &#123;<br>	InitialURL   <span class="hljs-type">string</span> <span class="hljs-comment">// 初始 URL</span><br>	MaxDepth     <span class="hljs-type">int</span>    <span class="hljs-comment">// 最大深度</span><br>	MaxGoroutine <span class="hljs-type">int</span>    <span class="hljs-comment">// 最大并发数</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="4-2-爬虫数据"><a href="#4-2-爬虫数据" class="headerlink" title="4.2 爬虫数据"></a>4.2 爬虫数据</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> SpiderData <span class="hljs-keyword">struct</span> &#123;<br>	URL       <span class="hljs-type">string</span> <span class="hljs-comment">// 链接</span><br>	FilmName  <span class="hljs-type">string</span> <span class="hljs-comment">// 电影名</span><br>	Director  <span class="hljs-type">string</span> <span class="hljs-comment">// 导员</span><br>	Actors    Actor  <span class="hljs-comment">// 演员列表</span><br>	Year      <span class="hljs-type">string</span> <span class="hljs-comment">// 年份</span><br>	Score     <span class="hljs-type">string</span> <span class="hljs-comment">// 评分</span><br>	Introduce <span class="hljs-type">string</span> <span class="hljs-comment">// 简介</span><br>&#125;<br><span class="hljs-keyword">type</span> Actor <span class="hljs-keyword">struct</span> &#123;<br>	actor1 <span class="hljs-type">string</span><br>	actor2 <span class="hljs-type">string</span><br>	actor3 <span class="hljs-type">string</span><br>	actor4 <span class="hljs-type">string</span><br>	actor5 <span class="hljs-type">string</span><br>	actor6 <span class="hljs-type">string</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="4-3-开启并行"><a href="#4-3-开启并行" class="headerlink" title="4.3 开启并行"></a>4.3 开启并行</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">spider</span><span class="hljs-params">(config SpiderConfig, chLinks <span class="hljs-keyword">chan</span> <span class="hljs-type">string</span>, wg *sync.WaitGroup)</span></span> &#123;<br><br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++ &#123;<br>		fmt.Println(<span class="hljs-string">&quot;正在爬取第&quot;</span>, i, <span class="hljs-string">&quot;个信息&quot;</span>)<br>		<span class="hljs-keyword">go</span> Spider(strconv.Itoa(i*<span class="hljs-number">25</span>), chLinks, wg)<br>	&#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="4-4-爬取某个链接"><a href="#4-4-爬取某个链接" class="headerlink" title="4.4 爬取某个链接"></a>4.4 爬取某个链接</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Spider</span><span class="hljs-params">(page <span class="hljs-type">string</span>, chLinks <span class="hljs-keyword">chan</span> <span class="hljs-type">string</span>, wg *sync.WaitGroup)</span></span> &#123;<br><br>	<span class="hljs-comment">// client</span><br>	client := http.Client&#123;&#125;<br>	URL := <span class="hljs-string">&quot;https://movie.douban.com/top250?start=&quot;</span> + page + <span class="hljs-string">&quot;&amp;filter=&quot;</span><br>	req, err := http.NewRequest(<span class="hljs-string">&quot;GET&quot;</span>, URL, <span class="hljs-literal">nil</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;req err&quot;</span>, err)<br>	&#125;<br>	<span class="hljs-comment">// UA伪造，明显比 python复杂得多</span><br>	req.Header.Set(<span class="hljs-string">&quot;Connection&quot;</span>, <span class="hljs-string">&quot;keep-alive&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Cache-Control&quot;</span>, <span class="hljs-string">&quot;max-age=0&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;sec-ch-ua-mobile&quot;</span>, <span class="hljs-string">&quot;?0&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Upgrade-Insecure-Requests&quot;</span>, <span class="hljs-string">&quot;1&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;User-Agent&quot;</span>, <span class="hljs-string">&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Accept&quot;</span>, <span class="hljs-string">&quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-Site&quot;</span>, <span class="hljs-string">&quot;same-origin&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-Mode&quot;</span>, <span class="hljs-string">&quot;navigate&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-User&quot;</span>, <span class="hljs-string">&quot;?1&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-Dest&quot;</span>, <span class="hljs-string">&quot;document&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Referer&quot;</span>, <span class="hljs-string">&quot;https://movie.douban.com/chart&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Accept-Language&quot;</span>, <span class="hljs-string">&quot;zh-CN,zh;q=0.9&quot;</span>)<br><br>	resp, err := client.Do(req)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;resp err&quot;</span>, err)<br>	&#125;<br>	<span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(Body io.ReadCloser)</span></span> &#123;<br>		err := Body.Close()<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			fmt.Println(<span class="hljs-string">&quot;close err&quot;</span>, err)<br>		&#125;<br>	&#125;(resp.Body)<br>	<span class="hljs-comment">// 网页解析</span><br>	docDetail, err := goquery.NewDocumentFromReader(resp.Body)<br><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;解析失败！&quot;</span>, err)<br>	&#125;<br>	<span class="hljs-comment">// 选择器</span><br>	<span class="hljs-comment">// #content &gt; div &gt; div.article &gt; ol &gt; li:nth-child(1) &gt; div &gt; div.info &gt; div.hd &gt; a</span><br>	title := docDetail.Find(<span class="hljs-string">&quot;#content &gt; div &gt; div.article &gt; ol &gt; li&quot;</span>).<br>		Each(<span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-type">int</span>, s *goquery.Selection)</span></span> &#123; <span class="hljs-comment">// 继续找</span><br>			link := s.Find(<span class="hljs-string">&quot;div &gt; div.pic &gt; a&quot;</span>)<br>			linkTemp, OK := link.Attr(<span class="hljs-string">&quot;href&quot;</span>)<br>			<span class="hljs-keyword">if</span> OK &#123;<br>				chLinks &lt;- linkTemp<br>			&#125;<br>		&#125;)<br>	title.Text()<br>	wg.Done()<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-5-爬取某个链接的电影数据"><a href="#4-5-爬取某个链接的电影数据" class="headerlink" title="4.5 爬取某个链接的电影数据"></a>4.5 爬取某个链接的电影数据</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">crawl</span><span class="hljs-params">(url <span class="hljs-type">string</span>, wg *sync.WaitGroup)</span></span> &#123;<br>	client := http.Client&#123;&#125;<br>	URL := url<br>	req, err := http.NewRequest(<span class="hljs-string">&quot;GET&quot;</span>, URL, <span class="hljs-literal">nil</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;req err&quot;</span>, err)<br>	&#125;<br>	<span class="hljs-comment">// UA伪造，明显比 python复杂得多</span><br>	req.Header.Set(<span class="hljs-string">&quot;Connection&quot;</span>, <span class="hljs-string">&quot;keep-alive&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Cache-Control&quot;</span>, <span class="hljs-string">&quot;max-age=0&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;sec-ch-ua-mobile&quot;</span>, <span class="hljs-string">&quot;?0&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Upgrade-Insecure-Requests&quot;</span>, <span class="hljs-string">&quot;1&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;User-Agent&quot;</span>, <span class="hljs-string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Accept&quot;</span>, <span class="hljs-string">&quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-Site&quot;</span>, <span class="hljs-string">&quot;same-origin&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-Mode&quot;</span>, <span class="hljs-string">&quot;navigate&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-User&quot;</span>, <span class="hljs-string">&quot;?1&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Sec-Fetch-Dest&quot;</span>, <span class="hljs-string">&quot;document&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Referer&quot;</span>, <span class="hljs-string">&quot;https://movie.douban.com/chart&quot;</span>)<br>	req.Header.Set(<span class="hljs-string">&quot;Accept-Language&quot;</span>, <span class="hljs-string">&quot;zh-CN,zh;q=0.9&quot;</span>)<br><br>	resp, err := client.Do(req)<br><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;resp err&quot;</span>, err)<br>	&#125;<br>	<span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(Body io.ReadCloser)</span></span> &#123;<br>		err := Body.Close()<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br><br>		&#125;<br>	&#125;(resp.Body)<br>	<span class="hljs-comment">// 网页解析</span><br>	docDatail, err := goquery.NewDocumentFromReader(resp.Body)<br><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(<span class="hljs-string">&quot;解析失败！&quot;</span>, err)<br>	&#125;<br>	<span class="hljs-keyword">var</span> data SpiderData<br>	<span class="hljs-comment">// 选择器</span><br><br>	<span class="hljs-comment">// #content &gt; h1 &gt; span:nth-child(1)	movie_name</span><br>	movie_name := docDatail.Find(<span class="hljs-string">&quot;#content &gt; h1 &gt; span:nth-child(1)&quot;</span>).Text()<br>	<span class="hljs-comment">// #info &gt; span:nth-child(1) &gt; span.attrs &gt; a	director</span><br>	director := docDatail.Find(<span class="hljs-string">&quot;#info &gt; span:nth-child(1) &gt; span.attrs &gt; a&quot;</span>).Text()<br>	<span class="hljs-comment">// #info &gt; span.actor &gt; span.attrs &gt; span:nth-child(1) &gt; a</span><br>	actor01, OK1 := docDatail.Find(<span class="hljs-string">&quot;#info &gt; span.actor &gt; span.attrs &gt; span:nth-child(1) &gt; a&quot;</span>).Attr(<span class="hljs-string">&quot;hel&quot;</span>)<br>	<span class="hljs-keyword">if</span> OK1 &#123;<br><br>	&#125;<br>	actor02 := docDatail.Find(<span class="hljs-string">&quot;#info &gt; span.actor &gt; span.attrs &gt; span:nth-child(2) &gt; a&quot;</span>).Text()<br>	actor03 := docDatail.Find(<span class="hljs-string">&quot;#info &gt; span.actor &gt; span.attrs &gt; span:nth-child(3) &gt; a&quot;</span>).Text()<br>	actor04 := docDatail.Find(<span class="hljs-string">&quot;#info &gt; span.actor &gt; span.attrs &gt; span:nth-child(4) &gt; a&quot;</span>).Text()<br>	actor05 := docDatail.Find(<span class="hljs-string">&quot;#info &gt; span.actor &gt; span.attrs &gt; span:nth-child(5) &gt; a&quot;</span>).Text()<br>	actor06 := docDatail.Find(<span class="hljs-string">&quot;#info &gt; span.actor &gt; span.attrs &gt; span:nth-child(6) &gt; a&quot;</span>).Text()<br><br>	<span class="hljs-comment">// #content &gt; h1 &gt; span.year</span><br>	year := docDatail.Find(<span class="hljs-string">&quot;#content &gt; h1 &gt; span.year&quot;</span>).Text()<br>	<span class="hljs-comment">// #interest_sectl &gt; div.rating_wrap.clearbox &gt; div.rating_self.clearfix &gt; strong</span><br>	score := docDatail.Find(<span class="hljs-string">&quot;#interest_sectl &gt; div.rating_wrap.clearbox &gt; div.rating_self.clearfix &gt; strong&quot;</span>).Text()<br>	<span class="hljs-comment">//#link-report-intra &gt; span.all.hidden</span><br>	introduce := docDatail.Find(<span class="hljs-string">&quot;#link-report-intra &gt; span.all.hidden&quot;</span>).Text()<br>	data.URL = URL<br>	data.FilmName = movie_name<br>	data.Director = director<br>	data.Actors.actor1 = actor01<br>	data.Actors.actor2 = actor02<br>	data.Actors.actor3 = actor03<br>	data.Actors.actor4 = actor04<br>	data.Actors.actor5 = actor05<br>	data.Actors.actor6 = actor06<br>	data.Year = year<br>	data.Score = score<br>	data.Introduce = introduce<br>	result := data2string(data)<br>	filename := strconv.Itoa(rand.Int()) + <span class="hljs-string">&quot;.txt&quot;</span><br>	f, err := os.Create(filename)<br><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		fmt.Println(err)<br>	&#125;<br>	_, err = f.Write([]<span class="hljs-type">byte</span>(result))<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	err = f.Close()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span><br>	&#125;<br>	<span class="hljs-keyword">defer</span> wg.Done()<br><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">data2string</span><span class="hljs-params">(data SpiderData)</span></span> <span class="hljs-type">string</span> &#123;<br>	result := data.FilmName + data.Score + data.Director + data.Year + data.Introduce<br>	<span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="4-6-main-函数开启爬虫"><a href="#4-6-main-函数开启爬虫" class="headerlink" title="4.6 main 函数开启爬虫"></a>4.6 main 函数开启爬虫</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	<span class="hljs-comment">// 先爬取初始URL,将爬来的 links放在 chan中</span><br>	<span class="hljs-comment">// 定义一个 chLinks,这里面将会放置 250 个links</span><br>	chLinks := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-type">string</span>, <span class="hljs-number">1000</span>) <span class="hljs-comment">// 有缓冲的 chan</span><br>	config := SpiderConfig&#123;<br>		InitialURL:   <span class="hljs-string">&quot;https://movie.douban.com/top250&quot;</span>,<br>		MaxDepth:     <span class="hljs-number">1</span>,<br>		MaxGoroutine: <span class="hljs-number">10</span>,<br>	&#125;<br>	wg := sync.WaitGroup&#123;&#125;<br>	wg.Add(<span class="hljs-number">10</span>)<br>	spider(config, chLinks, &amp;wg) <span class="hljs-comment">// 主线程,并发爬取所有的 href</span><br>	wg.Wait()<br>	<span class="hljs-comment">//for i := 0; i &lt; 250; i++ &#123;</span><br>	<span class="hljs-comment">//	fmt.Println(i, &lt;-chLinks)</span><br>	<span class="hljs-comment">//&#125;</span><br>	<span class="hljs-comment">// 爬完了所有的链接,250 个链接放在 chLinks</span><br>	<span class="hljs-comment">//建立250 个协程来爬每个链接</span><br>	wg.Add(<span class="hljs-number">250</span>)<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">250</span>; i++ &#123;<br>		<span class="hljs-keyword">go</span> crawl(&lt;-chLinks, &amp;wg)<br>	&#125;<br>	wg.Wait()<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>爬取结果：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce4dae7e22114a1e950a37a9d8001568_1720253831933.png?token=ANB4BCOYU3QPKG5QPU4S4SLGRD64K" alt="在这里插入图片描述"></p>
+<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>本文实现了一个普通的多线（协）程爬虫，用来爬去某些数据。缺点是并没有用到并发深度的功能，因为爬取的数据结构不一样，因此本尝试并不是一个很好的练手项目。<br>还可以改进的是可以在爬到连接之后，立即对该链接进行开启协程爬取，本文是爬完之后才开始的。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Golang/" class="category-chain-item">Golang</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/" class="print-no-link">#开发语言</a>
+      
+        <a href="/tags/golang/" class="print-no-link">#golang</a>
+      
+        <a href="/tags/%E7%88%AC%E8%99%AB/" class="print-no-link">#爬虫</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【Golang】多线程爬虫的实现</div>
+      <div>http://blog.luliang.online/2023/05/05/【Golang】多线程爬虫的实现/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/07/%E3%80%90Golang%E3%80%91%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8B%E8%BD%BD%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0/" title="【Golang】多线程下载器的实现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【Golang】多线程下载器的实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/23/%E3%80%90day11%E3%80%91%E9%93%BE%E8%A1%A8%E9%AB%98%E7%B2%BE%E5%BA%A6%E5%8A%A0%E6%B3%95/" title="【day11】链表高精度加法">
+                        <span class="hidden-mobile">【day11】链表高精度加法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

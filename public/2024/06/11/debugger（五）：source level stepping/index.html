@@ -1,0 +1,790 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、前言前面的源代码打印，利用了 DWARF 格式化的信息，现在我们更进一步，利用它分别进行 stepi、step_over、step_in、step_out。 一、stepi这个最简单，我们只需要利用 ptrace 就行： 1234567891011121314151617181920212223242526void Debugger::single_step_instruction() &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="debugger（五）：source level stepping">
+<meta property="og:url" content="http://blog.luliang.online/2024/06/11/debugger%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9Asource%20level%20stepping/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="〇、前言前面的源代码打印，利用了 DWARF 格式化的信息，现在我们更进一步，利用它分别进行 stepi、step_over、step_in、step_out。 一、stepi这个最简单，我们只需要利用 ptrace 就行： 1234567891011121314151617181920212223242526void Debugger::single_step_instruction() &amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-11T10:00:33.000Z">
+<meta property="article:modified_time" content="2024-09-11T00:07:43.773Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="lldb">
+<meta property="article:tag" content="debugger">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>debugger（五）：source level stepping - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="debugger（五）：source level stepping"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-11 18:00" pubdate>
+          2024年6月11日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">debugger（五）：source level stepping</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>前面的源代码打印，利用了 DWARF 格式化的信息，现在我们更进一步，利用它分别进行 <strong>stepi</strong>、<strong>step_over</strong>、<strong>step_in</strong>、<strong>step_out</strong>。</p>
+<h2 id="一、stepi"><a href="#一、stepi" class="headerlink" title="一、stepi"></a>一、stepi</h2><p>这个最简单，我们只需要利用 ptrace 就行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::single_step_instruction</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-built_in">ptrace</span>(PTRACE_SINGLESTEP, m_pid, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>    <span class="hljs-built_in">wait_for_signal</span>();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::single_step_instruction_with_breakpoint_check</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">if</span> (m_breakpoints.<span class="hljs-built_in">count</span>(<span class="hljs-built_in">get_pc</span>())) &#123;<br>        <span class="hljs-built_in">step_over_breakpoint</span>();<br>    &#125;<br>    <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">single_step_instruction</span>();<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::step_over_breakpoint</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-comment">// 二次检查</span><br>  <span class="hljs-keyword">if</span> (m_breakPoints.<span class="hljs-built_in">count</span>(<span class="hljs-built_in">get_pc</span>())) &#123;<br>    <span class="hljs-keyword">auto</span> &amp;bp = m_breakPoints[<span class="hljs-built_in">get_pc</span>()];<br>    <span class="hljs-keyword">if</span> (bp.<span class="hljs-built_in">is_enabled</span>()) &#123;<br>      bp.<span class="hljs-built_in">disable</span>();<br>      <span class="hljs-built_in">ptrace</span>(PTRACE_SINGLESTEP, m_pid, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>      <span class="hljs-built_in">wait_for_signal</span>();<br>      bp.<span class="hljs-built_in">enable</span>();<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里需要注意的是，如果改变了被跟踪程序的状态，必须要调用 <code>wait()</code>，这是因为我们必须要同步一些信息，比如 pc等寄存器，不然就会保错。</p>
+<h2 id="二、step-out"><a href="#二、step-out" class="headerlink" title="二、step_out"></a>二、step_out</h2><p>要完成这个函数，我们需要对栈帧所有了解。当函数执行到一个函数之中时，比如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-type">int</span> foo = <span class="hljs-number">1</span>;		&lt;-----执行在此处<br>  <span class="hljs-type">int</span> foo1 = <span class="hljs-number">1</span>;<br>  <span class="hljs-built_in">e</span>();<br>  <span class="hljs-type">int</span> foo2 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo3 = <span class="hljs-number">1</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-type">int</span> foo = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo1 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo2 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo3 = <span class="hljs-number">1</span>;<br>  <span class="hljs-built_in">f</span>();<br>  <span class="hljs-type">int</span> foo4 = <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当 <code>main()</code> 函数进入 <code>f()</code> 的时候，<code>f()</code> 首先会完成 <strong>prologue</strong>，新的栈帧是 <code>f()</code> 自己创建的。</p>
+<h3 id="函数调用过程"><a href="#函数调用过程" class="headerlink" title="函数调用过程"></a>函数调用过程</h3><ol>
+<li><p><strong>Prologue</strong>：函数调用开始时，调用者函数（例如 <code>main()</code>）会将当前函数的返回地址压入栈中（事实上，这是在 CALL 中隐式执行的），然后执行被调用函数（例如 <code>f()</code>）的 prologue 部分。Prologue 是被调用函数的一部分，用于准备函数的栈帧和执行环境。</p>
+</li>
+<li><p><strong>栈帧创建</strong>：在 prologue 部分，被调用函数会为自己创建一个新的栈帧。栈帧包含了函数的局部变量、参数、返回地址等信息。这个栈帧通常位于栈上，所以在创建时需要适当地调整栈指针。</p>
+</li>
+<li><p><strong>保存寄存器状态</strong>：在 prologue 部分，被调用函数还可能需要保存调用前的寄存器状态，以便在函数结束后恢复。</p>
+</li>
+<li><p><strong>函数执行</strong>：被调用函数开始执行其主体部分，执行其中的语句和操作。</p>
+</li>
+<li><p><strong>Epilogue</strong>：函数执行完毕后，执行 epilogue 部分。Epilogue 用于清理栈帧和恢复调用前的环境，包括恢复寄存器状态和返回地址。</p>
+</li>
+</ol>
+<h3 id="栈帧布局"><a href="#栈帧布局" class="headerlink" title="栈帧布局"></a>栈帧布局</h3><ol>
+<li><p><strong>局部变量分配</strong>：在栈帧中，局部变量通常位于栈顶的一段区域。在调用函数的 prologue 部分，会为局部变量分配空间。</p>
+</li>
+<li><p><strong>参数传递</strong>：函数参数可以通过栈传递，也可以通过寄存器传递（特别是在寄存器架构中）。参数通常存储在栈帧的特定位置，被调用函数在开始时会从这些位置读取参数。</p>
+</li>
+<li><p><strong>返回地址</strong>：返回地址是在调用函数 prologue 部分压入栈中的，它指示了在函数执行完毕后应该返回到哪里继续执行。</p>
+</li>
+<li><p><strong>其他信息</strong>：栈帧还可能包含其他的信息，如前一个函数的栈帧指针、异常处理相关信息等。</p>
+</li>
+</ol>
+<h3 id="其它情况"><a href="#其它情况" class="headerlink" title="其它情况"></a>其它情况</h3><ul>
+<li><p><strong>递归调用</strong>：每次函数调用都会创建一个新的栈帧，如果函数递归调用自身，会导致多个栈帧同时存在于栈上。</p>
+</li>
+<li><p><strong>内联函数</strong>：内联函数在调用时不会创建新的栈帧，而是将函数的内容嵌入到调用者函数中，从而减少了函数调用的开销。</p>
+</li>
+<li><p><strong>优化技术</strong>：编译器会对函数栈帧进行优化，例如将局部变量寄存器化、使用栈帧重用等，以提高程序的性能和效率。</p>
+</li>
+</ul>
+<p>比如这段代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#1  0x000055555555526d in main () at /home/luyoung/mydebugger/examples/stack.cpp:53</span><br>(gdb) disassemble<br>Dump of assembler code <span class="hljs-keyword">for</span> <span class="hljs-keyword">function</span> _Z1fv:<br>   0x0000555555555210 &lt;+0&gt;:     endbr64<br>   0x0000555555555214 &lt;+4&gt;:     push   %rbp<br>   0x0000555555555215 &lt;+5&gt;:     mov    %rsp,%rbp<br>   0x0000555555555218 &lt;+8&gt;:     sub    <span class="hljs-variable">$0x10</span>,%rsp<br>=&gt; 0x000055555555521c &lt;+12&gt;:    movl   <span class="hljs-variable">$0x1</span>,-0x10(%rbp)<br>   0x0000555555555223 &lt;+19&gt;:    movl   <span class="hljs-variable">$0x1</span>,-0xc(%rbp)<br>   0x000055555555522a &lt;+26&gt;:    call   0x5555555551e0 &lt;_Z1ev&gt;<br>   0x000055555555522f &lt;+31&gt;:    movl   <span class="hljs-variable">$0x1</span>,-0x8(%rbp)<br>   0x0000555555555236 &lt;+38&gt;:    movl   <span class="hljs-variable">$0x1</span>,-0x4(%rbp)<br>   0x000055555555523d &lt;+45&gt;:    nop<br>   0x000055555555523e &lt;+46&gt;:    leave<br>   0x000055555555523f &lt;+47&gt;:    ret<br>End of assembler dump.<br></code></pre></td></tr></table></figure>
+
+<p>对应于：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-type">int</span> foo = <span class="hljs-number">1</span>;		&lt;-----执行在此处<br>  <span class="hljs-type">int</span> foo1 = <span class="hljs-number">1</span>;<br>  <span class="hljs-built_in">e</span>();<br>  <span class="hljs-type">int</span> foo2 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo3 = <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这就是 <code>main() </code> 进入 <code>f()</code> 后所做的工作：</p>
+<ul>
+<li><p><code>endbr64</code>：这是一个指令，用于指示处理器启用 64 位模式下的 endbr 指令。</p>
+</li>
+<li><p><code>push %rbp</code>：将当前栈帧main() 的基址指针（Frame Pointer, RBP）压入栈中，以便后续函数使用。</p>
+</li>
+<li><p><code>mov %rsp,%rbp</code>：将栈顶指针（Stack Pointer, RSP）的值赋给基址指针（RBP），建立当前函数的栈帧。</p>
+</li>
+<li><p><code>sub $0x10,%rsp</code>：在栈上分配 16 字节的空间，用于存储局部变量或临时数据，更新 rsp。</p>
+</li>
+<li><p><code>movl $0x1,-0x10(%rbp)</code>：将立即数 1 存储到相对于基址指针（RBP）偏移量为 -0x10 的内存位置。</p>
+</li>
+<li><p><code>movl $0x1,-0xc(%rbp)</code>：将立即数 1 存储到相对于基址指针（RBP）偏移量为 -0xc 的内存位置。</p>
+</li>
+<li><p><code>call 0x5555555551b0 &lt;_Z1dv&gt;</code>：调用地址为 <code>0x5555555551b0</code> 的函数 <code>_Z1dv</code>，这个函数可能接受参数并返回结果。</p>
+</li>
+<li><p><code>movl $0x1,-0x8(%rbp)</code>：将立即数 1 存储到相对于基址指针（RBP）偏移量为 -0x8 的内存位置。</p>
+</li>
+<li><p><code>movl $0x1,-0x4(%rbp)</code>：将立即数 1 存储到相对于基址指针（RBP）偏移量为 -0x4 的内存位置。</p>
+</li>
+<li><p><code>nop</code>：空操作指令，不执行任何操作。</p>
+</li>
+<li><p><code>leave</code>：恢复栈帧，将栈帧移出栈。</p>
+</li>
+<li><p><code>ret</code>：返回指令，从当前函数返回到调用者函数。</p>
+</li>
+</ul>
+<p>因此我们想要跳出函数 <code>f()</code>，得知晓这个函数的返回地址，它放在哪里呢？</p>
+<p>返回地址实际上是在调用函数之前的步骤中由调用指令（如 <code>call</code>）隐式处理的，它会将下一条指令的地址（即函数 <code>f()</code> 的地址）<strong>压入栈</strong>中，作为返回时应该跳转的地址。这里就很清晰了，因为在这之后，紧接着入栈的是 <strong>rbp</strong>，接着是把 <strong>rsp</strong> 放入 <strong>rbp</strong>，当前 <strong>rbp</strong> 中值就是那时候的 <strong>rsp</strong>，也是新的栈帧。我们只要把 <strong>rbp+8</strong>，就能得到它了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::step_out</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> frame_pointer = <span class="hljs-built_in">get_register_value</span>(m_pid, reg::rbp);<br>    <span class="hljs-keyword">auto</span> return_address = <span class="hljs-built_in">read_memory</span>(frame_pointer+<span class="hljs-number">8</span>);<br><br>    <span class="hljs-type">bool</span> should_remove_breakpoint = <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">if</span> (!m_breakpoints.<span class="hljs-built_in">count</span>(return_address)) &#123;<br>        <span class="hljs-built_in">set_breakpoint_at_address</span>(return_address);<br>        should_remove_breakpoint = <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-built_in">continue_execution</span>();<br><br>    <span class="hljs-keyword">if</span> (should_remove_breakpoint) &#123;<br>        <span class="hljs-built_in">remove_breakpoint</span>(return_address);<br><br></code></pre></td></tr></table></figure>
+
+<p>这里有一个细节，就是得判断返回地址是不是一个断点，如果是，那就不用管，继续执行之后它自动会停在返回处；如果不是，那就要手动打断点，单步执行之后它就回停在那里，接着将断点取消，就可以了。</p>
+<h2 id="三、step-in"><a href="#三、step-in" class="headerlink" title="三、step_in()"></a>三、step_in()</h2><p>这个比较简单，假设在函数直行到：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-type">int</span> foo = <span class="hljs-number">1</span>;		&lt;-----执行在此处<br>  <span class="hljs-type">int</span> foo1 = <span class="hljs-number">1</span>;<br>  <span class="hljs-built_in">e</span>();<br>  <span class="hljs-type">int</span> foo2 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo3 = <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>那么 <strong>step_in</strong> 会继续执行，直行到 <code>e()</code> 的时候，会跳进去，我们只需要通过当前 <strong>pc</strong>来获取行号，然后单步执行，一直到行号变化为止。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::step_in</span><span class="hljs-params">()</span> </span>&#123;<br>   <span class="hljs-keyword">auto</span> line = <span class="hljs-built_in">get_line_entry_from_pc</span>(<span class="hljs-built_in">get_offset_pc</span>())-&gt;line;<br><br>   <span class="hljs-keyword">while</span> (<span class="hljs-built_in">get_line_entry_from_pc</span>(<span class="hljs-built_in">get_offset_pc</span>())-&gt;line == line) &#123;<br>      <span class="hljs-built_in">single_step_instruction_with_breakpoint_check</span>();<br>   &#125;<br><br>   <span class="hljs-keyword">auto</span> line_entry = <span class="hljs-built_in">get_line_entry_from_pc</span>(<span class="hljs-built_in">get_offset_pc</span>());<br>   <span class="hljs-built_in">print_source</span>(line_entry-&gt;file-&gt;path, line_entry-&gt;line);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">uint64_t</span> <span class="hljs-title">Debugger::get_offset_pc</span><span class="hljs-params">()</span> </span>&#123;<br>   <span class="hljs-keyword">return</span> <span class="hljs-built_in">offset_load_address</span>(<span class="hljs-built_in">get_pc</span>());<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>当行号不一样的时候，有可能进入到了一个函数，也有可能进入了本函数的下一行（本行不是函数）。之所以要用 <code>while()</code> 是因为 <code>prace()</code> 只能按照汇编指令一行一行执行，源代码一行可能对应着多行汇编指令。</p>
+<h2 id="四、step-over"><a href="#四、step-over" class="headerlink" title="四、step_over"></a>四、step_over</h2><p>step_over意味着如果下一行是一个函数，会直接运行下一行结束，而不是进入函数，并且会停在下下一行。</p>
+<blockquote>
+<p>A couple of horrible options are to keep stepping until we’re at a new line in the current function, or to set a breakpoint at every line in the current function. The former would be ridiculously inefficient if we’re stepping over a function call, as we’d need to single step through every single instruction in that call graph, so I’ll go for the second solution.</p>
+</blockquote>
+<p>这里就需要用第二个方法来解决这个问题，即在当前函数中给所有的行（除了本行）打上断点，然后 <strong>continue</strong>，那么将会停在下一个断点，也就是下下一行。这个方法很妙，当然第一种方法也不赖，它的思路是一直指令级别的 <strong>step</strong>，然后停在行数变化的那一行，这种方法的缺点是效率低。这里用第二种方法，打断点的方法。</p>
+<p>当然了，打完断点还得取消断点，这里得设计一个容器，将断点装起来，然后再取消掉。还有一个细节问题，就是如果直行到函数的最后一行，这时候就需要运行完停留在 <code>main()</code> 的 <code>f()</code> 的下一行了，因此这里还必须将 <code>f()</code> 的返回地址也打一个断点：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-type">int</span> foo = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo1 = <span class="hljs-number">1</span>;<br>  <span class="hljs-built_in">e</span>();<br>  <span class="hljs-type">int</span> foo2 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo3 = <span class="hljs-number">1</span>;		&lt;-----执行在此处<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-type">int</span> foo = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo1 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo2 = <span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> foo3 = <span class="hljs-number">1</span>;<br>  <span class="hljs-built_in">f</span>();<br>  <span class="hljs-type">int</span> foo4 = <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Debugger::step_over</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">auto</span> func = <span class="hljs-built_in">get_function_from_pc</span>(<span class="hljs-built_in">get_offset_pc</span>());<br>    <span class="hljs-keyword">auto</span> func_entry = <span class="hljs-built_in">at_low_pc</span>(func);<br>    <span class="hljs-keyword">auto</span> func_end = <span class="hljs-built_in">at_high_pc</span>(func);<br><br>    <span class="hljs-keyword">auto</span> line = <span class="hljs-built_in">get_line_entry_from_pc</span>(func_entry);<br>    <span class="hljs-keyword">auto</span> start_line = <span class="hljs-built_in">get_line_entry_from_pc</span>(<span class="hljs-built_in">get_offset_pc</span>());<br><br>    std::vector&lt;std::<span class="hljs-type">intptr_t</span>&gt; to_delete&#123;&#125;;<br><br>    <span class="hljs-keyword">while</span> (line-&gt;address &lt; func_end) &#123;<br>        <span class="hljs-keyword">auto</span> load_address = <span class="hljs-built_in">offset_dwarf_address</span>(line-&gt;address);<br>        <span class="hljs-keyword">if</span> (line-&gt;address != start_line-&gt;address &amp;&amp; !m_breakpoints.<span class="hljs-built_in">count</span>(load_address)) &#123;<br>            <span class="hljs-built_in">set_breakpoint_at_address</span>(load_address);<br>            to_delete.<span class="hljs-built_in">push_back</span>(load_address);<br>        &#125;<br>        ++line;<br>    &#125;<br>    <span class="hljs-comment">// 获取本函数的返回地址防止这是本函数的最后一行</span><br>    <span class="hljs-keyword">auto</span> frame_pointer = <span class="hljs-built_in">get_register_value</span>(m_pid, reg::rbp);<br>    <span class="hljs-keyword">auto</span> return_address = <span class="hljs-built_in">read_memory</span>(frame_pointer+<span class="hljs-number">8</span>);<br>    <span class="hljs-keyword">if</span> (!m_breakpoints.<span class="hljs-built_in">count</span>(return_address)) &#123;<br>        <span class="hljs-built_in">set_breakpoint_at_address</span>(return_address);<br>        to_delete.<span class="hljs-built_in">push_back</span>(return_address);<br>    &#125;<br><br>    <span class="hljs-built_in">continue_execution</span>();<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> addr : to_delete) &#123;<br>        <span class="hljs-built_in">remove_breakpoint</span>(addr);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C/" class="category-chain-item">C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C/debugger/" class="category-chain-item">debugger</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/" class="print-no-link">#c++</a>
+      
+        <a href="/tags/lldb/" class="print-no-link">#lldb</a>
+      
+        <a href="/tags/debugger/" class="print-no-link">#debugger</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>debugger（五）：source level stepping</div>
+      <div>http://blog.luliang.online/2024/06/11/debugger（五）：source level stepping/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/11/debugger%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9Asource%20level%20%E6%96%AD%E7%82%B9/" title="debugger（六）：source level 断点">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">debugger（六）：source level 断点</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/10/debugger%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%BA%90%E4%BB%A3%E7%A0%81/" title="debugger（四）：源代码">
+                        <span class="hidden-mobile">debugger（四）：源代码</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
