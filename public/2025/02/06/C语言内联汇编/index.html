@@ -1,0 +1,794 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/Luyoung0001/picBed/main/low.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Luyoung">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一个示例123456asm volatile(       &quot;jalr x0, 0(%0)&quot;       :       : &quot;r&quot;(jump_address)       :   );  代码片段的格式和含义分解： 这段代码使用了 GCC 扩展内联汇编的通用格式，其基本结构如下： 123456asm [volatile] (  汇编指令模板 :  &#x2F;&#x2F; 字符串，包含汇编指令和占位符  输出操">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C语言内联汇编">
+<meta property="og:url" content="http://blog.luliang.online/2025/02/06/C%E8%AF%AD%E8%A8%80%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96/index.html">
+<meta property="og:site_name" content="Luyoung">
+<meta property="og:description" content="一个示例123456asm volatile(       &quot;jalr x0, 0(%0)&quot;       :       : &quot;r&quot;(jump_address)       :   );  代码片段的格式和含义分解： 这段代码使用了 GCC 扩展内联汇编的通用格式，其基本结构如下： 123456asm [volatile] (  汇编指令模板 :  &#x2F;&#x2F; 字符串，包含汇编指令和占位符  输出操">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-02-06T09:57:27.000Z">
+<meta property="article:modified_time" content="2025-03-27T05:37:05.888Z">
+<meta property="article:author" content="Luyoung">
+<meta property="article:tag" content="C语言">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>C语言内联汇编 - Luyoung</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.luliang.online","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 65vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Luyoung</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C语言内联汇编"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-02-06 17:57" pubdate>
+          2025年2月6日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">C语言内联汇编</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <span id="more"></span>
+
+<h2 id="一个示例"><a href="#一个示例" class="headerlink" title="一个示例"></a><a href="#%E4%B8%80%E4%B8%AA%E7%A4%BA%E4%BE%8B" title="一个示例"></a>一个示例</h2><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(</span><br><span class="hljs-params">       <span class="hljs-string">"jalr x0, 0(%0)"</span></span><br><span class="hljs-params">       :</span><br><span class="hljs-params">       : <span class="hljs-string">"r"</span>(jump_address)</span><br><span class="hljs-params">       :</span><br><span class="hljs-params">   )</span>;<br></code></pre></td></tr></tbody></table>
+
+<p><strong>代码片段的格式和含义分解：</strong></p>
+<p>这段代码使用了 GCC 扩展内联汇编的通用格式，其基本结构如下：</p>
+<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">asm</span> [<span class="hljs-keyword">volatile</span>] (<br>  汇编指令模板 :  <span class="hljs-comment">// 字符串，包含汇编指令和占位符</span><br>  输出操作数列表 : <span class="hljs-comment">// 可选，指定汇编指令的输出操作数</span><br>  输入操作数列表 : <span class="hljs-comment">// 可选，指定汇编指令的输入操作数</span><br>  破坏列表        <span class="hljs-comment">// 可选，指定汇编指令可能修改的寄存器或内存</span><br>);<br></code></pre></td></tr></tbody></table>
+
+<ol>
+<li><p><strong><code>asm volatile(</code></strong></p>
+<ul>
+<li><strong><code>asm</code></strong>: 关键字，表示开始内联汇编代码块。</li>
+<li><strong><code>volatile</code></strong>: 可选关键字。使用 <code>volatile</code> 的目的是告诉编译器，这段内联汇编代码具有<strong>副作用</strong>（例如，修改了内存或影响了程序状态），<strong>不要对这段代码进行任何优化</strong>，每次调用都必须严格按照代码编写的顺序执行。在跳转指令这种场景下，通常需要使用 <code>volatile</code>，以确保跳转行为不被编译器优化掉。</li>
+</ul>
+</li>
+<li><p><strong><code>&quot;jalr x0, 0(%0)&quot;</code></strong></p>
+<ul>
+<li>这是 <strong>汇编指令模板</strong>，是一个<strong>字符串</strong>，包含了实际的 RISC-V 汇编指令。</li>
+<li><strong><code>jalr x0, 0(%0)</code></strong>: 这是 RISC-V 的 <strong>跳转指令</strong>。<ul>
+<li><strong><code>jalr</code></strong>: 指令名，表示 “Jump and Link Register”。 它会执行跳转，并将返回地址（跳转指令的下一条指令的地址）保存在指定的寄存器中，但在这里，由于目标寄存器是 <code>x0</code> (zero 寄存器)，所以实际上忽略了返回地址的保存，它只执行跳转功能。</li>
+<li><strong><code>x0</code></strong>: 目标寄存器，用于存放返回地址。 在这里被指定为 <code>x0</code>，表示<strong>不保存返回地址，只进行跳转</strong>。</li>
+<li><strong><code>0(%0)</code></strong>: 跳转目标地址的计算方式。<ul>
+<li><strong><code>%0</code></strong>: 这是一个**占位符 (Placeholder)**，用于在汇编指令模板中引用 C 语言的变量。 <code>%0</code> 表示 <strong>第一个操作数</strong> (这里的第一个操作数指的是后面 <code>输入操作数列表</code> 中的第一个操作数)。</li>
+<li><strong><code>(%0)</code></strong>: 表示 <strong>间接寻址</strong>。 它会将 <code>%0</code> 所代表的寄存器中的值，作为<strong>内存地址</strong>，并从该内存地址读取数据。</li>
+<li><strong><code>0(%0)</code> 完整含义</strong>: 表示跳转目标地址是：<strong>寄存器 <code>%0</code> 中存储的地址值 + 偏移量 0</strong>。 实际上就是直接使用寄存器 <code>%0</code> 中的值作为跳转目标地址。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>: // 输出操作数: 无</code></strong></p>
+<ul>
+<li><strong>输出操作数列表</strong>: 位于第一个冒号 <code>:</code> 之后，用于指定汇编指令的<strong>输出操作数</strong>。</li>
+<li><strong><code>:</code> 之后为空</strong>: 表示这段汇编代码 <strong>没有输出操作数</strong>，即汇编指令执行后，不会将结果值写回到 C 语言的变量中。</li>
+</ul>
+</li>
+<li><p><strong><code>: &quot;r&quot;(jump_address) // 输入操作数: jump_address (C变量) 映射到寄存器</code></strong></p>
+<ul>
+<li><strong>输入操作数列表</strong>: 位于第二个冒号 <code>:</code> 之后，用于指定汇编指令的<strong>输入操作数</strong>。</li>
+<li><strong><code>&quot;r&quot;(jump_address)</code></strong>: 指定了一个输入操作数。<ul>
+<li><strong><code>&quot;r&quot;</code></strong>: <strong>约束 (Constraint) 字符串</strong>。 <code>&quot;r&quot;</code> 约束告诉编译器，将 <code>jump_address</code> 这个 C 变量 <strong>分配到一个通用寄存器</strong> (register)。 编译器会选择一个合适的通用寄存器，并将 <code>jump_address</code> 的值加载到这个寄存器中，然后在汇编指令模板中使用 <code>%0</code> 占位符来引用这个寄存器。</li>
+<li><strong><code>(jump_address)</code></strong>: <strong>C 语言表达式</strong>。 <code>jump_address</code> 是一个 C 变量，它提供了汇编指令所需的输入值，即跳转的目标地址。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong><code>: &quot;memory&quot; // 破坏性操作: 无</code></strong></p>
+<ul>
+<li><strong>破坏列表 (Clobber List)</strong>: 位于第三个冒号 <code>:</code> 之后，用于告诉编译器，这段内联汇编代码可能会<strong>修改某些寄存器或内存位置</strong>，从而阻止编译器进行某些可能导致错误的优化。</li>
+<li><strong><code>&quot;memory&quot;</code></strong>: <strong>破坏描述符 (Clobber Descriptor)<strong>。 <code>&quot;memory&quot;</code> 告知编译器，这段内联汇编代码可能会</strong>修改内存中的数据</strong>。 即使代码中没有显式地写内存操作指令，但如果汇编代码的执行可能导致内存状态改变（例如，跳转到未知的代码区域，该区域的代码可能会修改内存），也需要使用 <code>&quot;memory&quot;</code> 来保守地告诉编译器，防止编译器做出错误的假设。 在本例中，虽然 <code>jalr</code> 指令本身不直接修改内存，但由于它是一个跳转指令，可能会跳转到任意地址的代码执行，为了安全起见，使用 <code>&quot;memory&quot;</code> 是一个好的实践。</li>
+<li><strong><code>: &quot;memory&quot;</code> 完整含义</strong>: 表示这段内联汇编代码可能会修改内存。</li>
+</ul>
+</li>
+</ol>
+<p><strong>代码功能：</strong></p>
+<p>这段内嵌汇编代码的功能是： **执行一个间接跳转 (register jump)**。 跳转的目标地址 <strong>由 C 变量 <code>jump_address</code> 的值来指定</strong>。 代码会将 <code>jump_address</code> 的值加载到一个寄存器中，然后使用 <code>jalr x0, 0(register)</code> 指令，以寄存器中的值作为目标地址进行跳转，但不保存返回地址。 由于使用了 <code>volatile</code> 和 <code>&quot;memory&quot;</code> clobber，编译器会保证这段代码被严格执行，并且不会因为优化而产生意外的行为。 这种代码通常用于需要直接控制程序流程，例如跳转到特定的地址执行某些初始化代码、处理异常、或者实现某些特殊的控制流逻辑等场景。</p>
+<hr>
+<h2 id="基本语法格式"><a href="#基本语法格式" class="headerlink" title="基本语法格式"></a><a href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F" title="基本语法格式"></a>基本语法格式</h2><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">asm</span> [<span class="hljs-keyword">volatile</span>] (<br>  <span class="hljs-string">"assembly code template"</span><br>  : [output operands]<br>  : [input operands]<br>  : [clobber <span class="hljs-built_in">list</span>]<br>);<br></code></pre></td></tr></tbody></table>
+
+<ul>
+<li><strong><code>asm</code></strong>: 关键字，开始内联汇编块。</li>
+<li><strong><code>[volatile]</code></strong>: 可选，<code>volatile</code> 关键字告知编译器不要优化这段汇编代码。</li>
+<li><strong><code>&quot;assembly code template&quot;</code></strong>: 汇编指令字符串，可以包含多条指令，指令之间用分号 <code>;</code> 或换行符 <code>\n</code> 分隔。 可以使用占位符 <code>%0</code>, <code>%1</code>, <code>%2</code>… 引用操作数。</li>
+<li><strong><code>: [output operands]</code></strong>: 可选，输出操作数列表。 每个输出操作数形如 <code>&quot;[约束](C 变量)&quot;</code>，多个操作数用逗号 <code>,</code> 分隔。</li>
+<li><strong><code>: [input operands]</code></strong>: 可选，输入操作数列表。 每个输入操作数形如 <code>&quot;[约束](C 表达式)&quot;</code>，多个操作数用逗号 <code>,</code> 分隔。</li>
+<li><strong><code>: [clobber list]</code></strong>: 可选，破坏列表。 用双引号 <code>&quot; &quot;</code> 括起来的寄存器名或特殊符号（如 <code>&quot;memory&quot;</code>），多个破坏描述符用逗号 <code>,</code> 分隔。</li>
+</ul>
+<h2 id="操作数和约束-Operands-and-Constraints"><a href="#操作数和约束-Operands-and-Constraints" class="headerlink" title="操作数和约束 (Operands and Constraints)"></a><a href="#%E6%93%8D%E4%BD%9C%E6%95%B0%E5%92%8C%E7%BA%A6%E6%9D%9F-Operands-and-Constraints" title="操作数和约束 (Operands and Constraints)"></a>操作数和约束 (Operands and Constraints)</h2><p>操作数用于在 C 代码和汇编代码之间传递数据。 约束字符串用于指定操作数的类型和位置 (寄存器、内存等)。</p>
+<p><strong>常用约束 (RISC-V GCC 常用约束，更完整的约束列表请查阅 GCC RISC-V 扩展文档):</strong></p>
+<ul>
+<li><strong><code>r</code></strong>: 通用寄存器 (General-purpose register)。 编译器会为操作数分配一个合适的通用寄存器 (例如 <code>x1</code> - <code>x31</code>)。</li>
+<li><strong><code>i</code></strong>: 立即数 (immediate value)。 操作数是一个编译时可知的立即数 (整数常量)。</li>
+<li><strong><code>f</code></strong>: 浮点寄存器 (Floating-point register) (用于浮点操作)。 RISC-V 32 位架构中，通常使用扩展指令集 ‘F’ 或 ‘D’ 支持浮点运算。</li>
+<li><strong><code>m</code></strong>: 内存操作数 (memory operand)。 操作数是一个内存地址。</li>
+<li><strong><code>I</code></strong>: 0-31 范围内的立即数 (适用于移位指令的移位量)。</li>
+</ul>
+<p><strong>操作数占位符:</strong></p>
+<ul>
+<li>在汇编指令模板中，使用 <code>%0</code>, <code>%1</code>, <code>%2</code>… 来引用操作数。</li>
+<li><code>%0</code> 对应第一个操作数，<code>%1</code> 对应第二个操作数，以此类推。</li>
+<li>输出操作数从 <code>%0</code> 开始编号，输入操作数从输出操作数之后继续编号。 例如，如果有一个输出操作数，那么第一个输入操作数就是 <code>%1</code>。</li>
+<li>在 RISC-V 汇编中，寄存器通常用 <code>x0</code>, <code>x1</code>, <code>x2</code>… 表示，而在内联汇编的操作数中，我们使用占位符 <code>%0</code>, <code>%1</code>… ，编译器会负责将这些占位符替换为实际分配的寄存器或立即数。</li>
+</ul>
+<h2 id="破坏列表-Clobber-List"><a href="#破坏列表-Clobber-List" class="headerlink" title="破坏列表 (Clobber List)"></a><a href="#%E7%A0%B4%E5%9D%8F%E5%88%97%E8%A1%A8-Clobber-List" title="破坏列表 (Clobber List)"></a>破坏列表 (Clobber List)</h2><ul>
+<li>破坏列表用于告知编译器，内联汇编代码可能会修改某些资源，从而影响编译器的优化决策。</li>
+<li><strong>常用破坏描述符:</strong><ul>
+<li><strong>寄存器名 (例如 <code>&quot;x1&quot;</code>, <code>&quot;x5&quot;</code>, <code>&quot;x10&quot;</code>)</strong>: 表示汇编代码可能会修改指定的寄存器。 如果汇编代码显式地修改了某个寄存器，或者依赖于某个寄存器的值，就应该将其添加到破坏列表中。</li>
+<li><strong><code>&quot;memory&quot;</code></strong>: 表示汇编代码可能会修改内存。 当汇编代码访问了内存（例如，通过 <code>lw</code> 或 <code>sw</code> 指令，或者像 <code>jalr</code> 这样的跳转指令可能执行未知的内存操作），就应该使用 <code>&quot;memory&quot;</code>。</li>
+<li><strong><code>&quot;cc&quot;</code></strong>: 表示汇编代码可能会修改条件码寄存器 (Condition Code register, RISC-V 中条件码隐含在比较指令和分支指令中，通常不需要显式 clobber “cc”)。</li>
+</ul>
+</li>
+</ul>
+<h2 id="简单示例教程-RISC-V-32"><a href="#简单示例教程-RISC-V-32" class="headerlink" title="简单示例教程 (RISC-V 32)"></a><a href="#%E7%AE%80%E5%8D%95%E7%A4%BA%E4%BE%8B%E6%95%99%E7%A8%8B-RISC-V-32" title="简单示例教程 (RISC-V 32)"></a>简单示例教程 (RISC-V 32)</h2><p><strong>示例 1: 将立即数加载到寄存器</strong></p>
+<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><p><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-type">int</span> value;<br>  <span class="hljs-keyword">asm</span> (<br>    <span class="hljs-string">"li %0, 100"</span>   <span class="hljs-comment">// RISC-V: li (load immediate) 指令，将 100 加载到寄存器</span><br>    : <span class="hljs-string">"=r"</span>(value)  <span class="hljs-comment">// 输出操作数: value (C变量) 映射到寄存器，使用 "=r" 表示输出，且分配寄存器</span><br>    :              <span class="hljs-comment">// 输入操作数: 无</span><br>    :              <span class="hljs-comment">// 破坏列表: 无</span><br>  );<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Value: %d\n"</span>, value); <span class="hljs-comment">// 输出 value 的值，应该是 100</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;</p></code></pre></td></tr></tbody></table>
+
+<ul>
+<li><strong><code>&quot;li %0, 100&quot;</code></strong>: 汇编指令模板，<code>li</code> (load immediate) 指令将立即数 100 加载到寄存器 <code>%0</code>。</li>
+<li><strong><code>&quot;=r&quot;(value)</code></strong>: 输出操作数。<ul>
+<li><strong><code>=r</code></strong>: 约束字符串。 <code>=</code> 表示输出操作数 (write-only)，<code>r</code> 表示分配通用寄存器。</li>
+<li><strong>(value)</strong>: C 变量 <code>value</code>，汇编指令的执行结果将存储到这个变量中。</li>
+</ul>
+</li>
+<li><strong>输出</strong>: 程序会输出 “Value: 100”。</li>
+</ul>
+<p><strong>示例 2: 寄存器加法</strong></p>
+<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><p><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-type">int</span> a = <span class="hljs-number">5</span>, b = <span class="hljs-number">10</span>, sum;<br>  <span class="hljs-keyword">asm</span> (<br>    <span class="hljs-string">"add %0, %1, %2"</span>  <span class="hljs-comment">// RISC-V: add 指令，将 %1 和 %2 相加，结果存入 %0</span><br>    : <span class="hljs-string">"=r"</span>(sum)       <span class="hljs-comment">// 输出操作数: sum (C变量)，分配寄存器，结果写入 sum</span><br>    : <span class="hljs-string">"r"</span>(a), <span class="hljs-string">"r"</span>(b)  <span class="hljs-comment">// 输入操作数: a 和 b (C变量)，分配寄存器，作为加法指令的输入</span><br>    :                 <span class="hljs-comment">// 破坏列表: 无</span><br>  );<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Sum: %d\n"</span>, sum); <span class="hljs-comment">// 输出 sum 的值，应该是 15</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;</p></code></pre></td></tr></tbody></table>
+
+<ul>
+<li><strong><code>&quot;add %0, %1, %2&quot;</code></strong>: RISC-V <code>add</code> 指令，将寄存器 <code>%1</code> 和 <code>%2</code> 的值相加，结果存入寄存器 <code>%0</code>。</li>
+<li><strong><code>&quot;=r&quot;(sum)</code></strong>: 输出操作数，结果写入 C 变量 <code>sum</code>。</li>
+<li><strong><code>&quot;r&quot;(a), &quot;r&quot;(b)</code></strong>: 输入操作数，C 变量 <code>a</code> 和 <code>b</code> 的值作为加法指令的输入。</li>
+<li><strong>输出</strong>: 程序会输出 “Sum: 15”。</li>
+</ul>
+<p><strong>示例 3: 内存加载 (Load Word) 和破坏列表</strong></p>
+<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><p><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-type">int</span> data_in_memory = <span class="hljs-number">0x12345678</span>;<br>  <span class="hljs-type">int</span> loaded_value;<br>  <span class="hljs-type">int</span> *addr_ptr = &amp;data_in_memory;</p><p>  <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span> <span class="hljs-params">(</span><br><span class="hljs-params">    <span class="hljs-string">"lw %0, (%1)"</span>     <span class="hljs-comment">// RISC-V: lw (load word) 指令，从地址 (%1) 加载一个字到 %0</span></span><br><span class="hljs-params">    : <span class="hljs-string">"=r"</span>(loaded_value) <span class="hljs-comment">// 输出操作数: loaded_value (C变量)</span></span><br><span class="hljs-params">    : <span class="hljs-string">"r"</span>(addr_ptr)     <span class="hljs-comment">// 输入操作数: addr_ptr (C变量，指向内存地址)</span></span><br><span class="hljs-params">    : <span class="hljs-string">"memory"</span>         <span class="hljs-comment">// 破坏列表: "memory"，表示汇编代码可能会访问内存</span></span><br><span class="hljs-params">  )</span>;</p><p>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Loaded value: 0x%x\n"</span>, loaded_value); <span class="hljs-comment">// 输出从内存加载的值，应该是 0x12345678</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;</p></code></pre></td></tr></tbody></table>
+
+<ul>
+<li><strong><code>&quot;lw %0, (%1)&quot;</code></strong>: RISC-V <code>lw</code> (load word) 指令，从内存地址 <code>(%1)</code> 加载一个 32 位字到寄存器 <code>%0</code>。</li>
+<li><strong><code>&quot;=r&quot;(loaded_value)</code></strong>: 输出操作数，加载的值存入 <code>loaded_value</code>。</li>
+<li><strong><code>&quot;r&quot;(addr_ptr)</code></strong>: 输入操作数，C 指针变量 <code>addr_ptr</code> (包含内存地址) 作为加载指令的地址来源。</li>
+<li><strong><code>&quot;memory&quot;</code></strong>: 破坏列表，因为 <code>lw</code> 指令会从内存中读取数据，因此使用 <code>&quot;memory&quot;</code> 是必要的，尽管本例中并没有 <em>修改</em> 内存，但 <code>lw</code> 指令的内存访问也可能影响编译器的优化假设。</li>
+<li><strong>输出</strong>: 程序会输出 “Loaded value: 0x12345678”。</li>
+</ul>
+<p>C 语言内联汇编提供了一种在 C 代码中直接编写汇编指令的方式，可以实现一些用纯 C 代码难以或无法完成的底层操作和优化。 掌握内联汇编的关键在于理解其语法格式、操作数约束、破坏列表，并结合具体的处理器架构（如 RISC-V）的汇编指令集进行实践。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B1%87%E7%BC%96/" class="category-chain-item">汇编</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C%E8%AF%AD%E8%A8%80/" class="print-no-link">#C语言</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C语言内联汇编</div>
+      <div>http://blog.luliang.online/2025/02/06/C语言内联汇编/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Luyoung</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年2月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/02/09/%E5%AF%B9%20SPI%E3%80%81FLASH%20%E7%9A%84%E6%80%9D%E8%80%83/" title="对 SPI、FLASH 的思考">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">对 SPI、FLASH 的思考</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/01/16/docker%20%E5%8A%A0%E9%80%9F%E6%9C%80%E4%BD%B3%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="docker 加速最佳解决方案">
+                        <span class="hidden-mobile">docker 加速最佳解决方案</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

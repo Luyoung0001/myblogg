@@ -222,23 +222,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/21/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第八章）">
+        <a href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="C++：返回值优化">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/12/21/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%89/" target="_self">
-          MIT 6.S081学习笔记（第八章）
+        <a href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" target="_self">
+          C++：返回值优化
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2023/12/21/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%89/" target="_self">
+      <a class="index-excerpt " href="/2024/04/17/C++%EF%BC%9A%E8%BF%94%E5%9B%9E%E5%80%BC%E4%BC%98%E5%8C%96/" target="_self">
         <div>
-          〇、前言本文主要完成MIT 6.S081 实验八：file system开始之前，切换分支： 123$ git fetch$ git checkout fs$ make clean  Large files (moderate) The format of an on-disk inode is defined by struct dinode in fs.h. You’re particul
+          正文对于返回一个对象的函数，它在返回后前，应该在栈外用复制构造函数创建一个临时对象t2，然后返回 t1，随后 t1 在栈内被析构掉，t2 被传回。如下： 1234567891011121314151617181920212223242526272829303132333435363738394041424344#include &lt;iostream&gt;#include &lt;stri
         </div>
       </a>
 
@@ -246,8 +246,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-21 19:22" pubdate>
-              2023-12-21
+            <time datetime="2024-04-17 19:25" pubdate>
+              2024-04-17
             </time>
           </div>
         
@@ -262,7 +262,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  <a href="/categories/C/" class="category-chain-item">C++</a>
   
   
 
@@ -277,168 +277,80 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
-            
-              <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/20/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 文件系统面临的问题">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/20/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
-          xv6 文件系统面临的问题
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/20/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
-        <div>
-          〇、前言本文将讨论 xv6 文件系统面临的挑战。 一、xv6 文件系统面临的挑战1、cache eviction在这个情景中，假设正在进行的事务（transaction）导致了对第 45 块（block 45）的更新。但在这个过程中，缓冲池已经被填满了，所以需要撤回第 45 块。这个撤回操作意味着将第 45 块写回磁盘。然而，这里存在的问题是：如果写回磁盘后发生了系统崩溃，会破坏被称为”wri
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-20 15:47" pubdate>
-              2023-12-20
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/OS/">#OS</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/19/%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%97%A5%E5%BF%97%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88C%E8%AF%AD%E8%A8%80%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="实现个人日志命令行工具（C语言）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/19/%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%97%A5%E5%BF%97%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88C%E8%AF%AD%E8%A8%80%EF%BC%89/" target="_self">
-          实现个人日志命令行工具（C语言）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/19/%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%97%A5%E5%BF%97%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88C%E8%AF%AD%E8%A8%80%EF%BC%89/" target="_self">
-        <div>
-          〇、前言中午上课的时候，打开 github 看了一下个人主页，虽然最近很忙，但是这个活动记录有点过于冷清：于是我就想着写一个日志命令行工具，输入以下命令就能将我的日志立即同步到 github 上： 1mylog today is really a long day! 之后 today is really a long day!  这句话就会被同步到 github 上的今天的文件中了。 一、思路
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-19 16:43" pubdate>
-              2023-12-19
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C%E8%AF%AD%E8%A8%80/" class="category-chain-item">C语言</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
+              <a href="/tags/c/">#c++</a>
             
               <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#开发语言</a>
             
-              <a href="/tags/c%E8%AF%AD%E8%A8%80/">#c语言</a>
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="C++：异常处理">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
+          C++：异常处理
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/04/17/C++%EF%BC%9A%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" target="_self">
+        <div>
+          异常处理中对象参数与引用参数的选择User：  catch()中的参数如果使用基类的引用，是不是相当于声明了一个引用，它是基类类型的，catch 到 throw的抛出的对象之后，就相当于这个基类引用指向了抛出的对象？  ChatGPT：  是的，你说得很对。当在 catch 块中使用基类的引用作为参数时，相当于声明了一个引用，它是基类类型的。当程序抛出一个异常并且在调用栈中找到匹配的 catc
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-04-17 18:01" pubdate>
+              2024-04-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
             
-              <a href="/tags/%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7/">#命令行工具</a>
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">#个人记录</a>
+              <a href="/tags/c/">#c++</a>
+            
+              <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#开发语言</a>
+            
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">#学习笔记</a>
             
           </div>
         
@@ -450,23 +362,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 文件系统（下）">
+        <a href="/2024/04/11/C++%EF%BC%9A%E5%BC%83%E5%80%BC%E8%A1%A8%E8%BE%BE%E5%BC%8F/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="C++：弃值表达式">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-          xv6 文件系统（下）
+        <a href="/2024/04/11/C++%EF%BC%9A%E5%BC%83%E5%80%BC%E8%A1%A8%E8%BE%BE%E5%BC%8F/" target="_self">
+          C++：弃值表达式
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+      <a class="index-excerpt " href="/2024/04/11/C++%EF%BC%9A%E5%BC%83%E5%80%BC%E8%A1%A8%E8%BE%BE%E5%BC%8F/" target="_self">
         <div>
-          〇、前言计算机崩溃后如何恢复，是一个很重要的话题。对于内存中的数据无关痛痒，开机后重新载入就能解决问题；但是对于持久化存储设备，当你尝试修改一个文件，突然断电当你重新打开文件后，这个文件的状态是否正确，是一个问题。 我们讨论文件的状态是否正确，是指文件系统对于这个文件是否运行正常，比如 entry 中的 inode 信息是否与用户期望的一致，比如 size 字段是否正确等。 因此，如何从崩溃中
+          正文有时候需要利用某些表达式的副作用来实现某些目的： 12345678910#include &lt;iostream&gt;template &lt;typename... Args&gt;void print(const Args &amp;...args) &#123;    Arr&#123;0,(std::cout &lt;&lt; args&lt;&lt; &#x27; &#x27
         </div>
       </a>
 
@@ -474,8 +386,75 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-18 22:43" pubdate>
-              2023-12-18
+            <time datetime="2024-04-11 20:41" pubdate>
+              2024-04-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/c/">#c++</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/03/31/%E5%85%B3%E4%BA%8E%E4%B8%80%E7%AF%87%E7%9F%A5%E4%B9%8E%E7%AD%94%E6%A1%88%E7%9A%84%E9%87%8D%E7%8E%B0/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="关于一篇知乎答案的重现">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/03/31/%E5%85%B3%E4%BA%8E%E4%B8%80%E7%AF%87%E7%9F%A5%E4%B9%8E%E7%AD%94%E6%A1%88%E7%9A%84%E9%87%8D%E7%8E%B0/" target="_self">
+          关于一篇知乎答案的重现
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/03/31/%E5%85%B3%E4%BA%8E%E4%B8%80%E7%AF%87%E7%9F%A5%E4%B9%8E%E7%AD%94%E6%A1%88%E7%9A%84%E9%87%8D%E7%8E%B0/" target="_self">
+        <div>
+          〇、前言早上在逛知乎的时候，瞥见了一篇答案：如何通俗解释Docker是什么？感觉很不错，然后就耐着性子看了下，并重现了作者的整个过程。但是并不顺利，记载一下这些坑。嫌麻烦的话可以直接clone 研究，git仓库。 一、构建 ubuntu 文件系统具体可以看这篇文章：**Ubuntu Base构建根文件系统**。 主要步骤就是： 下载镜像 ubuntu-base-20.04.1-base-arm
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-03-31 17:20" pubdate>
+              2024-03-31
             </time>
           </div>
         
@@ -493,6 +472,20 @@
   <a href="/categories/OS/" class="category-chain-item">OS</a>
   
   
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/Unix-Linux/" class="category-chain-item">Unix/Linux</a>
+  
+  
+
+  
+
+  
 
       </span>
     
@@ -505,13 +498,11 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+              <a href="/tags/docker/">#docker</a>
             
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+              <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">#系统编程</a>
             
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/OS/">#OS</a>
+              <a href="/tags/tips/">#tips</a>
             
           </div>
         
@@ -523,23 +514,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 文件系统（上）">
+        <a href="/2023/12/31/2023%20%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="2023 个人总结">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
-          xv6 文件系统（上）
+        <a href="/2023/12/31/2023%20%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" target="_self">
+          2023 个人总结
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+      <a class="index-excerpt " href="/2023/12/31/2023%20%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" target="_self">
         <div>
-          〇、前言本文将会结合 xv6 源码讨论文件系统的工作原理。 一、文件系统实现概述 xv6 文件系统可以用下面的图来表示： 按照分层的方式进行理解：  在最底层是磁盘，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。 在这之上是buffer cache或者说 block cache，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。 为了保证持久性，再往
+          〇、前言这一年是成长的一年，记录一些感悟。这里没有吃吃喝喝与娱乐休闲，主要是对自己过去的总结、反思以及对未来的展望。 一、学习这一年经过了两个学期，分别是大一下以及大二上。 大一下，认真学习了学校开的《离散数学》、《线性代数》、《高等数学》，并且取得了不错的成绩。也杂七杂八地在课外学了一些其它的知识，比如 python 爬虫、Golang 爬虫、一些 web 基础知识、一点系统编程、多线程、协
         </div>
       </a>
 
@@ -547,8 +538,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-18 17:00" pubdate>
-              2023-12-18
+            <time datetime="2023-12-31 17:57" pubdate>
+              2023-12-31
             </time>
           </div>
         
@@ -563,7 +554,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  <a href="/categories/Personal-Summary/" class="category-chain-item">Personal_Summary</a>
   
   
 
@@ -578,13 +569,7 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/OS/">#OS</a>
+              <a href="/tags/%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">#个人总结</a>
             
           </div>
         
@@ -596,23 +581,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第七章）">
+        <a href="/2023/12/24/mit6.s081%E3%80%90%E7%9B%AE%E5%BD%95%E3%80%91/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="mit6.s081【目录】">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" target="_self">
-          MIT 6.S081学习笔记（第七章）
+        <a href="/2023/12/24/mit6.s081%E3%80%90%E7%9B%AE%E5%BD%95%E3%80%91/" target="_self">
+          mit6.s081【目录】
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" target="_self">
+      <a class="index-excerpt " href="/2023/12/24/mit6.s081%E3%80%90%E7%9B%AE%E5%BD%95%E3%80%91/" target="_self">
         <div>
-          〇、前言本文主要完成MIT 6.S081 实验七：locks。开始之前，切换分支： 123$ git fetch$ git checkout lock$ make clean  一、Memory allocator (moderate)Question requirements The program user&#x2F;kalloctest stresses xv6’s memory all
+          〇、前言现在是 2023 年 12 月 24 日，我终于完成了 mit6.s081课程的学习，期间读完了xv6book、OSTEP、xv6 部分内核源码，也写了 近 20 篇的博客，可以说是学习之旅收获颇丰。本文将会起一个目录，方便查找和阅读。 一、Lab:目录[mit6.s081] 笔记 Lab10: Networking | 网络 [mit6.s081] 笔记 Lab9: Mmap | 文
         </div>
       </a>
 
@@ -620,227 +605,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-13 23:37" pubdate>
-              2023-12-13
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/11/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 中的一些系统调用（下）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/11/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-          xv6 中的一些系统调用（下）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/11/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-        <div>
-          〇、前言本文将会结合源代码谈论 sleep、wakeup 这两个系统调用。 一、sleep()系统调用以下是sleep()函数源码： 123456789101112131415161718192021222324252627282930// Atomically release lock and sleep on chan.// Reacquires lock when awakened.vo
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-11 14:47" pubdate>
-              2023-12-11
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/OS/">#OS</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 中的一些系统调用（上）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
-          xv6 中的一些系统调用（上）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
-        <div>
-          〇、前言本文将会结合源代码谈论 exit、wait、kill 这三个系统调用。 一、exit 系统调用以下是 exit()的源码： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647// Exit the current process.  Does not return./
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-10 23:02" pubdate>
-              2023-12-10
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/OS/">#OS</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第六章）（下）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-          MIT 6.S081学习笔记（第六章）（下）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
-        <div>
-          〇、前言MIT 6.S081 实验六：Multithreading；开始之前，切换分支： 123$ git fetch $ git checkout thread $ make clean  一、实验：MultithreadingUthread: switching between threads (moderate) In this exercise you will design the
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-08 09:04" pubdate>
-              2023-12-08
+            <time datetime="2023-12-24 19:08" pubdate>
+              2023-12-24
             </time>
           </div>
         
@@ -892,8 +658,6 @@
             
               <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
             
-              <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>
-            
           </div>
         
       </div>
@@ -904,23 +668,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第六章）（上）">
+        <a href="/2023/12/24/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%8D%81%E7%AB%A0%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第十章）">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/12/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
-          MIT 6.S081学习笔记（第六章）（上）
+        <a href="/2023/12/24/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%8D%81%E7%AB%A0%EF%BC%89/" target="_self">
+          MIT 6.S081学习笔记（第十章）
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2023/12/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+      <a class="index-excerpt " href="/2023/12/24/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%8D%81%E7%AB%A0%EF%BC%89/" target="_self">
         <div>
-          〇、前言本文主要完成：  MIT 6.S081 实验六：Multithreading；开始之前，切换分支：  123$ git fetch$ git checkout thread$ make clean  对知识的回顾。  一、线程1、线程概述为什么需要线程？为了提升性能，单核性能已经很难提升，CPU 的频率几乎已经提升不了多少了，但是可以通过提升CPU 计算单元数来提高算力。 123456
+          〇、前言本文主要完成 MIT 6.S081 实验 net 。开始之前，切换分支： 123$ git fetch$ git checkout net$ make clean  Lab: networking（hard）Question requirements Your job is to complete e1000_transmit() and e1000_recv(), both in k
         </div>
       </a>
 
@@ -928,8 +692,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-07 22:52" pubdate>
-              2023-12-07
+            <time datetime="2023-12-24 18:41" pubdate>
+              2023-12-24
             </time>
           </div>
         
@@ -946,20 +710,6 @@
         
   <a href="/categories/OS/" class="category-chain-item">OS</a>
   
-  
-    <span>></span>
-    
-  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/Unix-Linux/" class="category-chain-item">Unix/Linux</a>
-  
-  
-
-  
-
   
 
       </span>
@@ -982,6 +732,223 @@
               <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
             
               <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/23/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B9%9D%E7%AB%A0%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第九章）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/23/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B9%9D%E7%AB%A0%EF%BC%89/" target="_self">
+          MIT 6.S081学习笔记（第九章）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/23/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B9%9D%E7%AB%A0%EF%BC%89/" target="_self">
+        <div>
+          〇、前言本文主要完成 MIT 6.S081 实验  mmap 。开始之前，切换分支： 123$ git fetch$ git checkout mmap$ make clean  Lab: mmap (hard)Question requirements The mmap and munmap system calls allow UNIX programs to exert detailed
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-23 22:22" pubdate>
+              2023-12-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/23/Shell%20Tools%20of%20Missing%20Semester%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="Shell Tools of Missing Semester（二）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/23/Shell%20Tools%20of%20Missing%20Semester%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_self">
+          Shell Tools of Missing Semester（二）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/23/Shell%20Tools%20of%20Missing%20Semester%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_self">
+        <div>
+          Shell toolsshell 脚本Bash中的字符串通过 &#39; 和 &quot; 分隔符来定义，但是它们的含义并不相同。以 &#39; 定义的字符串为原义字符串，其中的变量不会被转义，而 &quot; 定义的字符串会将变量值进行替换。 12345foo=barecho &quot;$foo&quot;# 打印 barecho &#x27;$foo&#x27;# 打印 $foo  ba
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-23 14:28" pubdate>
+              2023-12-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Missing-Semester/" class="category-chain-item">Missing Semester</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/bash/">#bash</a>
+            
+              <a href="/tags/%E8%84%9A%E6%9C%AC/">#脚本</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="Course Shell of Missing Semester（一）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+          Course Shell of Missing Semester（一）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/22/Course%20Shell%20of%20Missing%20Semester%EF%BC%88%E4%B8%80%EF%BC%89/" target="_self">
+        <div>
+          〇、前言本文是 The Missing Semester of Your CS Education 课程的课后题答案，课程网站点击这里，以后系列文章不再描述前言。 本文实验环境：阿里云Ubuntu 22.04 Course shell1、本课程需要使用类Unix shell，例如 Bash 或 ZSH。如果您在 Linux 或者 MacOS 上面完成本课程的练习，则不需要做任何特殊的操作。如果
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-22 21:42" pubdate>
+              2023-12-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Missing-Semester/" class="category-chain-item">Missing Semester</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Shell/">#Shell</a>
+            
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
             
           </div>
         
@@ -993,7 +960,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/10/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/#board">9</a><a class="page-number" href="/page/10/#board">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/#board">12</a><a class="page-number" href="/page/13/#board">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/#board">19</a><a class="extend next" rel="next" href="/page/12/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/page/10/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/#board">9</a><a class="page-number" href="/page/10/#board">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/#board">12</a><a class="page-number" href="/page/13/#board">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/#board">20</a><a class="extend next" rel="next" href="/page/12/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

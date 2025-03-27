@@ -222,23 +222,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/06/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第五章）">
+        <a href="/2023/12/21/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第八章）">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/12/06/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%89/" target="_self">
-          MIT 6.S081学习笔记（第五章）
+        <a href="/2023/12/21/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%89/" target="_self">
+          MIT 6.S081学习笔记（第八章）
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2023/12/06/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%89/" target="_self">
+      <a class="index-excerpt " href="/2023/12/21/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%89/" target="_self">
         <div>
-          〇、前言本文主要完成MIT 6.S081 实验五：Copy-on-Write Fork for xv6。开始之前，切换分支： 123$ git fetch$ git checkout cow$ make clean 一、问题Question requirements The fork() system call in xv6 copies all of the parent process’s
+          〇、前言本文主要完成MIT 6.S081 实验八：file system开始之前，切换分支： 123$ git fetch$ git checkout fs$ make clean  Large files (moderate) The format of an on-disk inode is defined by struct dinode in fs.h. You’re particul
         </div>
       </a>
 
@@ -246,8 +246,601 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-06 11:33" pubdate>
-              2023-12-06
+            <time datetime="2023-12-21 19:22" pubdate>
+              2023-12-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
+            
+              <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/20/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 文件系统面临的问题">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/20/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
+          xv6 文件系统面临的问题
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/20/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98/" target="_self">
+        <div>
+          〇、前言本文将讨论 xv6 文件系统面临的挑战。 一、xv6 文件系统面临的挑战1、cache eviction在这个情景中，假设正在进行的事务（transaction）导致了对第 45 块（block 45）的更新。但在这个过程中，缓冲池已经被填满了，所以需要撤回第 45 块。这个撤回操作意味着将第 45 块写回磁盘。然而，这里存在的问题是：如果写回磁盘后发生了系统崩溃，会破坏被称为”wri
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-20 15:47" pubdate>
+              2023-12-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/xv6/">#xv6</a>
+            
+              <a href="/tags/OS/">#OS</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/19/%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%97%A5%E5%BF%97%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88C%E8%AF%AD%E8%A8%80%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="实现个人日志命令行工具（C语言）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/19/%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%97%A5%E5%BF%97%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88C%E8%AF%AD%E8%A8%80%EF%BC%89/" target="_self">
+          实现个人日志命令行工具（C语言）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/19/%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%97%A5%E5%BF%97%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%EF%BC%88C%E8%AF%AD%E8%A8%80%EF%BC%89/" target="_self">
+        <div>
+          〇、前言中午上课的时候，打开 github 看了一下个人主页，虽然最近很忙，但是这个活动记录有点过于冷清：于是我就想着写一个日志命令行工具，输入以下命令就能将我的日志立即同步到 github 上： 1mylog today is really a long day! 之后 today is really a long day!  这句话就会被同步到 github 上的今天的文件中了。 一、思路
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-19 16:43" pubdate>
+              2023-12-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/C%E8%AF%AD%E8%A8%80/" class="category-chain-item">C语言</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80/">#开发语言</a>
+            
+              <a href="/tags/c%E8%AF%AD%E8%A8%80/">#c语言</a>
+            
+              <a href="/tags/%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7/">#命令行工具</a>
+            
+              <a href="/tags/%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95/">#个人记录</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 文件系统（下）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+          xv6 文件系统（下）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+        <div>
+          〇、前言计算机崩溃后如何恢复，是一个很重要的话题。对于内存中的数据无关痛痒，开机后重新载入就能解决问题；但是对于持久化存储设备，当你尝试修改一个文件，突然断电当你重新打开文件后，这个文件的状态是否正确，是一个问题。 我们讨论文件的状态是否正确，是指文件系统对于这个文件是否运行正常，比如 entry 中的 inode 信息是否与用户期望的一致，比如 size 字段是否正确等。 因此，如何从崩溃中
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-18 22:43" pubdate>
+              2023-12-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/xv6/">#xv6</a>
+            
+              <a href="/tags/OS/">#OS</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 文件系统（上）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+          xv6 文件系统（上）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/18/xv6%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+        <div>
+          〇、前言本文将会结合 xv6 源码讨论文件系统的工作原理。 一、文件系统实现概述 xv6 文件系统可以用下面的图来表示： 按照分层的方式进行理解：  在最底层是磁盘，也就是一些实际保存数据的存储设备，正是这些设备提供了持久化存储。 在这之上是buffer cache或者说 block cache，这些cache可以避免频繁的读写磁盘。这里我们将磁盘中的数据保存在了内存中。 为了保证持久性，再往
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-18 17:00" pubdate>
+              2023-12-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/xv6/">#xv6</a>
+            
+              <a href="/tags/OS/">#OS</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第七章）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" target="_self">
+          MIT 6.S081学习笔记（第七章）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/13/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%89/" target="_self">
+        <div>
+          〇、前言本文主要完成MIT 6.S081 实验七：locks。开始之前，切换分支： 123$ git fetch$ git checkout lock$ make clean  一、Memory allocator (moderate)Question requirements The program user&#x2F;kalloctest stresses xv6’s memory all
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-13 23:37" pubdate>
+              2023-12-13
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/11/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 中的一些系统调用（下）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/11/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+          xv6 中的一些系统调用（下）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/11/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+        <div>
+          〇、前言本文将会结合源代码谈论 sleep、wakeup 这两个系统调用。 一、sleep()系统调用以下是sleep()函数源码： 123456789101112131415161718192021222324252627282930// Atomically release lock and sleep on chan.// Reacquires lock when awakened.vo
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-11 14:47" pubdate>
+              2023-12-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/xv6/">#xv6</a>
+            
+              <a href="/tags/OS/">#OS</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 中的一些系统调用（上）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+          xv6 中的一些系统调用（上）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/10/xv6%20%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+        <div>
+          〇、前言本文将会结合源代码谈论 exit、wait、kill 这三个系统调用。 一、exit 系统调用以下是 exit()的源码： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647// Exit the current process.  Does not return./
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-10 23:02" pubdate>
+              2023-12-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
+            
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+            
+              <a href="/tags/xv6/">#xv6</a>
+            
+              <a href="/tags/OS/">#OS</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第六章）（下）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+          MIT 6.S081学习笔记（第六章）（下）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/08/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8B%EF%BC%89/" target="_self">
+        <div>
+          〇、前言MIT 6.S081 实验六：Multithreading；开始之前，切换分支： 123$ git fetch $ git checkout thread $ make clean  一、实验：MultithreadingUthread: switching between threads (moderate) In this exercise you will design the
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-08 09:04" pubdate>
+              2023-12-08
             </time>
           </div>
         
@@ -299,6 +892,8 @@
             
               <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
             
+              <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>
+            
           </div>
         
       </div>
@@ -309,23 +904,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/04/xv6%20book%20Chapter7%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 book Chapter7 中文翻译">
+        <a href="/2023/12/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第六章）（上）">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/12/04/xv6%20book%20Chapter7%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          xv6 book Chapter7 中文翻译
+        <a href="/2023/12/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
+          MIT 6.S081学习笔记（第六章）（上）
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2023/12/04/xv6%20book%20Chapter7%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
+      <a class="index-excerpt " href="/2023/12/07/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%89%EF%BC%88%E4%B8%8A%EF%BC%89/" target="_self">
         <div>
-          〇、前言本文是 xv6 book 第七章的翻译，以下将开始翻译。 一、（翻译）第七章 调度任何操作系统可能会运行比计算机 CPU 数量更多的进程，因此需要一个计划来在这些进程之间进行 CPU 的时间共享。理想情况下，共享对于用户进程应该是透明的。常见的方法是通过将进程复用到硬件 CPU 上，为每个进程提供其拥有独立虚拟 CPU 的假象。本章将解释 xv6 如何实现这种复用。 7.1 复用xv6
+          〇、前言本文主要完成：  MIT 6.S081 实验六：Multithreading；开始之前，切换分支：  123$ git fetch$ git checkout thread$ make clean  对知识的回顾。  一、线程1、线程概述为什么需要线程？为了提升性能，单核性能已经很难提升，CPU 的频率几乎已经提升不了多少了，但是可以通过提升CPU 计算单元数来提高算力。 123456
         </div>
       </a>
 
@@ -333,8 +928,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-04 20:57" pubdate>
-              2023-12-04
+            <time datetime="2023-12-07 22:52" pubdate>
+              2023-12-07
             </time>
           </div>
         
@@ -352,289 +947,19 @@
   <a href="/categories/OS/" class="category-chain-item">OS</a>
   
   
-
-      </span>
+    <span>></span>
     
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/%E7%BF%BB%E8%AF%91/">#翻译</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/04/xv6%20book%20Chapter6%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 book Chapter6 中文翻译">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/04/xv6%20book%20Chapter6%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          xv6 book Chapter6 中文翻译
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/04/xv6%20book%20Chapter6%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-        <div>
-          〇、前言本文是 xv6 book 第六章的翻译，以下将开始翻译。 一、（翻译）第六章 锁大多数内核，包括 xv6，在执行多个活动时会交错执行。一个交错的来源是多处理器硬件：拥有多个独立执行的CPU的计算机，例如 xv6 的 RISC-V。这些多个CPU共享物理RAM，而 xv6 利用这种共享来维护所有CPU都可以读写的数据结构。这种共享引发了一个可能性，即一个CPU在读取数据结构时，另一个CP
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-04 20:32" pubdate>
-              2023-12-04
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" class="category-chain-item">系统编程</a>
   
   
+    <span>></span>
     
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  <a href="/categories/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/Unix-Linux/" class="category-chain-item">Unix/Linux</a>
   
   
 
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/%E7%BF%BB%E8%AF%91/">#翻译</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/04/xv6%20book%20Chapter5%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 book Chapter5 中文翻译">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/04/xv6%20book%20Chapter5%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          xv6 book Chapter5 中文翻译
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/04/xv6%20book%20Chapter5%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-        <div>
-          〇、前言本文是 xv6 book 第五章的翻译，以下将开始翻译。 一、（翻译）第五章 中断和设备驱动驱动程序是操作系统中管理特定设备的代码：它配置设备硬件，指示设备执行操作，处理产生的中断，并与可能正在等待来自设备的输入输出的进程进行交互。驱动程序代码可能会比较棘手，因为驱动程序与其管理的设备并发执行。此外，驱动程序必须理解设备的硬件接口，这可能是复杂的并且文档记录不足。 通常，需要操作系统关
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-04 20:18" pubdate>
-              2023-12-04
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
   
 
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/%E7%BF%BB%E8%AF%91/">#翻译</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/12/04/xv6%20book%20Chapter4%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 book Chapter4 中文翻译">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/12/04/xv6%20book%20Chapter4%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          xv6 book Chapter4 中文翻译
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/12/04/xv6%20book%20Chapter4%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-        <div>
-          〇、前言本文是 xv6 book 第四章的翻译，以下将开始翻译。 一、（译文）第四章 陷入和系统调用这里有三种事件会导致 CPU 暂停正常执行指令，并强制转移控制权到处理该事件的特殊代码。一种情况是系统调用，当用户程序执行 ecall 指令请求内核为其执行某些操作时。另一种情况是异常：指令（用户或内核）执行了一些非法操作，比如除以零或使用无效的虚拟地址。第三种情况是设备中断，当设备发出信号需要
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-12-04 16:00" pubdate>
-              2023-12-04
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/%E7%BF%BB%E8%AF%91/">#翻译</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/11/24/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第四章）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/11/24/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%89/" target="_self">
-          MIT 6.S081学习笔记（第四章）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/11/24/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%89/" target="_self">
-        <div>
-          〇、前言本文主要完成MIT 6.S081 实验四：traps。开始之前，切换分支： 123$ git fetch$ git checkout traps$ make clean RISC-V assembly (easy)Question requirementsIt will be important to understand a bit of RISC-V assembly, which
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-11-24 15:33" pubdate>
-              2023-11-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
   
 
       </span>
@@ -656,291 +981,7 @@
             
               <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
             
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/11/22/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="MIT 6.S081学习笔记（第三章）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/11/22/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%89/" target="_self">
-          MIT 6.S081学习笔记（第三章）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/11/22/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%89/" target="_self">
-        <div>
-          〇、前言本文主要完成MIT 6.S081 实验三：page tables。开始之前，切换分支： 123$ git fetch$ git checkout pgtbl$ make clean 一、Speed up system calls (easy)这个实验比底下两个都难，但是它的难度是简单？ Question requirements Some operating systems (e.g.
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-11-22 17:19" pubdate>
-              2023-11-22
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/MIT-6-S081/">#MIT 6.S081</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/11/18/xv6%20book%20Chapter3%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="xv6 book Chapter3 中文翻译">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/11/18/xv6%20book%20Chapter3%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-          xv6 book Chapter3 中文翻译
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/11/18/xv6%20book%20Chapter3%20%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91/" target="_self">
-        <div>
-          〇、前言本文是 xv6 book 第三章的翻译，因为原来的中文版翻译地和英文原版意思有出入，几乎很难读下去（并没有否认他们的意思，可能是我自己的问题。后面我可能会考虑重新将整本书都翻译一遍），以下将开始翻译。 一、（译文）第三章 页表页表是最流行的机制，操作系统通过它提供每个进程拥有自己的私有地址空间和内存。页面表确定了内存地址的含义，以及可以访问物理内存的哪些部分。它们使得 xv6 能够隔离
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-11-18 11:27" pubdate>
-              2023-11-18
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-              <a href="/tags/xv6/">#xv6</a>
-            
-              <a href="/tags/%E7%BF%BB%E8%AF%91/">#翻译</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/11/13/%E3%80%8AOSTEP%E3%80%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88chap31%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="《OSTEP》信号量（chap31）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/11/13/%E3%80%8AOSTEP%E3%80%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88chap31%EF%BC%89/" target="_self">
-          《OSTEP》信号量（chap31）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/11/13/%E3%80%8AOSTEP%E3%80%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%EF%BC%88chap31%EF%BC%89/" target="_self">
-        <div>
-          〇、前言本文是对《OSTEP》第三十一章的实践与总结。 一、信号量以下各个版本都是一个生产者-消费者模型，基于信号量实现，并且逐渐完善。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768#i
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-11-13 18:32" pubdate>
-              2023-11-13
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/11/11/%E3%80%8AOSTEP%E3%80%8B%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%EF%BC%88chap30%EF%BC%89/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="《OSTEP》条件变量（chap30）">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/11/11/%E3%80%8AOSTEP%E3%80%8B%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%EF%BC%88chap30%EF%BC%89/" target="_self">
-          《OSTEP》条件变量（chap30）
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/11/11/%E3%80%8AOSTEP%E3%80%8B%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%EF%BC%88chap30%EF%BC%89/" target="_self">
-        <div>
-          〇、前言本文是对《OSTEP》第三十章的实践与总结。 一、条件变量123456789101112131415161718192021222324252627282930313233343536373839404142434445464748#include &lt;pthread.h&gt;#include &lt;stdio.h&gt;#include &lt;assert.h&gt;int
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-11-11 22:10" pubdate>
-              2023-11-11
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E5%AD%A6%E4%B9%A0/">#学习</a>
-            
-              <a href="/tags/%E7%AC%94%E8%AE%B0/">#笔记</a>
-            
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">#操作系统</a>
+              <a href="/tags/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">#文件系统</a>
             
           </div>
         
@@ -952,7 +993,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/11/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/#board">10</a><a class="page-number" href="/page/11/#board">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/#board">13</a><a class="page-number" href="/page/14/#board">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/#board">19</a><a class="extend next" rel="next" href="/page/13/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/page/11/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/#board">10</a><a class="page-number" href="/page/11/#board">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/#board">13</a><a class="page-number" href="/page/14/#board">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/#board">20</a><a class="extend next" rel="next" href="/page/13/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

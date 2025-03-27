@@ -222,23 +222,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/09/10/Ubuntu22.04%E8%AE%BE%E7%BD%AE/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="Ubuntu 22.04 配置">
+        <a href="/2024/09/25/verilator%E7%BC%96%E8%AF%91%E5%A4%9A%E4%B8%AAcpp%E6%96%87%E4%BB%B6/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="verilator 编译多个 cpp 文件">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/09/10/Ubuntu22.04%E8%AE%BE%E7%BD%AE/" target="_self">
-          Ubuntu 22.04 配置
+        <a href="/2024/09/25/verilator%E7%BC%96%E8%AF%91%E5%A4%9A%E4%B8%AAcpp%E6%96%87%E4%BB%B6/" target="_self">
+          verilator 编译多个 cpp 文件
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2024/09/10/Ubuntu22.04%E8%AE%BE%E7%BD%AE/" target="_self">
+      <a class="index-excerpt " href="/2024/09/25/verilator%E7%BC%96%E8%AF%91%E5%A4%9A%E4%B8%AAcpp%E6%96%87%E4%BB%B6/" target="_self">
         <div>
-          前言这里记录一下配置Ubuntu22.04的过程，主要实现了：  ssh 远程免密访问 配置 git &amp; github 内网穿透远程 ssh 访问 v2ray、v2raya(虽然最后采用了其它的网络加速方案，但也是可行的) zsh 美化 远程桌面访问（目前只能在同一局域网下，内网穿透失效） 换软件源 开机启动脚本 hexo &amp; npm  ssh 远程免密访问因为这台电脑的角色是
+          目录结构12345678910verilator_helpers/│   └── include/│       └── helpers.h│   └── src/│       └── helpers.cpp│verilatorTest/├── Makefile├── top.v└── main.cpp     实验在这个实践中，用 verilator 编译了多个文件：helpers.cp
         </div>
       </a>
 
@@ -246,8 +246,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-09-10 14:20" pubdate>
-              2024-09-10
+            <time datetime="2024-09-25 18:20" pubdate>
+              2024-09-25
             </time>
           </div>
         
@@ -262,8 +262,15 @@
     
       <span class="category-chain">
         
-  <a href="/categories/Ubuntu/" class="category-chain-item">Ubuntu</a>
+  <a href="/categories/PA2/" class="category-chain-item">PA2</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/PA2/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="category-chain-item">模拟器</a>
+  
+  
+
   
 
       </span>
@@ -277,7 +284,9 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/Ubuntu/">#Ubuntu</a>
+              <a href="/tags/verilator/">#verilator</a>
+            
+              <a href="/tags/%E7%BC%96%E8%AF%91/">#编译</a>
             
           </div>
         
@@ -289,23 +298,23 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/09/07/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%B8%80)/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="nemu框架细节研究（一）">
+        <a href="/2024/09/24/Chisel_BlackBox/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="Chisel 中的 BlackBox 机制">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/09/07/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%B8%80)/" target="_self">
-          nemu框架细节研究（一）
+        <a href="/2024/09/24/Chisel_BlackBox/" target="_self">
+          Chisel 中的 BlackBox 机制
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2024/09/07/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%B8%80)/" target="_self">
+      <a class="index-excerpt " href="/2024/09/24/Chisel_BlackBox/" target="_self">
         <div>
-          一、前言现在做到了 PA2.3后面，遇到的问题有点多，感觉总在棉花上踩。遇到了一个 bug 迟迟无法解决：用 native 且没有定义 __NATIVE_USE_KLIB__ 跑 Bad Apples 会失败，但是用 nemu 跑竟然会成功。这说明我的 klib 比 glibc 还完备吗？看了两个小时，也没看出什么。思考良久，感觉还是对项目构建过程缺乏细节上的了解，这成了学习进度上的瓶颈。于是
+          什么是 Chisel 中的 BlackBox？在硬件设计中，BlackBox 是一种用于集成外部硬件模块的方法。在 Chisel 中，BlackBox 允许设计者将已经存在的硬件描述（如 Verilog 或 SystemVerilog 编写的模块）引入到 Chisel 项目中，而无需用 Chisel 重新实现这些模块。这种方法特别适用于以下情况：  重用现有模块：你可能已经有一些经过验证的 V
         </div>
       </a>
 
@@ -313,8 +322,628 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-09-07 11:22" pubdate>
-              2024-09-07
+            <time datetime="2024-09-24 18:20" pubdate>
+              2024-09-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PA2/" class="category-chain-item">PA2</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PA2/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="category-chain-item">模拟器</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Chisel/">#Chisel</a>
+            
+              <a href="/tags/DPI-C/">#DPI-C</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/20/YPC%E7%9A%84%E7%A0%94%E7%A9%B6/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="YPC的研究">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/20/YPC%E7%9A%84%E7%A0%94%E7%A9%B6/" target="_self">
+          YPC的研究
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/20/YPC%E7%9A%84%E7%A0%94%E7%A9%B6/" target="_self">
+        <div>
+          一、前言本文尝试去分析 YSYX 中的一个实例 YPC,YPC 使用 Chisel 来实现基本的指令执行过程：定义指令结构、取指、解码（操作码、操作数）、执行、更新 PC。 二、写被执行的程序这个程序主要使用内嵌汇编的方法来执行一些汇编代码，我们可以确认它仅仅包含这些指令，应为 YPC 被设计为只能执行 I类指令的两种指令，addi 和 ebreak。 1234567891011121314s
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-20 18:20" pubdate>
+              2024-09-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PA2/" class="category-chain-item">PA2</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PA2/%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="category-chain-item">模拟器</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/">#模拟器</a>
+            
+              <a href="/tags/YPC/">#YPC</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/19/Chisel%E7%9A%84%E6%B5%8B%E8%AF%95%E6%A8%A1%E5%9D%97/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="Chisel 测试模块">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/19/Chisel%E7%9A%84%E6%B5%8B%E8%AF%95%E6%A8%A1%E5%9D%97/" target="_self">
+          Chisel 测试模块
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/19/Chisel%E7%9A%84%E6%B5%8B%E8%AF%95%E6%A8%A1%E5%9D%97/" target="_self">
+        <div>
+          一个普通的测试模块12345678910111213141516171819202122232425import chisel3._import chiseltest._import org.scalatest.flatspec.AnyFlatSpecclass FlipFlopTest extends AnyFlatSpec with ChiselScalatestTester &#123;
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-19 22:20" pubdate>
+              2024-09-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Scala/" class="category-chain-item">Scala</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Scala/Chisel/" class="category-chain-item">Chisel</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Scala/Chisel/PA2/" class="category-chain-item">PA2</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Scala/">#Scala</a>
+            
+              <a href="/tags/Chisel/">#Chisel</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/18/30%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90Chisel/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="30 分钟速成 Chisel">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/18/30%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90Chisel/" target="_self">
+          30 分钟速成 Chisel
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/18/30%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90Chisel/" target="_self">
+        <div>
+          这针对拥有基础 Scala 知识但对 Chisel 完全零基础的入门教程。Chisel（Constructing Hardware In a Scala Embedded Language）是一个基于 Scala 的硬件描述语言，用于设计数字电路。这个教程从环境设置开始，逐步介绍 Chisel 的基本概念和实际应用。  目录 Chisel 简介 环境设置 基本概念 模块（Module） IO
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-18 13:50" pubdate>
+              2024-09-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Scala/" class="category-chain-item">Scala</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Scala/Chisel/" class="category-chain-item">Chisel</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Scala/Chisel/PA2/" class="category-chain-item">PA2</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Scala/">#Scala</a>
+            
+              <a href="/tags/Chisel/">#Chisel</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/18/30%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90scala/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="30 分钟速成 Scala">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/18/30%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90scala/" target="_self">
+          30 分钟速成 Scala
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/18/30%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90scala/" target="_self">
+        <div>
+          0. 前言要想 30 分钟速成，必须要有面向对象的经验，不然可能得花一个小时来适应。这个教程将涵盖以下内容：  变量（Variables） 函数（Functions） 类（Classes） 继承（Inheritance） 方法（Methods） 对象（Objects） 伴生对象（Companion Objects） 特质（Traits）  每个部分都会包含简要的解释和示例代码，帮助你快速掌握 S
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-18 12:50" pubdate>
+              2024-09-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Scala/" class="category-chain-item">Scala</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Scala/PA2/" class="category-chain-item">PA2</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Scala/">#Scala</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/17/PA2%E6%80%BB%E7%BB%93/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="PA2总结">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/17/PA2%E6%80%BB%E7%BB%93/" target="_self">
+          PA2总结
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/17/PA2%E6%80%BB%E7%BB%93/" target="_self">
+        <div>
+          
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-17 12:57" pubdate>
+              2024-09-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/ysyx/" class="category-chain-item">ysyx</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/ysyx/PA2/" class="category-chain-item">PA2</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ysyx/">#ysyx</a>
+            
+              <a href="/tags/PA2/">#PA2</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/17/static_inline%E5%9C%A8%20C%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E4%BD%9C%E7%94%A8%E5%88%86%E6%9E%90/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="static、inline 关键字在C语言中的作用分析">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/17/static_inline%E5%9C%A8%20C%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E4%BD%9C%E7%94%A8%E5%88%86%E6%9E%90/" target="_self">
+          static、inline 关键字在C语言中的作用分析
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/17/static_inline%E5%9C%A8%20C%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E4%BD%9C%E7%94%A8%E5%88%86%E6%9E%90/" target="_self">
+        <div>
+          static、inline1. static 关键字 作用：限制函数的作用域仅限于定义它的源文件（即内部链接）。这意味着每个包含该头文件的源文件都会生成该函数的一个独立实例，避免了多个定义导致的链接错误。 在头文件中使用：适用于小型、频繁调用的函数，允许每个源文件拥有自己的函数副本，避免链接器的重复定义错误。  2. inline 关键字 作用：建议编译器将函数调用替换为函数体本身，以减少函数
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-17 12:50" pubdate>
+              2024-09-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C-C/" class="category-chain-item">C/C++</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/C-C/PA2/" class="category-chain-item">PA2</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C-C/">#C/C++</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/12/%E8%B0%83%E7%94%A8glibc%E7%9A%84%E6%8A%80%E5%B7%A7/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="调用 glibc 的技巧">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/12/%E8%B0%83%E7%94%A8glibc%E7%9A%84%E6%8A%80%E5%B7%A7/" target="_self">
+          调用 glibc 的技巧
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/12/%E8%B0%83%E7%94%A8glibc%E7%9A%84%E6%8A%80%E5%B7%A7/" target="_self">
+        <div>
+          一、一个问题1234native的IOE是基于SDL库实现的, 这些库很有可能会调用glibc的库函数, 例如malloc()和free(). 但我们自己实现的klib通常不能完美地符合glibc的标准, 因此直觉上看, 如果定义了__NATIVE_USE_KLIB__, 很可能会导致SDL库产生不正确的行为.不过你会发现, 即使定义了__NATIVE_USE_KLIB__, 也可以正确地在n
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-12 12:57" pubdate>
+              2024-09-12
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/ysyx/" class="category-chain-item">ysyx</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/ysyx/PA2/" class="category-chain-item">PA2</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/PA2/">#PA2</a>
+            
+              <a href="/tags/glibc/">#glibc</a>
+            
+              <a href="/tags/%E7%BC%96%E8%AF%91%E6%8A%80%E5%B7%A7/">#编译技巧</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/09/12/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%BA%8C)/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="nemu框架细节研究（二）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/09/12/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%BA%8C)/" target="_self">
+          nemu框架细节研究（二）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/09/12/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%BA%8C)/" target="_self">
+        <div>
+          一、前言前文细致地研究了命令 make ARCH=native ALL=add run 的运行过程，对于Makefile中的行为有了很准确地把握（几乎没有疑点，可以随意修改 Makefile 且保证不会出错）。这篇文章继续研究命令make ARCH=riscv32-nemu ALL=add run的行为。 二、riscv32-nemu 开始的地方由于 ARCH=riscv32-nemu，因此
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-09-12 11:22" pubdate>
+              2024-09-12
             </time>
           </div>
         
@@ -368,648 +997,11 @@
     </article>
   </div>
 
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/26/4th_semester_%E6%80%BB%E7%BB%93/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="大二下学期学习总结">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/26/4th_semester_%E6%80%BB%E7%BB%93/" target="_self">
-          大二下学期学习总结
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/26/4th_semester_%E6%80%BB%E7%BB%93/" target="_self">
-        <div>
-          〇、前言为什么这一年还没结束，就要总结一些事情呢？因为今天是大三开学的第一天，也是今天我今天来学校的第一天。这里讲一个小故事，今天下午 4 点 30 我准时来到学校，也就意味着我没有参与上午的课。尽管这样，我心中还是很窃喜。我原本打算昨天来到学校，这样我就能参与今天的课。但是昨天的温度很高，我上午看了一下天气预报，实时温度是 39 度。但是我认为绝对不仅仅是 39 度，真实室外温度可能超过 4
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-26 18:22" pubdate>
-              2024-08-26
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/Personal-Summary/" class="category-chain-item">Personal_Summary</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/">#个人总结</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/23/nemu_am%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BA/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="nemu、am项目构建">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/23/nemu_am%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BA/" target="_self">
-          nemu、am项目构建
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/23/nemu_am%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BA/" target="_self">
-        <div>
-          nemu首先研究 nemu 的构建方式。 直接看 nemu 的 Makefile(~&#x2F;ysyx-workbench&#x2F;nemu&#x2F;Makefile): 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-23 11:22" pubdate>
-              2024-08-23
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/PA/" class="category-chain-item">PA</a>
-  
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/NEMU/">#NEMU</a>
-            
-              <a href="/tags/PA2/">#PA2</a>
-            
-              <a href="/tags/AM/">#AM</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/22/%E7%A8%8B%E5%BA%8F_RTE_AM/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="程序, 运行时环境与AM">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/22/%E7%A8%8B%E5%BA%8F_RTE_AM/" target="_self">
-          程序, 运行时环境与AM
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/22/%E7%A8%8B%E5%BA%8F_RTE_AM/" target="_self">
-        <div>
-          运行时环境一个事实是, 应用程序的运行都需要运行时环境的支持, 包括加载, 销毁程序, 以及提供程序运行时的各种动态链接库(你经常使用的库函数就是运行时环境提供的)等. 为了让客户程序在NEMU中运行, 现在轮到你来提供相应的运行时环境的支持了。 程序的运行时环境（Runtime Environment）是指在程序执行时提供的软件和硬件环境，它支持程序的运行并提供必要的服务和资源。运行时环境通
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-22 11:22" pubdate>
-              2024-08-22
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/PA/" class="category-chain-item">PA</a>
-  
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/">#模拟器</a>
-            
-              <a href="/tags/NEMU/">#NEMU</a>
-            
-              <a href="/tags/PA2/">#PA2</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/21/NEMU%E6%B7%BB%E5%8A%A0%E6%9B%B4%E5%A4%9A%E6%8C%87%E4%BB%A4/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="NEMU 添加更多的指令">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/21/NEMU%E6%B7%BB%E5%8A%A0%E6%9B%B4%E5%A4%9A%E6%8C%87%E4%BB%A4/" target="_self">
-          NEMU 添加更多的指令
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/21/NEMU%E6%B7%BB%E5%8A%A0%E6%9B%B4%E5%A4%9A%E6%8C%87%E4%BB%A4/" target="_self">
-        <div>
-          前言上一篇博客中介绍了如何添加指令，这篇将会熟悉这个过程，学习以及添加更多的指令。 所有程序在am-kernels&#x2F;tests&#x2F;cpu-tests&#x2F;tests 目录下有很多测试： 12345678910111213141516171819202122232425262728293031323334353637ls -ltotal 140-rw-rw-r-- 1 l
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-21 11:22" pubdate>
-              2024-08-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/PA/" class="category-chain-item">PA</a>
-  
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/">#模拟器</a>
-            
-              <a href="/tags/NEMU/">#NEMU</a>
-            
-              <a href="/tags/PA2/">#PA2</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/14/nemu%E6%B7%BB%E5%8A%A0%E6%8C%87%E4%BB%A4/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="NEMU 添加指令">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/14/nemu%E6%B7%BB%E5%8A%A0%E6%8C%87%E4%BB%A4/" target="_self">
-          NEMU 添加指令
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/14/nemu%E6%B7%BB%E5%8A%A0%E6%8C%87%E4%BB%A4/" target="_self">
-        <div>
-          前言前面讨论了 nemu 执行一条指令的过程，在源码中，可以看到它目前可以解析的指令有限： 1234567891011121314151617181920212223242526272829static int decode_exec(Decode* s) &#123;    int rd = 0;    word_t src1 = 0, src2 = 0, imm = 0;    s-&gt
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-14 11:22" pubdate>
-              2024-08-14
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/PA/" class="category-chain-item">PA</a>
-  
-  
-
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/">#模拟器</a>
-            
-              <a href="/tags/NEMU/">#NEMU</a>
-            
-              <a href="/tags/PA2/">#PA2</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/13/NEMU%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%9A%84%E8%BF%87%E7%A8%8B/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="NEMU 指令执行过程">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/13/NEMU%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%9A%84%E8%BF%87%E7%A8%8B/" target="_self">
-          NEMU 指令执行过程
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/13/NEMU%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%9A%84%E8%BF%87%E7%A8%8B/" target="_self">
-        <div>
-          NEMU 架构NEMU 是一个CPU模拟器，它使用 C语言 完成了模拟取指令、指令解析、指令执行、寄存器、初始化等，可以执行很多平台的任何二进制指令。 初始化nemu main 中进行了一些初始化，这里只研究关键的初始化： 12345678910111213init_mem();/* Initialize devices. */IFDEF(CONFIG_DEVICE, init_device(
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-13 11:22" pubdate>
-              2024-08-13
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/">#模拟器</a>
-            
-              <a href="/tags/NEMU/">#NEMU</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/12/NEMU%E4%BB%A3%E7%A0%81%E5%AF%BC%E8%AF%BB/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="NEMU 代码导读">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/12/NEMU%E4%BB%A3%E7%A0%81%E5%AF%BC%E8%AF%BB/" target="_self">
-          NEMU 代码导读
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/12/NEMU%E4%BB%A3%E7%A0%81%E5%AF%BC%E8%AF%BB/" target="_self">
-        <div>
-          项目构建首先得了解一些 make 的行为，重要的就是查看make 的行为以及make 的子进程如何与系统进行交互，比如 :  strace -f make make -nB # 只打印命令不执行 B强制构建 make -d make -debug&#x3D;v  具体RTFM。  nemu&#x2F;Makefile  SRCS: 和YEMU差不多, 是需要编译的源文件    CFLAGS:
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-12 11:22" pubdate>
-              2024-08-12
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/">#模拟器</a>
-            
-              <a href="/tags/NEMU/">#NEMU</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/08/09/%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E5%92%8C%E6%A8%A1%E6%8B%9F%E5%99%A8/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="程序的执行和模拟器">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/08/09/%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E5%92%8C%E6%A8%A1%E6%8B%9F%E5%99%A8/" target="_self">
-          程序的执行和模拟器
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/08/09/%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%89%A7%E8%A1%8C%E5%92%8C%E6%A8%A1%E6%8B%9F%E5%99%A8/" target="_self">
-        <div>
-          freestanding 运行时环境示例程序： 1234567#include &lt;stdint.h&gt;void _start() &#123;    volatile uint8_t* p = (uint8_t*)(uintptr_t)0x10000000;    *p = &#x27;A&#x27;;    while (1)        ;&#125;  编译：rv32gcc
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-08-09 11:22" pubdate>
-              2024-08-09
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/OS/RISCV/" class="category-chain-item">RISCV</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%A8%A1%E6%8B%9F%E5%99%A8/">#模拟器</a>
-            
-              <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/">#二进制程序</a>
-            
-              <a href="/tags/%E7%A8%8B%E5%BA%8F/">#程序</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
 
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/page/2/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/#board">19</a><a class="extend next" rel="next" href="/page/4/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/page/2/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/#board">20</a><a class="extend next" rel="next" href="/page/4/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 
