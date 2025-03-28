@@ -1,85 +1,244 @@
 ---
-title: 使用 GitHub Actions 自动发布 Hexo 博客
-date: 2025-2-11 17:57:27
-tags:
-    - Hexo
-    - GitHub_Actions
-categories: Blog
+title: 利用 Hexo 搭建个人博客
+date: 2024-07-06 21:57:40
+tags: Hexo
+categories: 博客
 ---
+
 <!--more-->
 
-## [](#Github-Actions-的原理 "Github Actions 的原理")Github Actions 的原理
+## 〇、前言
+本文将会讨论，如何将 CSDN 上的博客，拉取到本地，然后PicGo、Hexo、Github 等工具建立个人博客，环境为 Ubuntu 20.04。
 
-按照我的理解就是，首先GitHub 提供了一个虚拟主机，这个主机是干净的。当你需要使用它的时候，你首先得制作一个简单的部署或者测试环境，这是通过 pull docker 镜像或者安装一些软件实现的，甚至你还得配置一些秘钥啥的来访问特定操作（后面有例子）。总之，第一步得配置好环境。
+## 一、利用 Hexo
 
-第二步，就是你要在这个机器上要做的事情了，事实上，第一步的时候你已经做了一些事情了，比如安装一些必要的软件来创建所需要的环境。不同的是，这时候就得来做你想要做的事情了。比如编译一些目标、部署一下博客（这篇文章的主题）。
+### 预备工作
+首先安装 Node.js、npm、git工具。
 
-所以 Actions 的原理很好理解，接下来就看要怎么操作才能创建一个 Hexo 生成、部署（github push）的环境了。
+```bash
+> node -v
+v12.22.9
+> npm -v
+8.5.1
+> git version
+git version 2.34.1
+```
 
-## [](#设置权限 "设置权限")设置权限
+### 安装 Hexo
+```bash
+npm install -g hexo-cli
 
-为什么是设置权限呢？这是因为我们部署的原理的要求。首先我们需要在 A 仓库中写 mark down 博客，然后在根目录中执行一些 hexo 命令来将生成的网页等文件push 到 B 仓库。A 仓库一般是隐私的，存储着我们的 markdown 格式的博客，而 B 仓库一般是我们的目标仓库，一般是公开的，比如 `luyoung0001.github.io`。
+> hexo -v
+INFO  Validating config
+hexo: 7.3.0
+hexo-cli: 4.3.2
+os: linux 5.15.0-107-generic Ubuntu 22.04.4 LTS 22.04.4 LTS (Jammy Jellyfish)
+node: 12.22.9
+v8: 7.8.279.23-node.56
+uv: 1.43.0
+zlib: 1.2.11
+brotli: 1.0.9
+ares: 1.18.1
+modules: 72
+nghttp2: 1.43.0
+napi: 8
+llhttp: 2.1.6
+http_parser: 2.9.4
+openssl: 1.1.1m
+cldr: 40.0
+icu: 70.1
+tz: 2024a
+unicode: 14.0
+```
 
-问题是，当我们需要将 A 仓库生成的网页等文件 push 到 B 仓库时，是需要权限的，因此我们的环境设置中必须要有权限设置，从而可以使得在 A 目录中通过 `hexo d` 的时候可以成功将生成的代码 push 到 B 仓库中。
+### 小试牛刀
+首先创建一个文件夹，比如 hexotest。这个文件的目的是，我们打算在它里面创建博客，并且它是一个博客网站项目根目录：
 
-权限怎么设置呢？其实 GitHub 已经贴心的将这个需求解决了。我们只需要生成一对密钥，将私钥放在 A，将公钥放在 B。
+```bash
+mkdir hexotest
+cd hexotest
+```
 
-首先在你本机生成密钥对：
+之后，就可以初始化这个文件夹了，初始化的目的是，它会创建一个 helloword.md 文件，然后利用 node.js 等将这个 markdown 文件渲染成一个 html 文件，然后在本地开启一个网络服务器以供前端访问：
+```bash
+> hexo init
+INFO  Cloning hexo-starter https://github.com/hexojs/hexo-starter.git
+INFO  Install dependencies
+INFO  Start blogging with Hexo!
+```
 
-<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh-keygen -f github-deploy-key<br></code></pre></td></tr></tbody></table>
+接着启动：
+```bash
+> hexo s
+INFO  Validating config
+INFO  Start processing
+INFO  Hexo is running at http://localhost:4000/ . Press Ctrl+C to stop.
+```
 
-一路回车，当前目录下就会生成 `github-deploy-key` 和 `github-deploy-key.pub`。
+然后就可以在前端看到博客了：
+![博客](https://raw.githubusercontent.com/Luyoung0001/picBed/main/hexotest.png))
 
-接着，设置 A 仓库和 B 仓库的公钥和私钥：
+## 二、利用 Hexo 将博客部署在 github
 
-对于 A 仓库：进入仓库页面 → Settings → Secrets and variables → actions → New repository secret，Name 填 HEXO\_DEPLOY\_PRI ，Secret 填 github-deploy-key 的内容。
+这里创建 github 账户、创建博客仓库什么的就不啰嗦了，只提重点。
 
-对于 B 仓库：进入仓库页面 → Settings → Deploy keys → Add deploy key，Title 填 HEXO\_DEPLOY\_PUB ，Key 填 github-deploy-key.pub 的内容。
+### 修改配置文件
+进入文件夹 hexotest，之后修改配置文件 _config.yml:
+```bash
+# Deployment
+## Docs: https://hexo.io/docs/one-command-deployment
+deploy:
+  type: git
+  repo: git@github.com:Luyoung0001/Luyoung0001.github.io.git
+  branch: main
+```
 
-这里的需要注意的是，你需要将私钥整个复制，包括 `-----BEGIN OPENSSH PRIVATE KEY-----`:
+之后，需要一个小工具将博客部署上去， 原理主要就是 push到远端仓库：
+```bash
+npm install hexo-deployer-git --save
+```
 
-<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> github-deploy-key<br>-----BEGIN OPENSSH PRIVATE KEY-----<br>...<br></code></pre></td></tr></tbody></table>
+需要注意的是，每一个项目根目录都需要执行一次这个命令，这个命令会在本地生成一些脚本，然后把脚本放在 node_modules 目录中。
 
-## [](#Actions-脚本 "Actions 脚本")Actions 脚本
+之后执行下面的命令就可以了：
+```bash
+hexo c   #清除缓存文件 db.json 和已生成的静态文件 public
+hexo g       #生成网站静态文件到默认设置的 public 文件夹(hexo generate 的缩写)
+hexo d       #自动生成网站静态文件，并部署到设定的仓库(hexo deploy 的缩写)
+```
 
-我这里直接给出脚本：
+### 访问
+通过浏览器访问：https://luyoung0001.github.io 就可以了：
+![博客](https://raw.githubusercontent.com/Luyoung0001/picBed/main/hexotest.png))
 
-<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs YML"><span class="hljs-attr">name:</span> <span class="hljs-string">Deploy</span> <span class="hljs-string">hexo</span> <span class="hljs-string">blog</span><p><span class="hljs-attr">on:</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">master</span></p><p><span class="hljs-attr">jobs:</span><br>  <span class="hljs-attr">build:</span><br>    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span><br>    <span class="hljs-attr">strategy:</span><br>      <span class="hljs-attr">matrix:</span><br>        <span class="hljs-attr">node-version:</span> [<span class="hljs-number">20.</span><span class="hljs-string">x</span>]</p><p>    <span class="hljs-attr">steps:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span></p><p>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Use</span> <span class="hljs-string">Node.js</span> <span class="hljs-string">${{</span> <span class="hljs-string">matrix.node-version</span> <span class="hljs-string">}}</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v4</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">node-version:</span> <span class="hljs-string">${{</span> <span class="hljs-string">matrix.node-version</span> <span class="hljs-string">}}</span></p><p>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Configuration</span> <span class="hljs-string">environment</span><br>        <span class="hljs-attr">env:</span><br>          <span class="hljs-attr">HEXO_DEPLOY_PRI:</span> <span class="hljs-string">${{secrets.HEXO_DEPLOY_PRI}}</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br><span class="hljs-string">          sudo timedatectl set-timezone "Asia/Shanghai"</span><br><span class="hljs-string">          mkdir -p ~/.ssh/</span><br><span class="hljs-string">          echo "$HEXO_DEPLOY_PRI" | tr -d '\r' &gt; ~/.ssh/id_rsa</span><br><span class="hljs-string">          chmod 600 ~/.ssh/id_rsa</span><br><span class="hljs-string">          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts</span><br><span class="hljs-string">          git config --global user.name "你的 github 用户名"</span><br><span class="hljs-string">          git config --global user.email "你的 github 邮箱"</span><br><span class="hljs-string"></span>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br><span class="hljs-string">          npm i -g hexo-cli</span><br><span class="hljs-string">          npm ci</span><br><span class="hljs-string"></span>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Deploy</span> <span class="hljs-string">hexo</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br><span class="hljs-string">          rm -rf .deploy_git</span><br><span class="hljs-string">          hexo clean</span><br><span class="hljs-string">          hexo d -g</span></p></code></pre></td></tr></tbody></table>
+至此，博客系统就初步搭建起来了。
 
-需要注意的是：
+### 更新博客
+事实上，可以向 `hexotest/source/_post` 中放置大量的 markdown 文件，这些文件就是你想要写发布的博客。
 
-+   设置时区很重要。平常我们在自己电脑上部署都是 GMT+8 时区，但是执行 GitHub action 的 runner 在美国，可不是这个时区，所以我们要改下时区，否则如果你的博文地址是 年/月/日 这种形式的话，可能会出现有些博文访问不了的问题。
-+   SSH 密钥。这里选择的事 ssh，而之前你部署的时候使用的是 http，那么你需要修改 dev 目录下 \_config.yml 中的 deploy 字段中的 repo，改为 ssh 地址，即：
+写好了以后，继续执行：
+```bash
+hexo c
+hexo g
+hexo d
+```
 
-<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs YML"><span class="hljs-attr">deploy:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">git</span><br>  <span class="hljs-attr">repo:</span> <span class="hljs-string">https://github.com/secsilm/secsilm.github.io.git</span><br>  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span><p><span class="hljs-comment"># 应改为：</span><br><span class="hljs-attr">deploy:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">git</span><br>  <span class="hljs-attr">repo:</span> <span class="hljs-string">git@github.com:secsilm/secsilm.github.io.git</span><br>  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span></p></code></pre></td></tr></tbody></table>
+就好了。
 
-你也可以配合大模型来仔细查看那个脚本的具体含义，总之就是环境+操作。
+## 三、从 csdn 到 github
 
-## [](#测试 "测试")测试
+经过寻找，终于让我在网上找到了这个项目：https://github.com/flytam/blog-sync-tool?tab=readme-ov-file
 
-你可以进行一次更改提交，看看 action 是否正常执行。你可以在 GitHub Actions 页面查看每次运行的日志。
+这个工具可以将博客从 csdn 等博客网站下载到本地，而且还支持图片下载，这意味着你csdn 中博客的图片都可以下载下来。
 
-这里一般会遇到几个小问题：
+### 转移文章
 
-### [](#权限 "权限")权限
+参考 `csdnsynchexo` 的 文档，首先安装：
+```bash
+npx csdnsynchexo@latest  --help
+```
+安装好了就可以爬取了，但是别忘了需要阅读、修改等权限，谁的权限最高？当然是 csdn 作者本人了，因此这里需要你登录你自己的 csdn 账号后，获取到 csdn 的 cookie，并将其写入到配置文件。
 
-可能报这个错误：
+#### 配置文件
+可以将这个配置文件 `config.json` 放到任何地方，但是我还是建议在 ~ 目录下 创建一个 csdn目录，然后将这配置文件放置到 csdn 中：
+```bash
+{
+        "userId": "m0_73651896",
+        "type": "csdn",
+        "output": "./blogfromcsdn",
+        "cookie": ""
+}
+```
 
-<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>Load key <span class="hljs-string">"/home/runner/.ssh/id_rsa"</span>: error <span class="hljs-keyword">in</span> libcrypto<br>git@github.com: Permission denied (publickey).<br>fatal: Could not <span class="hljs-built_in">read</span> from remote repository.<p>Please make sure you have the correct access rights<br>and the repository exists.</p></code></pre></td></tr></tbody></table>
+userId 就是 csdn 的 userID,output 就是将文章爬取下来后存入的目录，至于 cookie，这很重要。
 
-前面已经提到，你必须把私钥所有的内容复制到 repository secret。
+获取方式：新开一个页面，F12(mac: cmd+shift+i)打开控制台，点击抓包这个[请求](https://blog-console-api.csdn.net/v1/editor/getArticle?id=104101476)的request headers中的cookie后面那段值。这个值很多，建议全部粘贴。
+#### 爬取
 
-### [](#部署失败 "部署失败")部署失败
+然后就可以执行了：
+```bash
+npx csdnsynchexo@latest --config ./config.json
+```
 
-可能报这个错误：
+执行完成后，就可以在目标文件夹看到爬取下来的文件了：
+```bash
+ls
+'(1) DNS Protocol Analysis Based on Wireshark at the Application Layer.md'
+'2022 Personal Summary.md'
+'2023 个人总结.md'
+'2024.06.16 刷题日记.md'
+'2024.06.17 刷题日记.md'
+'2024.06.18 刷题日记.md'
+'2024.06.19 刷题日记.md'
+...
+```
+### 将文件拷贝到博客目录
+将爬取下来的文章拷贝到 `hexotest/source/_post`，然后继续 `hexo cgd` 就可以了。
 
-<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">...<br>INFO  540 files generated <span class="hljs-keyword">in</span> 1.98 s<br>INFO  Deploying: git<br>INFO  Clearing .deploy_git folder...<br>INFO  Copying files from public folder...<br>INFO  Copying files from extend <span class="hljs-built_in">dirs</span>...<br>fatal: <span class="hljs-keyword">in</span> unpopulated submodule <span class="hljs-string">'.deploy_git'</span><br>...<br></code></pre></td></tr></tbody></table>
+## 四、爬取图片
 
-解决办法是：
+这个很重要，因为这里还牵扯到将以后写的文章的图片存储到哪里的问题。
 
-<table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> -rf .deploy_git<br></code></pre></td></tr></tbody></table>
+好消息是 csdnsynchexo 支持爬取图片，并将这些图片上传到图床，然后将图床中图片的链接统一地在 markdown 中置换，这简直太棒了！
 
-这个我已经加到脚本了，不会再遇到了。
+支持这一功能的是 PicGo，PicGo 是一个强大的用于快速上传图片并获取图片 URL 链接的工具，PicGo 本体支持如下图床：
+- 七牛图床 v1.0
+- 腾讯云 COS v4\v5 版本 v1.1 & v1.5.0
+- 又拍云 v1.2.0
+- GitHub v1.5.0
+- SM.MS V2 v2.3.0-beta.0
+- 阿里云 OSS v1.6.0
+- Imgur v1.6.0
 
-这篇博客就是通过 Actons 部署，再也不用本地环境了，由于网络的关系，使得某些过程可能会卡很久，但是 Actions 不会存在网络问题，只要你能 push 成功。
+这里支持的很多，但是个人建议选取 github，因为未来我们要用到 CloudFlare+github 的形式来做cdn。
+
+csdnsynchexo 中配置文件只需要这样修改以及添加：
+```json
+{
+        "userId": "m0_73651896",
+        "type": "csdn",
+        "imgConfig": "./img.json",
+        "output": "./blogfromcsdn",
+        "cookie": ""
+}
+```
+然后继续添加一个图片配置文件img.json：
+```json
+{
+  "accessKey": "xxxxx",
+  "secretKey": "xxxx",
+  "bucket": "xxxxx",
+  "area": "z2",
+  "options": "",
+  "path": "./blogfromcsdn",
+  "picBed": {
+      "uploader": "github",
+      "github": {
+        "repo": "Luyoung0001/picBed",
+        "token": "",
+        "branch": "main"
+      }
+    },
+  "picgoPlugins": {}
+}
+```
+具体配置方法，参考 [GitHub 图床](https://picgo.github.io/PicGo-Doc/zh/guide/config.html#github%E5%9B%BE%E5%BA%8A)。需要注意的是，一定要放置图床的仓库设为公开仓库，毕竟要从外面访问，要有访问权限。
+
+之后，重新爬取、转移、生成、布置就好了！
+
+
+## 五、写附带图片的文章
+写文章很简单，就在`hexotest/source/_post`目录下进行创作就行了，但是插入图片怎么办呢？我们继续使用网络图片，放置自己picbed 中的图片。
+
+问题是怎么上床呢？简单方法是直接 push 到这个仓库，然后抛链接，但是这不正规，况且文件的命名都是麻烦事。这里最好使用 PicGo。
+
+## 六、配置使用 PicGo
+
+首先下载 [PicGo](https://github.com/Molunerfinn/PicGo/releases):
+选择一个合适的发行版，然后就可以在本地操作了。
+
+具体参考[这里](https://picgo.github.io/PicGo-Doc/zh/guide/config.html#github%E5%9B%BE%E5%BA%8A)
+
+## 总结
+以上就是个人博客搭建的全过程，经过一上午的从 0 到 1,博客终于实现了，以后还得学习学习怎么添加一些feature。
 

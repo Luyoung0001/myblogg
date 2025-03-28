@@ -912,7 +912,7 @@
 <p>也只提升了一点点：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/3307e078f4a44a70934da1372d8d7826_1720253671766.png?token=ANB4BCITJTKONUIYRWAPXXDGRD6SQ" alt="在这里插入图片描述"></p>
 <p>事实上，可以直接构造，这是一道数学题，不过这不在本节讨论的范围，略过。</p>
 <h2 id="93-复原-IP-地址"><a href="#93-复原-IP-地址" class="headerlink" title="93. 复原 IP 地址"></a>93. 复原 IP 地址</h2><p>有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 ‘.’ 分隔。</p>
-<p>例如：”0.1.2.201” 和 “192.168.1.1” 是 有效 IP 地址，但是 “0.011.255.245”、”192.168.1.312” 和 “<a href="mailto:&#49;&#57;&#x32;&#46;&#x31;&#x36;&#56;&#x40;&#49;&#46;&#x31;">&#49;&#57;&#x32;&#46;&#x31;&#x36;&#56;&#x40;&#49;&#46;&#x31;</a>“ 是 无效 IP 地址。<br>给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能的有效 IP 地址，这些地址可以通过在 s 中插入 ‘.’ 来形成。你 不能 重新排序或删除 s 中的任何数字。你可以按 任何 顺序返回答案。</p>
+<p>例如：”0.1.2.201” 和 “192.168.1.1” 是 有效 IP 地址，但是 “0.011.255.245”、”192.168.1.312” 和 “<a href="mailto:&#x31;&#x39;&#x32;&#x2e;&#49;&#x36;&#56;&#x40;&#x31;&#x2e;&#49;">&#x31;&#x39;&#x32;&#x2e;&#49;&#x36;&#56;&#x40;&#x31;&#x2e;&#49;</a>“ 是 无效 IP 地址。<br>给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能的有效 IP 地址，这些地址可以通过在 s 中插入 ‘.’ 来形成。你 不能 重新排序或删除 s 中的任何数字。你可以按 任何 顺序返回答案。</p>
 <p>示例 1：</p>
 <blockquote>
 <p>输入：s &#x3D; “25525511135”<br>输出：[“255.255.11.135”,”255.255.111.35”]</p>
@@ -1614,17 +1614,6 @@
         <tag>算法</tag>
         <tag>数据结构</tag>
         <tag>leetcode</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>2月我做了什么</title>
-    <url>/2025/03/01/2%E6%9C%88%E6%88%91%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</url>
-    <content><![CDATA[<h2 id=""><a href="#" class="headerlink" title=""></a></h2>]]></content>
-      <categories>
-        <category>感想</category>
-      </categories>
-      <tags>
-        <tag>月记录</tag>
       </tags>
   </entry>
   <entry>
@@ -6185,6 +6174,46 @@
       </tags>
   </entry>
   <entry>
+    <title>MIPS 处理器的设计</title>
+    <url>/2025/03/10/MIPS%E5%A4%84%E7%90%86%E7%9A%84%E8%AE%BE%E8%AE%A1/</url>
+    <content><![CDATA[<h2 id="Why-MIPS"><a href="#Why-MIPS" class="headerlink" title="Why MIPS?"></a>Why MIPS?</h2><p>学校的课程设计需要做一个 MIPS 的五级流水线单周期处理器，这是 <a href="https://github.com/XUPTF4/CPU_based_on_MIPS">项目链接</a>。</p>
+<p>MIPS 有一个特点，那就是延迟槽。如果在编译参数中将延迟槽关掉，那么每一个分支指令后面的延迟槽就会变成空指令，这为流水线的指令相关解决提供了便利。</p>
+<p>这个项目提供了简单的测试环境，但是遗憾的是由于时间有限，并没有提供 difftest。</p>
+<h2 id="程序编译流程"><a href="#程序编译流程" class="headerlink" title="程序编译流程"></a>程序编译流程</h2><ul>
+<li>mips 交叉编译工具链编译成目标文件；</li>
+<li>将目标文件的 .data 抽取到 dataMem 中，将.text 抽取到 instMem 中，这个过程自动化的；</li>
+<li>通过链接脚本控制编译的数据段、程序段虚拟地址（CPU 发出的地址），以便正确访存；</li>
+<li>可以将目标文件反汇编成 .txt 文件，利于读取查看；</li>
+<li>就可以放到 vivado 中进行下板验证了；</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/Picture1.png"></p>
+<h2 id="程序运行逻辑"><a href="#程序运行逻辑" class="headerlink" title="程序运行逻辑"></a>程序运行逻辑</h2><ul>
+<li>首先是_start，设置一个 sp，由于 instMem 是 reg [31:0] mem [0:1023]，大小为 4KB，因此 sp 设置为 4KB;</li>
+<li>跳转到 _trm_init，这是一个监视 main 函数是否成功执行的环境，它调用 main 函数；</li>
+<li>main 函数就是各种测试了，比如 add.c sub.c 等等；</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/pic2.png"></p>
+<h2 id="让-MIPS-跑一个简单的-OS"><a href="#让-MIPS-跑一个简单的-OS" class="headerlink" title="让 MIPS 跑一个简单的 OS?"></a>让 MIPS 跑一个简单的 OS?</h2><p>这个 OS 来源于 ysyx 项目的 yieldOS。功能是切换上下文。</p>
+<p>原理很简单，只需要设置一个上下文结构体，A 进程调用yield()，yield() 是一个内联汇编：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs C"><span class="hljs-comment">// 系统调用</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">yield</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(</span><br><span class="hljs-params">        <span class="hljs-string">&quot;syscall\n\t&quot;</span></span><br><span class="hljs-params">        <span class="hljs-string">&quot;nop&quot;</span></span><br><span class="hljs-params">        :</span><br><span class="hljs-params">        :</span><br><span class="hljs-params">        :)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>MIPS 执行到 syscall 指令的时候，就会跳转到 __am_asm_trap：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs asm"><br>#define MAP(c, f) c(f)<br><br>#define REGS(f) \<br>      f( 1) f( 2) f( 3) f( 4) f( 5) f( 6) f( 7) f( 8) f( 9) \<br>f(10) f(11) f(12) f(13) f(14) f(15) f(16) f(17) f(18) f(19) \<br>f(20) f(21) f(22) f(23) f(24) f(25)             f(28)       \<br>f(30) f(31)<br><br>#define PUSH(n) sw $n, (n * 4)($sp);<br>#define POP(n)  lw $n, (n * 4)($v0);<br><br>#define CONTEXT_SIZE ((33) * 4)<br>#define OFFSET_SP     (29 * 4)<br><br><br><br>.set noat<br>.globl __am_asm_trap<br>__am_asm_trap:<br>  move $k1, $sp<br>  addiu $sp, $sp, -CONTEXT_SIZE<br><br>  MAP(REGS, PUSH)<br><br>  sw $k1, OFFSET_SP($sp)<br><br>  move $a0, $sp<br><br>  jal __am_irq_handle<br><br>  # 异常返回<br><br>  lw $a0, 16($v0)<br>  lw $t0, 128($v0) # 载入返回地址<br>  nop<br>  nop<br>  nop<br>  nop<br>  nop<br>  mtc0 $t0, $0      # 将返回地址载入 epc<br>  addiu $sp, $sp, CONTEXT_SIZE<br>  eret<br><br></code></pre></td></tr></table></figure>
+
+<p>保存上下文之后，调用调度函数，该函数返回一个新的上下文：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs C"><span class="hljs-type">int</span> tag = <span class="hljs-number">0</span>;<br>Context* <span class="hljs-title function_">user_handler</span><span class="hljs-params">(Context* prev)</span> &#123;<br>    <span class="hljs-comment">// 切换两个线程</span><br>    Context* c;<br>    tag++;<br>    <span class="hljs-keyword">if</span> (tag % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) &#123;<br>        c = pcb[<span class="hljs-number">0</span>].cp;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        c = pcb[<span class="hljs-number">1</span>].cp;<br>    &#125;<br>    <span class="hljs-keyword">return</span> c;<br>&#125;<br><br>Context* __am_irq_handle(Context* c) &#123;<br>    c = user_handler(c);<br><br>    <span class="hljs-keyword">return</span> c;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后，将这个上下文中的关键寄存器中的值，恢复到现场，然后 eret，返回到上次打断的地方，就可以继续运行了。</p>
+<p>这个简单的 OS 和其它 OS 的上下文基本一致，区别无非就是CPU 结构的区别了。</p>
+]]></content>
+      <categories>
+        <category>CPU 设计</category>
+      </categories>
+      <tags>
+        <tag>MIPS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux101:最好的Linux 入门资料</title>
     <url>/2024/08/07/Linux101/</url>
     <content><![CDATA[<span id="more"></span>
@@ -6312,17 +6341,6 @@
       <tags>
         <tag>Linux 入门</tag>
         <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MIPS 处理器的设计</title>
-    <url>/2025/03/10/MIPS%E5%A4%84%E7%90%86%E7%9A%84%E8%AE%BE%E8%AE%A1/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>CPU 设计</category>
-      </categories>
-      <tags>
-        <tag>MIPS</tag>
       </tags>
   </entry>
   <entry>
@@ -7043,6 +7061,83 @@
       </tags>
   </entry>
   <entry>
+    <title>MIT 6.S081学习笔记（第五章）</title>
+    <url>/2023/12/06/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%89/</url>
+    <content><![CDATA[<span id="more"></span>
+
+<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文主要完成<strong>MIT 6.S081</strong> 实验五：<strong>Copy-on-Write Fork for xv6</strong>。<br>开始之前，切换分支：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git fetch<br>$ git checkout cow<br>$ make clean<br></code></pre></td></tr></table></figure>
+<h2 id="一、问题"><a href="#一、问题" class="headerlink" title="一、问题"></a>一、问题</h2><h3 id="Question-requirements"><a href="#Question-requirements" class="headerlink" title="Question requirements"></a>Question requirements</h3><blockquote>
+<p>The <code>fork()</code> system call in <strong>xv6</strong> copies all of the parent process’s user-space memory into the child. If the parent is large, copying can take a long time. Worse, the work is often largely wasted: <code>fork()</code> is commonly followed by <code>exec()</code> in the child, which discards the copied memory, usually without using most of it. On the other hand, if both parent and child use a copied page, and one or both writes it, the copy is truly needed.</p>
+</blockquote>
+<h3 id="The-solution"><a href="#The-solution" class="headerlink" title="The solution"></a>The solution</h3><blockquote>
+<p>Your goal in implementing copy-on-write (COW) <code>fork()</code> is to defer allocating and copying physical memory pages until the copies are actually needed, if ever.<br>COW <code>fork()</code> creates just a page table for the child, with <strong>PTEs</strong> for user memory pointing to the parent’s physical pages. COW <code>fork()</code> marks all the user <strong>PTEs</strong> in both parent and child as read-only. When either process tries to write one of these COW pages, the CPU will force a page fault. The kernel page-fault handler detects this case, allocates a page of physical memory for the faulting process, copies the original page into the new page, and modifies the relevant <strong>PTE</strong> in the faulting process to refer to the new page, this time with the <strong>PTE</strong> marked writeable. When the page fault handler returns, the user process will be able to write its copy of the page.<br>COW <code>fork()</code> makes freeing of the physical pages that implement user memory a little trickier. A given physical page may be referred to by multiple processes’ page tables, and should be freed only when the last reference disappears. In a simple kernel like xv6 this bookkeeping is reasonably straightforward, but in production kernels this can be difficult to get right; see, for example, Patching until the <strong>COWs</strong> come home.</p>
+</blockquote>
+<h3 id="Here’s-a-reasonable-plan-of-attack"><a href="#Here’s-a-reasonable-plan-of-attack" class="headerlink" title="Here’s a reasonable plan of attack."></a>Here’s a reasonable plan of attack.</h3><blockquote>
+<ul>
+<li>Modify <code>uvmcopy()</code> to map the parent’s physical pages into the child, instead of allocating new pages. Clear <strong>PTE_W</strong> in the <strong>PTEs</strong> of both child and parent for pages that have <strong>PTE_W</strong> set.</li>
+<li>Modify <code>usertrap()</code> to recognize page faults. When a write page-fault occurs on a <strong>COW</strong> page that was originally writeable, allocate a new page with <code>kalloc()</code>, copy the old page to the new page, and install the new page in the <strong>PTE</strong> with <strong>PTE_W</strong> set. Pages that were originally read-only (not mapped PTE_W, like pages in the text segment) should remain read-only and shared between parent and child; a process that tries to write such a page should be killed.</li>
+<li>Ensure that each physical page is freed when the last PTE reference to it goes away – but not before. A good way to do this is to keep, for each physical page, a “reference count” of the number of user page tables that refer to that page. Set a page’s reference count to one when <code>kalloc()</code> allocates it. Increment a page’s reference count when fork causes a child to share the page, and decrement a page’s count each time any process drops the page from its page table. <code>kfree()</code> should only place a page back on the free list if its reference count is zero. It’s OK to to keep these counts in a fixed-size array of integers. You’ll have to work out a scheme for how to index the array and how to choose its size. For example, you could index the array with the page’s physical address divided by 4096, and give the array a number of elements equal to highest physical address of any page placed on the free list by <code>kinit()</code> in kalloc.c. Feel free to modify kalloc.c (e.g., <code>kalloc()</code> and <code>kfree()</code>) to maintain the reference counts.</li>
+<li>Modify <code>copyout()</code> to use the same scheme as page faults when it encounters a <strong>COW</strong> page.</li>
+</ul>
+</blockquote>
+<h3 id="Some-hints"><a href="#Some-hints" class="headerlink" title="Some hints"></a>Some hints</h3><blockquote>
+<ul>
+<li>It may be useful to have a way to record, for each PTE, whether it is a COW mapping. You can use the <strong>RSW</strong> (reserved for software) bits in the <strong>RISC-V</strong> PTE for this.</li>
+<li><code>usertests -q</code> explores scenarios that cowtest does not test, so don’t forget to check that all tests pass for both.</li>
+<li>Some helpful macros and definitions for page table flags are at the end of <code>kernel/riscv.h</code>.<br>If a <strong>COW</strong> page fault occurs and there’s no free memory, the process should be killed.</li>
+</ul>
+</blockquote>
+<h2 id="二、答案"><a href="#二、答案" class="headerlink" title="二、答案"></a>二、答案</h2><p>这个实验的思路已经在上面提到过，题目给的解决思路相当清晰，只需要照着做就可以。</p>
+<h3 id="1、在-kernel-vm-c-中修改uvmcopy"><a href="#1、在-kernel-vm-c-中修改uvmcopy" class="headerlink" title="1、在 kernel&#x2F;vm.c 中修改uvmcopy()"></a>1、在 kernel&#x2F;vm.c 中修改<code>uvmcopy()</code></h3><p>如果这个 <strong>page</strong> 是只读的，那么就不用管，直接映射在父进程就好了。如果这个 <strong>page</strong> 是可以写的，那么就需要将它标记为不可写（为了引发段错误，从而进一步处理），并且打上 <strong>COW</strong> 标记。<br>在<code>riscv.h</code>中加上<strong>COW</strong>标记定义：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> PTE_C (1L &lt;&lt; 8) <span class="hljs-comment">// copy-on-write</span></span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">uvmcopy</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> old, <span class="hljs-type">pagetable_t</span> new, uint64 sz)</span><br>&#123;<br>  <span class="hljs-type">pte_t</span> *pte;<br>  uint64 pa, i;<br>  <span class="hljs-type">int</span> flags;<br><br>  <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; sz; i += PGSIZE)&#123;<br>    <span class="hljs-keyword">if</span>((pte = walk(old, i, <span class="hljs-number">0</span>)) == <span class="hljs-number">0</span>)<br>      panic(<span class="hljs-string">&quot;uvmcopy: pte should exist&quot;</span>);<br>    <span class="hljs-keyword">if</span>((*pte &amp; PTE_V) == <span class="hljs-number">0</span>)<br>      panic(<span class="hljs-string">&quot;uvmcopy: page not present&quot;</span>);<br>    <span class="hljs-keyword">if</span>((pa = PTE2PA(*pte)) == <span class="hljs-number">0</span>)<br>      panic(<span class="hljs-string">&quot;uvmcopy: address should exist&quot;</span>);<br><br>    <span class="hljs-keyword">if</span>(*pte &amp; PTE_W)&#123; <span class="hljs-comment">// 如果可以写变成COW页</span><br>      *pte |= PTE_C;<br>      *pte &amp;= ~PTE_W;<br>    &#125;<br><br>    flags = PTE_FLAGS(*pte);<br>    <span class="hljs-keyword">if</span>(mappages(new, i, PGSIZE, (uint64)pa, flags) != <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;uvmcopy: mappages\n&quot;</span>);<br>      <span class="hljs-keyword">goto</span> err;<br>    &#125;<br>    refcnt_inc((<span class="hljs-type">void</span> *) pa);  <span class="hljs-comment">// 增加引用计数。</span><br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br><br> err:<br>  uvmunmap(new, <span class="hljs-number">0</span>, i / PGSIZE, <span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="2、在-kernel-trap-c-中修改-usertrap"><a href="#2、在-kernel-trap-c-中修改-usertrap" class="headerlink" title="2、在 kernel&#x2F;trap.c 中修改 usertrap()"></a>2、在 kernel&#x2F;trap.c 中修改 <code>usertrap()</code></h3><figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r_scause() == <span class="hljs-number">15</span>) &#123;<br>    <span class="hljs-comment">// 找到当前错误页</span><br>    uint64 addr = r_stval();<br>    <span class="hljs-comment">// 进行cow处理</span><br>    <span class="hljs-keyword">if</span>(cowalloc(p-&gt;pagetable, addr) &lt; <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;alloc user page fault addr=%p\n&quot;</span>, addr);<br>      setkilled(p);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="3、在kernel-kalloc-c中设置引用计数机制"><a href="#3、在kernel-kalloc-c中设置引用计数机制" class="headerlink" title="3、在kernel&#x2F;kalloc.c中设置引用计数机制"></a>3、在kernel&#x2F;kalloc.c中设置引用计数机制</h3><p>先在 <code>riscv.h</code> 中定义一些宏：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// cow</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> PG2REFIDX(_pa) ((((uint64)_pa) - KERNBASE) / PGSIZE)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MX_PGIDX PG2REFIDX(PHYSTOP)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> PG_REFCNT(_pa) pg_refcnt[PG2REFIDX((_pa))]</span><br></code></pre></td></tr></table></figure>
+<p>建立引用计数机制：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// cow</span><br><span class="hljs-type">int</span> pg_refcnt[MX_PGIDX];<br><span class="hljs-class"><span class="hljs-keyword">struct</span> &#123;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">spinlock</span> <span class="hljs-title">lock</span>;</span><br>  <span class="hljs-type">int</span> ref[PHYSTOP/PGSIZE];<br>&#125; pageref;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">refcnt_inc</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;refcnt_inc&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  PG_REFCNT(pa)++;<br>  release(&amp;pageref.lock);<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">refcnt_init</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;refcnt_init&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  PG_REFCNT(pa) = <span class="hljs-number">1</span>;<br>  release(&amp;pageref.lock);<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">refcnt_dec</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;refcnt_dec&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  PG_REFCNT(pa)--;<br>  release(&amp;pageref.lock);<br>&#125;<br><br><span class="hljs-type">int</span><br><span class="hljs-title function_">get_refcnt</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;get_refcnt&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  <span class="hljs-type">int</span> ret = PG_REFCNT(pa);<br>  release(&amp;pageref.lock);<br>  <span class="hljs-keyword">return</span> ret;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4、在-kernel-vm-c-中实现-cowalloc"><a href="#4、在-kernel-vm-c-中实现-cowalloc" class="headerlink" title="4、在 kernel&#x2F;vm.c 中实现 cowalloc()"></a>4、在 kernel&#x2F;vm.c 中实现 <code>cowalloc()</code></h3><p>因为我们还需要在 <code>copyout()</code>中使用这个函数，因此我们要把这个函数的定义加入到 <code>defs.h</code>中：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">cowalloc</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> pagetable, uint64 va)</span>;<br></code></pre></td></tr></table></figure>
+
+<p>思路就是当引用计数为 <strong>1</strong> （父进程初始时，对 <strong>page</strong> 的引用计数就是 <strong>1</strong>，因为 <code>uvmcopy()</code> 自增了它）时不变，直接恢复父进程的<strong>写权限</strong>。当引用计数大于 <strong>1</strong> 时，创建新的页表，赋值内容到新的页表，建立新的映射，更新标记位，并且去掉旧的映射。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">cowalloc</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> pagetable, uint64 va)</span><br>&#123;<br>	<span class="hljs-comment">// 进行一些检查</span><br>  <span class="hljs-keyword">if</span>(va &gt;= MAXVA)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br><br>  uint64 pa, new_pa, va_rounded;<br>  <span class="hljs-type">int</span> flags;<br>  <span class="hljs-type">pte_t</span> *pte = walk(pagetable, va, <span class="hljs-number">0</span>);<br><br>  <span class="hljs-keyword">if</span>( pte == <span class="hljs-number">0</span> || (*pte &amp; PTE_V) == <span class="hljs-number">0</span> || (*pte &amp; PTE_U) == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br><br>  flags = PTE_FLAGS(*pte);<br>  pa = PTE2PA(*pte);<br>  va_rounded = PGROUNDDOWN(va);<br>  <span class="hljs-comment">// 安全检查</span><br>  <span class="hljs-keyword">if</span>(!(*pte &amp; PTE_C) &amp;&amp; !(*pte &amp; PTE_W))<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>  <span class="hljs-keyword">if</span>( (*pte &amp; PTE_W) || !(*pte &amp; PTE_C))<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">if</span>(get_refcnt((<span class="hljs-type">void</span> *) pa) &gt; <span class="hljs-number">1</span>)&#123;<br>    <span class="hljs-keyword">if</span>((new_pa = (uint64) kalloc()) == <span class="hljs-number">0</span>) <span class="hljs-comment">// 申请一个物理页。</span><br>      panic(<span class="hljs-string">&quot;cowalloc: kalloc&quot;</span>);<br>    memmove((<span class="hljs-type">void</span> *)new_pa, (<span class="hljs-type">const</span> <span class="hljs-type">void</span> *) pa, PGSIZE);  <span class="hljs-comment">// 将原物理页中的内容复制到新物理页中。</span><br>    uvmunmap(pagetable, va_rounded, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>);  <span class="hljs-comment">// 解除虚拟页和物理页的映射关系。</span><br>    flags &amp;= ~PTE_C;  <span class="hljs-comment">// 清除页表项中的 COW 位。</span><br>    flags |= PTE_W;  <span class="hljs-comment">// 设置页表项中的 W 位。</span><br>    <span class="hljs-keyword">if</span>(mappages(pagetable, va_rounded, PGSIZE, new_pa, flags) != <span class="hljs-number">0</span>)&#123;<span class="hljs-comment">// 建立新的虚拟页和物理页的映射关系。</span><br>      kfree((<span class="hljs-type">void</span> *)new_pa);<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(get_refcnt((<span class="hljs-type">void</span> *) pa) == <span class="hljs-number">1</span>)&#123;<br>    *pte |= PTE_W;<br>    *pte &amp;= ~PTE_C;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="5、-在-kernel-vm-c-中修改-copyout-函数"><a href="#5、-在-kernel-vm-c-中修改-copyout-函数" class="headerlink" title="5、 在 kernel&#x2F;vm.c 中修改 copyout() 函数"></a>5、 在 kernel&#x2F;vm.c 中修改 <code>copyout()</code> 函数</h3><p>从内核中将数据复制到用户 <strong>page</strong> 时，必须确保用户页是独立存在的。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">copyout</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> pagetable, uint64 dstva, <span class="hljs-type">char</span> *src, uint64 len)</span><br>&#123;<br>  uint64 n, va0, pa0;<br><br>  <span class="hljs-keyword">while</span>(len &gt; <span class="hljs-number">0</span>)&#123;<br>    va0 = PGROUNDDOWN(dstva);<br>    <span class="hljs-keyword">if</span>(cowalloc(pagetable, va0) &lt; <span class="hljs-number">0</span>)<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    pa0 = walkaddr(pagetable, va0);<br>    <span class="hljs-keyword">if</span>(pa0 == <span class="hljs-number">0</span>)<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    n = PGSIZE - (dstva - va0);<br>    <span class="hljs-keyword">if</span>(n &gt; len)<br>      n = len;<br>    memmove((<span class="hljs-type">void</span> *)(pa0 + (dstva - va0)), src, n);<br><br>    len -= n;<br>    src += n;<br>    dstva = va0 + PGSIZE;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6、修改其它函数"><a href="#6、修改其它函数" class="headerlink" title="6、修改其它函数"></a>6、修改其它函数</h3><p><code>kinit()</code>:<br>将引用计数数组设为 <strong>0</strong>：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span><br><span class="hljs-title function_">kinit</span><span class="hljs-params">()</span><br>&#123;<br>  initlock(&amp;kmem.lock, <span class="hljs-string">&quot;kmem&quot;</span>);<br>  initlock(&amp;pageref.lock, <span class="hljs-string">&quot;ref_cnt&quot;</span>);<br>  <span class="hljs-built_in">memset</span>(pageref.ref, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(pageref.ref));<br>  freerange(end, (<span class="hljs-type">void</span>*)PHYSTOP);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><code>kfree()</code>:<br>引用计数大于 <strong>1</strong> 时自减，然后返回；等于 <strong>1</strong> 时，准备释放工作。释放前，置入垃圾信息防止泄露信息，然后放到 <code>freelist</code> 待用。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span><br><span class="hljs-title function_">kfree</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">run</span> *<span class="hljs-title">r</span>;</span><br><br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;kfree&quot;</span>);<br><br>  <span class="hljs-keyword">if</span>(get_refcnt(pa) &gt; <span class="hljs-number">1</span>)&#123;<br>    refcnt_dec(pa);<br>    <span class="hljs-keyword">return</span>;<br>  &#125;<br><br>  <span class="hljs-comment">// Fill with junk to catch dangling refs.</span><br>  <span class="hljs-built_in">memset</span>(pa, <span class="hljs-number">1</span>, PGSIZE);<br><br>  r = (<span class="hljs-keyword">struct</span> run*)pa;<br><br>  acquire(&amp;kmem.lock);<br>  r-&gt;next = kmem.freelist;<br>  kmem.freelist = r;<br>  release(&amp;kmem.lock);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><code>kalloc()</code>:<br>对于新分配的 <strong>page</strong>，将引用计数设为 <strong>1</strong>：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> *<br><span class="hljs-title function_">kalloc</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">run</span> *<span class="hljs-title">r</span>;</span><br><br>  acquire(&amp;kmem.lock);<br>  r = kmem.freelist;<br>  <span class="hljs-keyword">if</span>(r) &#123;<br>    kmem.freelist = r-&gt;next;<br>    refcnt_init((<span class="hljs-type">void</span>*)r);<br>  &#125;<br>  release(&amp;kmem.lock);<br><br>  <span class="hljs-keyword">if</span>(r)<br>    <span class="hljs-built_in">memset</span>((<span class="hljs-type">char</span>*)r, <span class="hljs-number">5</span>, PGSIZE); <span class="hljs-comment">// fill with junk</span><br>  <span class="hljs-keyword">return</span> (<span class="hljs-type">void</span>*)r;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因为这几个函数需要在其它地方使用，也需要修改 <code>defs.h</code>中：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span>            <span class="hljs-title function_">refcnt_inc</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>;<br><span class="hljs-type">void</span>            <span class="hljs-title function_">refcnt_dec</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>;<br><span class="hljs-type">int</span>             <span class="hljs-title function_">get_refcnt</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>;<br></code></pre></td></tr></table></figure>
+
+<p>实验到此完成。</p>
+<h2 id="三、测试"><a href="#三、测试" class="headerlink" title="三、测试"></a>三、测试</h2><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">== Test running cowtest ==<br>$ make qemu-gdb<br>(13.4s)<br>== Test   simple ==<br>  simple: OK<br>== Test   three ==<br>  three: OK<br>== Test   file ==<br>  file: OK<br>== Test usertests ==<br>$ make qemu-gdb<br>(11.8s)<br>    (Old xv6.out.usertests failure <span class="hljs-built_in">log</span> removed)<br>== Test   usertests: copyin ==<br>  usertests: copyin: OK<br>== Test   usertests: copyout ==<br>  usertests: copyout: OK<br>== Test   usertests: all tests ==<br>  usertests: all tests: OK<br>== Test time ==<br>time: OK<br>Score: 110/110<br></code></pre></td></tr></table></figure>
+<h2 id="四、实验总结"><a href="#四、实验总结" class="headerlink" title="四、实验总结"></a>四、实验总结</h2><p>该实验主要解决了在 <strong>xv6</strong> 操作系统中，通过实现<strong>Copy-on-Write</strong>（COW）<strong>fork</strong>，减少 <code>fork()</code> 系统调用所需的内存复制。这意味着在父进程和子进程之间共享物理页，并延迟物理内存分配和复制，直到有进程对共享的页进行写入操作。</p>
+<p>首先，在实现过程中，需要修改并新增了几个关键函数，如<code>uvmcopy()</code>来映射父进程的物理页到子进程，以及<code>cowalloc()</code>来处理<strong>COW</strong>页的分配。同时，对于用户空间和内核空间之间的数据传递，也需要修改<code>copyout()</code> 函数以确保用户页的独立存在。</p>
+<p>引入引用计数机制也是关键之举，它确保了物理页被正确释放。通过对物理页的引用计数进行管理，确保了正确的内存释放顺序，避免了可能的内存泄漏和悬空指针问题。</p>
+<p><em>全文完，感谢阅读。</em></p>
+]]></content>
+      <categories>
+        <category>OS</category>
+        <category>系统编程</category>
+        <category>Unix/Linux</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>笔记</tag>
+        <tag>操作系统</tag>
+        <tag>MIT 6.S081</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MIT 6.S081学习笔记（第二章）</title>
     <url>/2023/10/05/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%89/</url>
     <content><![CDATA[<span id="more"></span>
@@ -7225,83 +7320,6 @@
 
 
 
-]]></content>
-      <categories>
-        <category>OS</category>
-        <category>系统编程</category>
-        <category>Unix/Linux</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>笔记</tag>
-        <tag>操作系统</tag>
-        <tag>MIT 6.S081</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MIT 6.S081学习笔记（第五章）</title>
-    <url>/2023/12/06/MIT%206.S081%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%89/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h2 id="〇、前言"><a href="#〇、前言" class="headerlink" title="〇、前言"></a>〇、前言</h2><p>本文主要完成<strong>MIT 6.S081</strong> 实验五：<strong>Copy-on-Write Fork for xv6</strong>。<br>开始之前，切换分支：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ git fetch<br>$ git checkout cow<br>$ make clean<br></code></pre></td></tr></table></figure>
-<h2 id="一、问题"><a href="#一、问题" class="headerlink" title="一、问题"></a>一、问题</h2><h3 id="Question-requirements"><a href="#Question-requirements" class="headerlink" title="Question requirements"></a>Question requirements</h3><blockquote>
-<p>The <code>fork()</code> system call in <strong>xv6</strong> copies all of the parent process’s user-space memory into the child. If the parent is large, copying can take a long time. Worse, the work is often largely wasted: <code>fork()</code> is commonly followed by <code>exec()</code> in the child, which discards the copied memory, usually without using most of it. On the other hand, if both parent and child use a copied page, and one or both writes it, the copy is truly needed.</p>
-</blockquote>
-<h3 id="The-solution"><a href="#The-solution" class="headerlink" title="The solution"></a>The solution</h3><blockquote>
-<p>Your goal in implementing copy-on-write (COW) <code>fork()</code> is to defer allocating and copying physical memory pages until the copies are actually needed, if ever.<br>COW <code>fork()</code> creates just a page table for the child, with <strong>PTEs</strong> for user memory pointing to the parent’s physical pages. COW <code>fork()</code> marks all the user <strong>PTEs</strong> in both parent and child as read-only. When either process tries to write one of these COW pages, the CPU will force a page fault. The kernel page-fault handler detects this case, allocates a page of physical memory for the faulting process, copies the original page into the new page, and modifies the relevant <strong>PTE</strong> in the faulting process to refer to the new page, this time with the <strong>PTE</strong> marked writeable. When the page fault handler returns, the user process will be able to write its copy of the page.<br>COW <code>fork()</code> makes freeing of the physical pages that implement user memory a little trickier. A given physical page may be referred to by multiple processes’ page tables, and should be freed only when the last reference disappears. In a simple kernel like xv6 this bookkeeping is reasonably straightforward, but in production kernels this can be difficult to get right; see, for example, Patching until the <strong>COWs</strong> come home.</p>
-</blockquote>
-<h3 id="Here’s-a-reasonable-plan-of-attack"><a href="#Here’s-a-reasonable-plan-of-attack" class="headerlink" title="Here’s a reasonable plan of attack."></a>Here’s a reasonable plan of attack.</h3><blockquote>
-<ul>
-<li>Modify <code>uvmcopy()</code> to map the parent’s physical pages into the child, instead of allocating new pages. Clear <strong>PTE_W</strong> in the <strong>PTEs</strong> of both child and parent for pages that have <strong>PTE_W</strong> set.</li>
-<li>Modify <code>usertrap()</code> to recognize page faults. When a write page-fault occurs on a <strong>COW</strong> page that was originally writeable, allocate a new page with <code>kalloc()</code>, copy the old page to the new page, and install the new page in the <strong>PTE</strong> with <strong>PTE_W</strong> set. Pages that were originally read-only (not mapped PTE_W, like pages in the text segment) should remain read-only and shared between parent and child; a process that tries to write such a page should be killed.</li>
-<li>Ensure that each physical page is freed when the last PTE reference to it goes away – but not before. A good way to do this is to keep, for each physical page, a “reference count” of the number of user page tables that refer to that page. Set a page’s reference count to one when <code>kalloc()</code> allocates it. Increment a page’s reference count when fork causes a child to share the page, and decrement a page’s count each time any process drops the page from its page table. <code>kfree()</code> should only place a page back on the free list if its reference count is zero. It’s OK to to keep these counts in a fixed-size array of integers. You’ll have to work out a scheme for how to index the array and how to choose its size. For example, you could index the array with the page’s physical address divided by 4096, and give the array a number of elements equal to highest physical address of any page placed on the free list by <code>kinit()</code> in kalloc.c. Feel free to modify kalloc.c (e.g., <code>kalloc()</code> and <code>kfree()</code>) to maintain the reference counts.</li>
-<li>Modify <code>copyout()</code> to use the same scheme as page faults when it encounters a <strong>COW</strong> page.</li>
-</ul>
-</blockquote>
-<h3 id="Some-hints"><a href="#Some-hints" class="headerlink" title="Some hints"></a>Some hints</h3><blockquote>
-<ul>
-<li>It may be useful to have a way to record, for each PTE, whether it is a COW mapping. You can use the <strong>RSW</strong> (reserved for software) bits in the <strong>RISC-V</strong> PTE for this.</li>
-<li><code>usertests -q</code> explores scenarios that cowtest does not test, so don’t forget to check that all tests pass for both.</li>
-<li>Some helpful macros and definitions for page table flags are at the end of <code>kernel/riscv.h</code>.<br>If a <strong>COW</strong> page fault occurs and there’s no free memory, the process should be killed.</li>
-</ul>
-</blockquote>
-<h2 id="二、答案"><a href="#二、答案" class="headerlink" title="二、答案"></a>二、答案</h2><p>这个实验的思路已经在上面提到过，题目给的解决思路相当清晰，只需要照着做就可以。</p>
-<h3 id="1、在-kernel-vm-c-中修改uvmcopy"><a href="#1、在-kernel-vm-c-中修改uvmcopy" class="headerlink" title="1、在 kernel&#x2F;vm.c 中修改uvmcopy()"></a>1、在 kernel&#x2F;vm.c 中修改<code>uvmcopy()</code></h3><p>如果这个 <strong>page</strong> 是只读的，那么就不用管，直接映射在父进程就好了。如果这个 <strong>page</strong> 是可以写的，那么就需要将它标记为不可写（为了引发段错误，从而进一步处理），并且打上 <strong>COW</strong> 标记。<br>在<code>riscv.h</code>中加上<strong>COW</strong>标记定义：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> PTE_C (1L &lt;&lt; 8) <span class="hljs-comment">// copy-on-write</span></span><br></code></pre></td></tr></table></figure>
-
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">uvmcopy</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> old, <span class="hljs-type">pagetable_t</span> new, uint64 sz)</span><br>&#123;<br>  <span class="hljs-type">pte_t</span> *pte;<br>  uint64 pa, i;<br>  <span class="hljs-type">int</span> flags;<br><br>  <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; sz; i += PGSIZE)&#123;<br>    <span class="hljs-keyword">if</span>((pte = walk(old, i, <span class="hljs-number">0</span>)) == <span class="hljs-number">0</span>)<br>      panic(<span class="hljs-string">&quot;uvmcopy: pte should exist&quot;</span>);<br>    <span class="hljs-keyword">if</span>((*pte &amp; PTE_V) == <span class="hljs-number">0</span>)<br>      panic(<span class="hljs-string">&quot;uvmcopy: page not present&quot;</span>);<br>    <span class="hljs-keyword">if</span>((pa = PTE2PA(*pte)) == <span class="hljs-number">0</span>)<br>      panic(<span class="hljs-string">&quot;uvmcopy: address should exist&quot;</span>);<br><br>    <span class="hljs-keyword">if</span>(*pte &amp; PTE_W)&#123; <span class="hljs-comment">// 如果可以写变成COW页</span><br>      *pte |= PTE_C;<br>      *pte &amp;= ~PTE_W;<br>    &#125;<br><br>    flags = PTE_FLAGS(*pte);<br>    <span class="hljs-keyword">if</span>(mappages(new, i, PGSIZE, (uint64)pa, flags) != <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;uvmcopy: mappages\n&quot;</span>);<br>      <span class="hljs-keyword">goto</span> err;<br>    &#125;<br>    refcnt_inc((<span class="hljs-type">void</span> *) pa);  <span class="hljs-comment">// 增加引用计数。</span><br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br><br> err:<br>  uvmunmap(new, <span class="hljs-number">0</span>, i / PGSIZE, <span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="2、在-kernel-trap-c-中修改-usertrap"><a href="#2、在-kernel-trap-c-中修改-usertrap" class="headerlink" title="2、在 kernel&#x2F;trap.c 中修改 usertrap()"></a>2、在 kernel&#x2F;trap.c 中修改 <code>usertrap()</code></h3><figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r_scause() == <span class="hljs-number">15</span>) &#123;<br>    <span class="hljs-comment">// 找到当前错误页</span><br>    uint64 addr = r_stval();<br>    <span class="hljs-comment">// 进行cow处理</span><br>    <span class="hljs-keyword">if</span>(cowalloc(p-&gt;pagetable, addr) &lt; <span class="hljs-number">0</span>)&#123;<br>      <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;alloc user page fault addr=%p\n&quot;</span>, addr);<br>      setkilled(p);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="3、在kernel-kalloc-c中设置引用计数机制"><a href="#3、在kernel-kalloc-c中设置引用计数机制" class="headerlink" title="3、在kernel&#x2F;kalloc.c中设置引用计数机制"></a>3、在kernel&#x2F;kalloc.c中设置引用计数机制</h3><p>先在 <code>riscv.h</code> 中定义一些宏：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// cow</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> PG2REFIDX(_pa) ((((uint64)_pa) - KERNBASE) / PGSIZE)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MX_PGIDX PG2REFIDX(PHYSTOP)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> PG_REFCNT(_pa) pg_refcnt[PG2REFIDX((_pa))]</span><br></code></pre></td></tr></table></figure>
-<p>建立引用计数机制：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// cow</span><br><span class="hljs-type">int</span> pg_refcnt[MX_PGIDX];<br><span class="hljs-class"><span class="hljs-keyword">struct</span> &#123;</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">spinlock</span> <span class="hljs-title">lock</span>;</span><br>  <span class="hljs-type">int</span> ref[PHYSTOP/PGSIZE];<br>&#125; pageref;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">refcnt_inc</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;refcnt_inc&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  PG_REFCNT(pa)++;<br>  release(&amp;pageref.lock);<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">refcnt_init</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;refcnt_init&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  PG_REFCNT(pa) = <span class="hljs-number">1</span>;<br>  release(&amp;pageref.lock);<br>&#125;<br><br><span class="hljs-type">void</span><br><span class="hljs-title function_">refcnt_dec</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;refcnt_dec&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  PG_REFCNT(pa)--;<br>  release(&amp;pageref.lock);<br>&#125;<br><br><span class="hljs-type">int</span><br><span class="hljs-title function_">get_refcnt</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>&#123;<br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;get_refcnt&quot;</span>);<br>  acquire(&amp;pageref.lock);<br>  <span class="hljs-type">int</span> ret = PG_REFCNT(pa);<br>  release(&amp;pageref.lock);<br>  <span class="hljs-keyword">return</span> ret;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="4、在-kernel-vm-c-中实现-cowalloc"><a href="#4、在-kernel-vm-c-中实现-cowalloc" class="headerlink" title="4、在 kernel&#x2F;vm.c 中实现 cowalloc()"></a>4、在 kernel&#x2F;vm.c 中实现 <code>cowalloc()</code></h3><p>因为我们还需要在 <code>copyout()</code>中使用这个函数，因此我们要把这个函数的定义加入到 <code>defs.h</code>中：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">cowalloc</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> pagetable, uint64 va)</span>;<br></code></pre></td></tr></table></figure>
-
-<p>思路就是当引用计数为 <strong>1</strong> （父进程初始时，对 <strong>page</strong> 的引用计数就是 <strong>1</strong>，因为 <code>uvmcopy()</code> 自增了它）时不变，直接恢复父进程的<strong>写权限</strong>。当引用计数大于 <strong>1</strong> 时，创建新的页表，赋值内容到新的页表，建立新的映射，更新标记位，并且去掉旧的映射。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">cowalloc</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> pagetable, uint64 va)</span><br>&#123;<br>	<span class="hljs-comment">// 进行一些检查</span><br>  <span class="hljs-keyword">if</span>(va &gt;= MAXVA)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br><br>  uint64 pa, new_pa, va_rounded;<br>  <span class="hljs-type">int</span> flags;<br>  <span class="hljs-type">pte_t</span> *pte = walk(pagetable, va, <span class="hljs-number">0</span>);<br><br>  <span class="hljs-keyword">if</span>( pte == <span class="hljs-number">0</span> || (*pte &amp; PTE_V) == <span class="hljs-number">0</span> || (*pte &amp; PTE_U) == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br><br>  flags = PTE_FLAGS(*pte);<br>  pa = PTE2PA(*pte);<br>  va_rounded = PGROUNDDOWN(va);<br>  <span class="hljs-comment">// 安全检查</span><br>  <span class="hljs-keyword">if</span>(!(*pte &amp; PTE_C) &amp;&amp; !(*pte &amp; PTE_W))<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>  <span class="hljs-keyword">if</span>( (*pte &amp; PTE_W) || !(*pte &amp; PTE_C))<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">if</span>(get_refcnt((<span class="hljs-type">void</span> *) pa) &gt; <span class="hljs-number">1</span>)&#123;<br>    <span class="hljs-keyword">if</span>((new_pa = (uint64) kalloc()) == <span class="hljs-number">0</span>) <span class="hljs-comment">// 申请一个物理页。</span><br>      panic(<span class="hljs-string">&quot;cowalloc: kalloc&quot;</span>);<br>    memmove((<span class="hljs-type">void</span> *)new_pa, (<span class="hljs-type">const</span> <span class="hljs-type">void</span> *) pa, PGSIZE);  <span class="hljs-comment">// 将原物理页中的内容复制到新物理页中。</span><br>    uvmunmap(pagetable, va_rounded, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>);  <span class="hljs-comment">// 解除虚拟页和物理页的映射关系。</span><br>    flags &amp;= ~PTE_C;  <span class="hljs-comment">// 清除页表项中的 COW 位。</span><br>    flags |= PTE_W;  <span class="hljs-comment">// 设置页表项中的 W 位。</span><br>    <span class="hljs-keyword">if</span>(mappages(pagetable, va_rounded, PGSIZE, new_pa, flags) != <span class="hljs-number">0</span>)&#123;<span class="hljs-comment">// 建立新的虚拟页和物理页的映射关系。</span><br>      kfree((<span class="hljs-type">void</span> *)new_pa);<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(get_refcnt((<span class="hljs-type">void</span> *) pa) == <span class="hljs-number">1</span>)&#123;<br>    *pte |= PTE_W;<br>    *pte &amp;= ~PTE_C;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="5、-在-kernel-vm-c-中修改-copyout-函数"><a href="#5、-在-kernel-vm-c-中修改-copyout-函数" class="headerlink" title="5、 在 kernel&#x2F;vm.c 中修改 copyout() 函数"></a>5、 在 kernel&#x2F;vm.c 中修改 <code>copyout()</code> 函数</h3><p>从内核中将数据复制到用户 <strong>page</strong> 时，必须确保用户页是独立存在的。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">copyout</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> pagetable, uint64 dstva, <span class="hljs-type">char</span> *src, uint64 len)</span><br>&#123;<br>  uint64 n, va0, pa0;<br><br>  <span class="hljs-keyword">while</span>(len &gt; <span class="hljs-number">0</span>)&#123;<br>    va0 = PGROUNDDOWN(dstva);<br>    <span class="hljs-keyword">if</span>(cowalloc(pagetable, va0) &lt; <span class="hljs-number">0</span>)<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    pa0 = walkaddr(pagetable, va0);<br>    <span class="hljs-keyword">if</span>(pa0 == <span class="hljs-number">0</span>)<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    n = PGSIZE - (dstva - va0);<br>    <span class="hljs-keyword">if</span>(n &gt; len)<br>      n = len;<br>    memmove((<span class="hljs-type">void</span> *)(pa0 + (dstva - va0)), src, n);<br><br>    len -= n;<br>    src += n;<br>    dstva = va0 + PGSIZE;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<h3 id="6、修改其它函数"><a href="#6、修改其它函数" class="headerlink" title="6、修改其它函数"></a>6、修改其它函数</h3><p><code>kinit()</code>:<br>将引用计数数组设为 <strong>0</strong>：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span><br><span class="hljs-title function_">kinit</span><span class="hljs-params">()</span><br>&#123;<br>  initlock(&amp;kmem.lock, <span class="hljs-string">&quot;kmem&quot;</span>);<br>  initlock(&amp;pageref.lock, <span class="hljs-string">&quot;ref_cnt&quot;</span>);<br>  <span class="hljs-built_in">memset</span>(pageref.ref, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(pageref.ref));<br>  freerange(end, (<span class="hljs-type">void</span>*)PHYSTOP);<br>&#125;<br><br></code></pre></td></tr></table></figure>
-<p><code>kfree()</code>:<br>引用计数大于 <strong>1</strong> 时自减，然后返回；等于 <strong>1</strong> 时，准备释放工作。释放前，置入垃圾信息防止泄露信息，然后放到 <code>freelist</code> 待用。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span><br><span class="hljs-title function_">kfree</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">run</span> *<span class="hljs-title">r</span>;</span><br><br>  <span class="hljs-keyword">if</span>(((uint64)pa % PGSIZE) != <span class="hljs-number">0</span> || (<span class="hljs-type">char</span>*)pa &lt; end || (uint64)pa &gt;= PHYSTOP)<br>    panic(<span class="hljs-string">&quot;kfree&quot;</span>);<br><br>  <span class="hljs-keyword">if</span>(get_refcnt(pa) &gt; <span class="hljs-number">1</span>)&#123;<br>    refcnt_dec(pa);<br>    <span class="hljs-keyword">return</span>;<br>  &#125;<br><br>  <span class="hljs-comment">// Fill with junk to catch dangling refs.</span><br>  <span class="hljs-built_in">memset</span>(pa, <span class="hljs-number">1</span>, PGSIZE);<br><br>  r = (<span class="hljs-keyword">struct</span> run*)pa;<br><br>  acquire(&amp;kmem.lock);<br>  r-&gt;next = kmem.freelist;<br>  kmem.freelist = r;<br>  release(&amp;kmem.lock);<br>&#125;<br></code></pre></td></tr></table></figure>
-<p><code>kalloc()</code>:<br>对于新分配的 <strong>page</strong>，将引用计数设为 <strong>1</strong>：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> *<br><span class="hljs-title function_">kalloc</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">run</span> *<span class="hljs-title">r</span>;</span><br><br>  acquire(&amp;kmem.lock);<br>  r = kmem.freelist;<br>  <span class="hljs-keyword">if</span>(r) &#123;<br>    kmem.freelist = r-&gt;next;<br>    refcnt_init((<span class="hljs-type">void</span>*)r);<br>  &#125;<br>  release(&amp;kmem.lock);<br><br>  <span class="hljs-keyword">if</span>(r)<br>    <span class="hljs-built_in">memset</span>((<span class="hljs-type">char</span>*)r, <span class="hljs-number">5</span>, PGSIZE); <span class="hljs-comment">// fill with junk</span><br>  <span class="hljs-keyword">return</span> (<span class="hljs-type">void</span>*)r;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>因为这几个函数需要在其它地方使用，也需要修改 <code>defs.h</code>中：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span>            <span class="hljs-title function_">refcnt_inc</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>;<br><span class="hljs-type">void</span>            <span class="hljs-title function_">refcnt_dec</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>;<br><span class="hljs-type">int</span>             <span class="hljs-title function_">get_refcnt</span><span class="hljs-params">(<span class="hljs-type">void</span> *pa)</span>;<br></code></pre></td></tr></table></figure>
-
-<p>实验到此完成。</p>
-<h2 id="三、测试"><a href="#三、测试" class="headerlink" title="三、测试"></a>三、测试</h2><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">== Test running cowtest ==<br>$ make qemu-gdb<br>(13.4s)<br>== Test   simple ==<br>  simple: OK<br>== Test   three ==<br>  three: OK<br>== Test   file ==<br>  file: OK<br>== Test usertests ==<br>$ make qemu-gdb<br>(11.8s)<br>    (Old xv6.out.usertests failure <span class="hljs-built_in">log</span> removed)<br>== Test   usertests: copyin ==<br>  usertests: copyin: OK<br>== Test   usertests: copyout ==<br>  usertests: copyout: OK<br>== Test   usertests: all tests ==<br>  usertests: all tests: OK<br>== Test time ==<br>time: OK<br>Score: 110/110<br></code></pre></td></tr></table></figure>
-<h2 id="四、实验总结"><a href="#四、实验总结" class="headerlink" title="四、实验总结"></a>四、实验总结</h2><p>该实验主要解决了在 <strong>xv6</strong> 操作系统中，通过实现<strong>Copy-on-Write</strong>（COW）<strong>fork</strong>，减少 <code>fork()</code> 系统调用所需的内存复制。这意味着在父进程和子进程之间共享物理页，并延迟物理内存分配和复制，直到有进程对共享的页进行写入操作。</p>
-<p>首先，在实现过程中，需要修改并新增了几个关键函数，如<code>uvmcopy()</code>来映射父进程的物理页到子进程，以及<code>cowalloc()</code>来处理<strong>COW</strong>页的分配。同时，对于用户空间和内核空间之间的数据传递，也需要修改<code>copyout()</code> 函数以确保用户页的独立存在。</p>
-<p>引入引用计数机制也是关键之举，它确保了物理页被正确释放。通过对物理页的引用计数进行管理，确保了正确的内存释放顺序，避免了可能的内存泄漏和悬空指针问题。</p>
-<p><em>全文完，感谢阅读。</em></p>
 ]]></content>
       <categories>
         <category>OS</category>
@@ -8880,6 +8898,21 @@
       </tags>
   </entry>
   <entry>
+    <title>PA2总结</title>
+    <url>/2024/09/17/PA2%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<span id="more"></span>
+
+]]></content>
+      <categories>
+        <category>ysyx</category>
+        <category>PA2</category>
+      </categories>
+      <tags>
+        <tag>ysyx</tag>
+        <tag>PA2</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PA1 感悟与过程</title>
     <url>/2024/08/05/PA1%E6%89%80%E6%9C%89%E6%84%9F%E6%82%9F%E4%B8%8E%E8%BF%87%E7%A8%8B/</url>
     <content><![CDATA[<span id="more"></span>
@@ -9025,21 +9058,6 @@
         <tag>ysyx</tag>
         <tag>PA1</tag>
         <tag>sbd</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PA2总结</title>
-    <url>/2024/09/17/PA2%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<span id="more"></span>
-
-]]></content>
-      <categories>
-        <category>ysyx</category>
-        <category>PA2</category>
-      </categories>
-      <tags>
-        <tag>ysyx</tag>
-        <tag>PA2</tag>
       </tags>
   </entry>
   <entry>
@@ -11546,6 +11564,111 @@
       </tags>
   </entry>
   <entry>
+    <title>nemu框架细节研究（二）</title>
+    <url>/2024/09/12/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%BA%8C)/</url>
+    <content><![CDATA[<span id="more"></span>
+
+<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>前文细致地研究了命令 <code>make ARCH=native ALL=add run</code> 的运行过程，对于Makefile中的行为有了很准确地把握（几乎没有疑点，可以随意修改 Makefile 且保证不会出错）。这篇文章继续研究命令<code>make ARCH=riscv32-nemu ALL=add run</code>的行为。</p>
+<h2 id="二、riscv32-nemu-开始的地方"><a href="#二、riscv32-nemu-开始的地方" class="headerlink" title="二、riscv32-nemu 开始的地方"></a>二、riscv32-nemu 开始的地方</h2><p>由于 <code>ARCH=riscv32-nemu</code>，因此 <code>ISA=riscv32</code>，<code>PLATFORM=nemu</code>。我们来看看它新包含了哪些 可以包含到Makefile中的文件:</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/<span class="hljs-variable">$(ARCH)</span>.mk<br></code></pre></td></tr></table></figure>
+
+<p>这里的 <code>ARCH=riscv32-nemu</code>，因此它会包含<code>$(AM_HOME)/scripts/riscv32-nemu.mk</code>:</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/isa/riscv.mk<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/platform/nemu.mk<br>CFLAGS  += -DISA_H=\<span class="hljs-string">&quot;riscv/riscv.h\&quot;</span><br><span class="hljs-string">COMMON_CFLAGS += -march=rv32im_zicsr -mabi=ilp32   # overwrite</span><br><span class="hljs-string">LDFLAGS       += -melf32lriscv                     # overwrite</span><br><span class="hljs-string"></span><br><span class="hljs-string">AM_SRCS += riscv/nemu/start.S \</span><br><span class="hljs-string">           riscv/nemu/cte.c \</span><br><span class="hljs-string">           riscv/nemu/trap.S \</span><br><span class="hljs-string">           riscv/nemu/vme.c</span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
+<p>这个文件就复杂多了，看起来它将 <code>isa</code> 和 <code>platform</code> 解耦了，单独包含了两个可包含文件；还定义了一个可以传递到.c 文件中的宏<code>ISA_H</code>，看来它引入了 riscv 的一些符号。</p>
+<p>后面，它更新了 <code>COMMON_CFLAGS</code>、<code>LDFLAGS</code> 等变量。</p>
+<h2 id="三、目标构建"><a href="#三、目标构建" class="headerlink" title="三、目标构建"></a>三、目标构建</h2><p>执行<code>make ARCH=riscv32-nemu ALL=add run</code>。</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">run: image</span><br>	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> run ARGS=<span class="hljs-string">&quot;<span class="hljs-variable">$(NEMUFLAGS)</span>&quot;</span> IMG=<span class="hljs-variable">$(IMAGE)</span>.bin<br></code></pre></td></tr></table></figure>
+
+<p>依赖 <code>image</code> 的依赖：<code>$(IMAGE).elf</code>、<code>image-dep</code>，这两个依赖依次执行。</p>
+<h3 id="一、-IMAGE-elf"><a href="#一、-IMAGE-elf" class="headerlink" title="一、$(IMAGE).elf"></a>一、$(IMAGE).elf</h3><figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-variable">$(IMAGE)</span>.elf: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LIBS)</span><br>	@echo + LD <span class="hljs-string">&quot;-&gt;&quot;</span> <span class="hljs-variable">$(IMAGE_REL)</span>.elf<br>	@<span class="hljs-variable">$(LD)</span> <span class="hljs-variable">$(LDFLAGS)</span> -o <span class="hljs-variable">$(IMAGE)</span>.elf --start-group <span class="hljs-variable">$(LINKAGE)</span> --end-group<br></code></pre></td></tr></table></figure>
+
+<p>这里将会编译 <code>add.c</code>、以及 <code>kilb.a</code>、<code>am.a</code>。</p>
+<p>之后，就会链接成<code>$(IMAGE).elf</code>。</p>
+<h3 id="二、image-dep"><a href="#二、image-dep" class="headerlink" title="二、image-dep"></a>二、image-dep</h3><figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">image-dep: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LIBS)</span></span><br>	@echo \<span class="hljs-comment"># Creating image [$(ARCH)]</span><br></code></pre></td></tr></table></figure>
+
+<p>依赖在上面已经编译结束了，这里直接打印一个信息就结束了。这样 image 的依赖就解决完了。接着：</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">image: <span class="hljs-variable">$(IMAGE)</span>.elf</span><br>	@<span class="hljs-variable">$(OBJDUMP)</span> -d <span class="hljs-variable">$(IMAGE)</span>.elf &gt; <span class="hljs-variable">$(IMAGE)</span>.txt<br>	@echo + OBJCOPY <span class="hljs-string">&quot;-&gt;&quot;</span> <span class="hljs-variable">$(IMAGE_REL)</span>.bin<br>	@<span class="hljs-variable">$(OBJCOPY)</span> -S --set-section-flags .bss=alloc,contents -O binary <span class="hljs-variable">$(IMAGE)</span>.elf <span class="hljs-variable">$(IMAGE)</span>.bin<br></code></pre></td></tr></table></figure>
+<p>这里是将 $(IMAGE).elf 的二进制代码抽取出来，以供在 nemu 上运行。</p>
+<h3 id="做了什么"><a href="#做了什么" class="headerlink" title="做了什么"></a>做了什么</h3><p>看看这做了什么：</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile">CROSS_COMPILE := riscv64-linux-gnu-<br>COMMON_CFLAGS := -fno-pic -march=rv64g -mcmodel=medany -mstrict-align<br>CFLAGS        += <span class="hljs-variable">$(COMMON_CFLAGS)</span> -static<br>ASFLAGS       += <span class="hljs-variable">$(COMMON_CFLAGS)</span> -O0<br>LDFLAGS       += -melf64lriscv<br><br><span class="hljs-comment"># overwrite ARCH_H defined in $(AM_HOME)/Makefile</span><br>ARCH_H := arch/riscv.h<br>...<br>AM_SRCS := platform/nemu/trm.c \<br>           platform/nemu/ioe/ioe.c \<br>           platform/nemu/ioe/timer.c \<br>           platform/nemu/ioe/input.c \<br>           platform/nemu/ioe/gpu.c \<br>           platform/nemu/ioe/audio.c \<br>           platform/nemu/ioe/disk.c \<br>           platform/nemu/mpe.c<br><br>CFLAGS    += -fdata-sections -ffunction-sections<br>LDFLAGS   += -T <span class="hljs-variable">$(AM_HOME)</span>/scripts/linker.ld \<br>             --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0<br>LDFLAGS   += --gc-sections -e _start<br>NEMUFLAGS += -l <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> dirname <span class="hljs-variable">$(IMAGE)</span>.elf)</span>/nemu-log.txt<br>NEMUFLAGS += -e <span class="hljs-variable">$(IMAGE)</span>.elf <span class="hljs-comment"># elf</span><br>NEMUFLAGS += -b <span class="hljs-comment"># 自动执行</span><br><br><br>CFLAGS += -DMAINARGS=\<span class="hljs-string">&quot;<span class="hljs-variable">$(mainargs)\&quot;</span></span><br><span class="hljs-string">CFLAGS += -I<span class="hljs-variable">$(AM_HOME)</span>/am/src/platform/nemu/include</span><br><span class="hljs-string">.PHONY: <span class="hljs-variable">$(AM_HOME)</span>/am/src/platform/nemu/trm.c</span><br><span class="hljs-string"></span><br><span class="hljs-string">image: <span class="hljs-variable">$(IMAGE)</span>.elf</span><br><span class="hljs-string">	@<span class="hljs-variable">$(OBJDUMP)</span> -d <span class="hljs-variable">$(IMAGE)</span>.elf &gt; <span class="hljs-variable">$(IMAGE)</span>.txt</span><br><span class="hljs-string">	@echo + OBJCOPY &quot;</span>-&gt;<span class="hljs-string">&quot; <span class="hljs-variable">$(IMAGE_REL)</span>.bin</span><br><span class="hljs-string">	@<span class="hljs-variable">$(OBJCOPY)</span> -S --set-section-flags .bss=alloc,contents -O binary <span class="hljs-variable">$(IMAGE)</span>.elf <span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">run: image</span><br><span class="hljs-string">	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> run ARGS=&quot;</span><span class="hljs-variable">$(NEMUFLAGS)</span><span class="hljs-string">&quot; IMG=<span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">gdb: image</span><br><span class="hljs-string">	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> gdb ARGS=&quot;</span><span class="hljs-variable">$(NEMUFLAGS)</span><span class="hljs-string">&quot; IMG=<span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">...</span><br><span class="hljs-string"></span><br><span class="hljs-string">CFLAGS  += -DISA_H=\&quot;riscv/riscv.h\&quot;</span><br><span class="hljs-string">COMMON_CFLAGS += -march=rv32im_zicsr -mabi=ilp32   # overwrite</span><br><span class="hljs-string">LDFLAGS       += -melf32lriscv                     # overwrite</span><br><span class="hljs-string"></span><br><span class="hljs-string">AM_SRCS += riscv/nemu/start.S \</span><br><span class="hljs-string">           riscv/nemu/cte.c \</span><br><span class="hljs-string">           riscv/nemu/trap.S \</span><br><span class="hljs-string">           riscv/nemu/vme.c</span><br><span class="hljs-string"></span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，由于要编译出跨平台的文件，我们在编译目标的时候，要将 image 编译成能在 riscv32 的平台能跑的程序，因此它定义了 CROSS_COMPILE。</p>
+<p>另外还加了一些需要设置 riscv 的参数 ，并把它并入到了 CFLAGS、LDFLAGS。</p>
+<ul>
+<li><p>**<code>-fno-pic</code>**：<br>禁用生成位置无关代码（Position Independent Code, PIC）。PIC 通常用于动态链接库，因为它允许代码在内存中的任何位置运行。在某些情况下，如果你不需要动态链接，或者出于性能考虑，你可能会禁用它。</p>
+</li>
+<li><p>**<code>-march=rv64g</code>**：<br>设置目标架构为 RISC-V 64位，<code>G</code> 表示支持标准整数指令集（<code>I</code>）、乘法和除法指令集（<code>M</code>）、原子指令集（<code>A</code>）、单精度浮点（<code>F</code>）、双精度浮点（<code>D</code>）和压缩指令集（<code>C</code>）。这告诉编译器生成针对此架构优化的代码。</p>
+</li>
+<li><p>**<code>-mcmodel=medany</code>**：<br>这个选项定义了代码和数据的地址模型，适用于 RISC-V。<code>medany</code> 模型适合中等大小的可执行文件，允许代码和数据位于任意位置，但假设所有符号的地址相对于程序计数器（PC）的偏移适中。</p>
+</li>
+<li><p>**<code>-mstrict-align</code>**：<br>强制数据对齐，不允许编译器生成未对齐的内存访问指令。这在一些严格要求对齐的架构上可以避免性能损失或程序错误。</p>
+</li>
+<li><p>**<code>-static</code>**：<br>生成完全静态链接的可执行文件。静态链接的程序包含了所有必需的库函数的副本，不需要依赖系统中的共享库，提高了程序的移植性。</p>
+</li>
+<li><p>**<code>-O0</code>**：<br>禁用优化。这个选项告诉编译器不进行任何优化，通常用于调试，确保编译的代码直接对应源代码，便于跟踪和调试。</p>
+</li>
+<li><p>**<code>-melf64lriscv</code>**：<br>指定链接器输出格式为 RISC-V 64位 ELF 格式。ELF（可执行与链接格式）是一种广泛使用的文件格式，用于定义不同类型的文件如可执行文件、目标文件、共享库等。</p>
+</li>
+</ul>
+<p>总体来说，这些编译和链接选项针对 RISC-V 64位架构进行了特定的优化和设置，适用于生成高效且独立的程序。</p>
+<ul>
+<li><p>**<code>-fdata-sections</code>**：<br>这个选项指导编译器将不同的数据（变量）放置在不同的段（sections）中。这有助于链接器在链接时进行优化，比如删除未使用的数据段，从而减小最终可执行文件的大小。</p>
+</li>
+<li><p>**<code>-ffunction-sections</code>**：<br>与 <code>-fdata-sections</code> 类似，这个选项指导编译器将每个函数放置在独立的段中。这样做可以让链接器有机会在最终的可执行文件中移除未被引用的函数，尤其是在结合链接器的 <code>--gc-sections</code> 选项时。</p>
+</li>
+<li><p>**<code>-T $(AM_HOME)/scripts/linker.ld</code>**：<br>指定链接器脚本的位置，这里使用的是一个环境变量 <code>AM_HOME</code>。链接器脚本用于控制链接过程，定义了各种内存布局、段到地址的映射等。这是为嵌入式系统或操作系统内核等需要精确控制内存布局的场合常用的做法。</p>
+</li>
+<li><p><strong><code>--defsym=_pmem_start=0x80000000</code></strong> 和 **<code>--defsym=_entry_offset=0x0</code>**：<br>这两个选项定义了链接时的符号。<code>--defsym</code> 用于创建一个符号并为其分配一个值。在这个例子中，<code>_pmem_start</code> 被设置为 <code>0x80000000</code> 和 <code>_entry_offset</code> 被设置为 <code>0x0</code>。这些符号在链接脚本中可能会被引用，用于指定程序的某些特定内存地址或偏移。</p>
+</li>
+<li><p>**<code>--gc-sections</code>**：<br>这个链接器选项与前面的 <code>-ffunction-sections</code> 和 <code>-fdata-sections</code> 一起工作，用来在链接阶段去除未使用的函数和数据段，从而减少生成的二进制文件大小。这对于内存受限的系统特别有用。</p>
+</li>
+<li><p>**<code>-e _start</code>**：<br>设置入口点为 <code>_start</code>。这是程序开始执行的地方，<code>-e</code> 选项用于指定入口点符号名。这在很多系统软件中非常重要，特别是在操作系统或裸机程序中，需要精确控制程序的启动过程。</p>
+</li>
+</ul>
+<p>这里添加到 <code>COMMON_CFLAGS</code> 的参数用于覆盖或指定编译时的架构和二进制接口（ABI）设置：</p>
+<ul>
+<li><p>**<code>-march=rv32im_zicsr</code>**：</p>
+<ul>
+<li>**<code>-march=rv32im_zicsr</code>**：这个选项指定目标架构为 RISC-V 32位，具体到支持整数 (<code>I</code>)、乘法 (<code>M</code>) 指令和 CSR 寄存器 (<code>Zicsr</code>)。<code>Zicsr</code> 表示支持 CSR (Control and Status Register) 指令扩展，用于控制和状态寄存器的操作，这对于系统级编程特别重要。</li>
+</ul>
+</li>
+<li><p>**<code>-mabi=ilp32</code>**：</p>
+<ul>
+<li>**<code>-mabi=ilp32</code>**：设置使用的 ABI（Application Binary Interface）为 <code>ilp32</code>，这意味着整数和指针都是 32位，符合 32位系统的处理方式。这个设置确保生成的代码在32位 RISC-V 架构上能正确执行。</li>
+</ul>
+</li>
+<li><p>**<code>-melf32lriscv</code>**：</p>
+<ul>
+<li>**<code>-melf32lriscv</code>**：这个链接器选项指定生成的可执行文件格式为 32位 RISC-V ELF 格式。ELF（Executable and Linkable Format）是一种广泛使用的文件格式，用于定义可执行文件、目标代码、共享库等。这里的设置是为了确保链接器输出的是符合 32位 RISC-V 架构的 ELF 文件。</li>
+</ul>
+</li>
+</ul>
+<p>这些选项通常用于交叉编译环境，其中开发环境（如你的电脑）和目标环境（如一个嵌入式设备）的架构不同。例如，如果你正在为一个基于 RISC-V 32位架构的嵌入式系统开发软件，就需要配置这些选项以确保代码能在目标硬件上正确运行。</p>
+<p>这样配置的编译器和链接器选项允许开发者精确控制生成代码的架构特性和二进制格式，以符合特定硬件和操作系统的要求。</p>
+<p>这样设置，就生成了适合在 nemu 上运行的 bin 文件了。</p>
+<p>这时候，继续执行：</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">run: image</span><br>	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> run ARGS=<span class="hljs-string">&quot;<span class="hljs-variable">$(NEMUFLAGS)</span>&quot;</span> IMG=<span class="hljs-variable">$(IMAGE)</span>.bin<br></code></pre></td></tr></table></figure>
+
+<p>这个命令表明，接下来将会继续编译 nemu，并且传入了一些参数。</p>
+<h2 id="四、编译-nemu"><a href="#四、编译-nemu" class="headerlink" title="四、编译 nemu"></a>四、编译 nemu</h2><figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment">#***************************************************************************************</span><br><span class="hljs-comment"># Copyright (c) 2014-2022 Zihao Yu, Nanjing University</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># NEMU is licensed under Mulan PSL v2.</span><br><span class="hljs-comment"># You can use this software according to the terms and conditions of the Mulan PSL v2.</span><br><span class="hljs-comment"># You may obtain a copy of Mulan PSL v2 at:</span><br><span class="hljs-comment">#          http://license.coscl.org.cn/MulanPSL2</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># THIS SOFTWARE IS PROVIDED ON AN &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OF ANY KIND,</span><br><span class="hljs-comment"># EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,</span><br><span class="hljs-comment"># MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># See the Mulan PSL v2 for more details.</span><br><span class="hljs-comment">#**************************************************************************************/</span><br><br><span class="hljs-comment"># Sanity check</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">wildcard</span> <span class="hljs-variable">$(NEMU_HOME)</span>/src/nemu-main.c)</span>,)<br>  <span class="hljs-variable">$(<span class="hljs-built_in">error</span> NEMU_HOME=<span class="hljs-variable">$(NEMU_HOME)</span> is not a NEMU repo)</span><br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment"># Include variables and rules generated by menuconfig</span><br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf<br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf.cmd<br><br>remove_quote = <span class="hljs-variable">$(<span class="hljs-built_in">patsubst</span> &quot;%&quot;,%,$(1)</span>)<br><br><span class="hljs-comment"># Extract variabls from menuconfig</span><br>GUEST_ISA ?= <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ISA)</span>)</span><br>ENGINE ?= <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ENGINE)</span>)</span><br>NAME    = <span class="hljs-variable">$(GUEST_ISA)</span>-nemu-<span class="hljs-variable">$(ENGINE)</span><br><br><span class="hljs-comment"># Include all filelist.mk to merge file lists</span><br>FILELIST_MK = <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L ./src -name &quot;filelist.mk&quot;)</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(FILELIST_MK)</span><br><br><span class="hljs-comment"># Filter out directories and files in blacklist to obtain the final set of source files</span><br>DIRS-BLACKLIST-y += $(DIRS-BLACKLIST)<br>SRCS-BLACKLIST-y += $(SRCS-BLACKLIST) <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L $(DIRS-BLACKLIST-y)</span> -name <span class="hljs-string">&quot;*.c&quot;</span>)<br>SRCS-y += <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L $(DIRS-y)</span> -name <span class="hljs-string">&quot;*.c&quot;</span>)<br>SRCS = <span class="hljs-variable">$(<span class="hljs-built_in">filter</span>-out $(SRCS-BLACKLIST-y)</span>,$(SRCS-y))<br><br><span class="hljs-comment"># Extract compiler and options from menuconfig</span><br>CC = <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_CC)</span>)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_CC_OPT)</span>)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_LTO)</span>,-flto,)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_DEBUG)</span>,-Og -ggdb3,)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_ASAN)</span>,-fsanitize=address,)</span><br>CFLAGS_TRACE += -DITRACE_COND=<span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_ITRACE_COND)</span>,$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ITRACE_COND)</span>)</span>,true)<br>CFLAGS  += <span class="hljs-variable">$(CFLAGS_BUILD)</span> <span class="hljs-variable">$(CFLAGS_TRACE)</span> -D__GUEST_ISA__=<span class="hljs-variable">$(GUEST_ISA)</span><br>LDFLAGS += <span class="hljs-variable">$(CFLAGS_BUILD)</span><br><br><span class="hljs-comment"># Include rules for menuconfig</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/scripts/config.mk<br><br><span class="hljs-keyword">ifdef</span> CONFIG_TARGET_AM<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/Makefile<br>LINKAGE += <span class="hljs-variable">$(ARCHIVES)</span><br><span class="hljs-keyword">else</span><br><span class="hljs-comment"># Include rules to build NEMU</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/scripts/native.mk<br><span class="hljs-keyword">endif</span><br><br></code></pre></td></tr></table></figure>
+
+<p>由于我们的 nemu 依然要在 native 上跑，因此这里依然要 native.mk 来干这事。编译好了之后，设置 IMG 为刚才编译的 bin，就好了:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ make ARCH=riscv32-nemu  ALL=add run<br><span class="hljs-comment"># Building add-run [riscv32-nemu]</span><br>+ CC tests/add.c<br><span class="hljs-comment"># Building am-archive [riscv32-nemu]</span><br>+ CC src/platform/nemu/trm.c<br>+ CC src/platform/nemu/ioe/ioe.c<br>+ CC src/platform/nemu/ioe/timer.c<br>+ CC src/platform/nemu/ioe/input.c<br>+ CC src/platform/nemu/ioe/gpu.c<br>+ CC src/platform/nemu/ioe/audio.c<br>+ CC src/platform/nemu/ioe/disk.c<br>+ CC src/platform/nemu/mpe.c<br>+ AS src/riscv/nemu/start.S<br>+ CC src/riscv/nemu/cte.c<br>+ AS src/riscv/nemu/trap.S<br>+ CC src/riscv/nemu/vme.c<br>+ AR -&gt; build/am-riscv32-nemu.a<br><span class="hljs-comment"># Building klib-archive [riscv32-nemu]</span><br>+ CC src/stdlib.c<br>+ CC src/string.c<br>+ CC src/int64.c<br>+ CC src/stdio.c<br>+ CC src/cpp.c<br>+ AR -&gt; build/klib-riscv32-nemu.a<br>+ LD -&gt; build/add-riscv32-nemu.elf<br><span class="hljs-comment"># Creating image [riscv32-nemu]</span><br>+ OBJCOPY -&gt; build/add-riscv32-nemu.bin<br>+ CC src/device/device.c<br>+ CC src/device/alarm.c<br>+ CC src/device/intr.c<br>+ CC src/device/serial.c<br>+ CC src/device/timer.c<br>+ CC src/device/keyboard.c<br>+ CC src/device/vga.c<br>+ CC src/device/audio.c<br>+ CC src/device/disk.c<br>+ CC src/nemu-main.c<br>+ CC src/engine/interpreter/init.c<br>+ CC src/engine/interpreter/hostcall.c<br>+ CC src/isa/riscv32/system/mmu.c<br>+ CC src/isa/riscv32/system/intr.c<br>+ CC src/isa/riscv32/inst.c<br>+ CC src/isa/riscv32/init.c<br>+ CC src/isa/riscv32/difftest/dut.c<br>+ CC src/isa/riscv32/logo.c<br>+ CC src/isa/riscv32/reg.c<br>+ CC src/device/io/port-io.c<br>+ CC src/device/io/mmio.c<br>+ CC src/device/io/map.c<br>+ CC src/cpu/difftest/dut.c<br>+ CC src/cpu/difftest/ref.c<br>+ CC src/cpu/cpu-exec.c<br>+ CC src/monitor/sdb/expr.c<br>+ CC src/monitor/sdb/watchpoint.c<br>+ CC src/monitor/sdb/sdb.c<br>+ CC src/monitor/monitor.c<br>+ CC src/utils/timer.c<br>+ CC src/utils/trace.c<br>+ CC src/utils/log.c<br>+ CC src/utils/state.c<br>+ CC src/memory/vaddr.c<br>+ CC src/memory/paddr.c<br>+ LD /home/luyoung/ysyx-workbench/nemu/build/riscv32-nemu-interpreter<br></code></pre></td></tr></table></figure>
+
+<p>这样的流程很符合预期。</p>
+<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>通过分析了两种不同的目标构建方式，了解了整个项目的架构设计。</p>
+]]></content>
+      <categories>
+        <category>RISCV</category>
+        <category>PA</category>
+        <category>虚拟机</category>
+      </categories>
+      <tags>
+        <tag>NEMU</tag>
+        <tag>PA2</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>nemu框架细节研究（一）</title>
     <url>/2024/09/07/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%B8%80)/</url>
     <content><![CDATA[<span id="more"></span>
@@ -11864,111 +11987,6 @@
 <li><code>INC_PATH</code>: 符号搜索路径，影响编译是否成功。</li>
 </ul>
 <p>以上就是对<code>make ARCH=native ALL=add run</code>的解析。</p>
-]]></content>
-      <categories>
-        <category>RISCV</category>
-        <category>PA</category>
-        <category>虚拟机</category>
-      </categories>
-      <tags>
-        <tag>NEMU</tag>
-        <tag>PA2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>nemu框架细节研究（二）</title>
-    <url>/2024/09/12/nemu%E6%A1%86%E6%9E%B6%E7%BB%86%E8%8A%82%E7%A0%94%E7%A9%B6(%E4%BA%8C)/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>前文细致地研究了命令 <code>make ARCH=native ALL=add run</code> 的运行过程，对于Makefile中的行为有了很准确地把握（几乎没有疑点，可以随意修改 Makefile 且保证不会出错）。这篇文章继续研究命令<code>make ARCH=riscv32-nemu ALL=add run</code>的行为。</p>
-<h2 id="二、riscv32-nemu-开始的地方"><a href="#二、riscv32-nemu-开始的地方" class="headerlink" title="二、riscv32-nemu 开始的地方"></a>二、riscv32-nemu 开始的地方</h2><p>由于 <code>ARCH=riscv32-nemu</code>，因此 <code>ISA=riscv32</code>，<code>PLATFORM=nemu</code>。我们来看看它新包含了哪些 可以包含到Makefile中的文件:</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/<span class="hljs-variable">$(ARCH)</span>.mk<br></code></pre></td></tr></table></figure>
-
-<p>这里的 <code>ARCH=riscv32-nemu</code>，因此它会包含<code>$(AM_HOME)/scripts/riscv32-nemu.mk</code>:</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/isa/riscv.mk<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/scripts/platform/nemu.mk<br>CFLAGS  += -DISA_H=\<span class="hljs-string">&quot;riscv/riscv.h\&quot;</span><br><span class="hljs-string">COMMON_CFLAGS += -march=rv32im_zicsr -mabi=ilp32   # overwrite</span><br><span class="hljs-string">LDFLAGS       += -melf32lriscv                     # overwrite</span><br><span class="hljs-string"></span><br><span class="hljs-string">AM_SRCS += riscv/nemu/start.S \</span><br><span class="hljs-string">           riscv/nemu/cte.c \</span><br><span class="hljs-string">           riscv/nemu/trap.S \</span><br><span class="hljs-string">           riscv/nemu/vme.c</span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
-<p>这个文件就复杂多了，看起来它将 <code>isa</code> 和 <code>platform</code> 解耦了，单独包含了两个可包含文件；还定义了一个可以传递到.c 文件中的宏<code>ISA_H</code>，看来它引入了 riscv 的一些符号。</p>
-<p>后面，它更新了 <code>COMMON_CFLAGS</code>、<code>LDFLAGS</code> 等变量。</p>
-<h2 id="三、目标构建"><a href="#三、目标构建" class="headerlink" title="三、目标构建"></a>三、目标构建</h2><p>执行<code>make ARCH=riscv32-nemu ALL=add run</code>。</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">run: image</span><br>	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> run ARGS=<span class="hljs-string">&quot;<span class="hljs-variable">$(NEMUFLAGS)</span>&quot;</span> IMG=<span class="hljs-variable">$(IMAGE)</span>.bin<br></code></pre></td></tr></table></figure>
-
-<p>依赖 <code>image</code> 的依赖：<code>$(IMAGE).elf</code>、<code>image-dep</code>，这两个依赖依次执行。</p>
-<h3 id="一、-IMAGE-elf"><a href="#一、-IMAGE-elf" class="headerlink" title="一、$(IMAGE).elf"></a>一、$(IMAGE).elf</h3><figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-variable">$(IMAGE)</span>.elf: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LIBS)</span><br>	@echo + LD <span class="hljs-string">&quot;-&gt;&quot;</span> <span class="hljs-variable">$(IMAGE_REL)</span>.elf<br>	@<span class="hljs-variable">$(LD)</span> <span class="hljs-variable">$(LDFLAGS)</span> -o <span class="hljs-variable">$(IMAGE)</span>.elf --start-group <span class="hljs-variable">$(LINKAGE)</span> --end-group<br></code></pre></td></tr></table></figure>
-
-<p>这里将会编译 <code>add.c</code>、以及 <code>kilb.a</code>、<code>am.a</code>。</p>
-<p>之后，就会链接成<code>$(IMAGE).elf</code>。</p>
-<h3 id="二、image-dep"><a href="#二、image-dep" class="headerlink" title="二、image-dep"></a>二、image-dep</h3><figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">image-dep: <span class="hljs-variable">$(OBJS)</span> <span class="hljs-variable">$(LIBS)</span></span><br>	@echo \<span class="hljs-comment"># Creating image [$(ARCH)]</span><br></code></pre></td></tr></table></figure>
-
-<p>依赖在上面已经编译结束了，这里直接打印一个信息就结束了。这样 image 的依赖就解决完了。接着：</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">image: <span class="hljs-variable">$(IMAGE)</span>.elf</span><br>	@<span class="hljs-variable">$(OBJDUMP)</span> -d <span class="hljs-variable">$(IMAGE)</span>.elf &gt; <span class="hljs-variable">$(IMAGE)</span>.txt<br>	@echo + OBJCOPY <span class="hljs-string">&quot;-&gt;&quot;</span> <span class="hljs-variable">$(IMAGE_REL)</span>.bin<br>	@<span class="hljs-variable">$(OBJCOPY)</span> -S --set-section-flags .bss=alloc,contents -O binary <span class="hljs-variable">$(IMAGE)</span>.elf <span class="hljs-variable">$(IMAGE)</span>.bin<br></code></pre></td></tr></table></figure>
-<p>这里是将 $(IMAGE).elf 的二进制代码抽取出来，以供在 nemu 上运行。</p>
-<h3 id="做了什么"><a href="#做了什么" class="headerlink" title="做了什么"></a>做了什么</h3><p>看看这做了什么：</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile">CROSS_COMPILE := riscv64-linux-gnu-<br>COMMON_CFLAGS := -fno-pic -march=rv64g -mcmodel=medany -mstrict-align<br>CFLAGS        += <span class="hljs-variable">$(COMMON_CFLAGS)</span> -static<br>ASFLAGS       += <span class="hljs-variable">$(COMMON_CFLAGS)</span> -O0<br>LDFLAGS       += -melf64lriscv<br><br><span class="hljs-comment"># overwrite ARCH_H defined in $(AM_HOME)/Makefile</span><br>ARCH_H := arch/riscv.h<br>...<br>AM_SRCS := platform/nemu/trm.c \<br>           platform/nemu/ioe/ioe.c \<br>           platform/nemu/ioe/timer.c \<br>           platform/nemu/ioe/input.c \<br>           platform/nemu/ioe/gpu.c \<br>           platform/nemu/ioe/audio.c \<br>           platform/nemu/ioe/disk.c \<br>           platform/nemu/mpe.c<br><br>CFLAGS    += -fdata-sections -ffunction-sections<br>LDFLAGS   += -T <span class="hljs-variable">$(AM_HOME)</span>/scripts/linker.ld \<br>             --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0<br>LDFLAGS   += --gc-sections -e _start<br>NEMUFLAGS += -l <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> dirname <span class="hljs-variable">$(IMAGE)</span>.elf)</span>/nemu-log.txt<br>NEMUFLAGS += -e <span class="hljs-variable">$(IMAGE)</span>.elf <span class="hljs-comment"># elf</span><br>NEMUFLAGS += -b <span class="hljs-comment"># 自动执行</span><br><br><br>CFLAGS += -DMAINARGS=\<span class="hljs-string">&quot;<span class="hljs-variable">$(mainargs)\&quot;</span></span><br><span class="hljs-string">CFLAGS += -I<span class="hljs-variable">$(AM_HOME)</span>/am/src/platform/nemu/include</span><br><span class="hljs-string">.PHONY: <span class="hljs-variable">$(AM_HOME)</span>/am/src/platform/nemu/trm.c</span><br><span class="hljs-string"></span><br><span class="hljs-string">image: <span class="hljs-variable">$(IMAGE)</span>.elf</span><br><span class="hljs-string">	@<span class="hljs-variable">$(OBJDUMP)</span> -d <span class="hljs-variable">$(IMAGE)</span>.elf &gt; <span class="hljs-variable">$(IMAGE)</span>.txt</span><br><span class="hljs-string">	@echo + OBJCOPY &quot;</span>-&gt;<span class="hljs-string">&quot; <span class="hljs-variable">$(IMAGE_REL)</span>.bin</span><br><span class="hljs-string">	@<span class="hljs-variable">$(OBJCOPY)</span> -S --set-section-flags .bss=alloc,contents -O binary <span class="hljs-variable">$(IMAGE)</span>.elf <span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">run: image</span><br><span class="hljs-string">	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> run ARGS=&quot;</span><span class="hljs-variable">$(NEMUFLAGS)</span><span class="hljs-string">&quot; IMG=<span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">gdb: image</span><br><span class="hljs-string">	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> gdb ARGS=&quot;</span><span class="hljs-variable">$(NEMUFLAGS)</span><span class="hljs-string">&quot; IMG=<span class="hljs-variable">$(IMAGE)</span>.bin</span><br><span class="hljs-string"></span><br><span class="hljs-string">...</span><br><span class="hljs-string"></span><br><span class="hljs-string">CFLAGS  += -DISA_H=\&quot;riscv/riscv.h\&quot;</span><br><span class="hljs-string">COMMON_CFLAGS += -march=rv32im_zicsr -mabi=ilp32   # overwrite</span><br><span class="hljs-string">LDFLAGS       += -melf32lriscv                     # overwrite</span><br><span class="hljs-string"></span><br><span class="hljs-string">AM_SRCS += riscv/nemu/start.S \</span><br><span class="hljs-string">           riscv/nemu/cte.c \</span><br><span class="hljs-string">           riscv/nemu/trap.S \</span><br><span class="hljs-string">           riscv/nemu/vme.c</span><br><span class="hljs-string"></span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
-
-<p>可以看到，由于要编译出跨平台的文件，我们在编译目标的时候，要将 image 编译成能在 riscv32 的平台能跑的程序，因此它定义了 CROSS_COMPILE。</p>
-<p>另外还加了一些需要设置 riscv 的参数 ，并把它并入到了 CFLAGS、LDFLAGS。</p>
-<ul>
-<li><p>**<code>-fno-pic</code>**：<br>禁用生成位置无关代码（Position Independent Code, PIC）。PIC 通常用于动态链接库，因为它允许代码在内存中的任何位置运行。在某些情况下，如果你不需要动态链接，或者出于性能考虑，你可能会禁用它。</p>
-</li>
-<li><p>**<code>-march=rv64g</code>**：<br>设置目标架构为 RISC-V 64位，<code>G</code> 表示支持标准整数指令集（<code>I</code>）、乘法和除法指令集（<code>M</code>）、原子指令集（<code>A</code>）、单精度浮点（<code>F</code>）、双精度浮点（<code>D</code>）和压缩指令集（<code>C</code>）。这告诉编译器生成针对此架构优化的代码。</p>
-</li>
-<li><p>**<code>-mcmodel=medany</code>**：<br>这个选项定义了代码和数据的地址模型，适用于 RISC-V。<code>medany</code> 模型适合中等大小的可执行文件，允许代码和数据位于任意位置，但假设所有符号的地址相对于程序计数器（PC）的偏移适中。</p>
-</li>
-<li><p>**<code>-mstrict-align</code>**：<br>强制数据对齐，不允许编译器生成未对齐的内存访问指令。这在一些严格要求对齐的架构上可以避免性能损失或程序错误。</p>
-</li>
-<li><p>**<code>-static</code>**：<br>生成完全静态链接的可执行文件。静态链接的程序包含了所有必需的库函数的副本，不需要依赖系统中的共享库，提高了程序的移植性。</p>
-</li>
-<li><p>**<code>-O0</code>**：<br>禁用优化。这个选项告诉编译器不进行任何优化，通常用于调试，确保编译的代码直接对应源代码，便于跟踪和调试。</p>
-</li>
-<li><p>**<code>-melf64lriscv</code>**：<br>指定链接器输出格式为 RISC-V 64位 ELF 格式。ELF（可执行与链接格式）是一种广泛使用的文件格式，用于定义不同类型的文件如可执行文件、目标文件、共享库等。</p>
-</li>
-</ul>
-<p>总体来说，这些编译和链接选项针对 RISC-V 64位架构进行了特定的优化和设置，适用于生成高效且独立的程序。</p>
-<ul>
-<li><p>**<code>-fdata-sections</code>**：<br>这个选项指导编译器将不同的数据（变量）放置在不同的段（sections）中。这有助于链接器在链接时进行优化，比如删除未使用的数据段，从而减小最终可执行文件的大小。</p>
-</li>
-<li><p>**<code>-ffunction-sections</code>**：<br>与 <code>-fdata-sections</code> 类似，这个选项指导编译器将每个函数放置在独立的段中。这样做可以让链接器有机会在最终的可执行文件中移除未被引用的函数，尤其是在结合链接器的 <code>--gc-sections</code> 选项时。</p>
-</li>
-<li><p>**<code>-T $(AM_HOME)/scripts/linker.ld</code>**：<br>指定链接器脚本的位置，这里使用的是一个环境变量 <code>AM_HOME</code>。链接器脚本用于控制链接过程，定义了各种内存布局、段到地址的映射等。这是为嵌入式系统或操作系统内核等需要精确控制内存布局的场合常用的做法。</p>
-</li>
-<li><p><strong><code>--defsym=_pmem_start=0x80000000</code></strong> 和 **<code>--defsym=_entry_offset=0x0</code>**：<br>这两个选项定义了链接时的符号。<code>--defsym</code> 用于创建一个符号并为其分配一个值。在这个例子中，<code>_pmem_start</code> 被设置为 <code>0x80000000</code> 和 <code>_entry_offset</code> 被设置为 <code>0x0</code>。这些符号在链接脚本中可能会被引用，用于指定程序的某些特定内存地址或偏移。</p>
-</li>
-<li><p>**<code>--gc-sections</code>**：<br>这个链接器选项与前面的 <code>-ffunction-sections</code> 和 <code>-fdata-sections</code> 一起工作，用来在链接阶段去除未使用的函数和数据段，从而减少生成的二进制文件大小。这对于内存受限的系统特别有用。</p>
-</li>
-<li><p>**<code>-e _start</code>**：<br>设置入口点为 <code>_start</code>。这是程序开始执行的地方，<code>-e</code> 选项用于指定入口点符号名。这在很多系统软件中非常重要，特别是在操作系统或裸机程序中，需要精确控制程序的启动过程。</p>
-</li>
-</ul>
-<p>这里添加到 <code>COMMON_CFLAGS</code> 的参数用于覆盖或指定编译时的架构和二进制接口（ABI）设置：</p>
-<ul>
-<li><p>**<code>-march=rv32im_zicsr</code>**：</p>
-<ul>
-<li>**<code>-march=rv32im_zicsr</code>**：这个选项指定目标架构为 RISC-V 32位，具体到支持整数 (<code>I</code>)、乘法 (<code>M</code>) 指令和 CSR 寄存器 (<code>Zicsr</code>)。<code>Zicsr</code> 表示支持 CSR (Control and Status Register) 指令扩展，用于控制和状态寄存器的操作，这对于系统级编程特别重要。</li>
-</ul>
-</li>
-<li><p>**<code>-mabi=ilp32</code>**：</p>
-<ul>
-<li>**<code>-mabi=ilp32</code>**：设置使用的 ABI（Application Binary Interface）为 <code>ilp32</code>，这意味着整数和指针都是 32位，符合 32位系统的处理方式。这个设置确保生成的代码在32位 RISC-V 架构上能正确执行。</li>
-</ul>
-</li>
-<li><p>**<code>-melf32lriscv</code>**：</p>
-<ul>
-<li>**<code>-melf32lriscv</code>**：这个链接器选项指定生成的可执行文件格式为 32位 RISC-V ELF 格式。ELF（Executable and Linkable Format）是一种广泛使用的文件格式，用于定义可执行文件、目标代码、共享库等。这里的设置是为了确保链接器输出的是符合 32位 RISC-V 架构的 ELF 文件。</li>
-</ul>
-</li>
-</ul>
-<p>这些选项通常用于交叉编译环境，其中开发环境（如你的电脑）和目标环境（如一个嵌入式设备）的架构不同。例如，如果你正在为一个基于 RISC-V 32位架构的嵌入式系统开发软件，就需要配置这些选项以确保代码能在目标硬件上正确运行。</p>
-<p>这样配置的编译器和链接器选项允许开发者精确控制生成代码的架构特性和二进制格式，以符合特定硬件和操作系统的要求。</p>
-<p>这样设置，就生成了适合在 nemu 上运行的 bin 文件了。</p>
-<p>这时候，继续执行：</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-section">run: image</span><br>	<span class="hljs-variable">$(MAKE)</span> -C <span class="hljs-variable">$(NEMU_HOME)</span> ISA=<span class="hljs-variable">$(ISA)</span> run ARGS=<span class="hljs-string">&quot;<span class="hljs-variable">$(NEMUFLAGS)</span>&quot;</span> IMG=<span class="hljs-variable">$(IMAGE)</span>.bin<br></code></pre></td></tr></table></figure>
-
-<p>这个命令表明，接下来将会继续编译 nemu，并且传入了一些参数。</p>
-<h2 id="四、编译-nemu"><a href="#四、编译-nemu" class="headerlink" title="四、编译 nemu"></a>四、编译 nemu</h2><figure class="highlight makefile"><table><tr><td class="code"><pre><code class="hljs Makefile"><span class="hljs-comment">#***************************************************************************************</span><br><span class="hljs-comment"># Copyright (c) 2014-2022 Zihao Yu, Nanjing University</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># NEMU is licensed under Mulan PSL v2.</span><br><span class="hljs-comment"># You can use this software according to the terms and conditions of the Mulan PSL v2.</span><br><span class="hljs-comment"># You may obtain a copy of Mulan PSL v2 at:</span><br><span class="hljs-comment">#          http://license.coscl.org.cn/MulanPSL2</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># THIS SOFTWARE IS PROVIDED ON AN &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OF ANY KIND,</span><br><span class="hljs-comment"># EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,</span><br><span class="hljs-comment"># MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># See the Mulan PSL v2 for more details.</span><br><span class="hljs-comment">#**************************************************************************************/</span><br><br><span class="hljs-comment"># Sanity check</span><br><span class="hljs-keyword">ifeq</span> (<span class="hljs-variable">$(<span class="hljs-built_in">wildcard</span> <span class="hljs-variable">$(NEMU_HOME)</span>/src/nemu-main.c)</span>,)<br>  <span class="hljs-variable">$(<span class="hljs-built_in">error</span> NEMU_HOME=<span class="hljs-variable">$(NEMU_HOME)</span> is not a NEMU repo)</span><br><span class="hljs-keyword">endif</span><br><br><span class="hljs-comment"># Include variables and rules generated by menuconfig</span><br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf<br><span class="hljs-keyword">-include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/<span class="hljs-keyword">include</span>/config/auto.conf.cmd<br><br>remove_quote = <span class="hljs-variable">$(<span class="hljs-built_in">patsubst</span> &quot;%&quot;,%,$(1)</span>)<br><br><span class="hljs-comment"># Extract variabls from menuconfig</span><br>GUEST_ISA ?= <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ISA)</span>)</span><br>ENGINE ?= <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ENGINE)</span>)</span><br>NAME    = <span class="hljs-variable">$(GUEST_ISA)</span>-nemu-<span class="hljs-variable">$(ENGINE)</span><br><br><span class="hljs-comment"># Include all filelist.mk to merge file lists</span><br>FILELIST_MK = <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L ./src -name &quot;filelist.mk&quot;)</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(FILELIST_MK)</span><br><br><span class="hljs-comment"># Filter out directories and files in blacklist to obtain the final set of source files</span><br>DIRS-BLACKLIST-y += $(DIRS-BLACKLIST)<br>SRCS-BLACKLIST-y += $(SRCS-BLACKLIST) <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L $(DIRS-BLACKLIST-y)</span> -name <span class="hljs-string">&quot;*.c&quot;</span>)<br>SRCS-y += <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> find -L $(DIRS-y)</span> -name <span class="hljs-string">&quot;*.c&quot;</span>)<br>SRCS = <span class="hljs-variable">$(<span class="hljs-built_in">filter</span>-out $(SRCS-BLACKLIST-y)</span>,$(SRCS-y))<br><br><span class="hljs-comment"># Extract compiler and options from menuconfig</span><br>CC = <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_CC)</span>)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_CC_OPT)</span>)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_LTO)</span>,-flto,)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_DEBUG)</span>,-Og -ggdb3,)</span><br>CFLAGS_BUILD += <span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_CC_ASAN)</span>,-fsanitize=address,)</span><br>CFLAGS_TRACE += -DITRACE_COND=<span class="hljs-variable">$(<span class="hljs-built_in">if</span> <span class="hljs-variable">$(CONFIG_ITRACE_COND)</span>,$(<span class="hljs-built_in">call</span> remove_quote,<span class="hljs-variable">$(CONFIG_ITRACE_COND)</span>)</span>,true)<br>CFLAGS  += <span class="hljs-variable">$(CFLAGS_BUILD)</span> <span class="hljs-variable">$(CFLAGS_TRACE)</span> -D__GUEST_ISA__=<span class="hljs-variable">$(GUEST_ISA)</span><br>LDFLAGS += <span class="hljs-variable">$(CFLAGS_BUILD)</span><br><br><span class="hljs-comment"># Include rules for menuconfig</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/scripts/config.mk<br><br><span class="hljs-keyword">ifdef</span> CONFIG_TARGET_AM<br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(AM_HOME)</span>/Makefile<br>LINKAGE += <span class="hljs-variable">$(ARCHIVES)</span><br><span class="hljs-keyword">else</span><br><span class="hljs-comment"># Include rules to build NEMU</span><br><span class="hljs-keyword">include</span> <span class="hljs-variable">$(NEMU_HOME)</span>/scripts/native.mk<br><span class="hljs-keyword">endif</span><br><br></code></pre></td></tr></table></figure>
-
-<p>由于我们的 nemu 依然要在 native 上跑，因此这里依然要 native.mk 来干这事。编译好了之后，设置 IMG 为刚才编译的 bin，就好了:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">$ make ARCH=riscv32-nemu  ALL=add run<br><span class="hljs-comment"># Building add-run [riscv32-nemu]</span><br>+ CC tests/add.c<br><span class="hljs-comment"># Building am-archive [riscv32-nemu]</span><br>+ CC src/platform/nemu/trm.c<br>+ CC src/platform/nemu/ioe/ioe.c<br>+ CC src/platform/nemu/ioe/timer.c<br>+ CC src/platform/nemu/ioe/input.c<br>+ CC src/platform/nemu/ioe/gpu.c<br>+ CC src/platform/nemu/ioe/audio.c<br>+ CC src/platform/nemu/ioe/disk.c<br>+ CC src/platform/nemu/mpe.c<br>+ AS src/riscv/nemu/start.S<br>+ CC src/riscv/nemu/cte.c<br>+ AS src/riscv/nemu/trap.S<br>+ CC src/riscv/nemu/vme.c<br>+ AR -&gt; build/am-riscv32-nemu.a<br><span class="hljs-comment"># Building klib-archive [riscv32-nemu]</span><br>+ CC src/stdlib.c<br>+ CC src/string.c<br>+ CC src/int64.c<br>+ CC src/stdio.c<br>+ CC src/cpp.c<br>+ AR -&gt; build/klib-riscv32-nemu.a<br>+ LD -&gt; build/add-riscv32-nemu.elf<br><span class="hljs-comment"># Creating image [riscv32-nemu]</span><br>+ OBJCOPY -&gt; build/add-riscv32-nemu.bin<br>+ CC src/device/device.c<br>+ CC src/device/alarm.c<br>+ CC src/device/intr.c<br>+ CC src/device/serial.c<br>+ CC src/device/timer.c<br>+ CC src/device/keyboard.c<br>+ CC src/device/vga.c<br>+ CC src/device/audio.c<br>+ CC src/device/disk.c<br>+ CC src/nemu-main.c<br>+ CC src/engine/interpreter/init.c<br>+ CC src/engine/interpreter/hostcall.c<br>+ CC src/isa/riscv32/system/mmu.c<br>+ CC src/isa/riscv32/system/intr.c<br>+ CC src/isa/riscv32/inst.c<br>+ CC src/isa/riscv32/init.c<br>+ CC src/isa/riscv32/difftest/dut.c<br>+ CC src/isa/riscv32/logo.c<br>+ CC src/isa/riscv32/reg.c<br>+ CC src/device/io/port-io.c<br>+ CC src/device/io/mmio.c<br>+ CC src/device/io/map.c<br>+ CC src/cpu/difftest/dut.c<br>+ CC src/cpu/difftest/ref.c<br>+ CC src/cpu/cpu-exec.c<br>+ CC src/monitor/sdb/expr.c<br>+ CC src/monitor/sdb/watchpoint.c<br>+ CC src/monitor/sdb/sdb.c<br>+ CC src/monitor/monitor.c<br>+ CC src/utils/timer.c<br>+ CC src/utils/trace.c<br>+ CC src/utils/log.c<br>+ CC src/utils/state.c<br>+ CC src/memory/vaddr.c<br>+ CC src/memory/paddr.c<br>+ LD /home/luyoung/ysyx-workbench/nemu/build/riscv32-nemu-interpreter<br></code></pre></td></tr></table></figure>
-
-<p>这样的流程很符合预期。</p>
-<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>通过分析了两种不同的目标构建方式，了解了整个项目的架构设计。</p>
 ]]></content>
       <categories>
         <category>RISCV</category>
@@ -15757,8 +15775,83 @@
   </entry>
   <entry>
     <title>基于 riscv32 的 OS 设计（一）</title>
-    <url>/2025/03/11/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/</url>
-    <content><![CDATA[]]></content>
+    <url>/2025/03/16/%E5%9F%BA%E4%BA%8E%20riscv32%E7%9A%84OS(%E4%BA%8C)/</url>
+    <content><![CDATA[<h2 id="启动最简单的-OS"><a href="#启动最简单的-OS" class="headerlink" title="启动最简单的 OS"></a>启动最简单的 OS</h2><p>这个 OS 超级简单，就是一个裸机程序：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span> <span class="hljs-title function_">start_kernel</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>	<span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;&#125;; <span class="hljs-comment">// stop here!</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>我们只需要将这个程序编译成二进制文件，然后丢给 qemu，就可以跑了。</p>
+<p>但是，有一个大大的问题，这个问题再上一个博客中并没有提到。</p>
+]]></content>
+      <categories>
+        <category>OS</category>
+      </categories>
+      <tags>
+        <tag>OS</tag>
+        <tag>riscv</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于 riscv32 的 OS 设计（一）</title>
+    <url>/2025/03/15/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/</url>
+    <content><![CDATA[<h2 id="写的-OS-如何运行？"><a href="#写的-OS-如何运行？" class="headerlink" title="写的 OS 如何运行？"></a>写的 OS 如何运行？</h2><p>如果写过 CPU，那就会明白，OS 和其它裸机程序几乎没有什么区别。当然，复杂的 OS 可能引入各种模式，比如 S-mode，但这不影响 OS 是一个比较复杂的裸机程序的事实。</p>
+<p>因此，写好的 OS 加载到内存中，让 CPU 的 PC 指向 OS 的第一条指令，然后开始运行，OS 就成功运行了。</p>
+<p>根据以上判断，OS 想要跑起来，需要：</p>
+<ul>
+<li>一个 CPU；</li>
+<li>一个 RAM。</li>
+</ul>
+<p>有一个模拟器 qemu，它提供了上述条件的超集。</p>
+<h2 id="如何利用-qemu-运行-一个裸机程序？"><a href="#如何利用-qemu-运行-一个裸机程序？" class="headerlink" title="如何利用 qemu 运行 一个裸机程序？"></a>如何利用 qemu 运行 一个裸机程序？</h2><p>要问 qemu 如何运行一个 OS，倒不如问 qemu 如何运行一个裸机程序，毕竟前面说了，OS 和裸机程序并没有多大区别。</p>
+<p>先看一个裸机程序：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs asm">	.text			# Define beginning of text section<br>	.global	_start		# Define entry _start<br><br>_start:<br>	li x6, 1		# x6 = 1<br>	li x7, 2		# x7 = 2<br>	add x5, x6, x7		# x5 = x6 + x7<br><br>stop:<br>	j stop			# Infinite loop to stop execution<br><br>	.end			# End of file<br><br></code></pre></td></tr></table></figure>
+
+<p>上面这个程序足够简单，它的作用是计算 1+2 的值，并且将值放在 x5 中。</p>
+<h3 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h3><p>程序编译成指令流才能运行在 CPU 上，上面的程序也要编译。但是假设现在的环境是 linux，那么需要进行交叉编译：在 linux 上编译目标为 riscv 平台的二进制文件。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">EXEC = <span class="hljs-built_in">test</span><br>SRC = <span class="hljs-variable">$&#123;EXEC&#125;</span>.s<br><br>CROSS_COMPILE = riscv64-unknown-elf-<br>CFLAGS = -nostdlib -fno-builtin -march=rv32g -mabi=ilp32 -g -Wall<br><br>QEMU = qemu-system-riscv32<br>QFLAGS = -nographic -smp 1 -machine virt -bios none<br><br>GDB = gdb-multiarch<br>CC = <span class="hljs-variable">$&#123;CROSS_COMPILE&#125;</span>gcc<br>OBJCOPY = <span class="hljs-variable">$&#123;CROSS_COMPILE&#125;</span>objcopy<br>OBJDUMP = <span class="hljs-variable">$&#123;CROSS_COMPILE&#125;</span>objdump<br><br>all:<br>	@<span class="hljs-variable">$&#123;CC&#125;</span> <span class="hljs-variable">$&#123;CFLAGS&#125;</span> <span class="hljs-variable">$&#123;SRC&#125;</span> -Ttext=0x80000000 -o <span class="hljs-variable">$&#123;EXEC&#125;</span>.elf<br>	@<span class="hljs-variable">$&#123;OBJCOPY&#125;</span> -O binary <span class="hljs-variable">$&#123;EXEC&#125;</span>.elf <span class="hljs-variable">$&#123;EXEC&#125;</span>.bin<br></code></pre></td></tr></table></figure>
+
+<p>上面的 <code>-Ttext=0x80000000</code>取代了链接脚本的作用，CFLAGS 的含义也很简单，后面规定了输出格式是 32 位的通用指令集。</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">run: all<br>	@<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Press Ctrl-A and then X to exit QEMU&quot;</span><br>	@<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;------------------------------------&quot;</span><br>	@<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;No output, please run &#x27;make debug&#x27; to see details&quot;</span><br>	@<span class="hljs-variable">$&#123;QEMU&#125;</span> <span class="hljs-variable">$&#123;QFLAGS&#125;</span> -kernel ./<span class="hljs-variable">$&#123;EXEC&#125;</span>.elf<br></code></pre></td></tr></table></figure>
+
+<p>展开之后，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">qemu-system-riscv32 -nographic -smp 1 -machine virt -bios none -kernel ./test.elf<br></code></pre></td></tr></table></figure>
+
+<p>这个命令含义是使用 QEMU 模拟器运行一个针对 RISC-V 32位架构的程序：</p>
+<ul>
+<li><code>qemu-system-riscv32</code>:<ul>
+<li>这是 QEMU 模拟器的命令，用于模拟 RISC-V 32位架构的系统。</li>
+</ul>
+</li>
+<li><code>-nographic</code>:<ul>
+<li>这个选项告诉 QEMU 禁用图形界面，使用文本控制台进行输入和输出。这意味着程序将在终端中运行，而不是在一个独立的图形窗口中。</li>
+</ul>
+</li>
+<li><code>-smp 1</code>:<ul>
+<li>这个选项设置模拟器的 CPU 数量为 1，即单核 CPU。</li>
+</ul>
+</li>
+<li><code>-machine virt</code>:<ul>
+<li>这个选项指定模拟的机器类型为 <code>virt</code>，这是一个通用的 RISC-V 虚拟机，适合运行裸机程序。</li>
+</ul>
+</li>
+<li><code>-bios none</code>:<ul>
+<li>这个选项告诉 QEMU 禁用 BIOS。因为我们运行的是裸机程序，不需要 BIOS。</li>
+</ul>
+</li>
+<li><code>-kernel ./test.elf</code>:<ul>
+<li>这个选项告诉 QEMU 加载并运行 <code>test.elf</code> 文件作为内核。这意味着 <code>test.elf</code> 文件被当作操作系统内核加载运行。</li>
+</ul>
+</li>
+</ul>
+<p><strong>综合来看，这个命令的完整含义是：</strong></p>
+<p>使用 QEMU 模拟一个单核 RISC-V 32位虚拟机，禁用图形界面和 BIOS，并加载 <code>test.elf</code> 文件作为内核运行。</p>
+<p><strong>具体来说，这个命令用于：</strong></p>
+<ul>
+<li>在没有实际硬件的情况下，模拟 RISC-V 32位系统的运行环境。</li>
+<li>运行编译好的裸机程序（<code>test.elf</code>），并查看其输出。</li>
+<li>调试裸机程序，因为 QEMU 可以与 GDB 配合使用。</li>
+</ul>
+<p>QEMU能够正确加载程序到内存地址，是因为它能够读取并解释ELF文件中的加载地址信息。</p>
+<p>这样，我们就知道 qemu 怎么用了，那么运行一个 OS 就很简单了。</p>
+]]></content>
       <categories>
         <category>OS</category>
       </categories>
@@ -16045,6 +16138,24 @@
       </tags>
   </entry>
   <entry>
+    <title>总线</title>
+    <url>/2024/10/30/%E6%80%BB%E7%BA%BF/</url>
+    <content><![CDATA[<span id="more"></span>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>1、将默认信号改成握手信号<br>2、加上随机延迟<br>3、综合测试</p>
+<p>状态机的角度进行思考，如何进行状态转换，这个过程中，要考虑信号延迟，因此要能将状态能够保持几个周期，因此要在信号发射端，保持这些信号。总之，谁发射，谁负责，谁接收到了，谁转换状态。</p>
+<p>CPU 的状态完全靠寄存器来保持；MEM 的状态完全靠寄存器来保持。</p>
+]]></content>
+      <categories>
+        <category>ysyx</category>
+        <category>npc</category>
+      </categories>
+      <tags>
+        <tag>ysyx</tag>
+        <tag>总线</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>再探究异常处理</title>
     <url>/2024/11/19/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<span id="more"></span>
@@ -16158,24 +16269,6 @@
       </categories>
       <tags>
         <tag>异常处理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>总线</title>
-    <url>/2024/10/30/%E6%80%BB%E7%BA%BF/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>1、将默认信号改成握手信号<br>2、加上随机延迟<br>3、综合测试</p>
-<p>状态机的角度进行思考，如何进行状态转换，这个过程中，要考虑信号延迟，因此要能将状态能够保持几个周期，因此要在信号发射端，保持这些信号。总之，谁发射，谁负责，谁接收到了，谁转换状态。</p>
-<p>CPU 的状态完全靠寄存器来保持；MEM 的状态完全靠寄存器来保持。</p>
-]]></content>
-      <categories>
-        <category>ysyx</category>
-        <category>npc</category>
-      </categories>
-      <tags>
-        <tag>ysyx</tag>
-        <tag>总线</tag>
       </tags>
   </entry>
   <entry>
@@ -16446,6 +16539,30 @@
       </tags>
   </entry>
   <entry>
+    <title>数字电路实验1</title>
+    <url>/2024/07/13/%E6%95%B0%E5%AD%97%E7%94%B5%E8%B7%AF%E5%9F%BA%E7%A1%80%E5%AE%9E%E9%AA%8C1/</url>
+    <content><![CDATA[<span id="more"></span>
+
+<h2 id="实验过程"><a href="#实验过程" class="headerlink" title="实验过程"></a>实验过程</h2><p>本实验采用行为建模，top.v 代码如下：</p>
+<figure class="highlight verilog"><table><tr><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">module</span> c41(X0,X1,X2,X3,Y,F);<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] Y;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X0;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X1;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X2;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X3;<br><br><span class="hljs-keyword">output</span> <span class="hljs-keyword">reg</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] F;<br><span class="hljs-keyword">always</span> @ (Y <span class="hljs-keyword">or</span> X0 <span class="hljs-keyword">or</span> X1 <span class="hljs-keyword">or</span> X2 <span class="hljs-keyword">or</span> X3)<br>    <span class="hljs-keyword">case</span>(Y)<br>        <span class="hljs-number">0</span>: F = X0;<br>        <span class="hljs-number">1</span>: F = X1;<br>        <span class="hljs-number">2</span>: F = X2;<br>        <span class="hljs-number">3</span>: F = X3;<br>        <span class="hljs-keyword">default</span>: F = <span class="hljs-number">2&#x27;b00</span>;<br>    <span class="hljs-keyword">endcase</span><br><span class="hljs-keyword">endmodule</span><br><br><span class="hljs-keyword">module</span> top(<br>    <span class="hljs-keyword">input</span> clk,<br>    <span class="hljs-keyword">input</span> rst,<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">4</span>:<span class="hljs-number">0</span>] btn,<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] sw,<br>    <span class="hljs-keyword">input</span> ps2_clk,<br>    <span class="hljs-keyword">input</span> ps2_data,<br>    <span class="hljs-keyword">input</span> uart_rx,<br>    <span class="hljs-keyword">output</span> uart_tx,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">15</span>:<span class="hljs-number">0</span>] ledr,<br>    <span class="hljs-keyword">output</span> VGA_CLK,<br>    <span class="hljs-keyword">output</span> VGA_HSYNC,<br>    <span class="hljs-keyword">output</span> VGA_VSYNC,<br>    <span class="hljs-keyword">output</span> VGA_BLANK_N,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] VGA_R,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] VGA_G,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] VGA_B,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg0,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg1,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg2,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg3,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg4,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg5,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg6,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg7<br>);<br><br>c41 my_41(<br>    <span class="hljs-variable">.Y</span>(sw[<span class="hljs-number">1</span>:<span class="hljs-number">0</span>]),<br>    <span class="hljs-variable">.X0</span>(sw[<span class="hljs-number">3</span>:<span class="hljs-number">2</span>]),<br>    <span class="hljs-variable">.X1</span>(sw[<span class="hljs-number">5</span>:<span class="hljs-number">4</span>]),<br>    <span class="hljs-variable">.X2</span>(sw[<span class="hljs-number">7</span>:<span class="hljs-number">6</span>]),<br>    <span class="hljs-variable">.X3</span>(sw[<span class="hljs-number">9</span>:<span class="hljs-number">8</span>]),<br>    <span class="hljs-variable">.F</span>(ledr[<span class="hljs-number">1</span>:<span class="hljs-number">0</span>])<br>);<br><br><span class="hljs-keyword">assign</span> VGA_CLK = clk;<br><br><span class="hljs-keyword">wire</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] h_addr;<br><span class="hljs-keyword">wire</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] v_addr;<br><span class="hljs-keyword">wire</span> [<span class="hljs-number">23</span>:<span class="hljs-number">0</span>] vga_data;<br><br><br><br>vmem my_vmem(<br>    <span class="hljs-variable">.h_addr</span>(h_addr),<br>    <span class="hljs-variable">.v_addr</span>(v_addr[<span class="hljs-number">8</span>:<span class="hljs-number">0</span>]),<br>    <span class="hljs-variable">.vga_data</span>(vga_data)<br>);<br><br><br><br><span class="hljs-keyword">endmodule</span><br><br><span class="hljs-keyword">module</span> vmem(<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] h_addr,<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">8</span>:<span class="hljs-number">0</span>] v_addr,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">23</span>:<span class="hljs-number">0</span>] vga_data<br>);<br><br><span class="hljs-keyword">reg</span> [<span class="hljs-number">23</span>:<span class="hljs-number">0</span>] vga_mem [<span class="hljs-number">524287</span>:<span class="hljs-number">0</span>];<br><br><span class="hljs-keyword">initial</span> <span class="hljs-keyword">begin</span><br>    <span class="hljs-built_in">$readmemh</span>(<span class="hljs-string">&quot;resource/picture.hex&quot;</span>, vga_mem);<br><span class="hljs-keyword">end</span><br><br><span class="hljs-keyword">assign</span> vga_data = vga_mem[&#123;h_addr, v_addr&#125;];<br><br><span class="hljs-keyword">endmodule</span><br><br></code></pre></td></tr></table></figure>
+
+<p>这里需要注意的是，原来的 example 中的 top.v 代码的按钮只有 8 个，因此得修改一下。并且还得修改 绑定函数：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">nvboard_bind_all_pins</span><span class="hljs-params">(Vtop* top)</span> </span>&#123;<br>	...<br>	<span class="hljs-built_in">nvboard_bind_pin</span>( &amp;top-&gt;sw, <span class="hljs-number">10</span>, SW9, SW8, SW7, SW6, SW5, SW4, SW3, SW2, SW1, SW0);<br>	...<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>之后就可以愉快地按按钮了：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/buttons.png"></p>
+<p>以上就是这个实验的全部内容了~</p>
+]]></content>
+      <categories>
+        <category>ysyx</category>
+        <category>数字电路实验</category>
+      </categories>
+      <tags>
+        <tag>ysyx</tag>
+        <tag>NVBoard</tag>
+        <tag>二位四选一选择器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>教师工资管理系统之随机产生教师详细信息</title>
     <url>/2023/02/28/%E6%95%99%E5%B8%88%E5%B7%A5%E8%B5%84%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E4%B9%8B%E9%9A%8F%E6%9C%BA%E4%BA%A7%E7%94%9F%E6%95%99%E5%B8%88%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF/</url>
     <content><![CDATA[<span id="more"></span>
@@ -16468,30 +16585,6 @@
       <tags>
         <tag>c++</tag>
         <tag>开发语言</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>数字电路实验1</title>
-    <url>/2024/07/13/%E6%95%B0%E5%AD%97%E7%94%B5%E8%B7%AF%E5%9F%BA%E7%A1%80%E5%AE%9E%E9%AA%8C1/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h2 id="实验过程"><a href="#实验过程" class="headerlink" title="实验过程"></a>实验过程</h2><p>本实验采用行为建模，top.v 代码如下：</p>
-<figure class="highlight verilog"><table><tr><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">module</span> c41(X0,X1,X2,X3,Y,F);<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] Y;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X0;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X1;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X2;<br><span class="hljs-keyword">input</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] X3;<br><br><span class="hljs-keyword">output</span> <span class="hljs-keyword">reg</span> [<span class="hljs-number">1</span>:<span class="hljs-number">0</span>] F;<br><span class="hljs-keyword">always</span> @ (Y <span class="hljs-keyword">or</span> X0 <span class="hljs-keyword">or</span> X1 <span class="hljs-keyword">or</span> X2 <span class="hljs-keyword">or</span> X3)<br>    <span class="hljs-keyword">case</span>(Y)<br>        <span class="hljs-number">0</span>: F = X0;<br>        <span class="hljs-number">1</span>: F = X1;<br>        <span class="hljs-number">2</span>: F = X2;<br>        <span class="hljs-number">3</span>: F = X3;<br>        <span class="hljs-keyword">default</span>: F = <span class="hljs-number">2&#x27;b00</span>;<br>    <span class="hljs-keyword">endcase</span><br><span class="hljs-keyword">endmodule</span><br><br><span class="hljs-keyword">module</span> top(<br>    <span class="hljs-keyword">input</span> clk,<br>    <span class="hljs-keyword">input</span> rst,<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">4</span>:<span class="hljs-number">0</span>] btn,<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] sw,<br>    <span class="hljs-keyword">input</span> ps2_clk,<br>    <span class="hljs-keyword">input</span> ps2_data,<br>    <span class="hljs-keyword">input</span> uart_rx,<br>    <span class="hljs-keyword">output</span> uart_tx,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">15</span>:<span class="hljs-number">0</span>] ledr,<br>    <span class="hljs-keyword">output</span> VGA_CLK,<br>    <span class="hljs-keyword">output</span> VGA_HSYNC,<br>    <span class="hljs-keyword">output</span> VGA_VSYNC,<br>    <span class="hljs-keyword">output</span> VGA_BLANK_N,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] VGA_R,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] VGA_G,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] VGA_B,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg0,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg1,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg2,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg3,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg4,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg5,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg6,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">7</span>:<span class="hljs-number">0</span>] seg7<br>);<br><br>c41 my_41(<br>    <span class="hljs-variable">.Y</span>(sw[<span class="hljs-number">1</span>:<span class="hljs-number">0</span>]),<br>    <span class="hljs-variable">.X0</span>(sw[<span class="hljs-number">3</span>:<span class="hljs-number">2</span>]),<br>    <span class="hljs-variable">.X1</span>(sw[<span class="hljs-number">5</span>:<span class="hljs-number">4</span>]),<br>    <span class="hljs-variable">.X2</span>(sw[<span class="hljs-number">7</span>:<span class="hljs-number">6</span>]),<br>    <span class="hljs-variable">.X3</span>(sw[<span class="hljs-number">9</span>:<span class="hljs-number">8</span>]),<br>    <span class="hljs-variable">.F</span>(ledr[<span class="hljs-number">1</span>:<span class="hljs-number">0</span>])<br>);<br><br><span class="hljs-keyword">assign</span> VGA_CLK = clk;<br><br><span class="hljs-keyword">wire</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] h_addr;<br><span class="hljs-keyword">wire</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] v_addr;<br><span class="hljs-keyword">wire</span> [<span class="hljs-number">23</span>:<span class="hljs-number">0</span>] vga_data;<br><br><br><br>vmem my_vmem(<br>    <span class="hljs-variable">.h_addr</span>(h_addr),<br>    <span class="hljs-variable">.v_addr</span>(v_addr[<span class="hljs-number">8</span>:<span class="hljs-number">0</span>]),<br>    <span class="hljs-variable">.vga_data</span>(vga_data)<br>);<br><br><br><br><span class="hljs-keyword">endmodule</span><br><br><span class="hljs-keyword">module</span> vmem(<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">9</span>:<span class="hljs-number">0</span>] h_addr,<br>    <span class="hljs-keyword">input</span> [<span class="hljs-number">8</span>:<span class="hljs-number">0</span>] v_addr,<br>    <span class="hljs-keyword">output</span> [<span class="hljs-number">23</span>:<span class="hljs-number">0</span>] vga_data<br>);<br><br><span class="hljs-keyword">reg</span> [<span class="hljs-number">23</span>:<span class="hljs-number">0</span>] vga_mem [<span class="hljs-number">524287</span>:<span class="hljs-number">0</span>];<br><br><span class="hljs-keyword">initial</span> <span class="hljs-keyword">begin</span><br>    <span class="hljs-built_in">$readmemh</span>(<span class="hljs-string">&quot;resource/picture.hex&quot;</span>, vga_mem);<br><span class="hljs-keyword">end</span><br><br><span class="hljs-keyword">assign</span> vga_data = vga_mem[&#123;h_addr, v_addr&#125;];<br><br><span class="hljs-keyword">endmodule</span><br><br></code></pre></td></tr></table></figure>
-
-<p>这里需要注意的是，原来的 example 中的 top.v 代码的按钮只有 8 个，因此得修改一下。并且还得修改 绑定函数：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">nvboard_bind_all_pins</span><span class="hljs-params">(Vtop* top)</span> </span>&#123;<br>	...<br>	<span class="hljs-built_in">nvboard_bind_pin</span>( &amp;top-&gt;sw, <span class="hljs-number">10</span>, SW9, SW8, SW7, SW6, SW5, SW4, SW3, SW2, SW1, SW0);<br>	...<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-<p>之后就可以愉快地按按钮了：<br><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/buttons.png"></p>
-<p>以上就是这个实验的全部内容了~</p>
-]]></content>
-      <categories>
-        <category>ysyx</category>
-        <category>数字电路实验</category>
-      </categories>
-      <tags>
-        <tag>ysyx</tag>
-        <tag>NVBoard</tag>
-        <tag>二位四选一选择器</tag>
       </tags>
   </entry>
   <entry>

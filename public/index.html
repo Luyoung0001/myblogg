@@ -222,7 +222,7 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2025/03/11/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" target="_self">
+        <a href="/2025/03/16/%E5%9F%BA%E4%BA%8E%20riscv32%E7%9A%84OS(%E4%BA%8C)/" target="_self">
           <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="基于 riscv32 的 OS 设计（一）">
         </a>
       </div>
@@ -230,15 +230,15 @@
     <article class="col-12 col-md-8 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2025/03/11/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" target="_self">
+        <a href="/2025/03/16/%E5%9F%BA%E4%BA%8E%20riscv32%E7%9A%84OS(%E4%BA%8C)/" target="_self">
           基于 riscv32 的 OS 设计（一）
         </a>
       </h2>
 
       
-      <a class="index-excerpt " href="/2025/03/11/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" target="_self">
+      <a class="index-excerpt " href="/2025/03/16/%E5%9F%BA%E4%BA%8E%20riscv32%E7%9A%84OS(%E4%BA%8C)/" target="_self">
         <div>
-          
+          启动最简单的 OS这个 OS 超级简单，就是一个裸机程序： 1234void start_kernel(void)&#123;	while (1) &#123;&#125;; // stop here!&#125; 我们只需要将这个程序编译成二进制文件，然后丢给 qemu，就可以跑了。 但是，有一个大大的问题，这个问题再上一个博客中并没有提到。
         </div>
       </a>
 
@@ -246,8 +246,77 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2025-03-11 13:03" pubdate>
-              2025-03-11
+            <time datetime="2025-03-16 13:03" pubdate>
+              2025-03-16
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/OS/">#OS</a>
+            
+              <a href="/tags/riscv/">#riscv</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2025/03/15/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" target="_self">
+          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="基于 riscv32 的 OS 设计（一）">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/03/15/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" target="_self">
+          基于 riscv32 的 OS 设计（一）
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2025/03/15/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" target="_self">
+        <div>
+          写的 OS 如何运行？如果写过 CPU，那就会明白，OS 和其它裸机程序几乎没有什么区别。当然，复杂的 OS 可能引入各种模式，比如 S-mode，但这不影响 OS 是一个比较复杂的裸机程序的事实。 因此，写好的 OS 加载到内存中，让 CPU 的 PC 指向 OS 的第一条指令，然后开始运行，OS 就成功运行了。 根据以上判断，OS 想要跑起来，需要：  一个 CPU； 一个 RAM。  有一个
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-03-15 13:03" pubdate>
+              2025-03-15
             </time>
           </div>
         
@@ -307,7 +376,7 @@
       
       <a class="index-excerpt " href="/2025/03/10/MIPS%E5%A4%84%E7%90%86%E7%9A%84%E8%AE%BE%E8%AE%A1/" target="_self">
         <div>
-          
+          Why MIPS?学校的课程设计需要做一个 MIPS 的五级流水线单周期处理器，这是 项目链接。 MIPS 有一个特点，那就是延迟槽。如果在编译参数中将延迟槽关掉，那么每一个分支指令后面的延迟槽就会变成空指令，这为流水线的指令相关解决提供了便利。 这个项目提供了简单的测试环境，但是遗憾的是由于时间有限，并没有提供 difftest。 程序编译流程 mips 交叉编译工具链编译成目标文件； 将目标文
         </div>
       </a>
 
@@ -347,73 +416,6 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/MIPS/">#MIPS</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2025/03/01/2%E6%9C%88%E6%88%91%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" target="_self">
-          <img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/cat2_4article_face.jpg" alt="2月我做了什么">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/03/01/2%E6%9C%88%E6%88%91%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" target="_self">
-          2月我做了什么
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2025/03/01/2%E6%9C%88%E6%88%91%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" target="_self">
-        <div>
-          
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-03-01 13:03" pubdate>
-              2025-03-01
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E6%84%9F%E6%83%B3/" class="category-chain-item">感想</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E6%9C%88%E8%AE%B0%E5%BD%95/">#月记录</a>
             
           </div>
         

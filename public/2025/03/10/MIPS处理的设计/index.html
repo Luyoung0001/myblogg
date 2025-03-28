@@ -16,18 +16,21 @@
   <meta name="author" content="Luyoung">
   <meta name="keywords" content="">
   
-    <meta name="description" content="我自飞扬临天下。————《遮天》孔雀王">
+    <meta name="description" content="Why MIPS?学校的课程设计需要做一个 MIPS 的五级流水线单周期处理器，这是 项目链接。 MIPS 有一个特点，那就是延迟槽。如果在编译参数中将延迟槽关掉，那么每一个分支指令后面的延迟槽就会变成空指令，这为流水线的指令相关解决提供了便利。 这个项目提供了简单的测试环境，但是遗憾的是由于时间有限，并没有提供 difftest。 程序编译流程 mips 交叉编译工具链编译成目标文件； 将目标文">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MIPS 处理器的设计">
 <meta property="og:url" content="http://blog.luliang.online/2025/03/10/MIPS%E5%A4%84%E7%90%86%E7%9A%84%E8%AE%BE%E8%AE%A1/index.html">
 <meta property="og:site_name" content="Luyoung">
-<meta property="og:description" content="我自飞扬临天下。————《遮天》孔雀王">
+<meta property="og:description" content="Why MIPS?学校的课程设计需要做一个 MIPS 的五级流水线单周期处理器，这是 项目链接。 MIPS 有一个特点，那就是延迟槽。如果在编译参数中将延迟槽关掉，那么每一个分支指令后面的延迟槽就会变成空指令，这为流水线的指令相关解决提供了便利。 这个项目提供了简单的测试环境，但是遗憾的是由于时间有限，并没有提供 difftest。 程序编译流程 mips 交叉编译工具链编译成目标文件； 将目标文">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/Picture1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/pic2.png">
 <meta property="article:published_time" content="2025-03-10T05:03:13.000Z">
-<meta property="article:modified_time" content="2025-03-27T05:48:37.701Z">
+<meta property="article:modified_time" content="2025-03-27T07:46:05.118Z">
 <meta property="article:author" content="Luyoung">
 <meta property="article:tag" content="MIPS">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Luyoung0001/picBed/main/Picture1.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -222,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          686 字
         
       </span>
     
@@ -233,7 +236,7 @@
         
         
         
-          1 分钟
+          6 分钟
         
       </span>
     
@@ -275,7 +278,36 @@
             
               <div class="markdown-body">
                 
-                
+                <h2 id="Why-MIPS"><a href="#Why-MIPS" class="headerlink" title="Why MIPS?"></a>Why MIPS?</h2><p>学校的课程设计需要做一个 MIPS 的五级流水线单周期处理器，这是 <a target="_blank" rel="noopener" href="https://github.com/XUPTF4/CPU_based_on_MIPS">项目链接</a>。</p>
+<p>MIPS 有一个特点，那就是延迟槽。如果在编译参数中将延迟槽关掉，那么每一个分支指令后面的延迟槽就会变成空指令，这为流水线的指令相关解决提供了便利。</p>
+<p>这个项目提供了简单的测试环境，但是遗憾的是由于时间有限，并没有提供 difftest。</p>
+<h2 id="程序编译流程"><a href="#程序编译流程" class="headerlink" title="程序编译流程"></a>程序编译流程</h2><ul>
+<li>mips 交叉编译工具链编译成目标文件；</li>
+<li>将目标文件的 .data 抽取到 dataMem 中，将.text 抽取到 instMem 中，这个过程自动化的；</li>
+<li>通过链接脚本控制编译的数据段、程序段虚拟地址（CPU 发出的地址），以便正确访存；</li>
+<li>可以将目标文件反汇编成 .txt 文件，利于读取查看；</li>
+<li>就可以放到 vivado 中进行下板验证了；</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/Picture1.png"></p>
+<h2 id="程序运行逻辑"><a href="#程序运行逻辑" class="headerlink" title="程序运行逻辑"></a>程序运行逻辑</h2><ul>
+<li>首先是_start，设置一个 sp，由于 instMem 是 reg [31:0] mem [0:1023]，大小为 4KB，因此 sp 设置为 4KB;</li>
+<li>跳转到 _trm_init，这是一个监视 main 函数是否成功执行的环境，它调用 main 函数；</li>
+<li>main 函数就是各种测试了，比如 add.c sub.c 等等；</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/Luyoung0001/picBed/main/pic2.png"></p>
+<h2 id="让-MIPS-跑一个简单的-OS"><a href="#让-MIPS-跑一个简单的-OS" class="headerlink" title="让 MIPS 跑一个简单的 OS?"></a>让 MIPS 跑一个简单的 OS?</h2><p>这个 OS 来源于 ysyx 项目的 yieldOS。功能是切换上下文。</p>
+<p>原理很简单，只需要设置一个上下文结构体，A 进程调用yield()，yield() 是一个内联汇编：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">// 系统调用</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">yield</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">asm</span> <span class="hljs-title function_">volatile</span><span class="hljs-params">(</span><br><span class="hljs-params">        <span class="hljs-string">&quot;syscall\n\t&quot;</span></span><br><span class="hljs-params">        <span class="hljs-string">&quot;nop&quot;</span></span><br><span class="hljs-params">        :</span><br><span class="hljs-params">        :</span><br><span class="hljs-params">        :)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>MIPS 执行到 syscall 指令的时候，就会跳转到 __am_asm_trap：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs asm"><br>#define MAP(c, f) c(f)<br><br>#define REGS(f) \<br>      f( 1) f( 2) f( 3) f( 4) f( 5) f( 6) f( 7) f( 8) f( 9) \<br>f(10) f(11) f(12) f(13) f(14) f(15) f(16) f(17) f(18) f(19) \<br>f(20) f(21) f(22) f(23) f(24) f(25)             f(28)       \<br>f(30) f(31)<br><br>#define PUSH(n) sw $n, (n * 4)($sp);<br>#define POP(n)  lw $n, (n * 4)($v0);<br><br>#define CONTEXT_SIZE ((33) * 4)<br>#define OFFSET_SP     (29 * 4)<br><br><br><br>.set noat<br>.globl __am_asm_trap<br>__am_asm_trap:<br>  move $k1, $sp<br>  addiu $sp, $sp, -CONTEXT_SIZE<br><br>  MAP(REGS, PUSH)<br><br>  sw $k1, OFFSET_SP($sp)<br><br>  move $a0, $sp<br><br>  jal __am_irq_handle<br><br>  # 异常返回<br><br>  lw $a0, 16($v0)<br>  lw $t0, 128($v0) # 载入返回地址<br>  nop<br>  nop<br>  nop<br>  nop<br>  nop<br>  mtc0 $t0, $0      # 将返回地址载入 epc<br>  addiu $sp, $sp, CONTEXT_SIZE<br>  eret<br><br></code></pre></td></tr></table></figure>
+
+<p>保存上下文之后，调用调度函数，该函数返回一个新的上下文：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">int</span> tag = <span class="hljs-number">0</span>;<br>Context* <span class="hljs-title function_">user_handler</span><span class="hljs-params">(Context* prev)</span> &#123;<br>    <span class="hljs-comment">// 切换两个线程</span><br>    Context* c;<br>    tag++;<br>    <span class="hljs-keyword">if</span> (tag % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) &#123;<br>        c = pcb[<span class="hljs-number">0</span>].cp;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        c = pcb[<span class="hljs-number">1</span>].cp;<br>    &#125;<br>    <span class="hljs-keyword">return</span> c;<br>&#125;<br><br>Context* __am_irq_handle(Context* c) &#123;<br>    c = user_handler(c);<br><br>    <span class="hljs-keyword">return</span> c;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>之后，将这个上下文中的关键寄存器中的值，恢复到现场，然后 eret，返回到上次打断的地方，就可以继续运行了。</p>
+<p>这个简单的 OS 和其它 OS 的上下文基本一致，区别无非就是CPU 结构的区别了。</p>
+
                 
               </div>
             
@@ -365,7 +397,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/03/11/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" title="基于 riscv32 的 OS 设计（一）">
+                      <a href="/2025/03/15/%E5%9F%BA%E4%BA%8Eriscv32%E7%9A%84OS(%E4%B8%80)/" title="基于 riscv32 的 OS 设计（一）">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">基于 riscv32 的 OS 设计（一）</span>
                         <span class="visible-mobile">上一篇</span>
@@ -375,8 +407,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/03/01/2%E6%9C%88%E6%88%91%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" title="2月我做了什么">
-                        <span class="hidden-mobile">2月我做了什么</span>
+                      <a href="/2025/02/18/rust%E4%B8%AD%E7%9A%84%20traits/" title="Rust 中的 traits">
+                        <span class="hidden-mobile">Rust 中的 traits</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
