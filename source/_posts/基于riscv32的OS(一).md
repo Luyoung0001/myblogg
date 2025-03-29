@@ -1,5 +1,5 @@
 ---
-title: 基于 riscv32 的 OS 设计（一）
+title: 基于 riscv32 的 OS 设计：qemu 启动！
 date: 2025-03-15 13:03:13
 tags:
     - OS
