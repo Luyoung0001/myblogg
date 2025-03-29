@@ -9,7 +9,7 @@ categories: OS
 
 ## 多任务
 
-多任务很简单，首先创造两个任务：
+首先创造两个任务：
 
 ```C
 void user_task0(void)
@@ -97,7 +97,7 @@ Task 1: Running...
 Task 0: Running...
 ```
 
-这就是多任务的切换，很简单。
+这就是多任务的切换。
 
 
 
