@@ -19,12 +19,11 @@ categories: OS
 
 抢占式可以基于时钟中断来实现，通过不断地产生时钟中断来做到任务切换。
 
-思路大致为，当时钟中断到达的时候，进入到 trap_vector，接着调用 trap_handler。 trap_handler 对时钟中断进行处理，处理的过程中直接调用
-switch_to，这样就可以了吗？
+思路大致为，当时钟中断到达的时候，进入到 trap_vector，接着调用 trap_handler。 trap_handler 对时钟中断进行处理，处理的过程中直接调用 switch_to，这样就可以了吗？
 
 没有这么简单。
 
-之前的 switch_to 很简单，它由 yield 中的 schedule 函数引发引发。
+之前的 switch_to 很简单，它由 yield 中的 schedule 函数引发。
 
 switch_to 函数保存上下文后，切换到新的上下文，然后通过 jalr 指令返回到新的上下文（借助寄存器 ra）。这显然不怎么“合法”。合法的切换上下文最后应该由 mret 返回。但是 mret 返回的话，依赖的是 mepc 这个寄存器，因此在 mret 之前，得把 context 中的 mepc 恢复到 mepc。这就意味着，保存上下文的时候，得保存当前的 PC 的下一条指令地址（也就是硬件自动保存的 mepc ）到上下文中！
 
@@ -98,27 +97,27 @@ struct context {
 
 ```asm
     csrrw	t6, mscratch, t6
-	reg_save t6
+    reg_save t6
     mv	t5, t6
-	csrr	t6, mscratch
-	STORE	t6, 30*SIZE_REG(t5)
+    csrr	t6, mscratch
+    STORE	t6, 30*SIZE_REG(t5)
 ```
 
 这时候，还有一个新的上下文，那就是 mepc：
 
 ```asm
-	csrr	a0, mepc
-	STORE	a0, 31*SIZE_REG(t5)
+    csrr	a0, mepc
+    STORE	a0, 31*SIZE_REG(t5)
     # 恢复 mscratch
-	csrw	mscratch, t5
+    csrw	mscratch, t5
 ```
 
 调用 trap_handler：
 
 ```asm
-	csrr	a0, mepc
-	csrr	a1, mcause
-	call	trap_handler
+    csrr	a0, mepc
+    csrr	a1, mcause
+    call	trap_handler
 ```
 
 我们可能希望 trap_handler 执行完后，从这里返回。但是，事实上由于这里发生的是时钟中断，并且进行了新的任务调度：
@@ -201,15 +200,15 @@ void timer_handler() {
 这样，mret 就能利用 mepc 完美跳到另一个上下文中。当然，这也不会影响其它异常处理过程，trap_vector:
 
 ```asm
-	# trap_handler will return the return address via a0.
-	csrw	mepc, a0
+    # trap_handler will return the return address via a0.
+    srw	mepc, a0
 
-	# restore context(registers).
-	csrr	t6, mscratch
-	reg_restore t6
+    # restore context(registers).
+    csrr	t6, mscratch
+    reg_restore t6
 
-	# return to whatever we were doing before trap.
-	mret
+    # return to whatever we were doing before trap.
+    mret
 ```
 
 ## 测试
