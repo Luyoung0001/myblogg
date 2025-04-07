@@ -1,6 +1,6 @@
 ---
 title: LA 挑战赛：加上 difftest
-date: 2025-04-06 13:03:13
+date: 2025-04-05 13:03:13
 tags:
     - LoongArch
     - CPU
