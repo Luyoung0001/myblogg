@@ -1,61 +1,71 @@
 ---
-title: LA 挑战赛：双 Cache 设计
-date: 2025-07-15 13:03:13
+title: LA 挑战赛：一次调试 bug 的记录
+date: 2025-07-01 13:03:13
 tags:
-    - cache
+    - TLB
     - CPU
 categories: 体系结构
 ---
 
-## 前言
-cache 的设计如果能配合良好的 debug 系统，那么就不是太难。由于 icache 只是 dcache 的一个子集功能，因此只要设计好了 dcache，icache 自然就能正常运作。笔者设计好 cache 并成功启动 linux_kernel 后，认为 cache 设计可以问分为两个部分：可缓存的访问和不可缓存的访问，用信号 uncache_en 来指明，这个信号由访存单元和访问 cache 的地址等信号一同给出。
+## 问题
 
-## 总体设计
+在 sc.w 执行后，我发现一切都很合规，但是 REF 跳进了一个 pc = 0x00204000 的指令，然而 DUT 还在若无其事的执行 sc.w 的下一条指令。这让我意识到了，可能是 sc.w 遇到了异常，REF 给出了正确的响应，然而 DUT 无动于衷。
 
-OpenLA500 用了使用了两个状态机，我认为这个设计过于复杂，虽然 cache write 和 cache read 能并行几个时钟周期并带来性能上的些许优势，但是同时带来了极高的复杂度。对于新手而言，两个状态机带来的思维障碍和收益不相符。因此可以考虑放弃一两个时钟周期的速度来大大简化设计难度。
+## 分析过程
 
-因此，我采用了一个状态机，读和写都是阻塞的。每一个事务完成后，状态机都会回到 IDLE 状态来准备处理下一个事务。OpenLA500 的做法很激进，它可以一边处理一边接受新的请求，这样缩短一个事务周期，尤其是在连续访问 cache 的时候。但是同样，它会带来新的复杂度，比如考虑强续访存，就得手动保证上一个事务完成在处理下一个。但是我的设计完全不用考这些，它本来就是阻塞的。
+pc = 0x00204000 是什么异常的处理入口呢？
 
-## cache_read
+因为我是在启动 linux，因此必须对这个地址进行研究一下。在 linux 源码 `arch/loongarch/include/asm/loongarchregs.h` 中：
 
-命中返回就行，没命中直接替换后 retry。
-没命中要处理两件事：
-- 替换谁
-- 替换后如果脏就写回，不然直接和 AXI 要数据
+```C
 
-## cache_write
-
-如果命中，直接写，如果不命中，也是同理。
-
-但是这里要注意数据的拼凑：要对发来的 wdata 根据地址的 offset、wrtrb 等进行拼凑成一个写入单元，再写入 cache。
-
-## uncache_read
-
-如果一个请求是 uncache 类型的，那么问题应该更简单才对，但是做起来好像逻辑更复杂了。
-
-这里的原因就是，得对 axi 模块进行修改了，因为这时候axi 的 size、len 都不一样了，要针对性地处理。另外想要复用已经存在的 cache_axi 数据通路的话，就得针对发射到 axi 的信号进行 mux:
-
-```Verilog
-    assign rd_req = request_buffer_uncache_en ? ...
-    assign rd_type = request_buffer_uncache_en ? ...
-    assign rd_addr = request_buffer_uncache_en ? ...
-
+#define EXCCODE_RSV		0	/* Reserved */
+#define EXCCODE_TLBL		1	/* TLB miss on a load */
+#define EXCCODE_TLBS		2	/* TLB miss on a store */
+#define EXCCODE_TLBI		3	/* TLB miss on a ifetch */
+#define EXCCODE_TLBM		4	/* TLB modified fault */
+#define EXCCODE_TLBRI		5	/* TLB Read-Inhibit exception */
+#define EXCCODE_TLBXI		6	/* TLB Execution-Inhibit exception */
+#define EXCCODE_TLBPE		7	/* TLB Privilege Error */
 ```
 
-如果 axi 写得没错的话，只要发过去，就能拿到数据，之后将这个数据直接返回就行了。
+可以看到，这是一个 TLB modified fault。这个异常是怎么发生的呢？我立即去看访存模块中的 PME 异常条件：
 
-## uncache_write
-
-这个也是同理：
 ```Verilog
-    assign wr_type  = request_buffer_uncache_en ? ...
-    assign wr_addr  = request_buffer_uncache_en ? ...
-    assign wr_wstrb = request_buffer_uncache_en ? ...
-    assign wr_data  = request_buffer_uncache_en ? ...
+    // 0x14
+    assign exu_excp_pme  = (st_b | st_h | st_w) && data_tlb_v && (csr_plv <= data_tlb_plv) && !data_tlb_d && data_addr_trans_en;
+    assign excp_pme_num = exu_excp_pme ? 16'h4000 : 16'b0;
 ```
 
-## 总结
-cache 是一个系统，和上下游结合后，它的复杂度将会大大提升，另外 debug 也很费时间，可以说是 30% 的时间在设计代码，60%的时间在排除错误以及 debug，另外的 10% 就是优化各种细节了。
+发现当有效位有效且权限合法且脏位不脏且是翻译模式时，就应该报这个错误。
+
+我立即去看波形图：
+
+![](https://raw.githubusercontent.com/Luyoung0001/picBed/main/20250701_la_debug.png)
+
+发现，符合所有的条件，但是 exu_excp_pme 为 0？原来我并没有将 sc_w 这个指令放到中间判断，这样修改就好了：
+
+```Verilog
+    // 0x14
+    assign exu_excp_pme  = (st_b | st_h | st_w | sc_do) && data_tlb_v && (csr_plv <= data_tlb_plv) && !data_tlb_d && data_addr_trans_en;
+    assign excp_pme_num = exu_excp_pme ? 16'h4000 : 16'b0;
+```
+这样，这个 bug 就修好了。
+
+## 题外话: 关于脏位
+
+我认为，这个脏位 d 本来的名字就有问题，它和脏位一点关系都没有，在硬件层次上，它更像一个权限检查位。
+
+当访存指令访问某一个page 的时候，tlb 拿到给出的访存地址后，发现这个地址要访问的page 没被修改过，于是立即进入异常处理阶段，让软件判断是否有写的权限。如果有，在异常处理的时候利用 tlb 指令将其 d 置 1，异常处理返回后就继续执行；如果没有权限直接报段错误并杀死程序。
+
+因此这个脏位 d 其实就是权限位。
+
+这个 d 位也是操作系统内核实现 COW(Copy on write)的关键。由于多个进程共享同一块物理内存（节省内存），但是当其中任何一个写入数据时，才复制出一个私有的物理页。
+
+比如 fork() 子进程，初始和父进程公用相同物理页。如果是读，没什么事情。但是如果想写，就会进入 mpe 异常处理，检查该页是否标记为 “写时复制”，如果是那么就分配一块新的物理页，然后把旧物理页的内容拷贝到新页，接着修改当前进程页表，把这个虚拟页映射到新物理页，并更新 d=1，返回后再次执行那条 store。
+
+
+
 
 
 
