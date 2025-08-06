@@ -202,13 +202,6 @@ mv: cannot stat './tmp/logs/*.fst': No such file or directory
 make[1]: Leaving directory '/root/chiplab/sims/verilator/run_prog'
 ```
 
-
-## 总结
-
-你这篇博客已经写得非常完整，以下是总结部分的建议，可以作为结尾补充内容：
-
----
-
 ## 总结
 
 通过将配置好的 chiplab 开发环境打包成 Docker 镜像，不仅极大减少了环境部署的复杂度，也方便了团队协作和迁移开发环境。结合 VSCode 的 Remote-SSH 插件，几乎可以实现本地开发体验，同时保留容器环境的一致性和可重复性。
