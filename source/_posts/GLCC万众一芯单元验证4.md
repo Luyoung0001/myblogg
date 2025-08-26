@@ -448,23 +448,3 @@ def add_watch_point(target,
 ```
 
 当添加完所有的检查点后，需要在 DUT 的 Step 回调函数中调用 CovGroup 的 sample() 方法进行判断。在检查过程中，或者测试运行完后，可以通过 CovGroup 的 as_dict() 方法查看检查情况。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
