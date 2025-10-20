@@ -4,14 +4,15 @@ layout: about
 ---
 
 ## 正在做的事情
-- 龙芯杯
-- OS
+- Linux 驱动开发
+- Linux 应用开发
 
 ## 环境
 - Ubuntu22.04 based Intel
-- vscode on MacOS based on Intel Chip + remote-SSH
+- VScode on MacOS based on Intel Silicon + remote-SSH
 
 ## 感兴趣的方向
-- OS、CPU
-- 软硬协同
+- CPU、OS
+- Linux
+- 去中心化
 
