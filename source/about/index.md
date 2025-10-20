@@ -13,6 +13,6 @@ layout: about
 
 ## 感兴趣的方向
 - CPU、OS
-- Linux
+- Linux_kernel
 - 去中心化
 
