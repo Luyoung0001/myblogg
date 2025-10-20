@@ -15,9 +15,9 @@ categories:
 ## 一、一个问题
 
 ```
-native的IOE是基于SDL库实现的, 这些库很有可能会调用glibc的库函数, 例如malloc()和free(). 但我们自己实现的klib通常不能完美地符合glibc的标准, 因此直觉上看, 如果定义了__NATIVE_USE_KLIB__, 很可能会导致SDL库产生不正确的行为.
+native 的 IOE 是基于 SDL 库实现的, 这些库很有可能会调用 glibc 的库函数, 例如 malloc()和 free(). 但我们自己实现的 klib 通常不能完美地符合 glibc 的标准, 因此直觉上看, 如果定义了__NATIVE_USE_KLIB__, 很可能会导致SDL库产生不正确的行为.
 
-不过你会发现, 即使定义了__NATIVE_USE_KLIB__, 也可以正确地在native上执行IOE相关的功能. 实际上, 我们使用了一个小技巧, 使得在定义了__NATIVE_USE_KLIB__的情况下, 避免SDL库调用klib中的函数, 而是调用glibc中的相应函数. 如果屏蔽这个小技巧, 在定义__NATIVE_USE_KLIB__的情况下, native将无法正确运行依赖IOE的程序. 你知道这个小技巧是如何做到的吗?
+不过会发现, 即使定义了__NATIVE_USE_KLIB__, 也可以正确地在native上执行IOE相关的功能. 实际上, 我们使用了一个小技巧, 使得在定义了__NATIVE_USE_KLIB__的情况下, 避免SDL库调用klib中的函数, 而是调用glibc中的相应函数. 如果屏蔽这个小技巧, 在定义__NATIVE_USE_KLIB__的情况下, native将无法正确运行依赖IOE的程序. 你知道这个小技巧是如何做到的吗?
 
 ```
 
