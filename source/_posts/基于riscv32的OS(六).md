@@ -7,9 +7,9 @@ tags:
 categories: OS
 ---
 
-## trap 和 exception 相关寄存器
+## 中断 和 异常相关寄存器
 
-不管是 trap 还是 exception，大致处理流程都是一致的。
+不管是 中断 还是 异常，大致处理流程都是一致的。
 
 ### mcause
 
