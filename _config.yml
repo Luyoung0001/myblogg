@@ -97,6 +97,13 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: fluid
 
+mermaid:
+    enable: true
+    specific: true
+    opinions: {theme: 'default'}
+
+
+
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:

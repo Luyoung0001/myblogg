@@ -87,11 +87,6 @@ links:
   banner_img_height: 65
   banner_mask_alpha: 0
 
-mermaid:
-    enable: true
-    specific: true
-    opinions: {theme: 'default'}
-
 
 lazyload:
     enable: false
