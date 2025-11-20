@@ -217,9 +217,6 @@ deploy:
   repo: git@github.com:Luyoung0001/Luyoung0001.github.io.git
   branch: main
 
-index:
-  auto_excerpt:
-    enable: true
 
 post:
   mermaid:
