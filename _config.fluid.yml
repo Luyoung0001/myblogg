@@ -22,10 +22,10 @@ post:
   banner_img: https://raw.githubusercontent.com/Luyoung0001/picBed/main/1.jpg # 文章背景图
   banner_img_height: 65
   banner_mask_alpha: 0
-  
+
   mermaid:
     enable: true
-    specific: false
+    specific: true
     options: {theme: 'default'}
 
 # 页面背景图
