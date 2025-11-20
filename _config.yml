@@ -97,10 +97,6 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: fluid
 
-mermaid:
-    enable: true
-    specific: true
-    opinions: {theme: 'default'}
 
 
 

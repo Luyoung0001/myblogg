@@ -120,7 +120,7 @@ code:
 
 dark_mode:
   enable: true
-  default: light #auto / light / dark
+  default: dark #auto / light / dark
 
 
 # URL
@@ -216,6 +216,16 @@ deploy:
   type: git
   repo: git@github.com:Luyoung0001/Luyoung0001.github.io.git
   branch: main
+
+index:
+  auto_excerpt:
+    enable: true
+
+post:
+  mermaid:
+    enable: true
+    specific: false
+    options: {theme: 'default'}
 
 footer:
   statistics:
