@@ -1,6 +1,6 @@
 ---
 title: riscv-boom's loop
-date: 2025-12-01 15:03:16
+date: 2025-12-02 15:03:16
 tags: 分支预测
 categories: 计算机体系结构
 mermaid: true
