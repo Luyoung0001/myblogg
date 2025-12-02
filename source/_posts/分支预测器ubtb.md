@@ -1,6 +1,6 @@
 ---
 title: riscv-boom's ubtb
-date: 2025-12-01 15:03:13
+date: 2025-12-02 15:03:13
 tags: 分支预测
 categories: 计算机体系结构
 mermaid: true
@@ -8,8 +8,7 @@ mermaid: true
 
 ## ubtb
 
-This is the set-associative variant of the Micro BTB, as opposed to the
-fully-associative FAMicroBTB. It uses indexed addressing like a cache.
+This is the set-associative variant of the Micro BTB, as opposed to the fully-associative FAMicroBTB. It uses indexed addressing like a cache.
 
 Structure:
   - 256 sets by default (configurable)
