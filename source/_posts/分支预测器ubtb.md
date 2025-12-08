@@ -1330,3 +1330,4 @@ Write Bypass 的本质: 一个 2 条目的小缓存，记录最近写入 SRAM �
   | 硬件实现          | 每个 slot 有独立的写使能 (Write Enable) |
 
 这就是 字节/字掩码写入 (Byte/Word Mask Write)，是 SRAM 的标准功能，Chisel 的 SyncReadMem 直接支持这个特性。
+
