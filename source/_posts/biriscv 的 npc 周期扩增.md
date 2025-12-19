@@ -1,16 +1,328 @@
 ---
 title: biriscv 处理器 npc 的周期扩增
-date: 2025-12-015 15:03:13
+date: 2025-12-15 15:03:13
 tags: 超标量处理器设计
 categories: 计算机体系结构
 mermaid: true
 ---
 
-## fetch
+## biriscv_fetch
 
-fetch 单元在周期 T 向 npc 发射请求信号包括一个 pc 信号（pc_f_q），它能在同一周期 T 内获取到 next_pc 在下一个周期更新 pc_f_q。同时利用该 pc_f_q 向 icache 发出请求，在周期 T+1 拿到数据后将数据传送给 decode 单元。
+biriscv_fetch 是 biRISC-V CPU 的取指单元，位于 ICache 和 Decode 阶段之间，负责：
+- 管理 PC (Program Counter)
+- 向 ICache 发起取指请求
+- 缓冲 ICache 返回的指令
+- 处理分支跳转请求
+- 支持 MMU（可配置）
 
-fetch 的接口 io 如下：
+下面的分析是没有支持 MMU 的。
+
+### branch 处理
+
+```verilog
+begin
+    assign branch_w      = branch_q || branch_request_i;
+    assign branch_pc_w   = (branch_q & !branch_request_i) ? branch_pc_q   : branch_pc_i;
+    assign branch_priv_w = `PRIV_MACHINE; // don't care
+
+    always @ (posedge clk_i or posedge rst_i)
+    if (rst_i)
+    begin
+        branch_q       <= 1'b0;
+        branch_pc_q    <= 32'b0;
+    end
+    else if (branch_request_i && (icache_busy_w || !active_q))
+    begin
+        branch_q       <= branch_w;
+        branch_pc_q    <= branch_pc_w;
+    end
+    else if (~icache_busy_w)
+    begin
+        branch_q       <= 1'b0;
+        branch_pc_q    <= 32'b0;
+    end
+end
+```
+
+这个时序逻辑处理了 issue 来的反馈信号，issue 可以重定向任何一条指令的下一条指令。换言之，issue 总是能找到本条指令的下一条指令，只要给 decode 的一个 pc，decode 译码后发给 issue，issue 从此就能找到所有正确序列。
+
+因此 branch 信号给前端正确的反馈，甚至给出连续的反馈，因此这里使用了暂存器来暂存一组反馈：
+
+```verilog
+    ,input           branch_request_i
+    ,input  [ 31:0]  branch_pc_i
+    ,input  [  1:0]  branch_priv_i
+```
+branch_priv_i 无关紧要，这里做了忽略（总是机器模式）。
+
+### 激活
+
+```verilog
+//-------------------------------------------------------------
+// Active flag
+//-------------------------------------------------------------
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    active_q    <= 1'b0;
+else if (SUPPORT_MMU && branch_w && ~stall_w)
+    active_q    <= 1'b1;
+else if (!SUPPORT_MMU && branch_w)
+    active_q    <= 1'b1;
+```
+当 branch_request_i 拉高或者拉高之后锁存，active_q 下一个周期就会被激活。一旦被激活，fetch 将会出在激活状态。
+
+active_q 是一个"启动开关"：
+- 防止复位后用无效的 PC（0x0）去取指；
+- 等待外部（通常是 CSR 或复位逻辑）提供真正的启动地址；
+- 一旦启动，就一直工作下去。
+
+
+### 暂停
+
+
+
+```txt
+  stall_w = !fetch_accept_i || icache_busy_w || !icache_accept_i
+                │                   │                  │
+                ▼                   ▼                  ▼
+           下游反压            等待响应           ICache忙
+
+  | 条件             | 含义                | 场景                            |
+  |------------------|---------------------|---------------------------------|
+  | !fetch_accept_i  | Decode 不接受新指令 | Decode 阶段有阻塞（如依赖、满） |
+  | icache_busy_w    | ICache 请求未返回   | 等待 ICache 响应中              |
+  | !icache_accept_i | ICache 不接受请求   | ICache 内部忙（如 miss 处理）   |
+
+  | 信号    | 类型     | 含义                 |
+  |---------|----------|----------------------|
+  | stall_w | 组合逻辑 | 当前周期是否需要暂停 |
+  | stall_q | 寄存器   | 上一周期是否暂停     |
+
+```
+
+```verilog
+//-------------------------------------------------------------
+// Stall flag
+//-------------------------------------------------------------
+reg stall_q;
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    stall_q    <= 1'b0;
+else
+    stall_q    <= stall_w;
+```
+
+stall_q 锁存了当前 fetch 系统的 stall_w 状态，如果 stall_q 为 1，说明本周期继续处理这种 stall 情况。
+
+#### stall_w 的作用 1：控制 PC 更新
+
+```verilog
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    pc_f_q  <= 32'b0;
+// Branch request
+else if (SUPPORT_MMU && branch_w && ~stall_w)
+    pc_f_q  <= branch_pc_w;
+else if (!SUPPORT_MMU && (stall_w || !active_q || stall_q) && branch_w)
+    pc_f_q  <= branch_pc_w;
+// NPC
+else if (!stall_w)
+    pc_f_q  <= next_pc_f_i;
+```
+stall 的时候，pc_f_q 不更新，这样确保不会跳过 PC。
+
+#### stall_w 的作用 2：控制 npc 采样
+```verilog
+// biriscv_fetch.v:305
+assign pc_accept_o = ~stall_w;
+```
+告诉 NPC 模块：
+- pc_accept_o = 1：当前 PC 被接受，可以更新推测状态（RAS、BHT）
+- pc_accept_o = 0：暂停，不要更新推测状态
+
+这里停止更新 npc 的 RAS。
+
+#### stall_q 的作用 3：从 stall 的恢复过程
+
+```verilog
+assign icache_pc_w       = (branch_w & ~stall_q) ? branch_pc_w : pc_f_q;
+```
+
+如果上一周期 stall 了，那么此时 icache_pc_w 保持原来的 pc。
+
+### icache 请求追踪
+```verilog
+//-------------------------------------------------------------
+// Request tracking
+//-------------------------------------------------------------
+reg icache_fetch_q;
+
+// ICACHE fetch tracking
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    icache_fetch_q <= 1'b0;
+else if (icache_rd_o && icache_accept_i)
+    icache_fetch_q <= 1'b1;
+else if (icache_valid_i)
+    icache_fetch_q <= 1'b0;
+
+assign icache_busy_w       =  icache_fetch_q && !icache_valid_i;
+```
+```txt
+  | icache_fetch_q | icache_valid_i | icache_busy_w | 含义           |
+  |----------------|----------------|---------------|----------------|
+  | 0              | x              | 0             | 无未完成请求   |
+  | 1              | 0              | 1             | 等待响应中，忙 |
+  | 1              | 1              | 0             | 响应到达，不忙 |
+
+  时序图
+
+  Cycle        1        2        3        4        5
+             ┌────────┬────────┬────────┬────────┬────────┐
+  icache_rd  │   1    │   0    │   0    │   1    │   0    │
+             ├────────┼────────┼────────┼────────┼────────┤
+  icache_    │   1    │        │        │   1    │        │
+  accept     │        │        │        │        │        │
+             ├────────┼────────┼────────┼────────┼────────┤
+  icache_    │        │        │   1    │        │   1    │
+  valid      │        │        │resp @1 │        │resp @4 │
+             ├────────┼────────┼────────┼────────┼────────┤
+  icache_    │  0→1   │   1    │  1→0   │  0→1   │  1→0   │
+  fetch_q    │ 发请求 │ 等待中 │ 收响应 │ 发请求 │ 收响应 │
+             ├────────┼────────┼────────┼────────┼────────┤
+  icache_    │   0    │   1    │   0    │   0    │   0    │
+  busy_w     │        │  忙!   │        │        │        │
+             └────────┴────────┴────────┴────────┴────────┘
+```
+如果 icache 命中，那么下一个周期返回，busy 信号是不会拉高的，保证了连续发射请求。如果 icache 没有命中那么 busy 就会在下一个周期拉高，防止发射连续的请求。
+
+### pc 的更新逻辑
+
+```verilog
+
+//-------------------------------------------------------------
+// PC
+//-------------------------------------------------------------
+reg [31:0]  pc_f_q;
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    pc_f_q  <= 32'b0;
+// Branch request
+else if (SUPPORT_MMU && branch_w && ~stall_w)
+    pc_f_q  <= branch_pc_w;
+else if (!SUPPORT_MMU && (stall_w || !active_q || stall_q) && branch_w)
+    pc_f_q  <= branch_pc_w;
+// NPC
+else if (!stall_w)
+    pc_f_q  <= next_pc_f_i;
+
+wire [31:0] icache_pc_w;
+wire [1:0]  icache_priv_w;
+wire        fetch_resp_drop_w;
+
+assign icache_pc_w       = (branch_w & ~stall_q) ? branch_pc_w : pc_f_q;
+assign icache_priv_w     = `PRIV_MACHINE; // Don't care
+assign fetch_resp_drop_w = branch_w;
+```
+
+pc_f_q 的更新逻辑是如果遇见 stall 但是此时有 branch，直接更新（这是一种激进策略）；或者没有 stall 的话，采样 npc 返回值；其他情况保持。
+
+如果当前周期有 branch_w 信号，fetch_resp_drop_w 会拉高，这样前面请求的指令在这一周期直接无效化：
+
+```verilog
+assign fetch_valid_o       = (icache_valid_i || skid_valid_q) & !fetch_resp_drop_w;
+```
+
+### last fetch address
+
+```verilog
+// Last fetch address
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    pc_d_q <= 32'b0;
+else if (icache_rd_o && icache_accept_i)
+    pc_d_q <= icache_pc_w;
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+    pred_d_q <= 2'b0;
+else if (icache_rd_o && icache_accept_i)
+    pred_d_q <= next_taken_f_i;
+else if (icache_valid_i)
+    pred_d_q <= 2'b0;
+```
+
+pc_d_q 是用来追踪最后发射给 icache 请求且已经成功的 pc。这样，pc_d_q 就能和当前周期返回的 icache 数据对齐。
+
+
+### Response Buffer
+
+```verilog
+//-------------------------------------------------------------
+// Response Buffer
+//-------------------------------------------------------------
+reg [99:0]  skid_buffer_q;
+reg         skid_valid_q;
+
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+begin
+    skid_buffer_q  <= 100'b0;
+    skid_valid_q   <= 1'b0;
+end
+// Instruction output back-pressured - hold in skid buffer
+else if (fetch_valid_o && !fetch_accept_i)
+begin
+    skid_valid_q  <= 1'b1;
+    skid_buffer_q <= {fetch_fault_page_o, fetch_fault_fetch_o, fetch_pred_branch_o, fetch_pc_o, fetch_instr_o};
+end
+else
+begin
+    skid_valid_q  <= 1'b0;
+    skid_buffer_q <= 100'b0;
+end
+```
+
+如果 fetch_valid_o 有效，但是 decode 已经不需要了，这时候缓冲这些数据。
+
+
+## 概述
+
+发射到 decode 单元的指令是 8 字节，且 pc 是 8 字节对齐的。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```verilog
 module biriscv_fetch
@@ -57,83 +369,5 @@ module biriscv_fetch
 );
 ```
 
-如果将 npc 进行扩增一个周期，这时候就必须思考如何将 fetch 单元也扩增一个周期以对齐原来的io数据。如果将 fetch 单元进行重写设计，这将会带来很大的复杂度，甚至对 frontend 都要进行修改。
-
-而我们只想要让 fetch 单元提前发出 npc 请求信号，并在下一个周期返回 npc 并和原来的 fetch io数据对齐。思路就是针对这两个信号向前分裂出一级流水线：
-
-```verilog
-    ,output [ 31:0]  pc_f_o
-    ,output          pc_accept_o
-```
-
-新的一级流水线做的事情很简单，就是发出这两个信号。这两个信号需要在 fetch0 （原来 fetch 的上一拍）发出来，得考虑以下两个问题：
-
-- pc_f_o、pc_accept_o 和哪些输入信号相关；
-- 返回的数据 next_pc_f_i、next_taken_f_i 和哪些数据要对齐。
-
-针对第一个问题，直接查看 fetch 单元就行，思路很简单就是复制一个 biriscv_fetch.v 把不相干的信号全部删除。
-
-针对第二个问题，查看 fetch 单元，发现这三个信号不仅和 pc_f_o、pc_accept_o 相关，而且还要和 next_pc_f_i、next_taken_f_i 对齐：
-
-```verilog
-    ,input           branch_request_i
-    ,input  [ 31:0]  branch_pc_i
-    ,input  [  1:0]  branch_priv_i
-```
-
-因此在 fetch0 中利用它们发射 npc 请求，并对它加拍，这样就能在 fetch1 中形成和原 fetch 单元**完全等价的信号组**。这就是我们的目的———**形成等价的信号组**。
-
-换句话说，我们做的一切工作，目的就是要提前一个周期发射 npc 请求并保持 fetch1 和原 fetch 单元完全等价，这样对其它部件不会造成任何影响。
-
-开辟一个新的流水线 fetch0，需要关注 fetch0 的数据通路。fetch0 要发射 pc_f_o、pc_accept_o 信号，需要下游的一些信号：
-
-```verilog
-    ,input           fetch_accept_i
-    ,input           icache_accept_i
-    ,input           icache_valid_i
-    ,input           fetch_invalidate_i
-```
-
-这些信号是下游的数据旁路，提前从下游 fetch1 传递上来配合 fetch0 发射 npc 请求。
-
-fetch0 是流水线的某一级，它的流水线输入信号是：
-
-```verilog
-    ,input           branch_request_i
-    ,input  [ 31:0]  branch_pc_i
-    ,input  [  1:0]  branch_priv_i
-```
-
-流水线输出信号是：
-
-```verilog
-    ,output [ 31:0]  pc_f_o
-    ,output          pc_accept_o
-    ,output reg         branch_request_r
-    ,output reg [ 31:0] branch_pc_r
-    ,output reg [  1:0] branch_priv_r
-```
-
-## npc
-
-由于 fetch 改成了 fetch0、fetch1 的流水线结构，因此 npc 也必须改成流水线结构。
-
-在每一个周期 fetch0 都会发出 npc 请求，npc 中必须有流水线结构来存储新的请求。与此同时，返回信号也必须配合 npc 流水线更新，比如 npc 在 T 周期发出了读请求，与此同时反馈信号拉高要写 sram，这时候就应该 bypass 到读请求以检查是否和写数据 hit；甚至在 T+1 周期返回的时候，反馈信号也可能拉高，这时候返回的 npc 也要 mux 一下。
-
-还要检查读写端口是否冲突，如果冲突，就把写先暂存到 buffer 中。
-
-这里的流水线相当复杂，要好好思考设计问题，我再看看 boom 是如何处理的。
-
-
-
-
-
-
-
-
-
-
-
-
-
+从顶层文件得知，fetch 中 SUPPORT_MMU 其实是 0，MMU 默认是关闭的。
 
