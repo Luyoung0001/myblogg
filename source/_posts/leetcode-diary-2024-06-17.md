@@ -1,0 +1,207 @@
+---
+title: "LeetCode 刷题日志：2024-06-17"
+date: 2024-06-18 17:27:55
+tags:
+  - "LeetCode"
+  - "algorithms"
+  - "data structures"
+categories:
+  - "Algorithms"
+---
+
+<!--more-->
+
+## 42. 接雨水
+这道题的关键点是基于贪心策略，同时设置双指针，left_max 追踪左边的最大值 height[left]，right_max 同理。如果 height[left] < height[right]，那么就可以收集雨水，雨水量为 water += left_max - height[left]，同时右移左指针；反之同理：
+
+```cpp
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        int left_max = 0, right_max = 0, water = 0;
+        int left = 0, right = height.size()-1;
+        while (left < right) {
+            left_max = max(height[left], left_max);
+            right_max = max(height[right], right_max);
+            if (height[left] < height[right]) {
+                water += left_max - height[left];
+                ++left;
+            } else {
+                water += right_max - height[right];
+                --right;
+            }
+        }
+        return water;
+    }
+};
+```
+## 3. 无重复字符的最长子串
+这道题目还是双指针，右指针用来探索是否和现在维护的子串重复。如果重复，就更新现有窗口，将 left 更新为最靠右的值：即重复的位置的下一个位置。然后将右指针指的值收集起来，更新最大长度：
+
+```cpp
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        // 滑动窗口
+        int len = s.length(), left = 0, right = 0;
+        unordered_map<char, int> map;
+        int maxLen = 0;
+        for (; right < len; right++) {
+            if (map.find(s[right]) != map.end()) {
+                // 如果找到了，就更新 left
+                // 更新 left 到最右的位置：
+                // 出现的位置的下一个位置,这主要是为了忽略它
+                left = max(left, map[s[right]] + 1);
+            }
+            map[s[right]] = right;
+            maxLen = max(maxLen, right - left + 1);
+        }
+        return maxLen;
+    }
+};
+```
+
+## 438. 找到字符串中所有字母异位词
+
+这道题目的思路是，等宽窗口，利用哈希化的 vector 来进行判断是否是异位词。首先收集目标串的各频率，然后在 s 中滑动窗口，窗口大小为 p 的长度。如果 right - left + 1 == len && sv == pv，就把 left 收集到答案，然后移动 left：
+
+```cpp
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        vector<int> pv(26, 0), sv(26, 0), res;
+        if (s.size() < p.size())
+            return res; // 若 s 的长度小于 p，则直接返回空结果
+
+        // 先计算 p 中各字符的频率
+        for (auto c : p)
+            pv[c - 'a']++;
+
+        // 开始在 s 中滑动窗口，窗口大小和 p 的长度相同
+        int left = 0, right = 0, len = p.size();
+        while (right < s.size()) {
+            // 增加右边新字符的计数
+            sv[s[right] - 'a']++;
+
+            // 当窗口大小等于 p 的长度时，比较两个向量
+            if (right - left + 1 == len) {
+                if (pv == sv)
+                    res.push_back(left);  // 如果匹配，记录当前左索引
+                // 移动窗口前，减少左边字符的计数
+                sv[s[left] - 'a']--;
+                left++;
+            }
+            right++;
+        }
+        return res;
+    }
+};
+```
+## 560. 和为 K 的子数组
+
+这个题目用了前缀和的思路，如果在前缀和中找到了前缀和-k ，那么就说明前面肯定有一个子数组的和为 k。这是为什么呢？考虑到，a1+a2+a3+a4+...+ak = sum，考虑到 prefix_count = {a1:a1,a2+a1:a2,a1+a2+a3:a3... sum:ak} 这种模式，如果prefix_count 中存在sum-k的值那么必然有一个子数组的值为 k，比如：
+
+### 示例 1：
+假设有一个数组：`arr = [3, 4, -1, 5, 5]`，我们想找出子数组之和为 `k = 9` 的情况。
+
+1. **计算前缀和：**
+   ```
+   index:     0   1   2   3   4
+   arr:       3   4  -1   5   5
+   prefixSum: 3   7   6  11  16
+   ```
+
+2. **检查前缀和差值是否为 9：**
+   - 从 `prefixSum[3]` 到 `prefixSum[1]`，差值为 `11 - 7 = 4`。
+   - 因此，`arr[2]` 到 `arr[3]` 的子数组和为 `(-1) + 5 = 4`，这不是我们想要的结果。
+   - 但检查更进一步，`prefixSum[4]` 减去 `prefixSum[1]` 也是 9 (`16 - 7 = 9`)，这表明 `arr[2]` 到 `arr[4]` 的子数组和是 `-1 + 5 + 5 = 9`，正是我们想找的。
+
+### 示例 2：
+假设有另一个数组：`arr = [1, 2, 3, 4, 5]`，我们想找出子数组之和为 `k = 9` 的情况。
+
+1. **计算前缀和：**
+   ```
+   index:     0   1   2   3   4
+   arr:       1   2   3   4   5
+   prefixSum: 1   3   6  10  15
+   ```
+
+2. **检查前缀和差值是否为 9：**
+   - 从 `prefixSum[4]` 到 `prefixSum[1]`，差值为 `15 - 6 = 9`。
+   - 因此，`arr[2]` 到 `arr[4]` 的子数组和为 `3 + 4 + 5 = 12`，但这不是我们想要的。
+   - 但检查 `prefixSum[3]` 到 `prefixSum[0]` 的差值，差值为 `10 - 1 = 9`，这表明 `arr[1]` 到 `arr[3]` 的子数组和是 `2 + 3 + 4 = 9`，正是我们需要的。
+
+通过这种方法，我们可以高效地通过**维护一个前缀和数组并查找差值来确定是否存在特定的子数组之和**。这种方法的复杂度通常是线性的，特别是当我们使用哈希表来存储前缀和及其出现的次数时，可以进一步优化查找过程。
+
+```cpp
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        unordered_map<int, int> prefix_count;
+        prefix_count[0] =
+            1; // 初始化，前缀和为0的情况有一个（考虑从头开始的子数组）
+
+        int current_sum = 0;
+        int count = 0;
+
+        for (int num : nums) {
+            current_sum += num; // 更新当前前缀和
+            // 检查是否存在之前的前缀和，使得 current_sum - 前缀和 = k
+            if (prefix_count.find(current_sum - k) != prefix_count.end()) {
+                count += prefix_count[current_sum - k];
+            }
+            // 更新当前前缀和的计数
+            prefix_count[current_sum]++;
+        }
+
+        return count;
+    }
+};
+```
+
+## 239. 滑动窗口最大值
+这道题目的思路是用双端队列，队列中存储的是下标，如果超出范围就将队首元素踢掉；如果当前值比队尾大，就一直弹出元素，然后插入。当窗口和 k 一样大的时候，就可以收集结果了：
+
+```cpp
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        // 双端队列
+        deque<int> que;
+        vector<int> ans;
+        for (int i = 0; i < nums.size(); i++) {
+            // 如果超出范围，直接踢掉
+            if (!que.empty() && que.front() == i - k) {
+                que.pop_front();
+            }
+            // 如果当前值比队尾大，一直弹出，直到小于等于
+            while (!que.empty() && nums[que.back()] < nums[i]) {
+                que.pop_back();
+            }
+            que.push_back(i);
+            // 收集结果
+            if (i >= k - 1)
+                ans.push_back(nums[que.front()]);
+        }
+        return ans;
+    }
+};
+```
+
+
+## 总结（gpt4）
+### 1. 接雨水（贪心策略和双指针）
+这个问题使用了双指针来确定每个位置上可以积水的量。关键是维护两个指针 `left` 和 `right`，以及它们各自的最大值 `left_max` 和 `right_max`。根据左右最大值的比较，决定是移动左指针还是右指针，并更新积水量。这种方法利用了贪心的思想，每一步都尽可能多地积水。
+
+### 2. 无重复字符的最长子串（双指针滑动窗口）
+这个问题中，双指针定义了一个可变滑动窗口，用以维护一个没有重复字符的子串。通过右指针探索新字符，并利用哈希表记录字符出现的位置，左指针根据情况进行调整，确保窗口内无重复字符。这个方法在保证了窗口内字符的唯一性的同时，能够动态调整窗口的大小。
+
+### 3. 找到字符串中所有字母异位词（固定大小的滑动窗口）
+通过维持一个固定大小的滑动窗口，以及两个频率向量（哈希化的向量）来比较窗口内的字符串和目标字符串的字符频率是否一致。如果匹配，则记录当前窗口的起始位置。这种方法特别适用于需要在源字符串中找到所有与目标字符串字符组成相同的子串的场景。
+
+### 4. 和为 K 的子数组（前缀和和哈希表）
+利用前缀和来确定子数组的和。如果前缀和中存在 `current_sum - k`，那么表示存在一个子数组的和为 `k`。通过哈希表来存储不同前缀和出现的次数，这种方法能够快速检查是否存在满足条件的子数组，并计算这样的子数组出现的次数。
+
+### 5. 滑动窗口最大值（双端队列）
+使用双端队列来维持滑动窗口内的最大值。队列中存储元素的索引，并保持队列的首元素为当前窗口的最大值。通过合理地弹出队尾元素和队首元素，保证队列的有效性和最大值的即时更新。
+

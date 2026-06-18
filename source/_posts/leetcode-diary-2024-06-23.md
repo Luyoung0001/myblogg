@@ -1,0 +1,669 @@
+---
+title: "LeetCode 刷题日志：2024-06-23"
+date: 2024-06-23 17:43:54
+tags:
+  - "LeetCode"
+  - "algorithms"
+  - "data structures"
+categories:
+  - "Algorithms"
+---
+
+<!--more-->
+
+## 〇、前言
+今天重点刷了回溯，以及常见的题目。
+## 46. 全排列
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+示例 1：
+
+> 输入：nums = [1,2,3]
+> 输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+示例 2：
+
+> 输入：nums = [0,1]
+> 输出：[[0,1],[1,0]]
+
+示例 3：
+
+> 输入：nums = [1]
+>  输出：[[1]]
+
+
+这道题目的思路是使用回溯法（Backtracking）来生成所有可能的全排列。回溯法是一种通过递归尝试所有可能的解决方案的算法。**在生成排列时，回溯法通过递归地构建排列，当遇到不满足条件的排列时，撤销上一步操作（即回溯），继续尝试其他可能性**。
+
+### 思路：
+
+1. **初始化**：创建一个结果列表，用于存储所有可能的排列。还需要一个临时列表来存储当前构建的排列。
+2. **递归函数**：
+   - 基本情况：如果临时列表的长度等于输入数组的长度，说明已经构建了一个完整的排列，将其加入结果列表。
+   - 递归情况：遍历输入数组中的每个数字，如果该数字未在当前临时列表中出现过，则将其加入临时列表，然后继续递归构建排列。完成后，撤销这一步操作，从而回溯到上一个状态，继续尝试其他数字。
+3. **回溯**：在递归过程中，每当完成一轮递归（即一个完整的排列）后，撤销最后一步操作，回到上一个状态，从而尝试其他可能性。
+
+### 算法步骤：
+
+1. 创建一个空的结果列表 `res`。
+2. 定义一个递归函数 `backtrack(path, used)`：
+   - 如果 `path` 的长度等于 `nums` 的长度，将 `path` 加入 `res` 并返回。
+   - 遍历 `nums` 中的每个数字 `num`，如果 `num` 未被使用过：
+     - 将 `num` 加入 `path`。
+     - 标记 `num` 为已使用。
+     - 递归调用 `backtrack` 继续构建排列。
+     - 递归结束后，撤销当前操作（即移除 `path` 中的最后一个数字，并将 `num` 标记为未使用）。
+3. 调用 `backtrack([], [])` 开始递归。
+
+### 示例代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> res;
+        vector<int> path;
+        vector<bool> used(nums.size(), false);
+        backtrack(nums, path, used, res);
+        return res;
+    }
+
+private:
+    void backtrack(vector<int>& nums, vector<int>& path, vector<bool>& used, vector<vector<int>>& res) {
+        if (path.size() == nums.size()) {
+            res.push_back(path);
+            return;
+        }
+
+        for (int i = 0; i < nums.size(); i++) {
+            if (!used[i]) {
+                path.push_back(nums[i]);
+                used[i] = true;
+                backtrack(nums, path, used, res);
+                path.pop_back();
+                used[i] = false;
+            }
+        }
+    }
+};
+```
+![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/ce067bb1e3fd461a8faf35c0a1bdb5ce_1720253671766.png?token=ANB4BCIJX7ISHBHXR6PLXU3GRD6SK)
+
+### 关键点总结：
+- 使用回溯法构建所有可能的排列。
+- 在递归过程中使用一个 `path` 列表来存储当前的排列，一个 `used` 列表来记录哪些数字已经被使用过。
+- 通过回溯撤销之前的选择，从而尝试其他可能性，最终生成所有的排列。
+
+
+### 参考：[liweiwei1419](https://leetcode.cn/problems/permutations/solutions/9914/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/?envType=study-plan-v2&envId=top-100-liked)
+
+## 47. 全排列 II
+
+给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
+
+
+
+示例 1：
+
+> 输入：nums = [1,1,2]
+> 输出： [[1,1,2],  [1,2,1],  [2,1,1]]
+
+示例 2：
+
+> 输入：nums = [1,2,3]
+> 输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+仔细比较和上一道题目的不同处，对于上一道题目，nums 中并没有相同的元素，这道题目需要考虑相同元素的问题。首先要对 nums 进行一个 sort，目的是遇到和 `nums[i-1]` 相同时且需要跳过时，就跳过，因此排序很关键。此外，**跳过的条件是什么？这是这道题目的核心**。
+
+拿 `nums = [1,1,2]` 来举例，当进入第一层递归函数时，`used[0] = false`，因此path 增长到`[1,]` 进入第二层递归函数，此时 `nums[0]` 为 true，因此继续遍历。当 `i = 1` 时，`used[1] = false`，因此 path 增长到`[1,2,]`进入第三层递归。同理`nums[0`]、`nums[1]`为 true, `i = 2`时，`path = [1,2,3,]` 。进入第四层递归，此时 `path.size() == nums.size()` ，退出，将 path 收集到 result 中。
+
+返回到第三层递归后，`path.pop()，path = [1,2,]`，且 `used = [1,1,0,]`，此时 `i = 2`,循环结束，返回第二层，第二层i = 1,继续 pop,此时 `path = [1,]，used = [1,0,0,]`。接着在本层递归中继续遍历，`i = 2`时，`path增长到[1,2,]`，又进入第三层递归，此时`used = [1,0,1]`，因此 `i = 1， path = [1,2,1]，used = [1,1,1]`。进入第四层递归，收集答案后退回到第三层。继续 pop，此时 `path = [1,2,]`，`used = [1,0,1]`。继续循环，`i = 2`时，`used[2] = true`，循环结束，退回到第二层递归，此时 `i= 2`，继续 pop，此时 `used = [1,0,0]，path = [1,]`，循环结束，退回到第一层。
+
+进入第一层后，此时 i = 0，继续 pop，此时 `path = [,]，used = [0,0,0]`，继续循环，i = 1时候，发现了一个问题，这时候很明显需要跳过，因为已经把 nums[0] 搜索过了，这时候再次搜索 nums[1]，就会有相同的结果。
+
+因此跳过的条件是: `i>0 && nums[i] = nums[i-1] && !nums[i-1]`，没错就是 `nums[i-1]`没被用过。
+
+因此算法如下：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        sort(nums.begin(), nums.end()); // 排序，便于跳过重复结果
+        vector<vector<int>> result;
+        vector<int> used(nums.size(), false);
+        vector<int> path;
+        backtrace2(nums, used, path, result);
+        return result;
+    }
+
+private:
+    void backtrace2(vector<int>& nums, vector<int>& used, vector<int>& path,
+                    vector<vector<int>>& result) {
+        if (path.size() == nums.size()) {
+            result.push_back(path);
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (used[i])
+                continue;
+            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1])
+                continue; // 如果前一个元素没被用过，说明这是一个新起点，这个起点和前面有相同状态，一定要跳过
+            path.push_back(nums[i]);
+            used[i] = true;
+            backtrace2(nums, used, path, result);
+            path.pop_back();
+            used[i] = false;
+        }
+    }
+};
+```
+
+
+## 39. 组合总和
+给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+
+candidates 中的 同一个 数字可以 **无限制重复被选取** 。如果至少一个数字的被选数量不同，则两种组合是不同的。
+
+对于给定的输入，保证和为 target 的不同组合数少于 150 个。
+
+
+
+示例 1：
+
+> 输入：candidates = [2,3,6,7], target = 7
+> 输出：[[2,2,3],[7]]
+解释：
+2 和 3 可以形成一组候选，2 + 2 + 3 = 7 。注意 2 可以使用多次。
+7 也是一个候选， 7 = 7 。
+仅有这两种组合。
+
+
+示例 2：
+
+> 输入: candidates = [2,3,5], target = 8
+> 输出: [[2,2,2,2],[2,3,3],[3,5]]
+
+示例 3：
+
+> 输入: candidates = [2], target = 1
+> 输出: []
+
+
+这道题目和前面的两道题目有很大的相同点。首先就是元素可以重复使用，其次不允许出现相同的组合 `[2,3,3]`和`[3,2,2]`只能出现一种。也就是说，只能从左向右回溯，**因此排序后，递归的时候，需要传入当前节点的下标**。
+
+这道题目考查的是组合，组合用到了回溯，而在回溯的过程中用到了剪枝来提前结束不可能的分支。我们需要找到所有可能的数字组合，这些组合之和等于给定的目标数 `target`。具体来说，我们可以定义一个辅助函数来递归地尝试每个可能的数字添加到当前的组合中，并通过递归地调用自身来探索添加后的所有可能路径。
+
+### 回溯法的主要步骤如下：
+
+1. **定义递归函数**：创建一个递归辅助函数，例如 `backtrack`，该函数接收当前的组合、当前组合的总和、起始索引和其他必要的参数。
+
+2. **递归终止条件**：
+   - 当当前组合的总和等于目标数 `target` 时，将当前组合添加到结果列表中。
+   - 当当前组合的总和超过 `target` 时，终止当前递归路径，因为继续添加任何正整数都将使总和增加。
+
+3. **遍历和选择**：
+   - 从起始索引开始，遍历 `candidates` 数组。
+   - 将每个元素添加到当前组合中，并递归调用 `backtrack` 函数，同时将当前元素的索引作为新的起始索引传递，允许同一个元素多次选择。
+   - 完成当前元素的探索后，从当前组合中移除该元素（也称为“回溯”），尝试下一个元素。
+
+4. **实现优化**：
+   - 可以先对 `candidates` 进行排序，有助于在某些情况下提前终止不必要的路径。
+   - 使用引用传递来避免不必要的数据复制，提高效率。
+
+### C++ 示例代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+    	sort(candidates.begin(), candidates.end());
+        vector<vector<int>> results;
+        vector<int> currentCombination;
+        backtrack(candidates, target, 0, currentCombination, results);
+        return results;
+    }
+
+private:
+    void backtrack(vector<int>& candidates, int remaining, int start, vector<int>& current, vector<vector<int>>& results) {
+        if (remaining == 0) {
+            results.push_back(current);
+            return;
+        }
+        for (int i = start; i < candidates.size(); i++) {
+        	if (remaining < candidates[i]) break; // 剪枝
+            current.push_back(candidates[i]);
+            backtrack(candidates, remaining - candidates[i], i, current, results); // 不增加i，允许重复选择同一元素
+            current.pop_back(); // 回溯，移除上一步添加的元素
+        }
+    }
+};
+```
+
+这段代码中：
+- `backtrack` 函数是一个递归函数，用于构建组合。
+- `remaining` 表示距离目标值还差多少，每次递归调用时都减去当前选择的值。
+- `start` 用于控制从哪个索引开始遍历 `candidates`，以允许元素重复使用。
+- `current` 存储当前的组合。
+- `results` 存储所有满足条件的组合。
+
+通过递归地尝试每种可能的组合，并通过回溯机制撤销上一步操作，这种方法能有效地找出所有可能的组合，使得它们的和为目标值 `target`。
+
+## 40. 组合总和 II
+
+给定一个候选人编号的集合 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的每个数字在每个组合中只能使用 一次 。
+
+注意：解集不能包含重复的组合。
+
+
+
+示例 1:
+
+> 输入: candidates = [10,1,2,7,6,1,5], target = 8,
+> 输出: [ [1,1,6], [1,2,5],[1,7], [2,6] ]
+
+示例 2:
+
+> 输入: candidates = [2,5,2,1,2], target = 5,
+> 输出: [ [1,2,2], [5] ]
+
+这道题是组合总和的一个变种，**其中元素在每个组合中只能使用一次，并且解集不能包含重复的组合**。这种情况下，我们需要确保每个元素只被使用一次，并且要处理好元素重复出现带来的问题（例如示例中的重复数字 `1` 和 `2`）。
+
+### 分析步骤：
+
+1. **排序**：首先对数组进行排序。排序有两个好处：
+   - 可以方便地跳过重复的元素，避免生成重复的组合。
+   - 在递归中更容易判断并剪枝，当当前组合的和已经超过目标值 `target` 时，可以停止添加更大的元素。
+
+2. **回溯法**：使用回溯法来寻找所有符合条件的组合。我们需要设计一个递归函数，**该函数能够遍历所有可能的组合路径**。
+
+3. **递归设计**：
+   - **递归函数参数**：需要当前组合 `combination`、当前的开始位置 `start`、当前的和 `currentSum`、目标值 `target` 和结果集 `results`。
+   - **终止条件**：
+     - 当 `currentSum` 等于 `target` 时，把 `combination` 添加到 `results` 中。
+     - 当 `currentSum` 超过 `target` 时，直接返回，因为后续的数只会使和更大。
+
+4. **避免重复**：由于题目中的数组可能含有重复元素，我们需要特别处理，以避免在结果集中出现重复的组合：
+   - 当遍历到某个元素时，如果它与前一个元素相同，并且前一个元素在这个位置上没有被使用，那么跳过这个元素。
+
+5. **递归和回溯**：在递归过程中，需要尝试包括当前元素在内的所有可能。每次递归后，需要撤销当前的选择（即进行回溯），然后尝试下一个可能的选项。
+
+### C++ 示例代码：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        vector<vector<int>> results;
+        vector<int> combination;
+        sort(candidates.begin(), candidates.end());  // 排序
+        backtrack(candidates, target, 0, combination, results);
+        return results;
+    }
+
+private:
+    void backtrack(vector<int>& candidates, int target, int start, vector<int>& combination, vector<vector<int>>& results) {
+        if (target == 0) {
+            results.push_back(combination);
+            return;
+        }
+
+        for (int i = start; i < candidates.size(); i++) {
+            if (i > start && candidates[i] == candidates[i - 1]) continue;  // 跳过重复元素
+            if (candidates[i] > target) break;
+
+            combination.push_back(candidates[i]);
+            backtrack(candidates, target - candidates[i], i + 1, combination, results);
+            combination.pop_back();  // 回溯
+        }
+    }
+};
+```
+
+这段代码中的关键点是处理重复元素的方式（通过在排序后的数组中跳过相同的连续元素）和确保每个元素在组合中只使用一次（递归调用时 `start` 参数使用 `i + 1`）。这样既避免了重复组合的生成，也保证了每种可能的组合都被探索到。
+
+## 77. 组合
+给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+
+你可以按 任何顺序 返回答案。
+
+
+
+示例 1：
+
+> 输入：n = 4, k = 2
+> 输出： [   [2,4],   [3,4],   [2,3],   [1,2],   [1,3],
+> [1,4], ]
+
+示例 2：
+
+> 输入：n = 1, k = 1
+> 输出：[[1]]
+
+这道题目就是简单的组合，利用回溯就可以：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> combine(int n, int k) {
+        vector<vector<int>> result;
+        vector<int> path;
+        backtrace(1, n, path, result, k);
+        return result;
+    }
+
+private:
+    void backtrace(int start, int n, vector<int>& path,
+                   vector<vector<int>>& result, int k) {
+        if (path.size() == k) {
+            result.push_back(path);
+            return;
+        }
+        for(int i = start; i <= n; i++){
+            path.push_back(i);
+            backtrace(i+1, n, path, result, k);
+            path.pop_back();
+        }
+    }
+};
+```
+
+## 78. 子集
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+
+
+示例 1：
+
+> 输入：nums = [1,2,3]
+> 输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+
+示例 2：
+
+> 输入：nums = [0]
+> 输出：[[],[0]]
+
+这依然是一道很简单的组合体，只要在进入一次回溯之前将path 存进 result：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> result;
+        vector<int> path;
+        backtrace(nums,0,result,path);
+        return result;
+
+    }
+private:
+    void backtrace(vector<int> &nums,int start,vector<vector<int>> &result,vector<int> &path){
+        result.push_back(path);
+        for(int i = start; i < nums.size(); i++){
+            path.push_back(nums[i]);
+            backtrace(nums,i+1,result,path);
+            path.pop_back();
+        }
+
+    }
+
+};
+```
+
+
+
+## 90. 子集 II
+给你一个整数数组 nums ，其中可能包含重复元素，请你返回该数组所有可能的 子集（幂集）。
+
+解集 **不能** 包含重复的子集。返回的解集中，子集可以按 **任意顺序** 排列。
+
+
+
+示例 1：
+
+> 输入：nums = [1,2,2]
+> 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
+
+示例 2：
+
+> 输入：nums = [0]
+> 输出：[[],[0]]
+
+
+这道题目多了一些限制条件，nums 中有重复元素，这样子集求取的时候就要注意不能取重复的值，只要加上这个逻辑就可以了：`if(i > start && nums[i] == nums[i-1]) continue;`:
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        vector<vector<int>> result;
+        vector<int> path;
+        backtrace(nums,0,path,result);
+        return result;
+    }
+private:
+    void backtrace(vector<int> &nums,int start,vector<int> &path,vector<vector<int>> &result){
+        result.push_back(path);
+
+        for(int i = start; i < nums.size(); i++){
+            if(i > start && nums[i] == nums[i-1]) continue;
+            path.push_back(nums[i]);
+            backtrace(nums, i+1,path,result);
+            path.pop_back();
+        }
+
+    }
+};
+```
+
+## 60. 排列序列
+
+给出集合 [1,2,3,...,n]，其所有元素共有 n! 种排列。
+
+按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+
+> "123" "132" "213" "231" "312" "321"
+
+给定 n 和 k，返回第 k 个排列。
+
+示例 1：
+
+> 输入：n = 3, k = 3
+> 输出："213"
+
+示例 2：
+
+> 输入：n = 4, k = 9
+> 输出："2314"
+
+示例 3：
+
+> 输入：n = 3, k = 1
+> 输出："123"
+
+这道题目如果不剪枝，是一道简单题，思路就是回溯所有可能，当找到一种可能的时候，将计数器+1，如果计数器刚好等于 8，就将答案收集起来。这种解法时间复杂度太高，没有剪枝：
+
+
+![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/82e75b08a12b47bdb172e8456ddf2503_1720253671766.png?token=ANB4BCO6UXS2BAJPBGO2XKLGRD6SO)
+
+
+如果加一个 tag，如果到了之后，以后全部 break:
+
+```cpp
+private:
+    int tag = false;
+    void backtrace(int n, int k, vector<int>& path, vector<vector<int>>& result,
+                   int& begin, vector<bool>& used) {
+        if (path.size() == n) {
+            begin++;
+            if (begin == k) {
+                result.push_back(path);
+                tag = true;
+            }
+            return;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (tag)
+                break;
+
+            if (used[i])
+                continue;
+            path.push_back(i);
+            used[i] = true;
+            backtrace(n, k, path, result, begin, used);
+            used[i] = false;
+            path.pop_back();
+        }
+    }
+};
+```
+
+也只提升了一点点：
+![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/3307e078f4a44a70934da1372d8d7826_1720253671766.png?token=ANB4BCITJTKONUIYRWAPXXDGRD6SQ)
+
+事实上，可以直接构造，这是一道数学题，不过这不在本节讨论的范围，略过。
+
+## 93. 复原 IP 地址
+
+有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址。
+给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能的有效 IP 地址，这些地址可以通过在 s 中插入 '.' 来形成。你 不能 重新排序或删除 s 中的任何数字。你可以按 任何 顺序返回答案。
+
+
+
+示例 1：
+
+> 输入：s = "25525511135"
+> 输出：["255.255.11.135","255.255.111.35"]
+
+示例 2：
+
+> 输入：s = "0000"
+> 输出：["0.0.0.0"]
+
+示例 3：
+
+> 输入：s = "101023"
+> 输出：["1.0.10.23","1.0.102.3","10.1.0.23","10.10.2.3","101.0.2.3"]
+
+要解决这个问题，我们可以采用回溯法，这是一种通过构建解决方案的步骤来尝试达到问题的解的方法。对于IP地址生成问题，主要的思路是尝试在字符串`s`中插入三个点来形成四个有效的十进制数字，每个数字的范围必须在0到255之间，并且不能有前导0（除了数字0本身）。
+
+### 算法步骤
+
+1. **初始化**：准备一个容器来存放最终的答案。
+2. **递归函数**：设计一个递归函数，用于尝试所有可能的点的位置。
+   - **参数**：当前构建的字符串 `current`，当前处理的字符串位置 `start`，已放置的点数 `dotCount`。
+3. **递归终止条件**：
+   - 如果放置了3个点且处理完整个字符串，检查当前构建的IP是否有效，如果有效则加入结果。
+   - 如果放置的点数已经达到3个，但还未处理完字符串，或字符串已用尽但点数不足，这条路径就无效。
+4. **递归遍历**：
+   - 从当前位置开始，尝试截取1到3个字符作为一个字段，只要这个字段有效（即转换为数字后在0到255之间，且无前导0），就递归尝试下一个字段。
+   - 每次递归尝试放置一个点，直到所有的点都放完为止。
+5. **边界与有效性检查**：
+   - 确保每个部分在转化为数字后不会超过255。
+   - 检查字符串部分不应有前导0，除非它就是"0"。
+
+```cpp
+class Solution {
+public:
+    vector<string> restoreIpAddresses(string s) {
+        vector<string> result;
+        string ip;
+        backtrack(s, 0, 0, ip, result);
+        return result;
+    }
+
+    void backtrack(const string& s, int start, int dotCount, string ip, vector<string>& result) {
+        if (dotCount == 3) { // 最后一段
+            if (isValid(s, start, s.length() - 1)) {
+                result.push_back(ip + s.substr(start));
+            }
+            return;
+        }
+
+        for (int i = start; i < s.length() && i < start + 3; ++i) {
+            if (isValid(s, start, i)) {
+                string next = ip + s.substr(start, i - start + 1) + (dotCount < 3 ? "." : "");
+                backtrack(s, i + 1, dotCount + 1, next, result);
+            }
+        }
+    }
+
+    bool isValid(const string& s, int start, int end) {
+        if (start > end) return false;
+        if (s[start] == '0' && start != end) return false; // 前导0
+        int num = 0;
+        for (int i = start; i <= end; ++i) {
+            if (s[i] < '0' || s[i] > '9') return false; // 非数字
+            num = num * 10 + (s[i] - '0');
+            if (num > 255) return false;
+        }
+        return true;
+    }
+};
+```
+
+这段代码中：
+- `backtrack` 递归函数用于构建和探索所有可能的IP地址组成。
+- `isValid` 函数检查一个IP地址的一部分是否为有效的数字（即没有前导零，且位于0到255之间）。
+
+通过这种方式，我们可以生成所有可能的有效IP地址，并且避免不必要的计算和检查，使算法效率较高。
+
+## 总结
+你提供了九道题，每道题都侧重于不同的回溯策略。这些题目都是对回溯法的典型应用，展示了如何解决涉及排列、组合、子集生成和特定格式（如IP地址）生成的问题。下面是对这些题目的详细总结：
+
+### 1. 全排列 (LeetCode 46)
+**思路**:
+- 递归地尝试每个数字，如果未使用则加入当前路径，继续递归直到路径长度等于数组长度。
+
+### 2. 全排列 II (LeetCode 47)
+**思路**:
+- 先排序以简化重复值处理。
+- 使用额外的条件检查以跳过相同数字的重复处理。
+
+### 3. 组合总和 (LeetCode 39)
+**思路**:
+- 从数组中选择元素，允许元素重复使用，直到当前组合的和等于目标值。
+
+### 4. 组合总和 II (LeetCode 40)
+**思路**:
+- 与组合总和类似，但每个元素只能使用一次。
+- 跳过重复元素以避免重复的组合。
+
+### 5. 组合 (LeetCode 77)
+**思路**:
+- 回溯生成从1到n的所有可能的k个数的组合。
+
+### 6. 子集 (LeetCode 78)
+**思路**:
+- 从左到右逐个添加元素，每次添加时生成新的子集。
+
+### 7. 子集 II (LeetCode 90)
+**思路**:
+- 类似于子集，但要处理重复元素，需要先排序并在递归过程中跳过重复的元素。
+
+### 8. 排列序列 (LeetCode 60)
+**思路**:
+- 通过计算阶乘数，直接确定第k个排列的每一位，而非生成所有排列。
+
+### 9. 复原 IP 地址 (LeetCode 93)
+**思路**:
+- 尝试在给定字符串中插入3个点，分割成四部分，验证每部分是否为有效的IP段。
+
+### 关键技巧和策略:
+1. **回溯基本框架**: 使用递归函数进行深度优先搜索，每一步都尝试当前可用的选择，然后进入下一层递归。完成一种方案后，撤销当前步骤（回溯），尝试下一个可能的选项。
+2. **处理重复元素**:
+   - 对数组进行排序，使得相同的元素都相邻，然后在递归过程中通过比较当前元素与前一个元素来跳过重复处理。
+3. **剪枝优化**:
+   - 在递归之前判断是否可能形成有效解，如组合总和中和超过目标值时停止递归。
+4. **利用位置索引**:
+   - 通过传递当前元素的索引来避免重新使用已处理的元素，尤其是在需要组合或排列的题目中。
+
+这些题目展示了回溯法在处理需要枚举所有可能情况的问题时的强大能力。适当的剪枝可以显著提高效率，避免不必要的计算。在处理包含重复元素的数组时，合理的跳过策略是必须的，以保证结果的唯一性。
+
+
+

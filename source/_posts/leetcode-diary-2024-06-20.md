@@ -1,0 +1,230 @@
+---
+title: "LeetCode 刷题日志：2024-06-20"
+date: 2024-06-20 21:07:57
+tags:
+  - "LeetCode"
+  - "algorithms"
+  - "data structures"
+categories:
+  - "Algorithms"
+---
+
+<!--more-->
+
+## 2. 两数相加
+这道题目的思路就是模拟，好处是逆序的，不用反转链表：
+
+```cpp
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        // 创建一个新的链表节点，作为返回结果的头节点
+        ListNode* dummyHead = new ListNode(0);
+        ListNode *p = l1, *q = l2, *curr = dummyHead;
+        int carry = 0, x = 0, y = 0, sum = 0;
+
+        // 遍历两个链表，直到两个链表都到达尾部
+        while (p != nullptr || q != nullptr) {
+            x = (p != nullptr) ? p->val : 0;
+            y = (q != nullptr) ? q->val : 0;
+            sum = carry + x + y;
+            carry = sum / 10;
+
+            curr->next = new ListNode(sum % 10);
+
+            curr = curr->next;
+
+            if (p != nullptr)
+                p = p->next;
+            if (q != nullptr)
+                q = q->next;
+        }
+
+        // 如果最后还有进位，需要添加一个节点存储进位的值
+        if (carry > 0) {
+            curr->next = new ListNode(carry);
+        }
+        return dummyHead->next;
+    }
+```
+
+## 19. 删除链表的倒数第 N 个结点
+这个题目首先得计算链表的长度len，然后计算出删除 nth 个元素。分类讨论 nth = 1、nth = len的情况：
+
+```cpp
+	ListNode* removeNthFromEnd(ListNode* head, int n) {
+        // 计算长度
+        int len = 0;
+        ListNode* p = head;
+        while (p) {
+            len++;
+            p = p->next;
+        }
+        // 第几个数
+        int nth = len-n+1;
+        // 如果是第一个
+        if(nth == 1) return head->next;
+        // 将指针指向nth的前一个
+        int i = 1;
+        p = head;
+        while(i != nth-1){
+            p = p->next;
+            i++;
+        }
+        // 如果是最后一个
+        if(nth == len){
+            p->next = nullptr;
+            return head;
+        }
+        p->next = p->next->next;
+        return head;
+
+    }
+```
+
+## 24. 两两交换链表中的节点
+这个题在草稿纸上一比划就出来了，就是设置两个指针：curr 和 next，然后采用迭代的方法遍历，直到 next->next 为空：
+
+```cpp
+	ListNode* swapPairs(ListNode* head) {
+
+        // 对于 p
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        ListNode* curr = dummy;
+        ListNode* next = curr->next;
+        if (next == nullptr || next->next == nullptr)
+            return dummy->next;
+        while (next) {
+            if(next->next == nullptr) break;
+            curr->next = next->next;
+            next->next = curr->next->next;
+            curr->next->next = next;
+
+            // 后移
+            curr = curr->next->next;
+            next = curr->next;
+        }
+        return dummy->next;
+    }
+```
+
+## 25. K 个一组翻转链表
+仍然是迭代的思路，这里注意的是，迭代的次数为k-1：
+
+```cpp
+	ListNode* reverseKGroup(ListNode* head, int k) {
+        if (head == nullptr || k == 1)
+            return head;
+
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+
+        ListNode* cur = dummy;
+        ListNode* prev = dummy;
+        ListNode* nex = dummy;
+        int count = 0;
+
+        // 首先统计链表的长度
+        while (cur->next != nullptr) {
+            cur = cur->next;
+            count++;
+        }
+
+        // 当还有足够的节点进行翻转时进行循环
+        while (count >= k) {
+            cur = prev->next; // 指向当前k组的第一个节点
+            nex = cur->next;  // 指向当前k组的第二个节点
+            for (int i = 1; i < k; i++) {
+                cur->next = nex->next;
+                nex->next = prev->next;
+                prev->next = nex;
+                nex = cur->next;
+            }
+            prev = cur;
+            count -= k;
+        }
+        return dummy->next;
+    }
+```
+
+## 94. 二叉树的中序遍历
+
+递归还是简单：
+
+```cpp
+	vector<int> ans;
+    void inorder(TreeNode* root) {
+        if (!root)
+            return;
+
+        inorder(root->left);
+        ans.push_back(root->val);
+        inorder(root->right);
+    }
+
+    vector<int> inorderTraversal(TreeNode* root) {
+        inorder(root);
+        return ans;
+    }
+```
+
+## 104. 二叉树的最大深度
+
+只需要取左子树与右子树的最大值+1，然后递归。递归出口是：`if(root == nullptr) return 0;`，所以代码就是：
+
+```cpp
+	int maxDepth(TreeNode* root) {
+        return !root ? 0 : max(maxDepth(root->left), maxDepth(root->right)) + 1;
+    }
+```
+
+## 226. 翻转二叉树
+依然是递归，因为二叉树的定义本身就是递归的，算法也是依赖于数据结构的：
+
+```cpp
+	void invert(TreeNode *root){
+        if(!root) return;
+        TreeNode *temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+
+        invert(root->left);
+        invert(root->right);
+    }
+    TreeNode* invertTree(TreeNode* root) {
+        // 递归
+        invert(root);
+        return root;
+
+    }
+```
+## 总结
+### 2. 两数相加
+
+这道题目要求实现两个逆序存储的链表代表的数字相加，返回结果链表。关键点在于模拟加法的进位处理，并且要注意链表长度不一致的情况。代码中使用了哑节点简化了头节点处理，逐位相加并处理进位。
+
+### 19. 删除链表的倒数第 N 个结点
+
+这个问题中，需要删除链表中倒数第 `n` 个节点，要求一次遍历解决。解法是使用快慢指针法，快指针先走 `n+1` 步，然后慢指针开始走，当快指针走到链表末尾时，慢指针指向要删除节点的前一个节点。
+
+### 24. 两两交换链表中的节点
+
+要求将链表中每两个相邻节点进行交换。这个问题可以通过迭代或递归来解决。迭代方法中，使用两个指针 `curr` 和 `next`，每次交换它们的后继节点，并更新指针。
+
+### 25. K 个一组翻转链表
+
+这个问题要求每 `k` 个节点一组进行翻转，如果节点数不足 `k`，则保持原有顺序。解法使用迭代方法，先计算链表长度，然后在每次迭代中反转当前 `k` 个节点，并将上一组的尾部与新组的头部连接。
+
+### 94. 二叉树的中序遍历
+
+二叉树的中序遍历可以通过递归或迭代实现。递归方法简单直观，按照左子树-根节点-右子树的顺序访问节点，并将节点值保存在结果数组中。
+
+### 104. 二叉树的最大深度
+
+求二叉树的最大深度，递归地计算左右子树的最大深度，然后取较大值加上当前节点的深度。递归出口是空节点，即 `nullptr` 返回深度 `0`。
+
+### 226. 翻转二叉树
+
+翻转二叉树就是将每个节点的左右子树交换。递归方法简洁，递归函数中先交换当前节点的左右子树，然后递归地对左右子树进行翻转。
+
+
+

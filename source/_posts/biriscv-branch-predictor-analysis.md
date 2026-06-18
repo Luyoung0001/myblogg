@@ -1,0 +1,346 @@
+---
+title: "分支预测器研究（一）：biriscv_npc 预测器结构分析"
+date: 2025-11-17 15:03:13
+tags:
+  - "branch prediction"
+  - "biriscv"
+  - "NPC"
+categories:
+  - "Computer Architecture"
+---
+
+## biriscv bp
+
+这是 bp 的 IO 信息：
+
+```Verilog
+module biriscv_npc
+//-----------------------------------------------------------------
+// Params
+//-----------------------------------------------------------------
+#(
+     parameter SUPPORT_BRANCH_PREDICTION = 1
+    ,parameter NUM_BTB_ENTRIES  = 32
+    ,parameter NUM_BTB_ENTRIES_W = 5
+    ,parameter NUM_BHT_ENTRIES  = 512
+    ,parameter NUM_BHT_ENTRIES_W = 9
+    ,parameter RAS_ENABLE       = 1
+    ,parameter GSHARE_ENABLE    = 0
+    ,parameter BHT_ENABLE       = 1
+    ,parameter NUM_RAS_ENTRIES  = 8
+    ,parameter NUM_RAS_ENTRIES_W = 3
+)
+//-----------------------------------------------------------------
+// Ports
+//-----------------------------------------------------------------
+(
+    // Inputs
+     input           clk_i
+    ,input           rst_i
+
+    ,input           invalidate_i
+    ,input           branch_request_i
+    ,input           branch_is_taken_i
+    ,input           branch_is_not_taken_i
+    ,input  [ 31:0]  branch_source_i
+    ,input           branch_is_call_i
+    ,input           branch_is_ret_i
+    ,input           branch_is_jmp_i
+    ,input  [ 31:0]  branch_pc_i
+
+    ,input  [ 31:0]  pc_f_i
+    ,input           pc_accept_i
+
+    // Outputs
+    ,output [ 31:0]  next_pc_f_o
+    ,output [  1:0]  next_taken_f_o
+);
+```
+其中，这些信息是同周期的预测请求以及预测返回结果：
+```Verilog
+input  [ 31:0]  pc_f_i          // 当前取指PC - 预测查询地址
+input           pc_accept_i     // 预测接受信号 - fetch 部件几乎都会拉高这个新号
+// Outputs
+output [ 31:0]  next_pc_f_o     // 预测的下一个PC地址
+output [  1:0]  next_taken_f_o  // taken标记位
+```
+
+其它输入信息（除了clk_i、rst_i）用于更新 PHT 这里具体更新的是 bht_sat_q，它就是传统意义上的 PHT：
+```Verilog
+reg [1:0]                    bht_sat_q[NUM_BHT_ENTRIES-1:0];
+
+wire [NUM_BHT_ENTRIES_W-1:0] bht_wr_entry_w = GSHARE_ENABLE ? gshare_wr_entry_w : branch_source_i[2+NUM_BHT_ENTRIES_W-1:2];
+wire [NUM_BHT_ENTRIES_W-1:0] bht_rd_entry_w = GSHARE_ENABLE ? gshare_rd_entry_w : {pc_f_i[3+NUM_BHT_ENTRIES_W-2:3],btb_upper_w};
+
+integer i4;
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+begin
+    for (i4 = 0; i4 < NUM_BHT_ENTRIES; i4 = i4 + 1)
+    begin
+        bht_sat_q[i4] <= 2'd3;
+    end
+end
+else if (branch_is_taken_i && bht_sat_q[bht_wr_entry_w] < 2'd3)
+    bht_sat_q[bht_wr_entry_w] <= bht_sat_q[bht_wr_entry_w] + 2'd1;
+else if (branch_is_not_taken_i && bht_sat_q[bht_wr_entry_w] > 2'd0)
+    bht_sat_q[bht_wr_entry_w] <= bht_sat_q[bht_wr_entry_w] - 2'd1;
+
+wire bht_predict_taken_w = BHT_ENABLE && (bht_sat_q[bht_rd_entry_w] >= 2'd2);
+```
+
+除此之外，更新的还有：btb_pc_q、btb_target_q、btb_is_call_q、btb_is_ret_q、btb_is_jmp_q：
+
+```Verilog
+
+integer i2;
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+begin
+    for (i2 = 0; i2 < NUM_BTB_ENTRIES; i2 = i2 + 1)
+    begin
+        btb_pc_q[i2]     <= 32'b0;
+        btb_target_q[i2] <= 32'b0;
+        btb_is_call_q[i2]<= 1'b0;
+        btb_is_ret_q[i2] <= 1'b0;
+        btb_is_jmp_q[i2] <= 1'b0;
+    end
+end
+// Hit - update entry
+else if (btb_hit_r)
+begin
+    btb_pc_q[btb_wr_entry_r]     <= branch_source_i;
+    if (branch_is_taken_i)
+        btb_target_q[btb_wr_entry_r] <= branch_pc_i;
+    btb_is_call_q[btb_wr_entry_r]<= branch_is_call_i;
+    btb_is_ret_q[btb_wr_entry_r] <= branch_is_ret_i;
+    btb_is_jmp_q[btb_wr_entry_r] <= branch_is_jmp_i;
+end
+// Miss - allocate entry
+else if (btb_miss_r)
+begin
+    btb_pc_q[btb_wr_alloc_w]     <= branch_source_i;
+    btb_target_q[btb_wr_alloc_w] <= branch_pc_i;
+    btb_is_call_q[btb_wr_alloc_w]<= branch_is_call_i;
+    btb_is_ret_q[btb_wr_alloc_w] <= branch_is_ret_i;
+    btb_is_jmp_q[btb_wr_alloc_w] <= branch_is_jmp_i;
+end
+```
+当 btb 命中以及 pht 命中的时候，就会给出预测信息：
+```Verilog
+assign next_taken_f_o = (btb_valid_w & (ras_ret_pred_w | bht_predict_taken_w | btb_is_jmp_r)) ?
+                        pc_f_i[2] ? {btb_upper_r, 1'b0} :
+                        {btb_upper_r, ~btb_upper_r} : 2'b0;
+```
+
+这样就完成了预测以及根据分支的反馈信息更新预测表。
+
+接下来，从初始化、更新、预测的顺序研究 biriscv 的 bp。
+
+## 初始化
+
+部分默认配置是，32 长度的 BTB，512 长度的 PHT，关闭基于全局历史的分支预测。
+
+## 更新
+
+从前端 frontend issue 单元发送的更新信号：
+
+```Verilog
+    ,input           invalidate_i
+    ,input           branch_request_i
+    ,input           branch_is_taken_i
+    ,input           branch_is_not_taken_i
+    ,input  [ 31:0]  branch_source_i
+    ,input           branch_is_call_i
+    ,input           branch_is_ret_i
+    ,input           branch_is_jmp_i
+    ,input  [ 31:0]  branch_pc_i
+```
+
+这些信号用于更新：
+
+```Verilog
+reg [31:0]  btb_pc_q[NUM_BTB_ENTRIES-1:0];
+reg [31:0]  btb_target_q[NUM_BTB_ENTRIES-1:0];
+reg         btb_is_call_q[NUM_BTB_ENTRIES-1:0];
+reg         btb_is_ret_q[NUM_BTB_ENTRIES-1:0];
+reg         btb_is_jmp_q[NUM_BTB_ENTRIES-1:0];
+```
+
+### 更新 BTB
+首先根据进来的信号 branch_source_i 在 btb 中搜索，如果命中 btb_hit_r 那么拉高，并且 btb_wr_entry_r 是一个写入的 btb 索引，意味着要对 btb 进行修改。
+
+接着更新 btb:
+```Verilog
+else if (btb_hit_r)
+begin
+    btb_pc_q[btb_wr_entry_r]     <= branch_source_i;
+    if (branch_is_taken_i)
+        btb_target_q[btb_wr_entry_r] <= branch_pc_i;
+    btb_is_call_q[btb_wr_entry_r]<= branch_is_call_i;
+    btb_is_ret_q[btb_wr_entry_r] <= branch_is_ret_i;
+    btb_is_jmp_q[btb_wr_entry_r] <= branch_is_jmp_i;
+end
+```
+
+如果没有命中，那么就分配一个单元，进行添加：
+
+```Verilog
+else if (btb_miss_r)
+begin
+    btb_pc_q[btb_wr_alloc_w]     <= branch_source_i;
+    btb_target_q[btb_wr_alloc_w] <= branch_pc_i;
+    btb_is_call_q[btb_wr_alloc_w]<= branch_is_call_i;
+    btb_is_ret_q[btb_wr_alloc_w] <= branch_is_ret_i;
+    btb_is_jmp_q[btb_wr_alloc_w] <= branch_is_jmp_i;
+end
+```
+
+### 更新 PHT
+PHT 默认 256 行的 2bit 计数器 `bht_sat_q[NUM_BHT_ENTRIES-1:0]`。索引的寻找方式：
+```Verilog
+wire [NUM_BHT_ENTRIES_W-1:0] bht_wr_entry_w = GSHARE_ENABLE ? gshare_wr_entry_w : branch_source_i[2+NUM_BHT_ENTRIES_W-1:2];
+wire [NUM_BHT_ENTRIES_W-1:0] bht_rd_entry_w = GSHARE_ENABLE ? gshare_rd_entry_w : {pc_f_i[3+NUM_BHT_ENTRIES_W-2:3],btb_upper_w};
+```
+
+可以看到，bht 的索引是选中了 pc[10:2]，其中 pc[2:2] 是 btb_upper_w，表明了是双发射的高低位。
+
+接下来就可以更新 bht_sat_q 了，更新规则就是 2bit 饱和计数器：
+
+```Verilog
+integer i4;
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+begin
+    for (i4 = 0; i4 < NUM_BHT_ENTRIES; i4 = i4 + 1)
+    begin
+        bht_sat_q[i4] <= 2'd3;
+    end
+end
+else if (branch_is_taken_i && bht_sat_q[bht_wr_entry_w] < 2'd3)
+    bht_sat_q[bht_wr_entry_w] <= bht_sat_q[bht_wr_entry_w] + 2'd1;
+else if (branch_is_not_taken_i && bht_sat_q[bht_wr_entry_w] > 2'd0)
+    bht_sat_q[bht_wr_entry_w] <= bht_sat_q[bht_wr_entry_w] - 2'd1;
+```
+
+### 更新 RAS
+RAS（Return Address Stack），返回地址栈。
+当检测到是一个 call 指令的时候，首先更新 RAS 的栈指针 ras_index_r。然后根据 栈指针，将 branch_source_i + 4 入栈。
+
+RAS 索引的更新：
+```Verilog
+always @ *
+begin
+    ras_index_r = ras_index_q;
+    // Mispredict - go from confirmed call stack index
+    if (branch_request_i & branch_is_call_i)
+        ras_index_r = ras_index_real_q + 1;
+    else if (branch_request_i & branch_is_ret_i)
+        ras_index_r = ras_index_real_q - 1;
+    // Speculative call / returns
+    else if (ras_call_pred_w & pc_accept_i)
+        ras_index_r = ras_index_q + 1;
+    else if (ras_ret_pred_w & pc_accept_i)
+        ras_index_r = ras_index_q - 1;
+end
+```
+
+ras_stack_q 的更新：
+
+```Verilog
+integer i3;
+always @ (posedge clk_i or posedge rst_i)
+if (rst_i)
+begin
+    for (i3 = 0; i3 < NUM_RAS_ENTRIES; i3 = i3 + 1)
+    begin
+        ras_stack_q[i3] <= RAS_INVALID;
+    end
+
+    ras_index_q <= {NUM_RAS_ENTRIES_W{1'b0}};
+end
+// On a call push return address onto RAS stack (current PC + 4)
+else if (branch_request_i & branch_is_call_i)
+begin
+    ras_stack_q[ras_index_r] <= branch_source_i + 32'd4;
+    ras_index_q              <= ras_index_r;
+end
+// On a call push return address onto RAS stack (current PC + 4)
+else if (ras_call_pred_w & pc_accept_i)
+begin
+    ras_stack_q[ras_index_r] <= (btb_upper_w ? (pc_f_i | 32'd4) : pc_f_i) + 32'd4;
+    ras_index_q              <= ras_index_r;
+end
+// Return - pop item from stack
+else if ((ras_ret_pred_w & pc_accept_i) || (branch_request_i & branch_is_ret_i))
+begin
+    ras_index_q              <= ras_index_r;
+end
+```
+
+
+## 预测
+
+暂时不讨论基于全局历史的分支预测器，以下是经典的 2bit 饱和计数器预测器，还包含了从 RAS 中返回。
+
+如果当前指令是 btb_is_ret_r，那么预测的 PC 就是 ras_pc_pred_w。
+
+```Verilog
+assign next_pc_f_o   = ras_ret_pred_w      ? ras_pc_pred_w :
+                       (bht_predict_taken_w | btb_is_jmp_r) ? btb_next_pc_r :
+                       {pc_f_i[31:3],3'b0} + 32'd8;
+
+```
+如果是 bht_predict_taken_w，那么就是btb_next_pc_r，否则+8。
+
+来自 PHT 的很关键的信号，2bit 饱和计数器，它的值决定了跳转的方向：
+```Verilog
+wire bht_predict_taken_w = BHT_ENABLE && (bht_sat_q[bht_rd_entry_w] >= 2'd2);
+```
+同样这个信号表明了预测的地址中取高位还是低位：
+
+```Verilog
+assign next_taken_f_o = (btb_valid_w & (ras_ret_pred_w | bht_predict_taken_w | btb_is_jmp_r)) ?
+                        pc_f_i[2] ? {btb_upper_r, 1'b0} :
+                        {btb_upper_r, ~btb_upper_r} : 2'b0;
+```
+
+如果 next_taken_f_o 是 2'b01，意味着当前预测的指令是低位指令，如果是 2'b10，意味着这次预测是 pc_i+4 的高位指令的预测。
+
+btb_upper_r 解决了在查找 BTB 是否命中的时候，即使分支在高地址，也能在同一周期完成预测。也就是说，每次 pc_i 的都是低地址，因为这是双发射，是 8 字节对齐的。
+
+将这个 next_taken_f_o 发射到 decode 单元目的是让 decoder 明白哪一条指令是分支指令，哪条指令需要正常指令，哪些指令需要丢弃，大致如下：
+
+```Verilog
+// 在Decode单元中
+always @(*) begin
+    case (next_taken_f_o)
+        2'b01: begin  // 低地址分支
+            inst0_valid = 1'b1;    // 执行分支指令
+            inst1_valid = 1'b0;    // 丢弃后续指令
+            flush_next_fetch = 1'b1; // 清空下一次取指
+        end
+
+        2'b10: begin  // 高地址分支
+            inst0_valid = 1'b1;    // 执行第一条
+            inst1_valid = 1'b1;    // 执行分支指令
+            flush_next_fetch = 1'b1; // 清空下一次取指
+        end
+
+        2'b00: begin  // 无分支
+            inst0_valid = 1'b1;    // 两条都执行
+            inst1_valid = 1'b1;
+            flush_next_fetch = 1'b0; // 继续顺序取指
+        end
+    endcase
+end
+```
+
+这样，就完成了对两个信号的输出：
+
+```Verilog
+    ,output [ 31:0]  next_pc_f_o
+    ,output [  1:0]  next_taken_f_o
+```
+
+

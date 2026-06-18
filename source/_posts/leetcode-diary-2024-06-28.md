@@ -1,0 +1,205 @@
+---
+title: "LeetCode 刷题日志：2024-06-28"
+date: 2024-06-28 23:36:02
+tags:
+  - "LeetCode"
+  - "algorithms"
+  - "data structures"
+categories:
+  - "Algorithms"
+---
+
+<!--more-->
+
+## 394. 字符串解码
+
+给定一个经过编码的字符串，返回它解码后的字符串。
+
+示例 1：
+
+> 输入：s = "3[a]2[bc]"
+> 输出："aaabcbc"
+
+示例 2：
+
+> 输入：s = "3[a2[c]]"
+> 输出："accaccacc"
+
+示例 3：
+
+> 输入：s = "2[abc]3[cd]ef"
+> 输出："abcabccdcdcdef"
+
+示例 4：
+
+> 输入：s = "abc3[cd]xyz"
+> 输出："abccdcdcdxyz"
+
+
+这道题目感觉很不好做，我自己的解法很复杂，而且过不去一个测试点：
+
+```cpp
+class Solution {
+public:
+    string decodeString(string s) {
+        stack<string> st;
+        int k = 0;
+        string mode = "";
+        string currentStr = "";
+        for (char c : s) {
+            if (isdigit(c)) {
+                if (mode != "") {
+                    st.push(mode);
+                    mode = "";
+                }
+                k = k * 10 + c - '0';
+            } else if (isalpha(c)) {
+                if (k != 0) {
+                    st.push(to_string(k));
+                    k = 0;
+                }
+                mode += c;
+            } else if (c == ']') { // 退栈、合并
+                if (stringIsNum(st.top())) {
+                    // 如果栈顶是数字
+                    int num = stoi(st.top());
+                    st.pop();
+                    currentStr = mode;
+                    for (int i = 0; i < num - 1; i++) {
+                        currentStr += mode;
+                    }
+                    st.push(currentStr);
+                    currentStr = "";
+                    mode = "";
+                } else { // 否则合并
+                    currentStr = st.top();
+                    st.pop();
+                    currentStr += mode;
+                    st.push(currentStr);
+                    currentStr = "";
+                    mode = "";
+                }
+            } else if (c == '[') {
+                if (k != 0) {
+                    st.push(to_string(k));
+                    k = 0;
+                }
+            }
+        }
+        if (mode != "")
+            st.push(mode);
+        // 最后的处理
+        currentStr = "";
+        while (!st.empty()) {
+
+            string topStr = st.top();
+            st.pop();
+            if (st.empty())
+                return topStr;
+            if (stringIsNum(st.top())) {
+                currentStr = topStr;
+                int num = stoi(st.top());
+                st.pop();
+                for (int i = 0; i < num - 1; i++) {
+                    currentStr += topStr;
+                }
+                st.push(currentStr);
+                currentStr = "";
+            } else {
+                currentStr = topStr;
+                topStr = st.top();
+                currentStr = topStr + currentStr;
+                st.pop();
+                st.push(currentStr);
+            }
+        }
+        return "";
+    }
+
+private:
+    bool stringIsNum(string& str) {
+        try {
+            int num = std::stoi(str);
+            return true;
+        } catch (const std::invalid_argument& e) {
+            return false;
+        }
+    }
+};
+```
+
+后面我想到了用两个栈来解决这个问题，其中一个栈用来存储字符串段，另一个栈用来存储字符串段重复的次数。接下来的重点就是处理`'['`、`']'`符号。
+
+### 示例1：
+对于`s = "3[a]2[bc]"`：遇到`'['`的时候，入栈数字以及当前currentStr，并且置空；遇到`']'`的时候，取字符串段的 top 元素、重复次数栈的 top 元素，然后进行拼接。重复这个过程，currentStr 就是答案。
+
+
+### 示例2：
+对于`s = "3[a2[c]]"`：也是同样的操作。
+
+```cpp
+class Solution {
+public:
+    string decodeString(string s) {
+        stack<int> counts;     // 用于存储重复次数
+        stack<string> strings; // 用于存储字符串段
+        int k = 0;
+        string currentStr = "";
+        for (char c : s) {
+            if (isdigit(c)) {
+                k = k * 10 + (c - '0');
+            } else if (isalpha(c)) {
+                currentStr += c;
+            } else if (c == '[') {
+                // 遇到 '[' 时，将之前的数字和字符串推入栈中
+                counts.push(k);
+                strings.push(currentStr);
+                k = 0;
+                currentStr = "";
+            } else if (c == ']') {
+                // 遇到 ']' 时，开始构建字符串
+                string temp = currentStr;
+                currentStr = strings.top(); // 取出之前的字符串
+                strings.pop();
+                int count = counts.top(); // 取出重复次数
+                counts.pop();
+                for (int i = 0; i < count; i++) {
+                    currentStr += temp;
+                }
+            }
+        }
+        return currentStr; // 返回最终构建的字符串
+    }
+};
+```
+
+
+不禁要问，为什么可以这样？这里不禁让我想起了离散数学中的群论中的知识点，下面详细分析下。
+
+- 操作数：我们首先定义操作数，很明显这里的操作数为 **string** 以及 **int**。
+- 操作：这里并没有明确表明操作符号是什么，但是可以推断隐含的操作符。当 `int[string]` 时，表明要将 string 重复 int 次；当 `stringstring` 的时候，表明它们需要拼接；至于`string int`这种运算不存在，因为 `int` 必须后面跟 `string`。
+
+因此，遇到`'['`的时候，这意味着将要计算`int[string]`，将数字入栈，而且在数字入栈意味着数字前面还有一个 `string` ，不管这个 `string` 是否为空，无所谓。当遇到`']'`的时候，意味着`int[string]`要进行拼接了。
+
+可以看到，这个道题目无非就是计算`int[string]`以及`stringstring`，因此这道题目和`+`、`*`混合运算同构。
+
+对于`s = "3[a]2[bc]"`：可以同构为：`s = 3*(a)+2*(bc)`；对于`s = "3[a2[c]]"`，则可以同够为：`"s = 3*(a+2*(c))"`。
+
+以上就是这道题目的内涵了。
+
+## 总结（gpt4）
+将字符串解码问题与离散数学中的概念联系起来，这是一种非常有趣的视角。确实，字符串解码可以看作是对特定运算符（如拼接和重复）的递归运算。这种运算满足一定的结合律，类似于群论中的一些运算属性，尽管这里的操作并不构成严格数学意义上的群，因为群需要满足闭合性、结合律、单位元存在以及每个元素存在逆元等条件。
+
+提供的 C++ 代码示例有效地实现了字符串解码的功能，这里使用了两个栈：一个存储重复的次数（`counts`），另一个存储到目前为止解析的字符串（`strings`）。这种方法非常适合处理嵌套的解码结构。
+
+### 深入理解：
+每当遇到 `'['` 时，把当前解析到的重复次数和字符串推入各自的栈中，并重置这些变量准备解析括号内的内容。当遇到 `']'` 时，从栈中弹出最近的字符串和重复次数，并将解析到的字符串重复相应的次数，再与之前暂存的字符串拼接。
+
+### 操作符和操作数的对应关系
+- **操作数**：字符串和整数（重复次数）
+- **操作**：两种基本操作
+  - `int[string]`：将字符串重复指定的次数
+  - `stringstring`：将两个字符串拼接起来
+
+代码确实很好地模拟了这一过程，但要注意一点细节上的问题：在字符串解码结束后，如果主字符串（`currentStr`）后面没有更多的操作，它将直接返回。这种情况下，代码已经正确处理了所有情况。
+

@@ -1,0 +1,77 @@
+---
+title: "LA 挑战赛记录（11）：Vivado 综合内存爆炸问题排查"
+date: 2025-07-23 13:03:13
+tags:
+  - "Vivado"
+  - "FPGA"
+  - "troubleshooting"
+categories:
+  - "Digital Design"
+---
+
+## vivado 内存占用过多
+
+在综合 cache 的时候，发现内存直接占用过多，导致综合失败，仔细研究了下代码发现是这个引起的：
+
+```Verilog
+    reg [149:0] cache_line_0[255:0];
+    reg [149:0] cache_line_1[255:0];
+    reg [149:0] cache_line_2[255:0];
+    reg [149:0] cache_line_3[255:0];
+
+    genvar j;
+    generate
+        for (j = 0; j < 256; j = j + 1) begin
+            always @(posedge clk) begin
+                if(!resetn) begin
+                    cache_line_0[j] <= 150'd0;
+                    cache_line_1[j] <= 150'd0;
+                    cache_line_2[j] <= 150'd0;
+                    cache_line_3[j] <= 150'd0;
+                end
+            end
+        end
+    endgenerate
+
+```
+
+我的想法是，在一开始 !resetn 的时候，将 cache_line 中的数据清零。想法是好的，但是发生了什么呢？
+
+这在综合阶段会被 Vivado 展开成 256 个 always 块 × 4 个数组 = 1024 个寄存器单元实例化块，资源爆炸，每个寄存器宽度是 150 bit。
+
+于是我修改了代码，将它修改成了这样：
+```Verilog
+integer i;
+always @(posedge clk) begin
+    if (!resetn) begin
+        for (i = 0; i < 256; i = i + 1) begin
+            cache_line_0[i] <= 150'd0;
+            cache_line_1[i] <= 150'd0;
+            cache_line_2[i] <= 150'd0;
+            cache_line_3[i] <= 150'd0;
+        end
+    end
+end
+```
+
+但是，资源依然爆炸。
+
+为什么呢？因为如果没有这个清零逻辑，Vivado 自然得将其综合成 LUTRAM 资源，但是有了这个清零逻辑，Vivado 会认为：“这玩意儿 reset 要控制，我不能上 LUTRAM 啦，只能用寄存器阵列模拟。” 然后就爆炸了。
+
+后面我直接把清零逻辑取消了，果然没事了。
+
+## 思考
+
+不清零没事吗？没事，不仅 cache 没事，连 tlb 中没有清零都没事。
+
+因为 CPU 在执行之前，会用 cacop 或者 invtlb 指令清零，这真的为底层设计考虑周到了。因为加上一个 reset 清零，要多拉一根线，面积、延迟、成本都会变大，而通过软件的方式清零，无非就是多执行几条指令的事情，成本为零。
+
+因此，TLB 和 Cache 不清零是合理设计，并不是疏忽，这是有意为之，有软件兜底。
+
+这背后其实是一个经典的软硬件协同设计哲学：如果一个清零功能可以通过几条指令完成，就没有必要在硬件里拉专门的清零逻辑。否则不仅要额外布线，还会增加面积、功耗、延迟，甚至验证复杂度。
+
+通过软件清零，换来了更简单高效的硬件实现，可谓是“成本几乎为零，设计更优雅”。
+
+这里就可以看出 reset 的端倪了：**reset 是为那些无法通过软件显式控制的硬件状态保底清零的唯一机制，而凡是能被软件清空的，就无需额外布线去 reset。**
+
+**换句话说，reset 存在的真正价值在于清除那些软件无法访问或控制的硬件状态，比如内部的状态机、特殊寄存器或缓冲器。而能由软件清除的状态，例如 cache、TLB，则完全可以通过指令完成初始化，避免额外的硬件负担。**

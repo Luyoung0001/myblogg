@@ -1,0 +1,182 @@
+---
+title: "LeetCode 刷题日志：2024-07-05"
+date: 2024-07-05 23:30:27
+tags:
+  - "LeetCode"
+  - "algorithms"
+  - "data structures"
+categories:
+  - "Algorithms"
+---
+
+<!--more-->
+
+## 322. 零钱兑换
+动态规划，dp[i] 的定义为 i 块钱兑换的最少硬币数。状态转移为：
+
+```cpp
+			for (int coin : coins) {
+                if (i - coin >= 0) {
+                    dp[i] = min(dp[i], dp[i - coin] + 1);
+                }
+            }
+```
+
+因此代码为：
+
+```cpp
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        // dp数组大小为amount+1，初始化为amount+1（一个较大的数）
+        vector<int> dp(amount + 1, amount + 1);
+        dp[0] = 0; // 凑成金额0所需的硬币数为0
+
+        // 从1到amount逐步计算每一个金额所需的最小硬币数量
+        for (int i = 1; i <= amount; ++i) {
+            for (int coin : coins) {
+                if (i - coin >= 0) {
+                    dp[i] = min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+};
+
+```
+
+## 139. 单词拆分
+
+这道题还可以使用回溯：
+
+```cpp
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        // 回溯
+        vector<string> path;
+        bool ans = false;
+        backtrace(path, s, wordDict, ans);
+        return ans;
+    }
+    void backtrace(vector<string>& path, string& s, vector<string>& wordDict,
+                   bool& ans) {
+        if (gatherString(path) == s)
+            ans = true;
+        for (int i = 0; i < wordDict.size(); i++) {
+            string temp = gatherString(path);
+            if (isSubStr(temp, s)) {
+                path.push_back(wordDict[i]);
+                backtrace(path, s, wordDict, ans);
+                path.pop_back();
+            }
+        }
+    }
+
+private:
+    bool isSubStr(string& sub, string& str) {
+        for (int i = 0; i < sub.length(); i++) {
+            if (sub[i] != str[i])
+                return false;
+        }
+        return true;
+    }
+    string gatherString(vector<string>& path) {
+        string ans = "";
+        for (auto str : path) {
+            ans += str;
+        }
+        return ans;
+    }
+};
+```
+
+但是时间复杂度太高，有的案例跑不过。可以修改成另一种回溯：
+
+```cpp
+class Solution {
+public:
+    bool wordBreak(std::string s, std::vector<std::string>& wordDict) {
+        // 创建字典集合，加快查找速度
+        std::unordered_set<std::string> wordSet(wordDict.begin(), wordDict.end());
+        // 记录已经访问过的字符串组合
+        std::unordered_map<std::string, bool> memo;
+        return backtrace(s, wordSet, memo);
+    }
+
+private:
+    bool backtrace(const std::string& s, std::unordered_set<std::string>& wordSet, std::unordered_map<std::string, bool>& memo) {
+        if (s.empty()) return true; // 当s为空时，说明所有单词都匹配完了
+        if (memo.find(s) != memo.end()) return memo[s]; // 查找记忆化结果
+
+        for (int i = 1; i <= s.size(); ++i) {
+            std::string prefix = s.substr(0, i);
+            if (wordSet.find(prefix) != wordSet.end()) {
+                std::string suffix = s.substr(i);
+                if (backtrace(suffix, wordSet, memo)) {
+                    memo[s] = true;
+                    return true;
+                }
+            }
+        }
+        memo[s] = false; // 记录结果
+        return false;
+    }
+};
+```
+
+也可以使用动态规划来解决这个问题。
+
+### 动态规划解法
+
+我们定义一个布尔数组 `dp`，其中 `dp[i]` 表示字符串 `s` 的前 `i` 个字符能否用字典中的单词拼接成。我们需要初始化 `dp[0] = true`，表示空字符串可以被拼接。
+
+然后，对于每个位置 `i`，我们检查从位置 `j` 到 `i` 的子串 `s[j:i]` 是否在字典中，如果在字典中并且 `dp[j]` 为 `true`，则将 `dp[i]` 设为 `true`。
+
+### 代码实现
+
+```cpp
+class Solution {
+public:
+    bool wordBreak(std::string s, std::vector<std::string>& wordDict) {
+        // 创建字典集合，加快查找速度
+        std::unordered_set<std::string> wordSet(wordDict.begin(), wordDict.end());
+        // 动态规划数组，初始值为false
+        std::vector<bool> dp(s.size() + 1, false);
+        dp[0] = true; // 空字符串可以被拼接
+
+        // 动态规划填表
+        for (int i = 1; i <= s.size(); ++i) {
+            for (int j = 0; j < i; ++j) {
+                // 如果s[j:i]在字典中且dp[j]为true，则dp[i]为true
+                if (dp[j] && wordSet.find(s.substr(j, i - j)) != wordSet.end()) {
+                    dp[i] = true;
+                    break; // 找到一个可行的拆分就可以退出内层循环
+                }
+            }
+        }
+
+        // 返回结果
+        return dp[s.size()];
+    }
+};
+```
+
+### 详细解释
+
+1. **初始化字典集合**：
+   - 使用 `unordered_set` 存储字典中的单词，以加快查找速度。
+
+2. **初始化动态规划数组**：
+   - `dp` 数组的长度为 `s.size() + 1`，初始值都为 `false`。
+   - `dp[0] = true` 表示空字符串可以被拼接。
+
+3. **动态规划填表**：
+   - 外层循环遍历字符串的每个位置 `i`。
+   - 内层循环遍历位置 `j`，检查从 `j` 到 `i` 的子串 `s[j:i]` 是否在字典中且 `dp[j]` 为 `true`。
+   - 如果满足条件，则将 `dp[i]` 设为 `true` 并退出内层循环。
+
+4. **返回结果**：
+   - `dp[s.size()]` 表示整个字符串 `s` 是否可以被拼接成。
+

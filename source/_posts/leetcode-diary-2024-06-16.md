@@ -1,0 +1,198 @@
+---
+title: "LeetCode 刷题日志：2024-06-16"
+date: 2024-06-16 23:05:54
+tags:
+  - "LeetCode"
+  - "algorithms"
+  - "data structures"
+categories:
+  - "Algorithms"
+---
+
+<!--more-->
+
+## 前言
+今天刷了大概两个半小时，一边刷一边学，一边吃零食。效率有点低了~
+
+以后每天都会刷，并且写刷题日记，题目标题有题目序号以及题目名称，方便以后查询。
+## 1. 两数之和
+重点是要降低时间复杂度，所以用哈希表了，由于不能重复出现，所以是先查询后插入：
+
+```cpp
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> map;
+        int t;
+        for(int i = 0; i < nums.size(); i++){
+            t = target-nums[i];
+            if(map.find(t) != map.end()){
+                return {i,map[t]};
+            }else{
+                map[nums[i]] = i;
+            }
+        }
+        return {};
+    }
+};
+```
+
+## 49. 字母异位词分组
+
+这道题目思考了一会儿，每一个单词都以抽象为一个有序的序列，因此要对字符串进行排序，然后排序后的字符串为key，`vector<string>` 为 value。这里需要注意的是利用移动语义提高性能：
+
+```cpp
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> map;
+        vector<vector<string>> ans;
+        for(const auto &s:strs){
+            string key = s;
+            sort(key.begin(), key.end());
+            map[key].push_back(s);
+        }
+        for(auto &v:map){
+            ans.push_back(std::move(v.second));
+        }
+        return ans;
+    }
+};
+```
+
+## 128. 最长连续序列
+这个题目也想了一会儿，重点是现将这些值放到 set 中降低时间复杂度。然后将每一个 num 判断是否为开始的元素，如果是，就查询 num+1：
+
+```cpp
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> set(nums.begin(), nums.end());
+        int max_len = 0, temp, len;
+        for (auto num : set) {
+            if (!set.count(num - 1)) {
+                len = 0;
+                temp = num;
+                while (set.count(temp)) {
+                    temp++;
+                    len++;
+                }
+                max_len = max(len, max_len);
+            }
+        }
+        return max_len;
+    }
+};
+```
+
+## 283. 移动零
+这个题目还挺难，虽然标着简单，这是经典的双指针问题。用两个指针，一个维护当前数组，另一个用于搜索非零元素，找到之后，将右指针的值赋值给零元素，然后右指针指向的值赋为 0：
+
+```cpp
+class Solution {
+public:
+    void moveZeroes(vector<int>& nums) {
+        int left = 0;
+        for(int r = 0; r < nums.size(); r++){
+            if(nums[r] != 0){
+                if(r != left){
+                    nums[left] = nums[r];
+                    nums[r] = 0;
+                }
+                left++;
+            }
+        }
+
+    }
+};
+```
+
+## 11. 盛最多水的容器
+这个依然是双指针，然后贪心，从两边向中间紧靠。紧靠的原则是，哪边低哪边向中间靠：
+
+```cpp
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int left = 0, right = height.size() - 1;
+        int max = 0;
+        while (left < right) {
+            max = std::max(max,
+                           (right - left) * min(height[left], height[right]));
+            if(height[left] < height[right]){
+                left++;
+            }else{
+                right--;
+            }
+        }
+        return max;
+    }
+};
+```
+
+## 15. 三数之和
+首先排序，然后利用三指针。`nums[i]`为第一个，第二个指针为 `nums[i+1]`，下一个指针为 `nums[len-1]`，判断这三个值知否为 0。然后遍历 `nums[i]`，为了不重复，需要跳过 `nums[i] when nums[i] == nums[i+1]`：
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> result;
+        int len = nums.size(), left, right;
+        for (int i = 0; i < len; i++) {
+            if (nums[i] > 0)
+                break;
+            if (i > 0 && nums[i] == nums[i - 1])
+                continue;
+            left = i + 1;
+            right = len - 1;
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum == 0) {
+                    result.push_back({nums[i], nums[left], nums[right]});
+                    while (left < right && nums[left] == nums[left + 1])
+                        ++left;
+                    while (left < right && nums[right] == nums[right - 1])
+                        --right;
+                    ++left;
+                    --right;
+                } else if (sum < 0) {
+                    ++left;
+                } else {
+                    --right;
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+## 每日总结（gpt4）
+### 1. 两数之和
+- **关键点**：使用哈希表来优化查找过程，从而将时间复杂度降低到O(n)。
+- **策略**：通过存储每个数字和它的索引，我们可以快速检查目标值减去当前数字是否已经在哈希表中，这样避免了二次循环。
+
+### 49. 字母异位词分组
+- **关键点**：将每个字符串排序，使用排序后的结果作为键值来组织哈希表。
+- **策略**：排序字符串以标准化字母异位词，确保所有异位词都映射到相同的键下。使用移动语义优化性能。
+
+### 128. 最长连续序列
+- **关键点**：使用集合（Set）来存储所有数字，快速判断数字连续性。
+- **策略**：只从序列的可能开始位置检查（即当前数字的前一个数字不在集合中），避免重复计算。
+
+### 283. 移动零
+- **关键点**：使用双指针技术高效解决问题，一个指针用于迭代，一个指针用于维护非零数组的当前边界。
+- **策略**：当遇到非零元素时，将其移动到左边已处理区域的末尾，保持零元素在右边。
+
+### 11. 盛最多水的容器
+- **关键点**：使用双指针从数组两端向中心移动，选择合适的策略来尽可能扩大容积。
+- **策畓**：根据两边柱子的高度决定移动哪一个指针，总是试图通过移动较短的那个来寻找可能的更大容积。
+
+### 15. 三数之和
+- **关键点**：首先排序数组，然后使用三个指针分别指向当前元素、当前元素后的下一个元素以及数组的最后一个元素，以便对数组进行遍历和匹配。
+- **策略**：在保证不重复的基础上找到三个数的和为零的所有组合，注意在移动指针时跳过重复的值。
+
+
+

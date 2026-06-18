@@ -1,0 +1,162 @@
+---
+title: "数字电路实验（二）：译码器、编码器与优先编码"
+date: 2024-07-14 16:57:40
+tags:
+  - "digital logic"
+  - "decoder"
+  - "encoder"
+categories:
+  - "Digital Design"
+---
+
+<!--more-->
+
+## 一、译码器
+
+译码器带有一个使能输入，以及 n 位输入端，一共能输出 2^n 次方种信号。在二进制码中，最常用的输出编码是位中取1位编码，即任何时刻，m 位输出编码中只能有1位有效，其余各位都为0，这样的二进制编码被称为独热编码（one-hot encoded），意思是那个被置为1的码看起来是“热”的，而二进制译码器输出的信号就是独热编码。也可以理解为，这些信号之间是正交的，某一个信号不能通过其它信号合成：
+![](https://raw.githubusercontent.com/Luyoung0001/picBed/main/decoder24.png)
+
+```verilog
+module decode24 (x,en,y);
+    input [1:0] x;
+    input en;
+    output reg [3:0] y;
+
+    always @(x or en)
+        if(en) begin
+            case (x)
+                2'd0:
+                    y = 4'b0001;
+                2'd1:
+                    y = 4'b0010;
+                2'd2:
+                    y = 4'b0100;
+                2'd3:
+                    y = 4'b1000;
+                default:
+                    y = 4'b0001;
+
+            endcase
+        end
+        else
+            y = 4'b0000;
+
+endmodule
+
+```
+
+## 二、编码器
+编码器和译码器恰好是相反的过程，它有 2^n 个输入，对应着 n 个输出：
+
+![](https://raw.githubusercontent.com/Luyoung0001/picBed/main/encoder1.png)
+
+```verilog
+module encode42(x,en,y);
+    input [3:0] x;
+    input en;
+    output reg [1:0] y;
+
+    always @(x or en) begin
+        if(en) begin
+            case (x)
+                4'b0001 :
+                    y = 2'b00;
+                4'b0010 :
+                    y = 2'b01;
+                4'b0100 :
+                    y = 2'b10;
+                4'b1000 :
+                    y = 2'b11;
+                default:
+                    y = 2'b00;
+            endcase
+        end
+        else
+            y = 2'b00;
+    end
+endmodule
+
+```
+
+## 三、优先编码
+和编码器不一样的是，输入不是独热信号，可能有多个 1。如果输入信号为 4b'0101,则输出为 2'b10，即最高位的权限最高。通过观察，可以使用 for 循环来确定优先级：
+```verilog
+module encode42(x,en,y);
+  input  [3:0] x;
+  input  en;
+  output reg [1:0]y;
+  integer i;
+  always @(x or en) begin
+    if (en) begin
+      y = 0;
+      for( i = 0; i <= 3; i = i+1)
+          if(x[i] == 1)  y = i[1:0];
+    end
+    else  y = 0;
+  end
+endmodule
+```
+
+## 四、实验
+查找8-3优先编码器相关原理和实现方法，实现一个8-3编码器，完成8-3编码器的设计、功能仿真和硬件实现。
+
+输入一个8位二进制数，对此8位二进制数进行高位优先编码成一个3位二进制值，并根据是否有输入增加一位输入指示位，即8个输入全0时指示位为0，有任何一个输入为1时指示位为1。编码器的使能端可选实现。将此编码结果及指示位以二进制形式显示在四个发光二极管LED上。再将此结果跟据七段数码管的显示进行译码，将二进制的优先编码结果以十进制的形式显示在数码管上。
+
+实验思路很简单，8-3 优先编码器，利用 for 输出信号，然后对信号进行翻译成对应的数码管值：
+```verilog
+// 83 优先编码器
+module encode83(x,en,y,tag,bcd7seg);
+    input [7:0] x;
+    input en;
+    output reg [2:0] y;
+    output reg [7:0] bcd7seg;
+    output reg tag;
+    integer i;
+    always @(x or en) begin
+        if(en) begin
+            y = 0;
+            tag = 0;
+            for(i = 0; i <= 7; i = i+1) begin
+                if(x[i] == 1) begin
+                    y = i[2:0];
+                    tag = 1;
+                end
+            end
+        end
+        else begin
+            tag = 0;
+            y = 0;
+        end
+
+        // 数码管显示
+        begin
+            case (y)
+                3'b000:
+                    bcd7seg = 8'b00000010;  //0
+                3'b001:
+                    bcd7seg = 8'b10011111;  //1
+                3'b010:
+                    bcd7seg = 8'b00100101;  //2
+                3'b011:
+                    bcd7seg = 8'b00001101;  //3
+                3'b100:
+                    bcd7seg = 8'b10011001;  //4
+                3'b101:
+                    bcd7seg = 8'b01001001;  //5
+                3'b110:
+                    bcd7seg = 8'b01000001;  //6
+                3'b111:
+                    bcd7seg = 8'b00011111;  //7
+                default:
+                    bcd7seg = 8'b00000010;
+            endcase
+        end
+    end
+
+endmodule
+```
+这是效果：
+
+![](https://raw.githubusercontent.com/Luyoung0001/picBed/main/resultlab2.png)
+
+

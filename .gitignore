@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Hexo generated files
+public/
+.deploy_git
+.deploy_git/
+db.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment and local editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/

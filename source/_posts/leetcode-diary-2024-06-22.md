@@ -1,0 +1,142 @@
+---
+title: "LeetCode 刷题日志：2024-06-22"
+date: 2024-06-23 14:24:13
+tags:
+  - "LeetCode"
+  - "algorithms"
+  - "data structures"
+categories:
+  - "Algorithms"
+---
+
+<!--more-->
+
+## 199. 二叉树的右视图
+这道题目的思路就是层次遍历，然后每次处理每一层所有的元素，如果是第一个就收集到答案中：
+
+```cpp
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        if (!root)
+            return {};
+        queue<TreeNode*> que;
+        vector<int> ans;
+        que.push(root);
+        TreeNode* temp = nullptr;
+        int s = que.size();
+
+        while (!que.empty()) {
+            s = que.size(); // 获取每层的长度
+            for (int i = 0; i < s; i++) {
+                temp = que.front();
+                que.pop();
+                if (i == 0)
+                    ans.push_back(temp->val);
+                if (temp->right)
+                    que.push(temp->right);
+                if (temp->left)
+                    que.push(temp->left);
+            }
+        }
+        return ans;
+    }
+};
+```
+
+## 114. 二叉树展开为链表
+思路是每次将找到当前节点的左子树的最右，然后当前节点的右子树挂在左子树的最右节点的右子树。接着遍历所有节点：
+
+```cpp
+void flatten(TreeNode* root) {
+        TreeNode* cur = root;
+        while (cur) {
+            if (cur->left) {
+                // 最右
+                TreeNode* rightMost = cur->left;
+                while (rightMost->right) {
+                    rightMost = rightMost->right;
+                }
+                rightMost->right = cur->right;
+                cur->right = cur->left;
+                cur->left = nullptr;
+
+            }
+            cur = cur->right;
+        }
+    }
+```
+
+## 105. 从前序与中序遍历序列构造二叉树
+
+这道题的思路是，使用递归，将先序序列的起始和结尾，以及中序序列的起始和结尾传入。接着`preorder[preStart]`就是 `root` 节点，然后在中序中查找这个结点 `p`（事实上，这里用 map 更快些），这个结点到中序的起始结点这一段就是 `root` 的左子树，另一半就是右子树，分别赋值给 `root->left`、`root->right`：
+
+
+```cpp
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        return build(preorder, 0, preorder.size() - 1, inorder, 0, inorder.size() - 1);
+    }
+    TreeNode* build(vector<int> preorder, int preStart, int preEnd,
+                    vector<int> inorder, int inStart, int inEnd) {
+        if (preStart > preEnd || inStart > inEnd)
+            return nullptr;
+        int rootVal = preorder[preStart];
+        TreeNode* root = new TreeNode(rootVal);
+
+        int rootIndex = inStart;
+        while (rootIndex <= inEnd && inorder[rootIndex] != rootVal) {
+            rootIndex++;
+        }
+
+        int leftSize = rootIndex - inStart;
+        // 构建左子树
+        root->left = build(preorder, preStart + 1, preStart + leftSize, inorder,
+                           inStart, rootIndex - 1);
+        // 构建右子树
+        root->right = build(preorder, preStart + leftSize + 1, preEnd, inorder,
+                            rootIndex + 1, inEnd);
+        return root;
+    }
+};
+```
+
+由于没用 map，所以时间复杂度高：
+
+![在这里插入图片描述](https://raw.githubusercontent.com/Luyoung0001/picBed/main/8d5da3939c8845f38a2d8c93ce77d240_1720253671766.png?token=ANB4BCL37F2B2WSX2GJ77KTGRD6SS)
+
+## 总结
+### 199. 二叉树的右视图
+
+**算法思路：**
+- 使用层次遍历（广度优先搜索），从右向左处理每一层节点。
+- 每层处理时，收集第一个节点的值作为该层的右视图节点。
+
+**核心点：**
+- 层次遍历。
+- 每层第一个节点的值。
+
+### 114. 二叉树展开为链表
+
+**算法思路：**
+- 遍历每个节点，将当前节点的左子树的最右节点找到，并将当前节点的右子树挂在这个最右节点的右子树上。
+- 将左子树置为右子树，左子树置为空，然后继续处理下一个节点。
+
+**核心点：**
+- 找到左子树的最右节点。
+- 调整节点链接，将树展开为链表。
+
+### 105. 从前序与中序遍历序列构造二叉树
+
+**算法思路：**
+- 使用递归，根据前序遍历确定根节点，然后在中序遍历中找到根节点的位置，划分左右子树。
+- 递归构造左子树和右子树，分别赋值给根节点的左右子节点。
+
+**核心点：**
+- 前序遍历的第一个节点是根节点。
+- 在中序遍历中找到根节点位置以划分左右子树。
+- 递归构造二叉树。
+
+
+
