@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 28px sans-serif;fill:#0f172a}
+      .sub{font:16px sans-serif;fill:#475569}
+      .box{rx:12;ry:12;stroke-width:2}
+      .txt{font:700 17px sans-serif;fill:#0f172a}
+      .hint{font:14px sans-serif;fill:#475569}
+      .arrow{stroke:#475569;stroke-width:2.3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="54" y="58" class="title">C 模拟器：ISA 语义真值源</text>
+  <text x="54" y="88" class="sub">模拟器负责提交级正确性，不负责建模真实流水线周期。</text>
+
+  <rect x="70" y="160" width="145" height="76" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="113" y="191" class="txt">loader</text>
+  <text x="101" y="215" class="hint">load binary</text>
+
+  <rect x="275" y="160" width="145" height="76" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="323" y="191" class="txt">fetch</text>
+  <text x="310" y="215" class="hint">pc -> raw</text>
+
+  <rect x="480" y="160" width="145" height="76" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="519" y="191" class="txt">decode</text>
+  <text x="512" y="215" class="hint">raw -> inst_t</text>
+
+  <rect x="685" y="160" width="145" height="76" class="box" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="719" y="191" class="txt">execute</text>
+  <text x="704" y="215" class="hint">update arch state</text>
+
+  <rect x="890" y="160" width="160" height="76" class="box" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="935" y="191" class="txt">stats</text>
+  <text x="925" y="215" class="hint">JSON / trace</text>
+
+  <path d="M215 198 H275" class="arrow"/>
+  <path d="M420 198 H480" class="arrow"/>
+  <path d="M625 198 H685" class="arrow"/>
+  <path d="M830 198 H890" class="arrow"/>
+  <path d="M757 236 C757 285 348 285 348 236" class="arrow"/>
+
+  <rect x="255" y="340" width="300" height="92" class="box" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="290" y="374" class="txt">CLI mode</text>
+  <text x="290" y="400" class="hint">riscvi32r-sim --isa riscvi32r --bin ...</text>
+
+  <rect x="645" y="340" width="300" height="92" class="box" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="680" y="374" class="txt">Reference API</text>
+  <text x="680" y="400" class="hint">init / load / step / get_regs</text>
+
+  <text x="54" y="475" class="sub">后续 RTL difftest 对比的是提交事件和架构态，而不是 predictor、scoreboard 或 cache 状态。</text>
+</svg>

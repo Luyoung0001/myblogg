@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 28px sans-serif;fill:#0f172a}
+      .sub{font:16px sans-serif;fill:#475569}
+      .box{rx:12;ry:12;stroke-width:2}
+      .txt{font:700 17px sans-serif;fill:#0f172a}
+      .hint{font:14px sans-serif;fill:#475569}
+      .arrow{stroke:#475569;stroke-width:2.3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="54" y="58" class="title">AM/BSP 最小运行时：裸机 C 程序如何启动</text>
+  <text x="54" y="88" class="sub">没有启动代码、栈、.bss、halt 和 UART，C 程序无法变成可验证 workload。</text>
+
+  <rect x="70" y="165" width="135" height="76" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="103" y="196" class="txt">reset PC</text>
+  <text x="108" y="220" class="hint">entry point</text>
+
+  <rect x="260" y="165" width="135" height="76" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="303" y="196" class="txt">_start</text>
+  <text x="292" y="220" class="hint">start.S</text>
+
+  <rect x="450" y="165" width="135" height="76" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="483" y="196" class="txt">setup sp</text>
+  <text x="483" y="220" class="hint">stack top</text>
+
+  <rect x="640" y="165" width="135" height="76" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="676" y="196" class="txt">clear .bss</text>
+  <text x="682" y="220" class="hint">zero init</text>
+
+  <rect x="830" y="165" width="135" height="76" class="box" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="872" y="196" class="txt">main</text>
+  <text x="862" y="220" class="hint">C workload</text>
+
+  <rect x="1020" y="165" width="135" height="76" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="1061" y="196" class="txt">halt</text>
+  <text x="1056" y="220" class="hint">ebreak</text>
+
+  <path d="M205 203 H260" class="arrow"/>
+  <path d="M395 203 H450" class="arrow"/>
+  <path d="M585 203 H640" class="arrow"/>
+  <path d="M775 203 H830" class="arrow"/>
+  <path d="M965 203 H1020" class="arrow"/>
+
+  <rect x="280" y="340" width="275" height="92" class="box" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="312" y="374" class="txt">UART MMIO</text>
+  <text x="312" y="400" class="hint">putch writes 0x10000000</text>
+
+  <rect x="645" y="340" width="275" height="92" class="box" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="677" y="374" class="txt">Simulator JSON</text>
+  <text x="677" y="400" class="hint">uart_output records characters</text>
+
+  <path d="M555 386 H645" class="arrow"/>
+  <text x="54" y="475" class="sub">这套最小运行时让 cpu-test、AM 应用和 RTL workload 都可以共享同一种裸机程序口径。</text>
+</svg>

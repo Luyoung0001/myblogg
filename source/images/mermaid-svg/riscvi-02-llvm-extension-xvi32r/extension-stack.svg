@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 28px sans-serif;fill:#0f172a}
+      .sub{font:16px sans-serif;fill:#475569}
+      .layer{rx:14;ry:14;stroke-width:2}
+      .txt{font:700 18px sans-serif;fill:#0f172a}
+      .hint{font:14px sans-serif;fill:#475569}
+      .arrow{stroke:#475569;stroke-width:2.4;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="56" y="58" class="title">为什么 RISC-VI 第一阶段选择 +xvi32r</text>
+  <text x="56" y="88" class="sub">仍然复用 LLVM RISC-V target，只在 subtarget feature 中打开实验指令。</text>
+
+  <rect x="90" y="135" width="420" height="78" class="layer" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="122" y="168" class="txt">Target: RISCV</text>
+  <text x="122" y="193" class="hint">寄存器、ABI、调用约定、MC、AsmPrinter、FrameLowering</text>
+
+  <rect x="150" y="245" width="420" height="78" class="layer" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="182" y="278" class="txt">Subtarget Feature: +xvi32r</text>
+  <text x="182" y="303" class="hint">HasVendorXRiscVI 控制实验指令是否可用</text>
+
+  <rect x="210" y="355" width="420" height="78" class="layer" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="242" y="388" class="txt">RISC-VI Instructions</text>
+  <text x="242" y="413" class="hint">lwxs / swxs / min / max / csel / bchkltu</text>
+
+  <path d="M300 213 V245" class="arrow"/>
+  <path d="M360 323 V355" class="arrow"/>
+
+  <rect x="760" y="135" width="330" height="120" class="layer" fill="#fef3c7" stroke="#d97706"/>
+  <text x="790" y="170" class="txt">不急着新建 target</text>
+  <text x="790" y="198" class="hint">新 triple / 新 ABI / 新 driver / 新对象生态</text>
+  <text x="790" y="224" class="hint">都会放大第一阶段的工程成本。</text>
+
+  <rect x="760" y="305" width="330" height="120" class="layer" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="790" y="340" class="txt">先验证 ISA 价值</text>
+  <text x="790" y="368" class="hint">llc -mtriple=riscv32 -mattr=+xvi32r</text>
+  <text x="790" y="394" class="hint">让模式匹配、模拟器和 RTL 先闭环。</text>
+
+  <path d="M630 394 H760" class="arrow"/>
+  <text x="56" y="474" class="sub">判断标准：如果指令语义、编码、模拟器、AM 和 RTL 还在快速迭代，就先作为扩展落地。</text>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <style>
+    .title{font:700 28px sans-serif;fill:#0f172a}
+    .sub{font:16px sans-serif;fill:#475569}
+    .head{font:700 17px sans-serif;fill:#0f172a}
+    .txt{font:15px sans-serif;fill:#334155}
+    .cell{stroke:#cbd5e1;stroke-width:1.5}
+  </style>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="54" y="58" class="title">RISC-VI 双发射实验：收益和代价要一起看</text>
+  <text x="54" y="88" class="sub">一条指令压缩了某个序列，也可能把压力移动到读端口、分支或 LSU 统计里。</text>
+
+  <rect x="90" y="130" width="1020" height="285" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="90" y="130" width="260" height="48" class="cell" fill="#dbeafe"/>
+  <rect x="350" y="130" width="390" height="48" class="cell" fill="#dcfce7"/>
+  <rect x="740" y="130" width="370" height="48" class="cell" fill="#fee2e2"/>
+  <text x="125" y="161" class="head">Design point</text>
+  <text x="385" y="161" class="head">Benefit</text>
+  <text x="775" y="161" class="head">Cost / caveat</text>
+
+  <rect x="90" y="178" width="260" height="52" class="cell" fill="#f8fafc"/><text x="125" y="211" class="txt">lwxs / swxs</text>
+  <rect x="350" y="178" width="390" height="52" class="cell" fill="#ffffff"/><text x="385" y="211" class="txt">shorter address generation chain</text>
+  <rect x="740" y="178" width="370" height="52" class="cell" fill="#ffffff"/><text x="775" y="211" class="txt">LSU access count usually unchanged</text>
+
+  <rect x="90" y="230" width="260" height="52" class="cell" fill="#f8fafc"/><text x="125" y="263" class="txt">min / max</text>
+  <rect x="350" y="230" width="390" height="52" class="cell" fill="#ffffff"/><text x="385" y="263" class="txt">fewer compare-update branches</text>
+  <rect x="740" y="230" width="370" height="52" class="cell" fill="#ffffff"/><text x="775" y="263" class="txt">still consumes ALU resources</text>
+
+  <rect x="90" y="282" width="260" height="52" class="cell" fill="#f8fafc"/><text x="125" y="315" class="txt">csel</text>
+  <rect x="350" y="282" width="390" height="52" class="cell" fill="#ffffff"/><text x="385" y="315" class="txt">removes small control-flow fragments</text>
+  <rect x="740" y="282" width="370" height="52" class="cell" fill="#ffffff"/><text x="775" y="315" class="txt">three-source read pressure</text>
+
+  <rect x="90" y="334" width="260" height="52" class="cell" fill="#f8fafc"/><text x="125" y="367" class="txt">bchkltu</text>
+  <rect x="350" y="334" width="390" height="52" class="cell" fill="#ffffff"/><text x="385" y="367" class="txt">compact bounds-check sequence</text>
+  <rect x="740" y="334" width="370" height="52" class="cell" fill="#ffffff"/><text x="775" y="367" class="txt">still a conditional branch</text>
+
+  <text x="54" y="465" class="sub">正确的叙事是：RISC-VI 减少了一些短链和提交数，同时也暴露了多源、分支和访存口径上的真实约束。</text>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 28px sans-serif;fill:#0f172a}
+      .sub{font:16px sans-serif;fill:#475569}
+      .box{rx:12;ry:12;stroke-width:2}
+      .txt{font:700 17px sans-serif;fill:#0f172a}
+      .hint{font:14px sans-serif;fill:#475569}
+      .arrow{stroke:#475569;stroke-width:2.3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="54" y="58" class="title">RTL 对比的控制变量：同源才有资格谈 ISA 收益</text>
+  <text x="54" y="88" class="sub">如果前端、预测器、LSU、memory 或 workload 不一致，就不能把差异直接归因于 ISA。</text>
+
+  <rect x="100" y="155" width="260" height="220" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="165" y="190" class="txt">RV32R RTL</text>
+  <text x="135" y="222" class="hint">same workload</text>
+  <text x="135" y="250" class="hint">same frontend</text>
+  <text x="135" y="278" class="hint">same predictor</text>
+  <text x="135" y="306" class="hint">same LSU</text>
+  <text x="135" y="334" class="hint">same DPI memory</text>
+
+  <rect x="840" y="155" width="260" height="220" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="890" y="190" class="txt">RISC-VI32R RTL</text>
+  <text x="875" y="222" class="hint">same workload</text>
+  <text x="875" y="250" class="hint">same frontend</text>
+  <text x="875" y="278" class="hint">same predictor</text>
+  <text x="875" y="306" class="hint">same LSU</text>
+  <text x="875" y="334" class="hint">same DPI memory</text>
+
+  <rect x="450" y="190" width="300" height="150" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="516" y="225" class="txt">Counter table</text>
+  <text x="490" y="254" class="hint">retired / cycle / RAW stall</text>
+  <text x="490" y="282" class="hint">branch miss / read ports</text>
+  <text x="490" y="310" class="hint">load / store / LSU access</text>
+
+  <path d="M360 265 H450" class="arrow"/>
+  <path d="M840 265 H750" class="arrow"/>
+
+  <rect x="300" y="420" width="600" height="44" rx="10" ry="10" fill="#fff7ed" stroke="#fb923c"/>
+  <text x="325" y="448" class="hint">结论边界：功能闭环可以证明正确性；RTL 计数可以讨论结构信号；最终性能还需要更大 workload。</text>
+</svg>

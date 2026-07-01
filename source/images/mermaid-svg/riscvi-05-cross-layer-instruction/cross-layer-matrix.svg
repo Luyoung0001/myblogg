@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <style>
+    .title{font:700 28px sans-serif;fill:#0f172a}
+    .sub{font:16px sans-serif;fill:#475569}
+    .head{font:700 17px sans-serif;fill:#0f172a}
+    .txt{font:15px sans-serif;fill:#334155}
+    .cell{stroke:#cbd5e1;stroke-width:1.5}
+  </style>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="54" y="56" class="title">新增一条指令要同步修改哪些层</text>
+  <text x="54" y="84" class="sub">以 min 为例：LLVM 能发出还不够，模拟器、AM、测试和报告都要认识它。</text>
+
+  <rect x="90" y="125" width="1020" height="330" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="90" y="125" width="220" height="48" class="cell" fill="#dbeafe"/>
+  <rect x="310" y="125" width="410" height="48" class="cell" fill="#dcfce7"/>
+  <rect x="720" y="125" width="390" height="48" class="cell" fill="#fef3c7"/>
+  <text x="130" y="156" class="head">Layer</text>
+  <text x="350" y="156" class="head">What changes</text>
+  <text x="760" y="156" class="head">Project files</text>
+
+  <g>
+    <rect x="90" y="173" width="220" height="42" class="cell" fill="#f8fafc"/><text x="130" y="200" class="txt">LLVM</text>
+    <rect x="310" y="173" width="410" height="42" class="cell" fill="#ffffff"/><text x="350" y="200" class="txt">feature / instruction / pattern</text>
+    <rect x="720" y="173" width="390" height="42" class="cell" fill="#ffffff"/><text x="760" y="200" class="txt">RISCVInstrInfoXVI.td</text>
+
+    <rect x="90" y="215" width="220" height="42" class="cell" fill="#f8fafc"/><text x="130" y="242" class="txt">MC</text>
+    <rect x="310" y="215" width="410" height="42" class="cell" fill="#ffffff"/><text x="350" y="242" class="txt">assembly text and binary encoding</text>
+    <rect x="720" y="215" width="390" height="42" class="cell" fill="#ffffff"/><text x="760" y="242" class="txt">TableGen generated MC</text>
+
+    <rect x="90" y="257" width="220" height="42" class="cell" fill="#f8fafc"/><text x="130" y="284" class="txt">Simulator</text>
+    <rect x="310" y="257" width="410" height="42" class="cell" fill="#ffffff"/><text x="350" y="284" class="txt">op enum / decode / execute / stats</text>
+    <rect x="720" y="257" width="390" height="42" class="cell" fill="#ffffff"/><text x="760" y="284" class="txt">riscvi_sim.h, decode.c, exec.c</text>
+
+    <rect x="90" y="299" width="220" height="42" class="cell" fill="#f8fafc"/><text x="130" y="326" class="txt">AM/BSP</text>
+    <rect x="310" y="299" width="410" height="42" class="cell" fill="#ffffff"/><text x="350" y="326" class="txt">encoding macro / wrapper / runtime case</text>
+    <rect x="720" y="299" width="390" height="42" class="cell" fill="#ffffff"/><text x="760" y="326" class="txt">riscvi_encoding.h, xvi.S</text>
+
+    <rect x="90" y="341" width="220" height="42" class="cell" fill="#f8fafc"/><text x="130" y="368" class="txt">Test</text>
+    <rect x="310" y="341" width="410" height="42" class="cell" fill="#ffffff"/><text x="350" y="368" class="txt">positive / negative / end-to-end checks</text>
+    <rect x="720" y="341" width="390" height="42" class="cell" fill="#ffffff"/><text x="760" y="368" class="txt">cpu-test, llvm_codegen cases</text>
+
+    <rect x="90" y="383" width="220" height="42" class="cell" fill="#f8fafc"/><text x="130" y="410" class="txt">Report / RTL</text>
+    <rect x="310" y="383" width="410" height="42" class="cell" fill="#ffffff"/><text x="350" y="410" class="txt">dynamic count / decode / execute counters</text>
+    <rect x="720" y="383" width="390" height="42" class="cell" fill="#ffffff"/><text x="760" y="410" class="txt">stats.c, rv32r_pkg.sv</text>
+  </g>
+
+  <text x="54" y="485" class="sub">经验法则：只要某一层不同步，都会表现成“能编译但不能跑”或“能跑但统计/RTL 不可信”。</text>
+</svg>

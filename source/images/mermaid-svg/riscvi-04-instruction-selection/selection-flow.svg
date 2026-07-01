@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 28px sans-serif;fill:#0f172a}
+      .sub{font:16px sans-serif;fill:#475569}
+      .box{rx:12;ry:12;stroke-width:2}
+      .txt{font:700 18px sans-serif;fill:#0f172a}
+      .hint{font:14px sans-serif;fill:#475569}
+      .arrow{stroke:#475569;stroke-width:2.3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="54" y="58" class="title">LLVM 指令选择：从 IR 模式到 RISC-VI 指令</text>
+  <text x="54" y="88" class="sub">机器指令不是字符串替换出来的，而是由 IR/DAG 语义、predicate 和 pattern 共同决定。</text>
+
+  <rect x="60" y="165" width="145" height="80" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="106" y="198" class="txt">C</text>
+  <text x="86" y="222" class="hint">source pattern</text>
+
+  <rect x="260" y="165" width="145" height="80" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="302" y="198" class="txt">LLVM IR</text>
+  <text x="295" y="222" class="hint">smin / GEP</text>
+
+  <rect x="460" y="165" width="170" height="80" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="504" y="198" class="txt">DAG node</text>
+  <text x="489" y="222" class="hint">riscv_selectcc...</text>
+
+  <rect x="690" y="165" width="170" height="80" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="728" y="198" class="txt">Pattern</text>
+  <text x="718" y="222" class="hint">Requires + match</text>
+
+  <rect x="920" y="165" width="170" height="80" class="box" fill="#ede9fe" stroke="#7c3aed"/>
+  <text x="959" y="198" class="txt">MachineInstr</text>
+  <text x="973" y="222" class="hint">XVI_*</text>
+
+  <path d="M205 205 H260" class="arrow"/>
+  <path d="M405 205 H460" class="arrow"/>
+  <path d="M630 205 H690" class="arrow"/>
+  <path d="M860 205 H920" class="arrow"/>
+
+  <rect x="180" y="335" width="190" height="62" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="207" y="361" class="txt">smin/smax</text>
+  <text x="230" y="383" class="hint">-> min/max</text>
+
+  <rect x="405" y="335" width="190" height="62" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="431" y="361" class="txt">GEP + load</text>
+  <text x="456" y="383" class="hint">-> lwxs/swxs</text>
+
+  <rect x="630" y="335" width="190" height="62" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="678" y="361" class="txt">select</text>
+  <text x="691" y="383" class="hint">-> csel</text>
+
+  <rect x="855" y="335" width="190" height="62" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="895" y="361" class="txt">icmp + br</text>
+  <text x="905" y="383" class="hint">-> bchkltu</text>
+
+  <text x="54" y="468" class="sub">调试顺序：先看 C 是否形成目标 IR，再看 pattern 是否匹配，最后看 MachineInstr 和汇编是否符合预期。</text>
+</svg>

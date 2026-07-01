@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 28px sans-serif;fill:#0f172a}
+      .sub{font:16px sans-serif;fill:#475569}
+      .box{rx:12;ry:12;stroke-width:2}
+      .txt{font:700 17px sans-serif;fill:#0f172a}
+      .hint{font:14px sans-serif;fill:#475569}
+      .arrow{stroke:#475569;stroke-width:2.3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <text x="54" y="58" class="title">从静态依赖数据推导 RISC-VI 指令</text>
+  <text x="54" y="88" class="sub">先观测 RV32I 输出的问题，再选择能稳定命中 LLVM 模式的指令。</text>
+
+  <rect x="70" y="160" width="145" height="76" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="102" y="191" class="txt">C cases</text>
+  <text x="96" y="215" class="hint">15 workloads</text>
+
+  <rect x="275" y="160" width="145" height="76" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="311" y="191" class="txt">RV32I asm</text>
+  <text x="318" y="215" class="hint">1162 insts</text>
+
+  <rect x="480" y="160" width="170" height="76" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="511" y="191" class="txt">dep analyzer</text>
+  <text x="507" y="215" class="hint">RAW / load-use</text>
+
+  <rect x="710" y="160" width="190" height="76" class="box" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="741" y="191" class="txt">pattern estimate</text>
+  <text x="740" y="215" class="hint">39 opportunities</text>
+
+  <rect x="960" y="160" width="170" height="76" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="1000" y="191" class="txt">ISA choices</text>
+  <text x="1006" y="215" class="hint">8 instructions</text>
+
+  <path d="M215 198 H275" class="arrow"/>
+  <path d="M420 198 H480" class="arrow"/>
+  <path d="M650 198 H710" class="arrow"/>
+  <path d="M900 198 H960" class="arrow"/>
+
+  <rect x="135" y="330" width="240" height="72" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="166" y="359" class="txt">address-data</text>
+  <text x="168" y="382" class="hint">slli + add + lw/sw -> lwxs/swxs</text>
+
+  <rect x="480" y="330" width="240" height="72" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="512" y="359" class="txt">branch-data</text>
+  <text x="517" y="382" class="hint">compare/select -> min/max/csel</text>
+
+  <rect x="825" y="330" width="240" height="72" class="box" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="861" y="359" class="txt">bounds check</text>
+  <text x="858" y="382" class="hint">idx >= len -> bchkltu</text>
+
+  <text x="54" y="468" class="sub">这条证据链的重点是“设计来自瓶颈”，不是先写指令再找理由。</text>
+</svg>
