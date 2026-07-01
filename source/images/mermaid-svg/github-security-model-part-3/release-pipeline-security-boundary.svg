@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 920" role="img" aria-labelledby="title desc">
+  <title id="title">GitHub Actions 发布流水线安全边界</title>
+  <desc id="desc">开发者提交 PR、合并到 web-client/main、触发 Actions、构建资源包、计算校验信息、读取 GitHub App private key、生成 installation token、发布 release、下载并校验 sha256 的完整链路。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f4858"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .title { font: 700 27px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .hint { font: 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #607d8b; }
+      .node-title { font: 700 16px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .node-text { font: 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #37474f; text-anchor: middle; }
+      .stage { font: 700 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #455a64; }
+      .line { fill: none; stroke: #2f4858; stroke-width: 2.5; marker-end: url(#arrow); }
+      .boundary { fill: none; stroke: #ef6c00; stroke-width: 2; stroke-dasharray: 8 6; }
+      .code { fill: #e8f3ff; stroke: #1565c0; stroke-width: 2.3; }
+      .ci { fill: #fff8e1; stroke: #ef6c00; stroke-width: 2.3; }
+      .secret { fill: #fdecea; stroke: #c62828; stroke-width: 2.3; }
+      .app { fill: #f2e8ff; stroke: #6a1b9a; stroke-width: 2.3; }
+      .release { fill: #ecf7ee; stroke: #2e7d32; stroke-width: 2.3; }
+      .verify { fill: #e0f2f1; stroke: #00695c; stroke-width: 2.3; }
+      .callout { fill: #ffffff; stroke: #cfd8dc; stroke-width: 1.6; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1120" height="920"/>
+  <text class="title" x="64" y="60">自动发布流水线：每一个箭头都是安全边界</text>
+  <text class="hint" x="64" y="88">从代码进入 main，到 release asset 被下载，任何一步被绕过都会改变最终产物的可信度。</text>
+
+  <g filter="url(#shadow)">
+    <rect class="code" x="140" y="132" width="260" height="72" rx="12"/>
+    <text class="node-title" x="270" y="160">开发者提交 PR</text>
+    <text class="node-text" x="270" y="184">代码进入 review 流程</text>
+
+    <rect class="code" x="140" y="258" width="260" height="72" rx="12"/>
+    <text class="node-title" x="270" y="286">review 后合并</text>
+    <text class="node-text" x="270" y="310">web-client/main</text>
+
+    <rect class="ci" x="140" y="384" width="260" height="72" rx="12"/>
+    <text class="node-title" x="270" y="412">触发 GitHub Actions</text>
+    <text class="node-text" x="270" y="436">受 workflow 权限约束</text>
+
+    <rect class="ci" x="140" y="510" width="260" height="72" rx="12"/>
+    <text class="node-title" x="270" y="538">checkout 源码</text>
+    <text class="node-text" x="270" y="562">开始构建输入</text>
+
+    <rect class="ci" x="140" y="636" width="260" height="72" rx="12"/>
+    <text class="node-title" x="270" y="664">构建 resource-pack.zip</text>
+    <text class="node-text" x="270" y="688">生成待发布产物</text>
+
+    <rect class="verify" x="140" y="762" width="260" height="72" rx="12"/>
+    <text class="node-title" x="270" y="790">计算 sha256 / size / commit</text>
+    <text class="node-text" x="270" y="814">为下载端留下证据</text>
+
+    <rect class="secret" x="610" y="258" width="270" height="72" rx="12"/>
+    <text class="node-title" x="745" y="286">读取 GitHub App private key</text>
+    <text class="node-text" x="745" y="310">密钥访问边界</text>
+
+    <rect class="app" x="610" y="384" width="270" height="72" rx="12"/>
+    <text class="node-title" x="745" y="412">生成 installation token</text>
+    <text class="node-text" x="745" y="436">短期机器身份</text>
+
+    <rect class="release" x="610" y="510" width="270" height="72" rx="12"/>
+    <text class="node-title" x="745" y="538">发布到 resource-assets release</text>
+    <text class="node-text" x="745" y="562">目标仓库写入边界</text>
+
+    <rect class="release" x="610" y="636" width="270" height="72" rx="12"/>
+    <text class="node-title" x="745" y="664">用户或 Resource Manager 下载</text>
+    <text class="node-text" x="745" y="688">供应链消费端</text>
+
+    <rect class="verify" x="610" y="762" width="270" height="72" rx="12"/>
+    <text class="node-title" x="745" y="790">校验 sha256</text>
+    <text class="node-text" x="745" y="814">确认产物未被替换</text>
+  </g>
+
+  <path class="line" d="M 270 204 L 270 258"/>
+  <path class="line" d="M 270 330 L 270 384"/>
+  <path class="line" d="M 270 456 L 270 510"/>
+  <path class="line" d="M 270 582 L 270 636"/>
+  <path class="line" d="M 270 708 L 270 762"/>
+  <path class="line" d="M 400 798 C 505 798, 552 676, 610 546"/>
+  <path class="line" d="M 745 330 L 745 384"/>
+  <path class="line" d="M 745 456 L 745 510"/>
+  <path class="line" d="M 745 582 L 745 636"/>
+  <path class="line" d="M 745 708 L 745 762"/>
+
+  <rect class="boundary" x="92" y="108" width="356" height="252" rx="18"/>
+  <text class="stage" x="108" y="126">代码治理边界：review / branch protection</text>
+  <rect class="boundary" x="92" y="374" width="356" height="480" rx="18"/>
+  <text class="stage" x="108" y="392">构建边界：workflow 权限 / 可复现产物 / hash</text>
+  <rect class="boundary" x="562" y="232" width="366" height="244" rx="18"/>
+  <text class="stage" x="578" y="250">凭证边界：secret / App / installation token</text>
+  <rect class="boundary" x="562" y="496" width="366" height="358" rx="18"/>
+  <text class="stage" x="578" y="514">发布与消费边界：release / 下载 / 校验</text>
+
+  <g filter="url(#shadow)">
+    <rect class="callout" x="942" y="514" width="136" height="194" rx="12"/>
+    <text class="node-text" x="1010" y="548">关注点</text>
+    <text class="node-text" x="1010" y="579">main 是否保护</text>
+    <text class="node-text" x="1010" y="610">workflow 谁能改</text>
+    <text class="node-text" x="1010" y="641">secret 谁能读</text>
+    <text class="node-text" x="1010" y="672">latest 是否可覆盖</text>
+  </g>
+</svg>

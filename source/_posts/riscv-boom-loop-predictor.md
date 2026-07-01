@@ -7,7 +7,6 @@ tags:
   - "branch prediction"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## loop

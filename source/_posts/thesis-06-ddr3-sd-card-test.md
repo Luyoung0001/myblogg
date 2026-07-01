@@ -7,7 +7,6 @@ tags:
   - "SD card"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 前言

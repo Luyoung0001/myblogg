@@ -7,7 +7,6 @@ tags:
   - "branch prediction"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 TAGE is the most advanced branch predictor in BOOM. It uses multiple prediction tables indexed by different history lengths to achieve high accuracy.

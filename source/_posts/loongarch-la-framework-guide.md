@@ -7,7 +7,6 @@ tags:
   - "development environment"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## Windows 安装 VSCode 并通过 Remote SSH 登录服务器

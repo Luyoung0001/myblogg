@@ -7,7 +7,6 @@ tags:
   - "bare metal"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## GCC 自带头文件

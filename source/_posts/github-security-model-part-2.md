@@ -8,7 +8,6 @@ tags:
   - "GitHub App"
 categories:
   - "Tooling"
-mermaid: true
 ---
 
 ## 〇、前言
@@ -97,15 +96,7 @@ alice 在访问 GitHub
 
 Classic PAT 的问题在于 scope 比较粗。比如你为了发布 release，可能给了 `repo` scope。这个 scope 很强，尤其是用户能访问很多私有仓库时，风险就会放大。
 
-```mermaid
-flowchart LR
-  A[web-client workflow] --> B[读取 RELEASE_PAT]
-  B --> C[代表 alice]
-  C --> D{alice 能访问哪些仓库?}
-  D --> E[web-client]
-  D --> F[resource-assets]
-  D --> G[其他 alice 有权限的仓库]
-```
+![Classic PAT 的权限扩散](/images/mermaid-svg/github-security-model-part-2/classic-pat-scope-spread.svg)
 
 这就是长期 classic PAT 不适合做组织级自动化的原因。它不是一个独立的机器身份，而是把某个人的权限借给了自动化系统。
 
@@ -160,16 +151,7 @@ web-client Actions
 
 画成图是这样：
 
-```mermaid
-flowchart TD
-  A[alice 创建 fine-grained PAT] --> B[选择 example-org/resource-assets]
-  B --> C[申请 Contents write]
-  C --> D{example-org 是否需要审批?}
-  D -->|需要| E[PAT Pending]
-  E --> F[workflow 使用 token]
-  F --> G[GitHub API 返回 403]
-  D -->|已批准| H[可以按授权访问]
-```
+![Fine-grained PAT 的组织审批链路](/images/mermaid-svg/github-security-model-part-2/fine-grained-pat-approval.svg)
 
 这里最容易误解的是：`alice` 明明对 `web-client` 是 admin，为什么她的 token 不能用？
 
@@ -312,21 +294,7 @@ workflow 中不直接保存一个长期 token，而是保存：
 
 简化链路如下：
 
-```mermaid
-sequenceDiagram
-  participant W as web-client workflow
-  participant S as Actions Secrets
-  participant G as GitHub API
-  participant A as example-resource-release-bot
-  participant R as resource-assets
-
-  W->>S: 读取 App ID 和 Private Key
-  W->>G: 使用 private key 生成 JWT
-  G->>W: 校验 App 身份
-  W->>G: 请求 installation token
-  G->>W: 返回短期 token
-  W->>R: 使用 installation token 发布 release
-```
+![GitHub App installation token 时序](/images/mermaid-svg/github-security-model-part-2/github-app-token-sequence.svg)
 
 这和 PAT 的区别非常大。
 

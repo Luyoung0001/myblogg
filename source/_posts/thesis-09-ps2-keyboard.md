@@ -7,7 +7,6 @@ tags:
   - "keyboard"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## ps2 键盘的软件仿真

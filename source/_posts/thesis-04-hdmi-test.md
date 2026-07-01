@@ -7,7 +7,6 @@ tags:
   - "UART"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## uart

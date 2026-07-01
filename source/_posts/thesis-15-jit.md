@@ -7,7 +7,6 @@ tags:
   - "emulator"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 问题

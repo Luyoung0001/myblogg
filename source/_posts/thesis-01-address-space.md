@@ -7,7 +7,6 @@ tags:
   - "linker script"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 地址空间

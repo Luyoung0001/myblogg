@@ -7,7 +7,6 @@ tags:
   - "microarchitecture"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## 第一章 超标量处理器概述

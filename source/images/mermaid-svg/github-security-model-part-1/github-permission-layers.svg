@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 720" role="img" aria-labelledby="title desc">
+  <title id="title">GitHub 权限分层总图</title>
+  <desc id="desc">用户身份层、Organization 层、Team 层、Repository 层、资源与操作之间的逐层授权关系。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f4858"/>
+    </marker>
+    <filter id="shadow" x="-8%" y="-14%" width="116%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .title { font: 700 28px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .hint { font: 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #607d8b; }
+      .card-title { font: 700 20px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .card-text { font: 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #37474f; text-anchor: middle; }
+      .arrow { fill: none; stroke: #2f4858; stroke-width: 2.6; marker-end: url(#arrow); }
+      .layer-num { font: 700 18px Arial, sans-serif; fill: #ffffff; text-anchor: middle; dominant-baseline: central; }
+      .num-dot { fill: #2f4858; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="980" height="720"/>
+  <text class="title" x="70" y="68">GitHub 权限不是一个点，而是一条授权链</text>
+  <text class="hint" x="70" y="96">从“是谁”开始，一层层落到“能对哪个资源执行什么操作”。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="190" y="132" width="600" height="86" rx="12" fill="#e8f3ff" stroke="#1565c0" stroke-width="2.5"/>
+    <circle class="num-dot" cx="225" cy="175" r="17"/>
+    <text class="layer-num" x="225" y="175">1</text>
+    <text class="card-title" x="490" y="166">用户身份层</text>
+    <text class="card-text" x="490" y="193">GitHub 账号 / 2FA / SSH key / commit signing</text>
+
+    <rect x="190" y="270" width="600" height="86" rx="12" fill="#ecf7ee" stroke="#2e7d32" stroke-width="2.5"/>
+    <circle class="num-dot" cx="225" cy="313" r="17"/>
+    <text class="layer-num" x="225" y="313">2</text>
+    <text class="card-title" x="490" y="304">Organization 层</text>
+    <text class="card-text" x="490" y="331">owner / member / outside collaborator / 组织策略</text>
+
+    <rect x="190" y="408" width="600" height="86" rx="12" fill="#fff6df" stroke="#ef6c00" stroke-width="2.5"/>
+    <circle class="num-dot" cx="225" cy="451" r="17"/>
+    <text class="layer-num" x="225" y="451">3</text>
+    <text class="card-title" x="490" y="442">Team 层</text>
+    <text class="card-text" x="490" y="469">把一组用户映射到多个仓库权限</text>
+
+    <rect x="190" y="546" width="600" height="86" rx="12" fill="#f2e8ff" stroke="#6a1b9a" stroke-width="2.5"/>
+    <circle class="num-dot" cx="225" cy="589" r="17"/>
+    <text class="layer-num" x="225" y="589">4</text>
+    <text class="card-title" x="490" y="580">Repository 层</text>
+    <text class="card-text" x="490" y="607">read / triage / write / maintain / admin</text>
+  </g>
+
+  <path class="arrow" d="M 490 218 L 490 270"/>
+  <path class="arrow" d="M 490 356 L 490 408"/>
+  <path class="arrow" d="M 490 494 L 490 546"/>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="654" width="836" height="42" rx="10" fill="#eceff1" stroke="#90a4ae" stroke-width="2"/>
+    <text class="card-text" x="490" y="681">资源与操作：push / release / secret / workflow / issue / package</text>
+  </g>
+  <path class="arrow" d="M 490 632 L 490 654"/>
+</svg>

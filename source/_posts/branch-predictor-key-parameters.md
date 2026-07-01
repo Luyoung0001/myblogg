@@ -7,7 +7,6 @@ tags:
   - "performance"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## 分支预测器的性能指标

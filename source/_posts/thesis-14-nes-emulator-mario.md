@@ -7,7 +7,6 @@ tags:
   - "emulator"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 本文介绍如何将基于 AbstractMachine (AM) 抽象层的 LiteNES 模拟器移植到 xOS 上运行。重点讲解 AM 的设计理念，以及如何通过实现 AM 适配层让应用程序在不同平台间无缝迁移。

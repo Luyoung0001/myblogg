@@ -7,7 +7,6 @@ tags:
   - "double buffer"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## HDMI 控制器

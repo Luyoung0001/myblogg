@@ -7,7 +7,6 @@ tags:
   - "simulation"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 问题

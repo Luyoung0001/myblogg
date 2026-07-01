@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 560" role="img" aria-labelledby="title desc">
+  <title id="title">PIC 与非 PIC 的全局变量访问路径</title>
+  <desc id="desc">代码访问全局变量时，如果是 PIC 则通过 GOT 间接访问并依赖运行时重定位；如果不是 PIC 则直接访问。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f4858"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .title { font: 700 26px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .hint { font: 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #607d8b; }
+      .node-title { font: 700 18px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .node-text { font: 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #37474f; text-anchor: middle; }
+      .edge-label { font: 700 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #344955; text-anchor: middle; }
+      .line { fill: none; stroke: #2f4858; stroke-width: 2.5; marker-end: url(#arrow); }
+      .code { fill: #e8f3ff; stroke: #1565c0; stroke-width: 2.4; }
+      .decision { fill: #fff8e1; stroke: #ef6c00; stroke-width: 2.5; }
+      .pic { fill: #f2e8ff; stroke: #6a1b9a; stroke-width: 2.4; }
+      .direct { fill: #ecf7ee; stroke: #2e7d32; stroke-width: 2.4; }
+      .runtime { fill: #fdecea; stroke: #c62828; stroke-width: 2.4; }
+      .note { fill: #ffffff; stroke: #cfd8dc; stroke-width: 1.6; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="980" height="560"/>
+  <text class="title" x="58" y="62">PIC/PIE 为什么不适合裸机启动路径</text>
+  <text class="hint" x="58" y="90">裸机没有动态链接器时，通过 GOT 的间接访问会把问题推迟到一个不存在的运行时重定位阶段。</text>
+
+  <g filter="url(#shadow)">
+    <rect class="code" x="74" y="206" width="150" height="78" rx="12"/>
+    <text class="node-title" x="149" y="238">代码</text>
+    <text class="node-text" x="149" y="262">instruction stream</text>
+
+    <rect class="code" x="294" y="206" width="190" height="78" rx="12"/>
+    <text class="node-title" x="389" y="238">访问全局变量</text>
+    <text class="node-text" x="389" y="262">global symbol</text>
+
+    <path class="decision" d="M 610 166 L 740 245 L 610 324 L 480 245 Z"/>
+    <text class="node-title" x="610" y="235">是否 PIC?</text>
+    <text class="node-text" x="610" y="260">位置无关代码</text>
+
+    <rect class="pic" x="760" y="108" width="170" height="78" rx="12"/>
+    <text class="node-title" x="845" y="140">通过 GOT</text>
+    <text class="node-text" x="845" y="164">间接访问</text>
+
+    <rect class="pic" x="760" y="256" width="170" height="78" rx="12"/>
+    <text class="node-title" x="845" y="288">GOT 表</text>
+    <text class="node-text" x="845" y="312">保存重定位入口</text>
+
+    <rect class="runtime" x="760" y="404" width="170" height="78" rx="12"/>
+    <text class="node-title" x="845" y="436">运行时重定位</text>
+    <text class="node-text" x="845" y="460">依赖动态链接器</text>
+
+    <rect class="direct" x="482" y="404" width="190" height="78" rx="12"/>
+    <text class="node-title" x="577" y="436">直接访问</text>
+    <text class="node-text" x="577" y="460">适合固定地址裸机</text>
+
+    <rect class="note" x="80" y="394" width="312" height="88" rx="12"/>
+    <text class="node-text" x="236" y="424">裸机程序通常需要固定入口地址、</text>
+    <text class="node-text" x="236" y="449">固定中断向量和可预测的启动代码。</text>
+  </g>
+
+  <path class="line" d="M 224 245 L 294 245"/>
+  <path class="line" d="M 484 245 L 480 245"/>
+  <path class="line" d="M 690 198 C 718 162, 734 147, 760 147"/>
+  <text class="edge-label" x="727" y="148">是</text>
+  <path class="line" d="M 845 186 L 845 256"/>
+  <path class="line" d="M 845 334 L 845 404"/>
+  <path class="line" d="M 572 302 C 546 342, 566 376, 577 404"/>
+  <text class="edge-label" x="545" y="364">否</text>
+</svg>

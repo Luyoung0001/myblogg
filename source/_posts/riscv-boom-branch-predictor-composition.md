@@ -7,7 +7,6 @@ tags:
   - "microarchitecture"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## 预测器的组合逻辑级联

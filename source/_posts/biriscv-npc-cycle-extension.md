@@ -7,7 +7,6 @@ tags:
   - "microarchitecture"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## biriscv_fetch

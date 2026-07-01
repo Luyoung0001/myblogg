@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 900" role="img" aria-labelledby="title desc">
+  <title id="title">NES JIT 执行流程</title>
+  <desc id="desc">PPU/frame loop 调用 cpu_run 后，根据 jit_enabled、pc_func 命中情况、编译结果和 cycles 返回值，在 JIT 与解释器之间切换并扣减周期。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f4858"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .title { font: 700 27px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .node-title { font: 700 16px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .node-text { font: 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #37474f; text-anchor: middle; }
+      .edge-label { font: 700 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #344955; text-anchor: middle; }
+      .line { fill: none; stroke: #2f4858; stroke-width: 2.5; marker-end: url(#arrow); }
+      .loop { fill: #e8f3ff; stroke: #1565c0; stroke-width: 2.4; }
+      .decision { fill: #fff8e1; stroke: #ef6c00; stroke-width: 2.5; }
+      .jit { fill: #f2e8ff; stroke: #6a1b9a; stroke-width: 2.4; }
+      .interp { fill: #fdecea; stroke: #c62828; stroke-width: 2.4; }
+      .ok { fill: #ecf7ee; stroke: #2e7d32; stroke-width: 2.4; }
+      .cache { fill: #e0f2f1; stroke: #00695c; stroke-width: 2.4; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1180" height="900"/>
+  <text class="title" x="58" y="60">当前 JIT：按 PC 缓存一条 6502 指令的机器码</text>
+
+  <g filter="url(#shadow)">
+    <rect class="loop" x="84" y="110" width="200" height="68" rx="12"/>
+    <text class="node-title" x="184" y="138">PPU / frame loop</text>
+    <text class="node-text" x="184" y="160">驱动每帧模拟</text>
+
+    <rect class="loop" x="84" y="230" width="200" height="68" rx="12"/>
+    <text class="node-title" x="184" y="258">cpu_run cycles</text>
+    <text class="node-text" x="184" y="280">执行 CPU 周期</text>
+
+    <path class="decision" d="M 184 360 L 304 430 L 184 500 L 64 430 Z"/>
+    <text class="node-title" x="184" y="420">jit_enabled?</text>
+
+    <rect class="jit" x="410" y="392" width="200" height="76" rx="12"/>
+    <text class="node-title" x="510" y="422">jit_run(cpu.PC)</text>
+    <text class="node-text" x="510" y="446">尝试执行缓存代码</text>
+
+    <path class="decision" d="M 760 342 L 900 430 L 760 518 L 620 430 Z"/>
+    <text class="node-title" x="760" y="418">pc_func[PC]</text>
+    <text class="node-text" x="760" y="442">hit?</text>
+
+    <rect class="cache" x="640" y="586" width="240" height="74" rx="12"/>
+    <text class="node-title" x="760" y="616">jit_compile PC</text>
+    <text class="node-text" x="760" y="640">miss 时生成机器码</text>
+
+    <rect class="cache" x="640" y="716" width="240" height="82" rx="12"/>
+    <text class="node-title" x="760" y="748">写入 code_pool</text>
+    <text class="node-text" x="760" y="772">并刷新 I-cache</text>
+
+    <rect class="jit" x="940" y="392" width="200" height="76" rx="12"/>
+    <text class="node-title" x="1040" y="422">调用已生成机器码</text>
+    <text class="node-text" x="1040" y="446">返回执行周期</text>
+
+    <path class="decision" d="M 1040 556 L 1160 626 L 1040 696 L 920 626 Z"/>
+    <text class="node-title" x="1040" y="616">cycles &gt; 0?</text>
+
+    <rect class="interp" x="360" y="710" width="250" height="76" rx="12"/>
+    <text class="node-title" x="485" y="739">解释器取指 / 译码 / 执行</text>
+    <text class="node-text" x="485" y="763">JIT 关闭或回退时使用</text>
+
+    <rect class="ok" x="900" y="780" width="200" height="76" rx="12"/>
+    <text class="node-title" x="1000" y="810">扣减周期</text>
+    <text class="node-text" x="1000" y="834">回到帧循环调度</text>
+  </g>
+
+  <path class="line" d="M 184 178 L 184 230"/>
+  <path class="line" d="M 184 298 L 184 360"/>
+  <path class="line" d="M 304 430 L 410 430"/>
+  <text class="edge-label" x="352" y="418">是</text>
+  <path class="line" d="M 610 430 L 620 430"/>
+  <path class="line" d="M 900 430 L 940 430"/>
+  <text class="edge-label" x="918" y="418">hit</text>
+  <path class="line" d="M 760 518 L 760 586"/>
+  <text class="edge-label" x="792" y="552">miss</text>
+  <path class="line" d="M 760 660 L 760 716"/>
+  <path class="line" d="M 880 757 C 934 728, 1010 626, 1040 468"/>
+  <path class="line" d="M 1040 468 L 1040 556"/>
+  <path class="line" d="M 1040 696 L 1000 780"/>
+  <text class="edge-label" x="1062" y="732">是</text>
+  <path class="line" d="M 920 626 C 760 644, 598 696, 532 710"/>
+  <text class="edge-label" x="720" y="652">否</text>
+  <path class="line" d="M 64 430 C 20 560, 170 748, 360 748"/>
+  <text class="edge-label" x="88" y="594">否</text>
+  <path class="line" d="M 610 748 C 704 776, 812 808, 900 818"/>
+</svg>

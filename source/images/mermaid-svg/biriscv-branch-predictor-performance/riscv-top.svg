@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 640" role="img" aria-labelledby="title desc">
+  <title id="title">riscv_top 顶层模块</title>
+  <desc id="desc">riscv_core 与 icache、dcache、AXI 指令总线、AXI 数据总线以及复位中断接口之间的连接关系。</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f4f78"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9f4f00"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b2a80"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .module-boundary { fill: #ffffff; stroke: #b8c4d0; stroke-width: 2; stroke-dasharray: 8 7; }
+      .heading { font: 700 24px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .node-title { font: 700 18px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .node-sub { font: 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #37474f; text-anchor: middle; }
+      .label { font: 13px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; fill: #22313f; text-anchor: middle; }
+      .label-box { fill: #ffffff; stroke: #d8e0e8; stroke-width: 1; rx: 7; opacity: 0.96; }
+      .solid-blue { fill: none; stroke: #1f4f78; stroke-width: 2.6; marker-end: url(#arrow-blue); }
+      .solid-orange { fill: none; stroke: #9f4f00; stroke-width: 2.6; marker-end: url(#arrow-orange); }
+      .solid-purple { fill: none; stroke: #5b2a80; stroke-width: 2.6; marker-end: url(#arrow-purple); }
+      .dash-blue { fill: none; stroke: #1f4f78; stroke-width: 2.4; stroke-dasharray: 8 6; marker-end: url(#arrow-blue); }
+      .dash-purple { fill: none; stroke: #5b2a80; stroke-width: 2.4; stroke-dasharray: 8 6; marker-end: url(#arrow-purple); }
+      .bus { fill: none; stroke: #1b5e20; stroke-width: 2.6; marker-start: url(#arrow-blue); marker-end: url(#arrow-blue); }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1120" height="640"/>
+  <rect class="module-boundary" x="60" y="58" width="760" height="500" rx="18"/>
+  <text class="heading" x="90" y="100">riscv_top 顶层模块</text>
+
+  <g filter="url(#shadow)">
+    <rect x="135" y="226" width="210" height="120" rx="12" fill="#e1f5ff" stroke="#01579b" stroke-width="3"/>
+    <text class="node-title" x="240" y="276">riscv_core</text>
+    <text class="node-sub" x="240" y="305">CPU核心</text>
+
+    <rect x="575" y="134" width="185" height="100" rx="12" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+    <text class="node-title" x="667.5" y="177">icache</text>
+    <text class="node-sub" x="667.5" y="204">指令缓存</text>
+
+    <rect x="575" y="372" width="185" height="100" rx="12" fill="#f3e5f5" stroke="#4a148c" stroke-width="2"/>
+    <text class="node-title" x="667.5" y="415">dcache</text>
+    <text class="node-sub" x="667.5" y="442">数据缓存</text>
+
+    <rect x="895" y="134" width="160" height="100" rx="12" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2"/>
+    <text class="node-title" x="975" y="177">AXI总线</text>
+    <text class="node-sub" x="975" y="204">(指令)</text>
+
+    <rect x="895" y="372" width="160" height="100" rx="12" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2"/>
+    <text class="node-title" x="975" y="415">AXI总线</text>
+    <text class="node-sub" x="975" y="442">(数据)</text>
+
+    <rect x="120" y="438" width="210" height="82" rx="12" fill="#fff8e1" stroke="#8d6e63" stroke-width="2"/>
+    <text class="node-title" x="225" y="472">复位/中断</text>
+    <text class="node-sub" x="225" y="498">reset_vector_i / intr_i</text>
+  </g>
+
+  <path class="solid-orange" d="M 346 256 C 440 228, 472 184, 575 184"/>
+  <rect class="label-box" x="382" y="178" width="155" height="48"/>
+  <text class="label" x="459.5" y="198">
+    <tspan x="459.5" dy="0">icache_pc_w[31:0]</tspan>
+    <tspan x="459.5" dy="18">icache_rd_w</tspan>
+  </text>
+
+  <path class="solid-blue" d="M 575 212 C 470 256, 440 302, 346 304"/>
+  <rect class="label-box" x="385" y="292" width="162" height="82"/>
+  <text class="label" x="466" y="312">
+    <tspan x="466" dy="0">icache_inst_w[63:0]</tspan>
+    <tspan x="466" dy="18">icache_valid_w</tspan>
+    <tspan x="466" dy="18">icache_accept_w</tspan>
+    <tspan x="466" dy="18">icache_error_w</tspan>
+  </text>
+
+  <path class="solid-purple" d="M 346 324 C 444 340, 482 421, 575 421"/>
+  <rect class="label-box" x="382" y="390" width="174" height="82"/>
+  <text class="label" x="469" y="410">
+    <tspan x="469" dy="0">dcache_addr_w[31:0]</tspan>
+    <tspan x="469" dy="18">dcache_data_wr_w[31:0]</tspan>
+    <tspan x="469" dy="18">dcache_rd_w</tspan>
+    <tspan x="469" dy="18">dcache_wr_w[3:0]</tspan>
+  </text>
+
+  <path class="solid-purple" d="M 575 454 C 448 520, 290 438, 286 347"/>
+  <rect class="label-box" x="265" y="472" width="182" height="82"/>
+  <text class="label" x="356" y="492">
+    <tspan x="356" dy="0">dcache_data_rd_w[31:0]</tspan>
+    <tspan x="356" dy="18">dcache_ack_w</tspan>
+    <tspan x="356" dy="18">dcache_accept_w</tspan>
+    <tspan x="356" dy="18">dcache_error_w</tspan>
+  </text>
+
+  <path class="dash-blue" d="M 346 242 C 430 142, 506 142, 575 158"/>
+  <rect class="label-box" x="388" y="116" width="154" height="48"/>
+  <text class="label" x="465" y="136">
+    <tspan x="465" dy="0">icache_flush_w</tspan>
+    <tspan x="465" dy="18">icache_invalidate_w</tspan>
+  </text>
+
+  <path class="dash-purple" d="M 346 346 C 458 504, 507 478, 575 456"/>
+  <rect class="label-box" x="452" y="486" width="160" height="48"/>
+  <text class="label" x="532" y="506">
+    <tspan x="532" dy="0">dcache_flush_w</tspan>
+    <tspan x="532" dy="18">dcache_invalidate_w</tspan>
+  </text>
+
+  <path class="bus" d="M 760 184 L 895 184"/>
+  <rect class="label-box" x="801" y="158" width="64" height="32"/>
+  <text class="label" x="833" y="179">axi_i_*</text>
+
+  <path class="bus" d="M 760 422 L 895 422"/>
+  <rect class="label-box" x="801" y="396" width="68" height="32"/>
+  <text class="label" x="835" y="417">axi_d_*</text>
+
+  <path class="solid-blue" d="M 225 438 C 214 386, 210 360, 218 346"/>
+</svg>

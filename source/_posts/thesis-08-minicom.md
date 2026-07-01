@@ -7,7 +7,6 @@ tags:
   - "UART"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 遇到的问题

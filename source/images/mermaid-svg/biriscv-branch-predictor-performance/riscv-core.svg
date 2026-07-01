@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 930" role="img" aria-labelledby="title desc">
+  <title id="title">riscv_core CPU核心数据通路</title>
+  <desc id="desc">riscv_core 内部前端、Issue、执行单元、LSU、CSR、MMU 与外部 ICache、DCache 的固定布局数据通路图。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#29465b"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e7d32"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#bf360c"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#00695c"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.11"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .boundary { fill: #ffffff; stroke: #bcc7d3; stroke-width: 2; stroke-dasharray: 9 7; }
+      .subtle-boundary { fill: #f8fafb; stroke: #d7dfe7; stroke-width: 1.6; stroke-dasharray: 7 6; }
+      .heading { font: 700 24px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .section { font: 700 16px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #455a64; }
+      .node-title { font: 700 16px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .node-sub { font: 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #37474f; text-anchor: middle; }
+      .label { font: 12px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; fill: #243441; text-anchor: middle; }
+      .tiny { font: 11px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; fill: #243441; text-anchor: middle; }
+      .label-box { fill: #ffffff; stroke: #d8e0e8; stroke-width: 1; rx: 6; opacity: 0.97; }
+      .line { fill: none; stroke: #29465b; stroke-width: 2.2; marker-end: url(#arrow); }
+      .line-back { fill: none; stroke: #29465b; stroke-width: 2; marker-end: url(#arrow); }
+      .line-green { fill: none; stroke: #2e7d32; stroke-width: 2.1; marker-end: url(#arrow-green); }
+      .line-red { fill: none; stroke: #bf360c; stroke-width: 2.1; marker-end: url(#arrow-red); }
+      .line-teal { fill: none; stroke: #00695c; stroke-width: 2.2; marker-end: url(#arrow-teal); }
+      .dash { fill: none; stroke: #bf360c; stroke-width: 2.1; stroke-dasharray: 8 6; marker-end: url(#arrow-red); }
+      .bus { fill: none; stroke: #00695c; stroke-width: 2.4; marker-start: url(#arrow-teal); marker-end: url(#arrow-teal); }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1320" height="930"/>
+  <rect class="boundary" x="42" y="42" width="1088" height="800" rx="20"/>
+  <text class="heading" x="72" y="84">riscv_core CPU核心</text>
+  <rect class="subtle-boundary" x="72" y="108" width="305" height="195" rx="14"/>
+  <text class="section" x="96" y="137">前端 (Frontend)</text>
+  <rect class="subtle-boundary" x="410" y="108" width="690" height="700" rx="14"/>
+  <text class="section" x="434" y="137">后端 (Backend)</text>
+  <rect class="subtle-boundary" x="735" y="170" width="335" height="292" rx="14"/>
+  <text class="section" x="759" y="199">执行单元</text>
+
+  <g filter="url(#shadow)">
+    <rect x="112" y="166" width="225" height="96" rx="12" fill="#ffe0b2" stroke="#e65100" stroke-width="3"/>
+    <text class="node-title" x="224.5" y="204">biriscv_frontend</text>
+    <text class="node-sub" x="224.5" y="229">取指 + 分支预测 + 解码</text>
+
+    <rect x="486" y="190" width="195" height="100" rx="12" fill="#b3e5fc" stroke="#01579b" stroke-width="3"/>
+    <text class="node-title" x="583.5" y="232">biriscv_issue</text>
+    <text class="node-sub" x="583.5" y="257">指令发射 / 寄存器堆</text>
+
+    <rect x="790" y="222" width="220" height="82" rx="12" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+    <text class="node-title" x="900" y="254">biriscv_exec</text>
+    <text class="node-sub" x="900" y="278">执行单元0 (ALU / Branch)</text>
+
+    <rect x="790" y="334" width="220" height="82" rx="12" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+    <text class="node-title" x="900" y="366">biriscv_exec</text>
+    <text class="node-sub" x="900" y="390">执行单元1 (ALU / Branch)</text>
+
+    <rect x="790" y="502" width="220" height="76" rx="12" fill="#f0f4c3" stroke="#827717" stroke-width="2"/>
+    <text class="node-title" x="900" y="535">biriscv_multiplier</text>
+    <text class="node-sub" x="900" y="558">乘法器</text>
+
+    <rect x="790" y="614" width="220" height="76" rx="12" fill="#f0f4c3" stroke="#827717" stroke-width="2"/>
+    <text class="node-title" x="900" y="647">biriscv_divider</text>
+    <text class="node-sub" x="900" y="670">除法器</text>
+
+    <rect x="492" y="474" width="185" height="88" rx="12" fill="#e1bee7" stroke="#6a1b9a" stroke-width="2"/>
+    <text class="node-title" x="584.5" y="510">biriscv_lsu</text>
+    <text class="node-sub" x="584.5" y="535">Load / Store单元</text>
+
+    <rect x="492" y="626" width="185" height="88" rx="12" fill="#ffccbc" stroke="#bf360c" stroke-width="2"/>
+    <text class="node-title" x="584.5" y="662">biriscv_csr</text>
+    <text class="node-sub" x="584.5" y="687">控制状态寄存器</text>
+
+    <rect x="190" y="596" width="195" height="92" rx="12" fill="#b2dfdb" stroke="#00695c" stroke-width="2"/>
+    <text class="node-title" x="287.5" y="633">biriscv_mmu</text>
+    <text class="node-sub" x="287.5" y="658">MMU / 地址翻译</text>
+
+    <rect x="105" y="830" width="220" height="76" rx="12" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2"/>
+    <text class="node-title" x="215" y="862">指令存储</text>
+    <text class="node-sub" x="215" y="885">(ICache)</text>
+
+    <rect x="555" y="830" width="220" height="76" rx="12" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2"/>
+    <text class="node-title" x="665" y="862">数据存储</text>
+    <text class="node-sub" x="665" y="885">(DCache)</text>
+  </g>
+
+  <path class="line" d="M 337 224 C 402 224, 426 224, 486 224"/>
+  <rect class="label-box" x="352" y="152" width="120" height="66"/>
+  <text class="label" x="412" y="170">
+    <tspan x="412" dy="0">fetch0/1_valid</tspan>
+    <tspan x="412" dy="16">fetch0/1_instr</tspan>
+    <tspan x="412" dy="16">fetch0/1_pc</tspan>
+  </text>
+
+  <path class="line-green" d="M 681 222 C 725 222, 740 246, 790 252"/>
+  <rect class="label-box" x="690" y="202" width="92" height="48"/>
+  <text class="tiny" x="736" y="219">
+    <tspan x="736" dy="0">opcode0_*</tspan>
+    <tspan x="736" dy="15">operands</tspan>
+  </text>
+
+  <path class="line-green" d="M 681 250 C 728 270, 735 354, 790 370"/>
+  <rect class="label-box" x="690" y="305" width="92" height="48"/>
+  <text class="tiny" x="736" y="322">
+    <tspan x="736" dy="0">opcode1_*</tspan>
+    <tspan x="736" dy="15">operands</tspan>
+  </text>
+
+  <path class="line" d="M 616 290 C 634 388, 712 520, 790 537"/>
+  <rect class="label-box" x="671" y="458" width="94" height="32"/>
+  <text class="tiny" x="718" y="478">mul_opcode_*</text>
+
+  <path class="line" d="M 583 290 C 566 350, 566 414, 584 474"/>
+  <rect class="label-box" x="492" y="352" width="94" height="32"/>
+  <text class="tiny" x="539" y="372">lsu_opcode_*</text>
+
+  <path class="line-red" d="M 552 290 C 525 395, 525 542, 560 626"/>
+  <rect class="label-box" x="452" y="568" width="94" height="32"/>
+  <text class="tiny" x="499" y="588">csr_opcode_*</text>
+
+  <path class="dash" d="M 900 304 C 940 404, 960 520, 900 614"/>
+  <rect class="label-box" x="925" y="448" width="86" height="32"/>
+  <text class="tiny" x="968" y="468">div_opcode_*</text>
+
+  <path class="line-back" d="M 790 282 C 705 318, 636 320, 604 290"/>
+  <path class="line-back" d="M 790 394 C 700 392, 640 338, 603 290"/>
+  <path class="line-back" d="M 790 556 C 706 565, 622 382, 594 290"/>
+  <path class="line-back" d="M 790 654 C 686 660, 616 392, 590 290"/>
+  <path class="line-back" d="M 584 474 C 640 430, 662 336, 617 290"/>
+  <path class="line-back" d="M 584 626 C 642 552, 648 390, 625 290"/>
+  <rect class="label-box" x="1010" y="478" width="122" height="66"/>
+  <text class="tiny" x="1071" y="496">
+    <tspan x="1071" dy="0">writeback_*_value</tspan>
+    <tspan x="1071" dy="15">valid / result</tspan>
+    <tspan x="1071" dy="15">返回 Issue</tspan>
+  </text>
+
+  <path class="line-red" d="M 790 236 C 715 172, 586 152, 540 190"/>
+  <path class="line-red" d="M 790 358 C 715 432, 578 355, 552 290"/>
+  <rect class="label-box" x="650" y="126" width="104" height="32"/>
+  <text class="tiny" x="702" y="146">branch_exec*</text>
+
+  <path class="line-red" d="M 486 210 C 396 148, 326 148, 274 166"/>
+  <rect class="label-box" x="352" y="100" width="126" height="48"/>
+  <text class="tiny" x="415" y="117">
+    <tspan x="415" dy="0">branch_request</tspan>
+    <tspan x="415" dy="15">pc / priv</tspan>
+  </text>
+
+  <path class="line-teal" d="M 492 532 C 438 560, 390 604, 385 632"/>
+  <rect class="label-box" x="393" y="541" width="108" height="64"/>
+  <text class="tiny" x="447" y="558">
+    <tspan x="447" dy="0">mmu_lsu_addr</tspan>
+    <tspan x="447" dy="15">data_wr</tspan>
+    <tspan x="447" dy="15">rd / wr</tspan>
+  </text>
+
+  <path class="line-teal" d="M 385 657 C 432 663, 466 621, 492 548"/>
+  <rect class="label-box" x="393" y="653" width="108" height="48"/>
+  <text class="tiny" x="447" y="670">
+    <tspan x="447" dy="0">mmu_lsu_data_rd</tspan>
+    <tspan x="447" dy="15">mmu_lsu_ack</tspan>
+  </text>
+
+  <path class="line-teal" d="M 224 262 C 188 360, 208 520, 258 596"/>
+  <rect class="label-box" x="96" y="374" width="132" height="48"/>
+  <text class="tiny" x="162" y="391">
+    <tspan x="162" dy="0">mmu_ifetch_pc_w</tspan>
+    <tspan x="162" dy="15">mmu_ifetch_rd_w</tspan>
+  </text>
+
+  <path class="line-teal" d="M 308 596 C 350 450, 322 318, 252 262"/>
+  <rect class="label-box" x="280" y="426" width="140" height="48"/>
+  <text class="tiny" x="350" y="443">
+    <tspan x="350" dy="0">mmu_ifetch_inst[63:0]</tspan>
+    <tspan x="350" dy="15">mmu_ifetch_valid</tspan>
+  </text>
+
+  <path class="dash" d="M 492 674 C 446 710, 383 708, 337 681"/>
+  <rect class="label-box" x="365" y="710" width="118" height="48"/>
+  <text class="tiny" x="424" y="727">
+    <tspan x="424" dy="0">mmu_priv</tspan>
+    <tspan x="424" dy="15">satp / flush</tspan>
+  </text>
+
+  <path class="dash" d="M 585 626 C 628 520, 648 384, 611 290"/>
+  <rect class="label-box" x="618" y="710" width="112" height="48"/>
+  <text class="tiny" x="674" y="727">
+    <tspan x="674" dy="0">take_interrupt</tspan>
+    <tspan x="674" dy="15">ifence</tspan>
+  </text>
+
+  <path class="bus" d="M 242 688 C 210 738, 210 790, 215 830"/>
+  <rect class="label-box" x="108" y="742" width="134" height="48"/>
+  <text class="tiny" x="175" y="759">
+    <tspan x="175" dy="0">mem_i_pc_o[31:0]</tspan>
+    <tspan x="175" dy="15">mem_i_inst_i[63:0]</tspan>
+  </text>
+
+  <path class="bus" d="M 385 652 C 500 690, 634 742, 665 830"/>
+  <rect class="label-box" x="510" y="730" width="142" height="48"/>
+  <text class="tiny" x="581" y="747">
+    <tspan x="581" dy="0">mem_d_addr_o[31:0]</tspan>
+    <tspan x="581" dy="15">mem_d_data_wr/rd_o</tspan>
+  </text>
+
+  <text class="label" x="1085" y="594">写回通路</text>
+</svg>

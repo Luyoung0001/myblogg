@@ -623,15 +623,7 @@ riscv64-unknown-elf-ld -Wl,-no-pie -T link.ld -o firmware.elf
 ### 深入技术细节
 
 #### 1. PIC如何工作
-```mermaid
-graph LR
-    A[代码] --> B[访问全局变量]
-    B --> C{是否PIC?}
-    C -->|是| D[通过GOT间接访问]
-    C -->|否| E[直接访问]
-    D --> F[GOT表]
-    F --> G[运行时重定位]
-```
+![PIC 与非 PIC 的全局变量访问路径](/images/mermaid-svg/riscv-qemu-compilation-linking/pic-pie-access-path.svg)
 
 #### 2. 启动代码的正确处理
 裸机启动代码需要：
@@ -1001,7 +993,6 @@ uint8_t non_zero_buffer[1024] = {1};
 - 符合C语言规范要求
 - 允许灵活的内存布局
 - 确保程序启动状态的确定性
-
 
 
 

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" role="img" aria-labelledby="title desc">
+  <title id="title">GitHub App installation token 时序</title>
+  <desc id="desc">web-client workflow 从 Actions Secrets 读取 App ID 和 Private Key，向 GitHub API 证明 App 身份并换取短期 installation token，然后使用 token 发布到 resource-assets。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f4858"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .title { font: 700 26px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .actor { fill: #ffffff; stroke: #b0bec5; stroke-width: 2; }
+      .actor-main { fill: #e8f3ff; stroke: #1565c0; stroke-width: 2.4; }
+      .actor-app { fill: #f2e8ff; stroke: #6a1b9a; stroke-width: 2.4; }
+      .actor-repo { fill: #ecf7ee; stroke: #2e7d32; stroke-width: 2.4; }
+      .actor-title { font: 700 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .line { stroke: #90a4ae; stroke-width: 1.6; stroke-dasharray: 7 7; }
+      .msg { fill: none; stroke: #2f4858; stroke-width: 2.3; marker-end: url(#arrow); }
+      .msg-text { font: 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; text-anchor: middle; }
+      .return { fill: none; stroke: #2f4858; stroke-width: 2.1; stroke-dasharray: 8 6; marker-end: url(#arrow); }
+      .note { fill: #fff8e1; stroke: #ef6c00; stroke-width: 1.8; }
+      .note-text { font: 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #4e342e; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1180" height="720"/>
+  <text class="title" x="58" y="60">GitHub App：先证明 App 身份，再换短期 installation token</text>
+
+  <g filter="url(#shadow)">
+    <rect class="actor-main" x="54" y="100" width="170" height="58" rx="11"/>
+    <text class="actor-title" x="139" y="134">web-client workflow</text>
+
+    <rect class="actor" x="284" y="100" width="170" height="58" rx="11"/>
+    <text class="actor-title" x="369" y="134">Actions Secrets</text>
+
+    <rect class="actor" x="514" y="100" width="170" height="58" rx="11"/>
+    <text class="actor-title" x="599" y="134">GitHub API</text>
+
+    <rect class="actor-app" x="744" y="100" width="210" height="58" rx="11"/>
+    <text class="actor-title" x="849" y="134">release-bot App</text>
+
+    <rect class="actor-repo" x="1014" y="100" width="140" height="58" rx="11"/>
+    <text class="actor-title" x="1084" y="134">resource-assets</text>
+  </g>
+
+  <line class="line" x1="139" y1="158" x2="139" y2="660"/>
+  <line class="line" x1="369" y1="158" x2="369" y2="660"/>
+  <line class="line" x1="599" y1="158" x2="599" y2="660"/>
+  <line class="line" x1="849" y1="158" x2="849" y2="660"/>
+  <line class="line" x1="1084" y1="158" x2="1084" y2="660"/>
+
+  <path class="msg" d="M 139 220 L 369 220"/>
+  <text class="msg-text" x="254" y="207">读取 App ID 和 Private Key</text>
+
+  <path class="msg" d="M 139 300 L 599 300"/>
+  <text class="msg-text" x="369" y="286">使用 private key 生成 JWT</text>
+
+  <path class="msg" d="M 599 372 L 139 372"/>
+  <text class="msg-text" x="369" y="358">校验 App 身份</text>
+
+  <path class="msg" d="M 139 450 L 599 450"/>
+  <text class="msg-text" x="369" y="436">请求 installation token</text>
+
+  <path class="return" d="M 599 520 L 139 520"/>
+  <text class="msg-text" x="369" y="506">返回短期 token</text>
+
+  <path class="msg" d="M 139 600 L 1084 600"/>
+  <text class="msg-text" x="611" y="586">使用 installation token 发布 release</text>
+
+  <path class="return" d="M 849 220 C 760 230, 690 264, 599 300"/>
+  <text class="msg-text" x="748" y="255">App 身份</text>
+
+  <g filter="url(#shadow)">
+    <rect class="note" x="760" y="468" width="250" height="70" rx="10"/>
+    <text class="note-text" x="885" y="496">长期保存的是 private key</text>
+    <text class="note-text" x="885" y="520">真正发布用的是短期 token</text>
+  </g>
+</svg>

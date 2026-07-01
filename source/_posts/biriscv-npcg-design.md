@@ -7,7 +7,6 @@ tags:
   - "fetch"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## 前言

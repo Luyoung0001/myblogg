@@ -7,7 +7,6 @@ tags:
   - "biriscv"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## 分支预测器性能统计
@@ -95,35 +94,7 @@ assign branch_info_pc_o           = (pipe1_branch_e1_w & branch_exec1_request_i)
 
 这个顶层包含三个主要模块：icache(指令缓存)、dcache(数据缓存) 和riscv_core(CPU核心)，对外暴露 axi 总线，对内分别连接 icache、dcache。
 
-```mermaid
-graph TB
-    subgraph riscv_top["riscv_top 顶层模块"]
-        Core["riscv_core<br/>CPU核心"]
-        ICache["icache<br/>指令缓存"]
-        DCache["dcache<br/>数据缓存"]
-        %% 指令通路
-        Core -->|"icache_pc_w[31:0]<br/>icache_rd_w"| ICache
-        ICache -->|"icache_inst_w[63:0]<br/>icache_valid_w<br/>icache_accept_w<br/>icache_error_w"| Core
-        %% 数据通路
-        Core -->|"dcache_addr_w[31:0]<br/>dcache_data_wr_w[31:0]<br/>dcache_rd_w<br/>dcache_wr_w[3:0]"| DCache
-        DCache -->|"dcache_data_rd_w[31:0]<br/>dcache_ack_w<br/>dcache_accept_w<br/>dcache_error_w"| Core
-        %% 控制信号
-        Core -.->|"icache_flush_w<br/>icache_invalidate_w"| ICache
-        Core -.->|"dcache_flush_w<br/>dcache_invalidate_w"| DCache
-    end
-    %% 外部接口
-    AXI_I["AXI总线<br/>(指令)"]
-    AXI_D["AXI总线<br/>(数据)"]
-    RST["复位/中断<br/>reset_vector_i<br/>intr_i"]
-    ICache <-->|"axi_i_*"| AXI_I
-    DCache <-->|"axi_d_*"| AXI_D
-    RST --> Core
-    style Core fill:#e1f5ff,stroke:#01579b,stroke-width:3px
-    style ICache fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style DCache fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    style AXI_I fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
-    style AXI_D fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
-```
+![riscv_top 顶层架构图](/images/mermaid-svg/biriscv-branch-predictor-performance/riscv-top.svg)
 
 riscv_core 是一个核心，它包含这些部件：
 
@@ -144,85 +115,7 @@ riscv_core 数据通路说明：
 - 分支控制：执行单元计算分支结果反馈到前端
 - 访存通路：通过 MMU 连接到外部存储
 
-```mermaid
-  graph TB
-      subgraph riscv_core["riscv_core CPU核心"]
-          direction TB
-
-          subgraph Frontend["前端 (Frontend)"]
-              FE["biriscv_frontend<br/>取指+分支预测+解码"]
-          end
-
-          subgraph Backend["后端 (Backend)"]
-              MMU["biriscv_mmu<br/>MMU/地址翻译"]
-              Issue["biriscv_issue<br/>指令发射/寄存器堆"]
-
-              subgraph Execution["执行单元"]
-                  Exec0["biriscv_exec<br/>执行单元0<br/>(ALU/Branch)"]
-                  Exec1["biriscv_exec<br/>执行单元1<br/>(ALU/Branch)"]
-                  Mul["biriscv_multiplier<br/>乘法器"]
-                  Div["biriscv_divider<br/>除法器"]
-              end
-
-              LSU["biriscv_lsu<br/>Load/Store单元"]
-              CSR["biriscv_csr<br/>控制状态寄存器"]
-          end
-
-          %% 取指通路
-          FE -->|"fetch0/1_valid<br/>fetch0/1_instr[31:0]<br/>fetch0/1_pc[31:0]"|Issue
-
-          %% 指令发射
-          Issue -->|"opcode0_*<br/>(opcode/pc/operands)"| Exec0
-          Issue -->|"opcode1_*<br/>(opcode/pc/operands)"| Exec1
-          Issue -->|"mul_opcode_*"| Mul
-          Issue -->|"lsu_opcode_*"| LSU
-          Issue -->|"csr_opcode_*"| CSR
-          Exec0 -.->|"div_opcode_*"| Div
-
-          %% 写回通路
-          Exec0 -->|"writeback_exec0_value_w"| Issue
-          Exec1 -->|"writeback_exec1_value_w"| Issue
-          Mul -->|"writeback_mul_value_w"| Issue
-          Div -->|"writeback_div_value/valid_w"| Issue
-          LSU -->|"writeback_mem_value/valid_w"| Issue
-          CSR -->|"csr_result_e1_value_w"| Issue
-
-          %% 分支反馈
-          Exec0 -->|"branch_exec0_*"| Issue
-          Exec1 -->|"branch_exec1_*"| Issue
-          Issue -->|"branch_request/pc/priv"| FE
-          CSR -->|"branch_csr_*"| Issue
-
-          %% LSU 访存通路
-          LSU -->|"mmu_lsu_addr_w<br/>mmu_lsu_data_wr_w<br/>mmu_lsu_rd/wr_w"| MMU
-          MMU -->|"mmu_lsu_data_rd_w<br/>mmu_lsu_ack_w"| LSU
-
-          %% 取指访存通路
-          FE -->|"mmu_ifetch_pc_w<br/>mmu_ifetch_rd_w"| MMU
-          MMU -->|"mmu_ifetch_inst_w[63:0]<br/>mmu_ifetch_valid_w"| FE
-
-          %% CSR 控制
-          CSR -.->|"mmu_priv/satp/flush"| MMU
-          CSR -.->|"take_interrupt<br/>ifence"| Issue
-      end
-
-      %% 外部接口
-      IMEM["指令存储<br/>(ICache)"]
-      DMEM["数据存储<br/>(DCache)"]
-
-      MMU <-->|"mem_i_pc_o[31:0]<br/>mem_i_inst_i[63:0]"| IMEM
-      MMU <-->|"mem_d_addr_o[31:0]<br/>mem_d_data_wr/rd_o"| DMEM
-
-      style FE fill:#ffe0b2,stroke:#e65100,stroke-width:3px
-      style Issue fill:#b3e5fc,stroke:#01579b,stroke-width:3px
-      style Exec0 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-      style Exec1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-      style Mul fill:#f0f4c3,stroke:#827717,stroke-width:2px
-      style Div fill:#f0f4c3,stroke:#827717,stroke-width:2px
-      style LSU fill:#e1bee7,stroke:#6a1b9a,stroke-width:2px
-      style CSR fill:#ffccbc,stroke:#bf360c,stroke-width:2px
-      style MMU fill:#b2dfdb,stroke:#00695c,stroke-width:2px
-```
+![riscv_core CPU核心数据通路图](/images/mermaid-svg/biriscv-branch-predictor-performance/riscv-core.svg)
 
 ## biriscv_frontend
 
@@ -246,57 +139,7 @@ fetch 拿到来自 icache 经过 mmu 处理过的地址的指令后，将：
 
 decode 单元拿到这些信号后，对数据进行解析，然后将数据发送到 issue 模块（双发射）。
 
-```mermaid
-
-  graph TB
-      subgraph biriscv_frontend["biriscv_frontend 前端模块"]
-          direction TB
-
-          NPC["biriscv_npc<br/>下一PC计算<br/>+分支预测<br/>(BTB/BHT/RAS)"]
-          Fetch["biriscv_fetch<br/>取指单元<br/>PC管理"]
-          Decode["biriscv_decode<br/>解码单元<br/>(双发射)"]
-
-          %% NPC 计算
-          NPC -->|"next_pc_f_w[31:0]<br/>next_taken_f_w[1:0]<br/>(预测信息)"| Fetch
-          Fetch -->|"fetch_pc_f_w[31:0]<br/>fetch_pc_accept_w<br/>(当前PC)"| NPC
-
-          %% 取指通路
-          Fetch -->|"fetch_valid_w<br/>fetch_instr_w[63:0]<br/>fetch_pc_w[31:0]<br/
-  >fetch_pred_branch_w[1:0]"| Decode
-
-          %% 解码输出
-          Decode -->|"fetch0_valid_o<br/>fetch0_instr_o[31:0]<br/>fetch0_pc_o[31:0]
-  <br/>+控制信号"| Out0["发射单元<br/>Instruction 0"]
-          Decode -->|"fetch1_valid_o<br/>fetch1_instr_o[31:0]<br/>fetch1_pc_o[31:0]
-  <br/>+控制信号"| Out1["发射单元<br/>Instruction 1"]
-
-          %% 反压信号
-          Out0 -->|"fetch0_accept_i"| Decode
-          Out1 -->|"fetch1_accept_i"| Decode
-          Decode -->|"fetch_accept_w"| Fetch
-
-          %% 分支反馈
-          Branch["分支反馈<br/>(来自执行单元)"]
-  -.->|"branch_request_i<br/>branch_pc_i[31:0]"| Fetch
-          Branch -.->|"branch_request_i<br/>branch_pc_i[31:0]"| Decode
-          BranchInfo["分支结果<br/>(实际执行)"]
-  -.->|"branch_info_request_i<br/>branch_info_is_taken/not_taken_i<br/>branch_info_
-  source/pc_i<br/>branch_info_is_call/ret/jmp_i"| NPC
-      end
-
-      %% 外部接口
-      ICache["ICache/MMU"] <-->|"icache_rd_o<br/>icache_pc_o[31:0]<br/>icache_inst_
-  i[63:0]<br/>icache_valid_i<br/>icache_accept_i"| Fetch
-
-      style NPC fill:#fff9c4,stroke:#f57f17,stroke-width:3px
-      style Fetch fill:#b2dfdb,stroke:#00695c,stroke-width:3px
-      style Decode fill:#bbdefb,stroke:#0d47a1,stroke-width:3px
-      style Out0 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-      style Out1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-      style ICache fill:#e1bee7,stroke:#6a1b9a,stroke-width:2px
-      style Branch fill:#ffccbc,stroke:#bf360c,stroke-width:2px
-      style BranchInfo fill:#ffccbc,stroke:#bf360c,stroke-width:2px
-```
+![biriscv_frontend 前端模块数据通路图](/images/mermaid-svg/biriscv-branch-predictor-performance/biriscv-frontend.svg)
 前端数据通路说明：
 - PC 流向：NPC → next_pc_f_w → Fetch → icache_pc_o → ICache
 - 指令流向：ICache → icache_inst_i[63:0] → Fetch → fetch_instr_w[63:0] → Decode → fetch0/1_instr_o[31:0]
@@ -592,7 +435,6 @@ Returns:             1
 Jumps:               189
 ========================================
 ```
-
 
 
 

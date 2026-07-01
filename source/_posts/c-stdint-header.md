@@ -7,7 +7,6 @@ tags:
   - "integer types"
 categories:
   - "Programming Languages"
-mermaid: true
 ---
 
 ## 前言

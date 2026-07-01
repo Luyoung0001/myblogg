@@ -7,7 +7,6 @@ tags:
   - "hardware acceleration"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 前面几篇主要在软件侧做 NES：先移植 LiteNES，再尝试用 JIT 减少 6502 解释器的开销。但软件模拟始终有一个绕不开的问题：原本 NES 的 CPU、PPU、调色板、扫描线、手柄移位寄存器都是硬件并行工作的；放到软核 CPU 上解释执行以后，这些并行行为都变成了串行函数调用。
@@ -41,19 +40,7 @@ HDMI 模块负责：把 NES framebuffer 或 DDR framebuffer 输出到屏幕
 
 从系统图看，大致是这样：
 
-```mermaid
-flowchart LR
-  CPU[LoongArch32R CPU] -->|AXI| CONF[confreg<br/>NES_CTRL/STATUS/...]
-  CPU -->|AXI write| BRAM[Boot RAM<br/>PRG/CHR/VRAM/WRAM]
-  CONF --> CTRL[NES control signals]
-  CTRL --> NES[NES accelerator]
-  BRAM <-->|Port-B| NES
-  NES -->|6-bit color + scanline/cycle| NFB[NES framebuffer BRAM]
-  NFB --> PAL[palette ROM]
-  PAL --> HDMI[HDMI output]
-  CPU -->|hdmi_src_sel| HDMI
-  NES -->|step irq| CPU
-```
+![NES 硬件加速总体结构](/images/mermaid-svg/thesis-18-hardware-accelerated-nes/nes-hardware-acceleration-path.svg)
 
 ## 为什么要挂在 Boot RAM 上
 

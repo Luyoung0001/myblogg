@@ -7,7 +7,6 @@ tags:
   - "simulation"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 仿真系统中的测试

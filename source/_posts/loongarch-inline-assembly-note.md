@@ -7,7 +7,6 @@ tags:
   - "CSR"
 categories:
   - "Computer Architecture"
-mermaid: true
 ---
 
 ## 前言

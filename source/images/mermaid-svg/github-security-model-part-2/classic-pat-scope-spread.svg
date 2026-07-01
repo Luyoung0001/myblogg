@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 620" role="img" aria-labelledby="title desc">
+  <title id="title">Classic PAT 的权限扩散</title>
+  <desc id="desc">web-client workflow 读取 RELEASE_PAT 后代表 alice 访问 GitHub，而 classic PAT 的实际可达范围取决于 alice 能访问的仓库和 token scope。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f4858"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .canvas { fill: #fbfcfd; }
+      .title { font: 700 26px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #263238; }
+      .hint { font: 14px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #607d8b; }
+      .node-title { font: 700 17px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #1d2730; text-anchor: middle; }
+      .node-text { font: 13px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #37474f; text-anchor: middle; }
+      .edge-label { font: 700 12px "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif; fill: #344955; text-anchor: middle; }
+      .line { fill: none; stroke: #2f4858; stroke-width: 2.4; marker-end: url(#arrow); }
+      .workflow { fill: #e8f3ff; stroke: #1565c0; stroke-width: 2.4; }
+      .secret { fill: #fff8e1; stroke: #ef6c00; stroke-width: 2.4; }
+      .person { fill: #f2e8ff; stroke: #6a1b9a; stroke-width: 2.4; }
+      .decision { fill: #ffffff; stroke: #607d8b; stroke-width: 2.3; }
+      .repo { fill: #ecf7ee; stroke: #2e7d32; stroke-width: 2.2; }
+      .risk { fill: #fdecea; stroke: #c62828; stroke-width: 2.2; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1120" height="620"/>
+  <text class="title" x="58" y="60">Classic PAT：自动化拿到的是某个人的钥匙</text>
+  <text class="hint" x="58" y="90">token 的可达范围不是 workflow 自己决定的，而是由 alice 的权限和 PAT scope 共同决定。</text>
+
+  <g filter="url(#shadow)">
+    <rect class="workflow" x="70" y="220" width="190" height="86" rx="12"/>
+    <text class="node-title" x="165" y="254">web-client</text>
+    <text class="node-text" x="165" y="279">workflow</text>
+
+    <rect class="secret" x="340" y="220" width="190" height="86" rx="12"/>
+    <text class="node-title" x="435" y="254">读取</text>
+    <text class="node-text" x="435" y="279">RELEASE_PAT</text>
+
+    <rect class="person" x="610" y="220" width="190" height="86" rx="12"/>
+    <text class="node-title" x="705" y="254">代表 alice</text>
+    <text class="node-text" x="705" y="279">调用 GitHub API</text>
+
+    <path class="decision" d="M 900 178 L 1030 263 L 900 348 L 770 263 Z"/>
+    <text class="node-title" x="900" y="251">alice 能访问</text>
+    <text class="node-text" x="900" y="276">哪些仓库?</text>
+
+    <rect class="repo" x="842" y="48" width="190" height="70" rx="12"/>
+    <text class="node-title" x="937" y="78">web-client</text>
+    <text class="node-text" x="937" y="100">源仓库</text>
+
+    <rect class="repo" x="842" y="430" width="190" height="70" rx="12"/>
+    <text class="node-title" x="937" y="460">resource-assets</text>
+    <text class="node-text" x="937" y="482">目标仓库</text>
+
+    <rect class="risk" x="842" y="526" width="190" height="70" rx="12"/>
+    <text class="node-title" x="937" y="556">其他仓库</text>
+    <text class="node-text" x="937" y="578">alice 有权限的范围</text>
+  </g>
+
+  <path class="line" d="M 260 263 L 340 263"/>
+  <path class="line" d="M 530 263 L 610 263"/>
+  <path class="line" d="M 800 263 L 770 263"/>
+  <path class="line" d="M 900 178 C 900 142, 914 124, 937 118"/>
+  <path class="line" d="M 900 348 C 900 386, 914 414, 937 430"/>
+  <path class="line" d="M 940 333 C 1018 396, 1040 486, 982 526"/>
+  <text class="edge-label" x="300" y="248">secret</text>
+  <text class="edge-label" x="570" y="248">身份变成用户</text>
+  <text class="edge-label" x="992" y="395">scope 过粗时风险放大</text>
+</svg>

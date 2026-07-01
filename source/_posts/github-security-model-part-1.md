@@ -7,7 +7,6 @@ tags:
   - "permissions"
 categories:
   - "Tooling"
-mermaid: true
 ---
 
 ## 〇、前言
@@ -43,13 +42,7 @@ GitHub 的安全模型不是一层，而是很多层叠在一起。一个人可�
 
 GitHub 权限大概可以拆成四层：
 
-```mermaid
-flowchart TD
-  A[用户身份层<br/>GitHub 账号 / 2FA / SSH key / commit signing] --> B[Organization 层<br/>owner / member / outside collaborator / 组织策略]
-  B --> C[Team 层<br/>把一组用户映射到多个仓库权限]
-  C --> D[Repository 层<br/>read / triage / write / maintain / admin]
-  D --> E[资源与操作<br/>push / release / secret / workflow / issue / package]
-```
+![GitHub 权限分层总图](/images/mermaid-svg/github-security-model-part-1/github-permission-layers.svg)
 
 如果只看最下面的仓库权限，很容易误判。
 
@@ -321,20 +314,7 @@ resource-assets 也是组织里的仓库
 
 但实际权限链路应该这样看：
 
-```mermaid
-flowchart LR
-  A[alice<br/>GitHub 用户] --> B{alice 在 example-org 是什么角色?}
-  B -->|member| C[可以访问被授权仓库]
-  B -->|owner| D[可以管理组织策略]
-  C --> E{alice 对 web-client 是什么权限?}
-  E -->|admin| F[可以配置 web-client secrets 和 workflow]
-  F --> G{workflow 使用什么凭证?}
-  G -->|GITHUB_TOKEN| H[默认只能访问 web-client]
-  G -->|alice PAT| I[代表 alice 访问 resource-assets]
-  G -->|GitHub App token| J[代表 App 访问已安装仓库]
-  I --> K{PAT 是否被 org 批准?}
-  J --> L{App 是否安装到 resource-assets 且有写权限?}
-```
+![跨仓库发布时的身份与凭证链路](/images/mermaid-svg/github-security-model-part-1/cross-repo-release-credential-chain.svg)
 
 如果 workflow 用的是 `GITHUB_TOKEN`，它默认主要作用于 `web-client`，不能天然写 `resource-assets`。
 

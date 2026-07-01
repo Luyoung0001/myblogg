@@ -7,7 +7,6 @@ tags:
   - "NES"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 把 JIT 接入 NES 指令执行路径
@@ -108,22 +107,7 @@ static uint32_t code_pool[1 << 16][JIT_CODE_PER_ENTRY] LITENES_NOINIT;
 
 整体流程如下：
 
-```mermaid
-flowchart TD
-  A[PPU/frame loop] --> B[cpu_run cycles]
-  B --> C{jit_enabled?}
-  C -->|否| I[解释器取指/译码/执行]
-  C -->|是| D[jit_run cpu.PC]
-  D --> E{pc_func[PC] hit?}
-  E -->|miss| F[jit_compile PC]
-  E -->|hit| G[调用已生成机器码]
-  F --> H[写入 code_pool 并刷新 I-cache]
-  H --> G
-  G --> J{返回 cycles > 0?}
-  J -->|是| K[扣减周期]
-  J -->|否| I
-  I --> K
-```
+![NES JIT 执行流程](/images/mermaid-svg/thesis-16-jit-runs-nes/jit-execution-flow.svg)
 
 `jit_run()` 负责命中检查、编译、统计和调用：
 

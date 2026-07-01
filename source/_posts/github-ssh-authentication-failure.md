@@ -7,7 +7,6 @@ tags:
   - "troubleshooting"
 categories:
   - "Tooling"
-mermaid: true
 ---
 
 ## 问题

@@ -7,7 +7,6 @@ tags:
   - "Hello World"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## 基础工作

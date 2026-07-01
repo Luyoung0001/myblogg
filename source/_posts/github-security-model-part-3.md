@@ -8,7 +8,6 @@ tags:
   - "supply chain"
 categories:
   - "Tooling"
-mermaid: true
 ---
 
 ## 〇、前言
@@ -56,19 +55,7 @@ push main，然后自动发 release
 
 我们先把目标流程画出来：
 
-```mermaid
-flowchart TD
-  A[开发者提交 PR] --> B[review 后合并到 web-client/main]
-  B --> C[触发 GitHub Actions]
-  C --> D[checkout 源码]
-  D --> E[构建 resource-pack.zip]
-  E --> F[计算 sha256 / size / commit]
-  F --> G[读取 GitHub App private key]
-  G --> H[生成 installation token]
-  H --> I[发布到 resource-assets release]
-  I --> J[用户或 Resource Manager 下载]
-  J --> K[校验 sha256]
-```
+![GitHub Actions 发布流水线安全边界](/images/mermaid-svg/github-security-model-part-3/release-pipeline-security-boundary.svg)
 
 从安全角度看，每一个箭头都可能成为边界。
 

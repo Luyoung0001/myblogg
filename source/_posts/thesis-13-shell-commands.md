@@ -7,7 +7,6 @@ tags:
   - "command parser"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 本文详细介绍 xOS Shell 中各个命令的实现方式。Shell 是操作系统与用户交互的核心组件，通过命令表驱动的方式实现了多种实用命令。

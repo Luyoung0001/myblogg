@@ -7,7 +7,6 @@ tags:
   - "boot"
 categories:
   - "Thesis Project"
-mermaid: true
 ---
 
 ## xOS
