@@ -12,139 +12,133 @@ categories:
 
 ## 前言
 
-如果要让 LLVM 支持一种“新架构”，直觉上很容易想到：那就新建一个 target，比如 `riscvi32r`。但在 RISC-VI 这个项目里，第一阶段我没有这么做，而是选择：
+如果要让 LLVM 支持一种“新架构”，直觉上很容易想到：那就新建一个 target，比如 `riscvi32r`。但 RISC-VI 的第一阶段没有这么做，而是选择继续使用 RISC-V target，并通过 `+xvi32r` 打开实验指令。
 
-```bash
-llc -mtriple=riscv32 -mattr=+xvi32r
-```
-
-这不是偷懒，而是一个很重要的工程取舍。
+这不是绕路，而是一个非常典型的后端工程取舍：先把变量收窄，把目标放在指令价值验证上，而不是过早承担新 triple、新 ABI、新 driver、新 object 生态的维护成本。
 
 ![LLVM RISC-V 后端中的 +xvi32r 扩展分层](/images/mermaid-svg/riscvi-02-llvm-extension-xvi32r/extension-stack.svg)
 
-这张图要表达三件事：
+## LLVM 后端里的三层概念
 
-1. RISC-VI 当前仍然复用 LLVM 的 RISC-V target。
-2. `+xvi32r` 是 subtarget feature，用来控制实验指令是否可用。
-3. 第一阶段目标是验证指令价值，不是立刻维护一整套新 ABI 和新工具链生态。
+理解这个选择前，需要先区分三个概念。
 
-## target、triple 和 feature
+`target` 是 LLVM 后端的大类，例如 `RISCV`、`X86`、`AArch64`。一个 target 里面有寄存器文件、指令格式、调用约定、栈帧处理、MC 编码、汇编打印、指令选择等基础设施。
 
-LLVM 后端里有几个层次需要先分清。
+`triple` 是编译目标描述，例如 `riscv32`、`riscv64`、`x86_64-unknown-linux-gnu`。它会影响 ABI、数据布局、平台约定和 driver 行为。
 
-`target` 是一个后端大类，比如 RISC-V、AArch64、X86。它包含寄存器定义、指令格式、调用约定、栈帧处理、汇编打印、MC 编码等一整套基础设施。
+`subtarget feature` 是 target 内部的能力开关。RISC-V 后端天然适合这种模型，因为 RISC-V 本身就是 base ISA 加扩展的组合。`+m`、`+a`、`+c` 是扩展，vendor extension 也可以被建模成 feature。
 
-`triple` 是目标平台描述，比如：
+RISC-VI 当前就放在第三层：它不是另起炉灶，而是在 RISC-V target 里增加一个可开关的实验扩展。
 
-```text
-riscv32
-riscv64
-x86_64-unknown-linux-gnu
-```
+## 源码里的 feature 定义
 
-`subtarget feature` 是某个 target 内部可开关的扩展能力，比如 RISC-V 里的各种扩展。RISC-VI 当前就是通过这个机制接入：
-
-```tablegen
-def FeatureVendorXVI32R
-    : SubtargetFeature<"xvi32r", "HasVendorXRiscVI", "true",
-                       "'XVI32R' (RISC-VI32R LLVM-friendly integer operations)">;
-```
-
-后续指令定义就可以用：
-
-```tablegen
-let Predicates = [HasVendorXRiscVI] in {
-  // RISC-VI instructions here.
-}
-```
-
-也就是说，不打开 `+xvi32r`，这些指令就不应该被选择出来。
-
-## 为什么不直接新建 `riscvi32r`
-
-新建 target 看起来很干净，但代价很大。它意味着你要回答一连串问题：
-
-- 新 triple 怎么被 clang driver 接受；
-- 新 ABI 是否和 RV32I 完全一致；
-- 寄存器、栈帧、调用约定是否复用；
-- 汇编器、反汇编器、relocation、object 格式怎么处理；
-- 测试树怎么组织；
-- 后续和 RISC-V 上游代码如何同步。
-
-而 RISC-VI 第一阶段真正想验证的是另一件事：
-
-```text
-少量面向 LLVM 常见模式和双发射流水线的指令，能否减少短距离依赖和动态指令数。
-```
-
-所以更稳妥的路线是：先借住 RISC-V 后端，把 RISC-VI 做成实验扩展。
-
-## 代码入口
-
-这个阶段主要看三个文件：
+在 LLVM 源码中，RISC-VI feature 定义位于：
 
 ```text
 llvm/lib/Target/RISCV/RISCVFeatures.td
-llvm/lib/Target/RISCV/RISCVInstrInfo.td
-llvm/lib/Target/RISCV/RISCVInstrInfoXVI.td
 ```
 
-`RISCVFeatures.td` 定义 `+xvi32r`。  
-`RISCVInstrInfo.td` include 新的指令文件。  
-`RISCVInstrInfoXVI.td` 定义 RISC-VI 指令本身。
+当前项目中对应的是 `llvm/lib/Target/RISCV/RISCVFeatures.td:1207` 开始的 RISC-VI vendor extension 段。
 
-研究仓库里还保留了 patch 原型：
+核心定义是：
+
+```tablegen
+def FeatureVendorXVI32R
+    : RISCVExtension<0, 1, "RISC-VI32R LLVM-friendly user-mode integer operations",
+                     [], "HasVendorXRiscVI">;
+def HasVendorXRiscVI : Predicate<"Subtarget->hasVendorXRiscVI()">,
+                       AssemblerPredicate<(all_of FeatureVendorXVI32R),
+                           "'XVI32R' (RISC-VI32R LLVM-friendly integer operations)">;
+```
+
+这段代码同时服务两件事：
+
+1. 后端 C++ 可以通过 `Subtarget->hasVendorXRiscVI()` 判断这个 feature 是否开启。
+2. 汇编器可以通过 `AssemblerPredicate` 拒绝未开启 feature 时出现的 RISC-VI 指令。
+
+也就是说，`+xvi32r` 不是一个字符串约定，而是进入了 LLVM 的 subtarget 和 MC predicate 体系。
+
+## 指令文件如何接入 RISC-V 后端
+
+RISC-V 后端的主指令描述文件是：
 
 ```text
-riscv-vi-research/llvm_patches/
+llvm/lib/Target/RISCV/RISCVInstrInfo.td
 ```
 
-这很重要。博客里讲工程能力时，不只讲“我改了哪里”，还要讲“我怎么让改动可以复现、检查和迁移”。
+RISC-VI 的 include 落点在 `llvm/lib/Target/RISCV/RISCVInstrInfo.td:2425`。这个位置和其他 vendor extension 并列，而不是侵入主干 RV32I/RV64I 指令描述。
 
-## 验证 feature 是否工作
+RISC-VI 通过 include 接入 vendor extension 区域：
 
-先跑项目里的报告入口：
-
-```bash
-cd /home/luyoung/llvm-project/riscv-vi-research
-
-make llvm-source-tree-report
-make llvm-tblgen-report
-make llvm-plan
+```tablegen
+include "RISCVInstrInfoXVI.td"
 ```
 
-再直接调用 `llc`：
+这意味着 RISC-VI 指令没有散落在主文件里，而是被集中放在 `RISCVInstrInfoXVI.td`。这种组织方式很重要：实验扩展可以独立迁移、审查和回滚，也方便后续比较 v0.1/v0.2 编码设计。
 
-```bash
-/home/luyoung/llvm-project/build-riscvi-llvm/bin/llc \
-  -mtriple=riscv32 -mattr=+xvi32r \
-  cases/llvm_codegen/xvi_minmax.ll -o -
+## 为什么不直接新建 `riscvi32r` target
+
+新建 target 看起来干净，但它会立刻引出一整套问题：
+
+- clang driver 是否认识新 triple；
+- ABI 是否完全复用 RV32I；
+- calling convention 是否要复制一份；
+- frame lowering、register info、instruction info 如何维护；
+- MC 层 relocation、object、disassembler 是否要分叉；
+- libc、linker script、runtime 如何命名；
+- 测试体系如何避免和 RISC-V 后端重复。
+
+RISC-VI v0.1 真正想验证的是另一件事：
+
+```text
+少量面向 LLVM 常见代码模式和双发射流水线的整数指令，
+能不能减少短距离依赖、动态提交数和局部控制流代价。
 ```
 
-负向测试也很关键：
+在这个阶段，复用 RISC-V 后端能让研究问题更清楚。变量越少，实验结论越容易归因。
 
-```bash
-/home/luyoung/llvm-project/build-riscvi-llvm/bin/llc \
-  -mtriple=riscv32 \
-  cases/llvm_codegen/xvi_minmax.ll -o -
+## feature 不是护身符，predicate 才是边界
+
+定义 feature 只是第一步。真正防止“未开启扩展也生成新指令”的，是每条指令和 pattern 上的 predicate。
+
+在 `RISCVInstrInfoXVI.td` 中，真实指令被包在：
+
+```tablegen
+let Predicates = [HasVendorXRiscVI] in {
+  def XVI_LWXS : ...
+  def XVI_MIN  : ...
+  def XVI_CSEL : ...
+}
 ```
 
-如果没开 `+xvi32r` 也出现 `min/max/lwxs`，那说明 predicate 漏了，属于很严重的问题。
+指令选择 pattern 进一步限定在 RV32：
+
+```tablegen
+let Predicates = [HasVendorXRiscVI, IsRV32] in {
+  def : PatGprGpr<smin, XVI_MIN, i32>;
+}
+```
+
+这就是工程边界：打开 `+xvi32r` 时，LLVM 可以选择 RISC-VI 指令；没有打开时，后端和汇编器都应该把它们挡住。
 
 ## 这种路线的边界
 
-这种做法并不意味着永远不做 `riscvi32r` triple。它只是说明，当前阶段还没到那个点。
+把 RISC-VI 做成 vendor extension，不代表永远不做独立 triple。它只是说明当前阶段还不该过早扩大系统边界。
 
-我会等这些条件更稳定：
+后续如果满足这些条件，就可以重新评估 `riscvi32r` triple：
 
-- 指令语义稳定；
-- 编码稳定；
-- LLVM、模拟器、AM、RTL 都对同一套编码闭环；
-- 用户态 ABI 边界明确；
-- 更大 workload 有验证结果。
+1. 指令语义稳定。
+2. 编码版本稳定。
+3. LLVM、MC、模拟器、AM、RTL 都对同一套编码闭环。
+4. ABI 和用户态边界明确。
+5. 更大 workload 上有足够实验数据。
 
-到了那时，再评估新 triple 才更合理。
+在那之前，`+xvi32r` 是一个务实路线：让项目专注在 ISA 实验本身。
+
+## 项目里的验证入口
+
+项目提供了 feature、TableGen 和 codegen 的检查入口，例如 source tree report、tblgen report、real codegen check。它们的意义不是让读者记命令，而是表达一个工程原则：feature 定义、TableGen 生成物、正向 codegen 和负向 predicate 检查应当同时存在。只要缺一层，`+xvi32r` 就可能从“受控扩展”变成“到处泄漏的实验代码”。
 
 ## 小结
 
-`+xvi32r` 的价值在于小步快跑：复用 RISC-V 后端已经成熟的基础设施，把注意力集中在“这些指令是否真的对 LLVM 输出和双发射流水线有帮助”。下一篇继续往下走，看 TableGen 里一条真实机器指令到底要描述哪些信息。
+`+xvi32r` 的核心价值是小步快跑：复用 RISC-V 后端已经成熟的基础设施，把研究焦点放在指令是否真的覆盖 LLVM 常见模式、是否真的改善双发射压力。下一篇继续深入 TableGen，看一条机器指令在 LLVM 里到底由哪些信息构成。
