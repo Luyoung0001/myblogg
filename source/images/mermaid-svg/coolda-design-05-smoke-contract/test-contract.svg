@@ -13,5 +13,5 @@
   <path class="line" d="M366 180 C395 220 430 245 474 266"/>
   <path class="line" d="M588 180 C565 220 535 245 506 266"/>
   <path class="line" d="M810 180 C740 230 660 252 575 266"/>
-  <text class="small" x="54" y="386">Grounded in coolda-soc/Makefile coolda-smoke target and runtime test functions.</text>
+  <text class="small" x="54" y="386">A smoke contract checks build, shell scripting, runtime scheduling, MMIO driver behavior, NPU results and simulator shutdown.</text>
 </svg>

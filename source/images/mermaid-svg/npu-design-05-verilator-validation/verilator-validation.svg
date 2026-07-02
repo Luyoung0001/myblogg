@@ -12,5 +12,5 @@
   <rect class="box" x="190" y="260" width="230" height="82"/><text class="text" x="246" y="293">Verilator</text><text class="small" x="222" y="319">compile RTL and dump FST</text>
   <rect class="box" x="560" y="260" width="230" height="82"/><text class="text" x="630" y="293">Wave Debug</text><text class="small" x="588" y="319">ready/valid/state/result</text>
   <path class="line" d="M458 302 H552"/>
-  <text class="small" x="54" y="386">Grounded in npu-project/sim/Makefile and sim/tb testbenches: validation follows module boundaries.</text>
+  <text class="small" x="54" y="386">Validation follows module boundaries: single PE, array, control unit, top-level operator chain and waveform checks.</text>
 </svg>

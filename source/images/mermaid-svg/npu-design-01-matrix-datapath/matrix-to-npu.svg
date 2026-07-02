@@ -35,5 +35,5 @@
   <path class="line" d="M400 296 H442"/>
   <path class="line" d="M660 296 H702"/>
   <path class="line" d="M295 250 C340 212 480 196 590 184"/>
-  <text class="small" x="54" y="386">Grounded in AI2026/npu-project: README, tutorial docs, RTL top, PE array, buffer, control and post-processing units.</text>
+  <text class="small" x="54" y="386">A compact NPU datapath: host commands, local buffer, PE array, post-processing units and output stream.</text>
 </svg>

@@ -12,5 +12,5 @@
   <path class="line" d="M199 151 H232"/><path class="line" d="M385 151 H418"/><path class="line" d="M571 151 H604"/><path class="line" d="M757 151 H790"/>
   <rect class="box" x="260" y="270" width="460" height="72"/><text class="text" x="370" y="300">Verilator SoC Simulation</text><text class="small" x="330" y="324">UART stdout, PS2 host input bypass, scriptable commands</text>
   <path class="line" d="M490 270 C500 236 500 212 500 192"/>
-  <text class="small" x="54" y="386">Grounded in coolda-soc README and docs/COOLDA_ARCHITECTURE.md.</text>
+  <text class="small" x="54" y="386">A minimal accelerator platform: shell, runtime, MMIO driver, APB peripheral and a 4x4 NPU kernel.</text>
 </svg>
