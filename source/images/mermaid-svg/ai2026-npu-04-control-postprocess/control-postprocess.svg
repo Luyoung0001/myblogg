@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">NPU Control And Post-processing Flow</title>
+  <desc id="desc">A diagram showing command FIFO, state decode, matmul, activation, pooling and store.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#24313f"/></marker><style>.bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.blue{fill:#eef6ff;stroke:#1d5f99;stroke-width:2;rx:8}.green{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.gold{fill:#fff8e6;stroke:#9a6a00;stroke-width:2;rx:8}.text{font:16px sans-serif;fill:#18202a}.small{font:13px sans-serif;fill:#45515f}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.line{stroke:#24313f;stroke-width:2;fill:none;marker-end:url(#arrow)}</style></defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="48">Control Unit Turns Commands Into Datapath Actions</text>
+  <rect class="blue" x="60" y="110" width="160" height="76"/><text class="text" x="94" y="142">Command</text><text class="small" x="98" y="166">LOAD / MATMUL</text>
+  <rect class="box" x="280" y="110" width="160" height="76"/><text class="text" x="318" y="142">FIFO</text><text class="small" x="304" y="166">decouple host</text>
+  <rect class="green" x="500" y="110" width="160" height="76"/><text class="text" x="535" y="142">FSM</text><text class="small" x="520" y="166">FETCH / DECODE</text>
+  <rect class="gold" x="720" y="110" width="180" height="76"/><text class="text" x="760" y="142">PE Control</text><text class="small" x="756" y="166">start / rows / cols</text>
+  <path class="line" d="M220 148 H272"/><path class="line" d="M440 148 H492"/><path class="line" d="M660 148 H712"/>
+  <rect class="box" x="180" y="260" width="150" height="76"/><text class="text" x="218" y="292">ACT</text><text class="small" x="208" y="316">ReLU, LUT hooks</text>
+  <rect class="box" x="415" y="260" width="150" height="76"/><text class="text" x="448" y="292">POOL</text><text class="small" x="442" y="316">2x2 max / avg</text>
+  <rect class="box" x="650" y="260" width="150" height="76"/><text class="text" x="698" y="292">STORE</text><text class="small" x="681" y="316">stream results</text>
+  <path class="line" d="M810 186 C760 230 682 250 565 280"/><path class="line" d="M330 298 H407"/><path class="line" d="M565 298 H642"/>
+  <text class="small" x="54" y="386">Grounded in control_unit.sv command/state definitions, activation_unit.sv and pooling_unit.sv.</text>
+</svg>

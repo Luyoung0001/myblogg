@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">xOS And Verilator Interaction</title>
+  <desc id="desc">A diagram showing shell command table, UART output, PS2 bypass input and scripted simulation.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#24313f"/></marker><style>.bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.blue{fill:#eef6ff;stroke:#1d5f99;stroke-width:2;rx:8}.green{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.gold{fill:#fff8e6;stroke:#9a6a00;stroke-width:2;rx:8}.text{font:16px sans-serif;fill:#18202a}.small{font:13px sans-serif;fill:#45515f}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.line{stroke:#24313f;stroke-width:2;fill:none;marker-end:url(#arrow)}</style></defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="48">The Simulator Makes A SoC Usable From A Terminal</text>
+  <rect class="blue" x="62" y="116" width="185" height="88"/><text class="text" x="104" y="148">Host Script</text><text class="small" x="88" y="174">queued shell commands</text>
+  <rect class="box" x="310" y="116" width="185" height="88"/><text class="text" x="358" y="148">PS2 Bypass</text><text class="small" x="340" y="174">stdin to scancodes</text>
+  <rect class="green" x="558" y="116" width="185" height="88"/><text class="text" x="602" y="148">xOS Shell</text><text class="small" x="588" y="174">command dispatch</text>
+  <rect class="gold" x="806" y="116" width="130" height="88"/><text class="text" x="842" y="148">UART</text><text class="small" x="824" y="174">stdout output</text>
+  <path class="line" d="M247 160 H302"/><path class="line" d="M495 160 H550"/><path class="line" d="M743 160 H798"/>
+  <rect class="box" x="310" y="276" width="370" height="72"/><text class="text" x="404" y="306">Verilator Loop</text><text class="small" x="345" y="330">clock, memory, UART monitor, script tick, trace hooks</text>
+  <path class="line" d="M495 276 V212"/>
+  <text class="small" x="54" y="386">Grounded in shell_coolda.c, simulator/src/ps2.cpp, uart.cpp and cpu.cpp.</text>
+</svg>

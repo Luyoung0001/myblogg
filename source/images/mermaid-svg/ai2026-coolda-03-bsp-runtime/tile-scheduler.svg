@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">CoolDA Tile Scheduler</title>
+  <desc id="desc">A diagram showing how an 8x8 matmul is decomposed into 4x4 tiles and accumulated across the K dimension.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#263241"/></marker>
+    <style>
+      .bg{fill:#f8fafc}.tile{fill:#eef6ff;stroke:#1d5f99;stroke-width:2}.tile2{fill:#fff8e6;stroke:#9a6a00;stroke-width:2}.acc{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.text{font:16px sans-serif;fill:#17202a}.small{font:13px sans-serif;fill:#465363}.line{stroke:#263241;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="46">Runtime Turns A Large Matmul Into 4x4 Hardware Tiles</text>
+  <g transform="translate(64,92)">
+    <rect class="box" x="0" y="0" width="210" height="210"/><text class="text" x="76" y="-14">C 8x8</text>
+    <rect class="tile" x="0" y="0" width="105" height="105"/><rect class="tile2" x="105" y="0" width="105" height="105"/><rect class="tile2" x="0" y="105" width="105" height="105"/><rect class="tile" x="105" y="105" width="105" height="105"/>
+    <text class="small" x="34" y="56">C00</text><text class="small" x="140" y="56">C01</text><text class="small" x="34" y="162">C10</text><text class="small" x="140" y="162">C11</text>
+  </g>
+  <rect class="box" x="360" y="100" width="180" height="76"/><text class="text" x="394" y="132">pack A tile</text><text class="small" x="386" y="154">zero pad edges</text>
+  <rect class="box" x="360" y="220" width="180" height="76"/><text class="text" x="394" y="252">pack B tile</text><text class="small" x="386" y="274">zero pad edges</text>
+  <rect class="acc" x="640" y="110" width="190" height="94"/><text class="text" x="684" y="144">4x4 NPU</text><text class="small" x="674" y="168">run one K tile</text><text class="small" x="668" y="188">int8 x int8 -> int32</text>
+  <rect class="acc" x="640" y="248" width="190" height="72"/><text class="text" x="668" y="282">accumulate C tile</text><text class="small" x="686" y="304">then store/ReLU</text>
+  <path class="line" d="M274 158 H352"/><path class="line" d="M540 138 H632"/><path class="line" d="M540 258 C590 258 588 174 632 168"/><path class="line" d="M735 204 V240"/>
+  <text class="small" x="64" y="364">For an 8x8 demo, row/col tiles are 2x2 and K has two 4-wide steps. The event model advances one tile step per poll.</text>
+</svg>

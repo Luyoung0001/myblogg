@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">BSP And Runtime Split</title>
+  <desc id="desc">A diagram showing BSP as a thin MMIO layer and runtime as tiling, heap and event layer.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#24313f"/></marker><style>.bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.blue{fill:#eef6ff;stroke:#1d5f99;stroke-width:2;rx:8}.green{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.gold{fill:#fff8e6;stroke:#9a6a00;stroke-width:2;rx:8}.text{font:16px sans-serif;fill:#18202a}.small{font:13px sans-serif;fill:#45515f}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.line{stroke:#24313f;stroke-width:2;fill:none;marker-end:url(#arrow)}</style></defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="48">CoolDA Separates Hardware Buttons From Work Scheduling</text>
+  <rect class="blue" x="80" y="102" width="220" height="92"/><text class="text" x="132" y="135">Application</text><text class="small" x="114" y="163">matmul / vecadd request</text>
+  <rect class="green" x="380" y="102" width="220" height="92"/><text class="text" x="430" y="135">Runtime</text><text class="small" x="405" y="163">heap, memcpy, tiling, event</text>
+  <rect class="gold" x="680" y="102" width="220" height="92"/><text class="text" x="748" y="135">BSP</text><text class="small" x="716" y="163">pack rows, start, poll, read</text>
+  <path class="line" d="M300 148 H372"/><path class="line" d="M600 148 H672"/>
+  <rect class="box" x="210" y="268" width="230" height="80"/><text class="text" x="270" y="300">4x4 Tile</text><text class="small" x="242" y="324">hardware granularity</text>
+  <rect class="box" x="540" y="268" width="230" height="80"/><text class="text" x="590" y="300">8x8 Job</text><text class="small" x="572" y="324">software decomposes work</text>
+  <path class="line" d="M540 308 H448"/>
+  <text class="small" x="54" y="386">Grounded in bsp/src/coolda.c and software/xos_pro_max/src/coolda_runtime.c.</text>
+</svg>

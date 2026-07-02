@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">Unified Buffer As NPU Local Memory</title>
+  <desc id="desc">A diagram showing three ports of unified buffer and logical regions for weights, activations, partial sums and output.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#24313f"/></marker><style>.bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.buf{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.seg1{fill:#eef6ff}.seg2{fill:#fff8e6}.seg3{fill:#f3eefc}.seg4{fill:#fcefee}.text{font:16px sans-serif;fill:#18202a}.small{font:13px sans-serif;fill:#45515f}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.line{stroke:#24313f;stroke-width:2;fill:none;marker-end:url(#arrow)}</style></defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="48">Unified Buffer: The Local Memory Boundary</text>
+  <rect class="box" x="70" y="120" width="170" height="80"/><text class="text" x="118" y="153">DMA</text><text class="small" x="98" y="178">Port B write/read</text>
+  <rect class="box" x="70" y="250" width="170" height="80"/><text class="text" x="110" y="283">Control</text><text class="small" x="100" y="308">Port C access</text>
+  <rect class="box" x="740" y="185" width="170" height="80"/><text class="text" x="793" y="218">PE Array</text><text class="small" x="784" y="243">Port A stream</text>
+  <rect class="buf" x="330" y="92" width="330" height="250"/>
+  <rect class="seg1" x="350" y="120" width="290" height="45"/><rect class="seg2" x="350" y="168" width="290" height="45"/><rect class="seg3" x="350" y="216" width="290" height="45"/><rect class="seg4" x="350" y="264" width="290" height="45"/>
+  <text class="text" x="426" y="144">Weight Buffer</text>
+  <text class="text" x="410" y="192">Activation Buffer</text>
+  <text class="text" x="428" y="240">Partial Sum</text>
+  <text class="text" x="438" y="288">Output</text>
+  <path class="line" d="M240 160 H322"/><path class="line" d="M240 290 H322"/><path class="line" d="M660 224 H732"/>
+  <text class="small" x="350" y="330">4K entries, 32-bit data, three logical access ports</text>
+  <text class="small" x="54" y="386">Grounded in rtl/control/unified_buffer.sv: ports A/B/C and address-region comments.</text>
+</svg>

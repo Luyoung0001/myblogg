@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">CoolDA APB Register Interface</title>
+  <desc id="desc">A diagram showing CPU APB access to Coolda registers and the 4x4 compute loop.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#24313f"/></marker><style>.bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.blue{fill:#eef6ff;stroke:#1d5f99;stroke-width:2;rx:8}.green{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.gold{fill:#fff8e6;stroke:#9a6a00;stroke-width:2;rx:8}.text{font:16px sans-serif;fill:#18202a}.small{font:13px sans-serif;fill:#45515f}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.line{stroke:#24313f;stroke-width:2;fill:none;marker-end:url(#arrow)}</style></defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="48">APB Makes CoolDA Look Like A Memory-Mapped Peripheral</text>
+  <rect class="blue" x="70" y="120" width="170" height="80"/><text class="text" x="116" y="153">CPU</text><text class="small" x="92" y="178">load/store to MMIO</text>
+  <rect class="box" x="300" y="120" width="170" height="80"/><text class="text" x="354" y="153">APB Mux</text><text class="small" x="333" y="178">UART on apb0</text>
+  <rect class="green" x="530" y="120" width="170" height="80"/><text class="text" x="574" y="153">CoolDA Regs</text><text class="small" x="558" y="178">CTRL, STATUS, A, B, C</text>
+  <rect class="gold" x="760" y="120" width="170" height="80"/><text class="text" x="805" y="153">4x4 MAC</text><text class="small" x="792" y="178">k = 0..3 loop</text>
+  <path class="line" d="M240 160 H292"/><path class="line" d="M470 160 H522"/><path class="line" d="M700 160 H752"/>
+  <rect class="box" x="312" y="272" width="355" height="72"/><text class="text" x="388" y="302">Register Contract</text><text class="small" x="356" y="326">write A/B rows, start, poll done, read C window</text>
+  <path class="line" d="M612 200 V264"/>
+  <text class="small" x="54" y="386">Grounded in apb_dev_top_no_nand.v, coolda_npu.v and bsp/include/coolda.h.</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">NPU Command Decode And FSM</title>
+  <desc id="desc">A diagram showing command fields, FIFO fetch/decode and execution states for load, matmul, act, pool and store.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#263241"/></marker>
+    <style>
+      .bg{fill:#f8fafc}.field{fill:#eef6ff;stroke:#1d5f99;stroke-width:2;rx:6}.state{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.exec{fill:#fff8e6;stroke:#9a6a00;stroke-width:2;rx:8}.post{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.text{font:16px sans-serif;fill:#17202a}.small{font:13px sans-serif;fill:#465363}.line{stroke:#263241;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="46">Command Fields Become Control States</text>
+  <g transform="translate(60,86)">
+    <rect class="field" x="0" y="0" width="130" height="60"/><text class="text" x="36" y="28">opcode</text><text class="small" x="34" y="48">[31:24]</text>
+    <rect class="field" x="132" y="0" width="150" height="60"/><text class="text" x="176" y="28">addr/base</text><text class="small" x="184" y="48">[23:12]</text>
+    <rect class="field" x="284" y="0" width="130" height="60"/><text class="text" x="328" y="28">extra</text><text class="small" x="322" y="48">[19:16]</text>
+    <rect class="field" x="416" y="0" width="150" height="60"/><text class="text" x="456" y="28">len/rows</text><text class="small" x="464" y="48">[11:0]</text>
+  </g>
+  <rect class="state" x="80" y="210" width="110" height="58"/><text class="text" x="116" y="244">IDLE</text>
+  <rect class="state" x="240" y="210" width="110" height="58"/><text class="text" x="278" y="244">FETCH</text>
+  <rect class="state" x="400" y="210" width="110" height="58"/><text class="text" x="436" y="244">DECODE</text>
+  <rect class="exec" x="590" y="166" width="120" height="52"/><text class="text" x="620" y="198">LOAD</text>
+  <rect class="exec" x="590" y="236" width="120" height="52"/><text class="text" x="614" y="268">MATMUL</text>
+  <rect class="post" x="760" y="126" width="120" height="52"/><text class="text" x="806" y="158">ACT</text>
+  <rect class="post" x="760" y="196" width="120" height="52"/><text class="text" x="800" y="228">POOL</text>
+  <rect class="exec" x="760" y="266" width="120" height="52"/><text class="text" x="798" y="298">STORE</text>
+  <path class="line" d="M190 239 H232"/><path class="line" d="M350 239 H392"/>
+  <path class="line" d="M510 238 C550 238 550 192 582 192"/>
+  <path class="line" d="M510 244 H582"/>
+  <path class="line" d="M510 250 C556 250 546 152 752 152"/>
+  <path class="line" d="M510 256 C556 256 550 222 752 222"/>
+  <path class="line" d="M510 262 C552 262 556 292 752 292"/>
+  <text class="small" x="70" y="362">FETCH exists because the command FIFO is synchronous. DECODE fans out into data movement, compute and post-processing states.</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="390" viewBox="0 0 980 390" role="img" aria-labelledby="title desc">
+  <title id="title">CoolDA Register Map</title>
+  <desc id="desc">Register map for CoolDA APB NPU showing control, status, info, A rows, B rows and C output window.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#263241"/></marker>
+    <style>
+      .bg{fill:#f8fafc}.reg{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:6}.ctrl{fill:#fff8e6;stroke:#9a6a00}.in{fill:#eef6ff;stroke:#1d5f99}.out{fill:#eefaf2;stroke:#277244}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.text{font:16px sans-serif;fill:#17202a}.small{font:13px sans-serif;fill:#465363}.line{stroke:#263241;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="390"/>
+  <text class="title" x="40" y="46">CoolDA Register Contract: Feed Rows, Start, Poll, Read C</text>
+  <g transform="translate(62,84)">
+    <rect class="reg ctrl" x="0" y="0" width="180" height="48"/><text class="text" x="20" y="30">0x00 CTRL</text>
+    <rect class="reg ctrl" x="0" y="54" width="180" height="48"/><text class="text" x="20" y="84">0x04 STATUS</text>
+    <rect class="reg ctrl" x="0" y="108" width="180" height="48"/><text class="text" x="20" y="138">0x08 INFO</text>
+    <rect class="reg in" x="250" y="0" width="180" height="48"/><text class="text" x="284" y="30">A0 row</text>
+    <rect class="reg in" x="250" y="54" width="180" height="48"/><text class="text" x="284" y="84">A1 row</text>
+    <rect class="reg in" x="250" y="108" width="180" height="48"/><text class="text" x="284" y="138">A2 row</text>
+    <rect class="reg in" x="250" y="162" width="180" height="48"/><text class="text" x="284" y="192">A3 row</text>
+    <rect class="reg in" x="480" y="0" width="180" height="48"/><text class="text" x="514" y="30">B0 row</text>
+    <rect class="reg in" x="480" y="54" width="180" height="48"/><text class="text" x="514" y="84">B1 row</text>
+    <rect class="reg in" x="480" y="108" width="180" height="48"/><text class="text" x="514" y="138">B2 row</text>
+    <rect class="reg in" x="480" y="162" width="180" height="48"/><text class="text" x="514" y="192">B3 row</text>
+    <rect class="reg out" x="710" y="24" width="180" height="156"/><text class="text" x="754" y="74">C window</text><text class="small" x="746" y="104">16 int32 regs</text><text class="small" x="736" y="132">0x40 - 0x7C</text>
+  </g>
+  <path class="line" d="M240 184 H304"/>
+  <path class="line" d="M722 184 H766"/>
+  <text class="small" x="62" y="338">The BSP turns these offsets into volatile MMIO reads and writes; the RTL turns them into rows, lanes and a 4-step k loop.</text>
+</svg>

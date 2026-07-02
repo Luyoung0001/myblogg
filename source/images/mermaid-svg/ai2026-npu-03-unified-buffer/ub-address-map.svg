@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="380" viewBox="0 0 980 380" role="img" aria-labelledby="title desc">
+  <title id="title">Unified Buffer Address Map</title>
+  <desc id="desc">Unified Buffer address ranges for weights, activations, partial sums and outputs with three access ports.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#263241"/></marker>
+    <style>
+      .bg{fill:#f8fafc}.range{stroke:#2f3a4a;stroke-width:2;rx:8}.w{fill:#edf6ff}.a{fill:#eefaf2}.p{fill:#fff8e6}.o{fill:#fff1f2}.port{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.text{font:16px sans-serif;fill:#17202a}.small{font:13px sans-serif;fill:#465363}.line{stroke:#263241;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="380"/>
+  <text class="title" x="40" y="46">Unified Buffer: A Locality Boundary, Not Just A SRAM</text>
+  <g transform="translate(70,94)">
+    <rect class="range w" x="0" y="0" width="640" height="54"/><text class="text" x="24" y="34">0x000 - 0x3FF</text><text class="text" x="238" y="34">Weight Buffer</text><text class="small" x="514" y="34">1KB</text>
+    <rect class="range a" x="0" y="58" width="640" height="54"/><text class="text" x="24" y="92">0x400 - 0x7FF</text><text class="text" x="238" y="92">Activation Buffer</text><text class="small" x="514" y="92">1KB</text>
+    <rect class="range p" x="0" y="116" width="640" height="54"/><text class="text" x="24" y="150">0x800 - 0xBFF</text><text class="text" x="238" y="150">Partial Sum</text><text class="small" x="514" y="150">1KB</text>
+    <rect class="range o" x="0" y="174" width="640" height="54"/><text class="text" x="24" y="208">0xC00 - 0xFFF</text><text class="text" x="238" y="208">Output Buffer</text><text class="small" x="514" y="208">1KB</text>
+  </g>
+  <rect class="port" x="760" y="94" width="150" height="52"/><text class="text" x="804" y="126">Port A</text><text class="small" x="786" y="142">PE Array</text>
+  <rect class="port" x="760" y="172" width="150" height="52"/><text class="text" x="804" y="204">Port B</text><text class="small" x="800" y="220">DMA path</text>
+  <rect class="port" x="760" y="250" width="150" height="52"/><text class="text" x="804" y="282">Port C</text><text class="small" x="784" y="298">Control/post</text>
+  <path class="line" d="M744 120 H710"/>
+  <path class="line" d="M744 198 H710"/>
+  <path class="line" d="M744 276 C704 276 700 260 670 244"/>
+  <text class="small" x="58" y="344">The address map turns data lifetime into a hardware-visible contract: input, intermediate state and output are separate regions.</text>
+</svg>

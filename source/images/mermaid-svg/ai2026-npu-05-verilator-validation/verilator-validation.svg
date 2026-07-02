@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">NPU Validation Layers</title>
+  <desc id="desc">A layered validation diagram from single PE to control unit and full NPU testbench.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#24313f"/></marker><style>.bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.blue{fill:#eef6ff;stroke:#1d5f99;stroke-width:2;rx:8}.green{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.text{font:16px sans-serif;fill:#18202a}.small{font:13px sans-serif;fill:#45515f}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.line{stroke:#24313f;stroke-width:2;fill:none;marker-end:url(#arrow)}</style></defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="48">Validation Is Layered, Not One Big Simulation</text>
+  <rect class="blue" x="70" y="104" width="170" height="82"/><text class="text" x="114" y="137">Single PE</text><text class="small" x="92" y="163">MAC correctness</text>
+  <rect class="blue" x="290" y="104" width="170" height="82"/><text class="text" x="337" y="137">PE Array</text><text class="small" x="315" y="163">matmul dataflow</text>
+  <rect class="green" x="510" y="104" width="170" height="82"/><text class="text" x="548" y="137">Control TB</text><text class="small" x="538" y="163">FSM and signals</text>
+  <rect class="box" x="730" y="104" width="170" height="82"/><text class="text" x="772" y="137">NPU Top</text><text class="small" x="758" y="163">end-to-end chain</text>
+  <path class="line" d="M240 145 H282"/><path class="line" d="M460 145 H502"/><path class="line" d="M680 145 H722"/>
+  <rect class="box" x="190" y="260" width="230" height="82"/><text class="text" x="246" y="293">Verilator</text><text class="small" x="222" y="319">compile RTL and dump FST</text>
+  <rect class="box" x="560" y="260" width="230" height="82"/><text class="text" x="630" y="293">Wave Debug</text><text class="small" x="588" y="319">ready/valid/state/result</text>
+  <path class="line" d="M458 302 H552"/>
+  <text class="small" x="54" y="386">Grounded in npu-project/sim/Makefile and sim/tb testbenches: validation follows module boundaries.</text>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">From Neural Network Workloads To NPU Datapath</title>
+  <desc id="desc">A layered diagram showing how neural network operations become matrix multiplication and then map to NPU blocks.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#263238"/>
+    </marker>
+    <style>
+      .bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.accent{fill:#eef6ff;stroke:#1d5f99;stroke-width:2;rx:8}.green{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.gold{fill:#fff8e6;stroke:#9a6a00;stroke-width:2;rx:8}.text{font:16px sans-serif;fill:#18202a}.small{font:13px sans-serif;fill:#45515f}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.line{stroke:#263238;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="420"/>
+  <text class="title" x="40" y="48">NPU Design Series: The Workload Becomes A Datapath</text>
+  <rect class="box" x="52" y="92" width="210" height="92"/>
+  <text class="text" x="82" y="125">Neural Network Layer</text>
+  <text class="small" x="82" y="153">conv / dense / activation</text>
+  <rect class="accent" x="310" y="92" width="210" height="92"/>
+  <text class="text" x="354" y="125">Matrix Work</text>
+  <text class="small" x="348" y="153">MACs, reuse, locality</text>
+  <rect class="green" x="568" y="92" width="210" height="92"/>
+  <text class="text" x="618" y="125">PE Array</text>
+  <text class="small" x="600" y="153">many small MAC units</text>
+  <path class="line" d="M262 138 H302"/>
+  <path class="line" d="M520 138 H560"/>
+  <rect class="gold" x="190" y="250" width="210" height="92"/>
+  <text class="text" x="236" y="283">On-chip Buffer</text>
+  <text class="small" x="226" y="311">weights / activations / results</text>
+  <rect class="box" x="450" y="250" width="210" height="92"/>
+  <text class="text" x="494" y="283">Control Unit</text>
+  <text class="small" x="482" y="311">commands and sequencing</text>
+  <rect class="accent" x="710" y="250" width="210" height="92"/>
+  <text class="text" x="754" y="283">Post-process</text>
+  <text class="small" x="756" y="311">activation / pooling / store</text>
+  <path class="line" d="M660 184 C640 222 600 238 562 248"/>
+  <path class="line" d="M400 296 H442"/>
+  <path class="line" d="M660 296 H702"/>
+  <path class="line" d="M295 250 C340 212 480 196 590 184"/>
+  <text class="small" x="54" y="386">Grounded in AI2026/npu-project: README, tutorial docs, RTL top, PE array, buffer, control and post-processing units.</text>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="360" viewBox="0 0 980 360" role="img" aria-labelledby="title desc">
+  <title id="title">Single PE Contract</title>
+  <desc id="desc">A diagram showing signed INT8 inputs, multiplication, sign extension, accumulation and registered valid output.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#263241"/></marker>
+    <style>
+      .bg{fill:#f8fafc}.box{fill:#fff;stroke:#2f3a4a;stroke-width:2;rx:8}.blue{fill:#edf6ff;stroke:#1d5f99;stroke-width:2;rx:8}.gold{fill:#fff8e6;stroke:#9a6a00;stroke-width:2;rx:8}.green{fill:#eefaf2;stroke:#277244;stroke-width:2;rx:8}.red{fill:#fff1f2;stroke:#b4232a;stroke-width:2;rx:8}.title{font:22px sans-serif;font-weight:700;fill:#17202a}.text{font:16px sans-serif;fill:#17202a}.small{font:13px sans-serif;fill:#465363}.line{stroke:#263241;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="360"/>
+  <text class="title" x="40" y="46">Single PE Contract: y_out = y_in + signed(a) * signed(b)</text>
+  <rect class="blue" x="60" y="108" width="130" height="64"/><text class="text" x="100" y="136">a</text><text class="small" x="82" y="158">INT8 signed</text>
+  <rect class="blue" x="60" y="204" width="130" height="64"/><text class="text" x="100" y="232">b</text><text class="small" x="82" y="254">INT8 signed</text>
+  <rect class="gold" x="260" y="136" width="150" height="92"/><text class="text" x="312" y="172">Multiply</text><text class="small" x="287" y="198">16-bit product</text>
+  <rect class="box" x="470" y="136" width="150" height="92"/><text class="text" x="505" y="172">Sign Extend</text><text class="small" x="502" y="198">to 32 bits</text>
+  <rect class="green" x="690" y="94" width="150" height="92"/><text class="text" x="736" y="130">Add</text><text class="small" x="724" y="156">+ y_in</text>
+  <rect class="red" x="690" y="224" width="150" height="64"/><text class="text" x="730" y="252">Register</text><text class="small" x="718" y="274">valid delayed</text>
+  <path class="line" d="M190 140 H252"/>
+  <path class="line" d="M190 236 C220 236 224 198 252 190"/>
+  <path class="line" d="M410 182 H462"/>
+  <path class="line" d="M620 182 C650 182 652 140 682 140"/>
+  <path class="line" d="M575 84 H682"/>
+  <text class="small" x="492" y="76">y_in / clear_acc</text>
+  <path class="line" d="M765 186 V216"/>
+  <path class="line" d="M840 256 H914"/>
+  <text class="small" x="858" y="246">y_out</text>
+  <text class="small" x="56" y="326">PE correctness hinges on signed extension, accumulator width, clear timing and valid alignment.</text>
+</svg>
