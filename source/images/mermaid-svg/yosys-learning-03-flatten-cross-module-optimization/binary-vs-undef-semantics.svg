@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="1100" viewBox="0 0 760 1100" role="img" aria-labelledby="title desc">
+  <title id="title">二值布尔语义与四值未知传播的区别</title>
+  <desc id="desc">上半部分展示默认二值 SAT 对零和一输入证明 b 或非 b 恒为一；下半部分明确在第二次 opt 之前的展平网络上启用 undef 建模时，X 和 Z 输入会得到未知输出。最终常量网表无法通过重新启用 undef 恢复已经删除的未知传播。</desc>
+  <defs>
+    <style>
+      .title { font: 700 29px Arial, 'Noto Sans SC', sans-serif; fill: #172033; }
+      .head { font: 700 24px Arial, 'Noto Sans SC', sans-serif; fill: #172033; }
+      .body { font: 20px Arial, 'Noto Sans SC', sans-serif; fill: #344454; }
+      .small { font: 18px Arial, 'Noto Sans SC', sans-serif; fill: #53616f; }
+      .mono { font: 600 20px 'DejaVu Sans Mono', Consolas, monospace; fill: #172033; }
+      .ok { font: 700 20px Arial, 'Noto Sans SC', sans-serif; fill: #23734a; }
+      .warn { font: 700 20px Arial, 'Noto Sans SC', sans-serif; fill: #a4473c; }
+      .panel { fill: #ffffff; stroke: #96a7b5; stroke-width: 2; rx: 8; }
+      .binary { fill: #edf7f1; stroke: #2e8b57; stroke-width: 2; rx: 7; }
+      .undef { fill: #fff7e6; stroke: #b77b19; stroke-width: 2; rx: 7; }
+      .cell { fill: #f6f8fa; stroke: #a4b0ba; stroke-width: 1.5; }
+      .rule { stroke: #a4b0ba; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="760" height="1100" fill="#f7f9fc"/>
+  <text x="380" y="42" text-anchor="middle" class="title">b | ~b 的两个语义问题</text>
+  <rect x="35" y="70" width="690" height="115" class="panel"/>
+  <text x="380" y="105" text-anchor="middle" class="mono">b = value[0]</text>
+  <text x="380" y="137" text-anchor="middle" class="mono">odd_hit = b, even_hit = ~b</text>
+  <text x="380" y="169" text-anchor="middle" class="mono">always_one = b | ~b</text>
+
+  <!-- Binary panel -->
+  <rect x="35" y="215" width="690" height="350" class="panel"/>
+  <rect x="55" y="235" width="650" height="58" class="binary"/>
+  <text x="380" y="272" text-anchor="middle" class="head">A. 二值综合与默认 SAT</text>
+  <text x="380" y="325" text-anchor="middle" class="body">问题：对所有稳定的 b ∈ {0, 1}，输出是否恒为 1？</text>
+  <rect x="100" y="350" width="560" height="120" class="cell"/>
+  <line x1="100" y1="390" x2="660" y2="390" class="rule"/>
+  <line x1="100" y1="430" x2="660" y2="430" class="rule"/>
+  <line x1="240" y1="350" x2="240" y2="470" class="rule"/>
+  <line x1="380" y1="350" x2="380" y2="470" class="rule"/>
+  <line x1="520" y1="350" x2="520" y2="470" class="rule"/>
+  <text x="170" y="377" text-anchor="middle" class="mono">b</text>
+  <text x="310" y="377" text-anchor="middle" class="mono">~b</text>
+  <text x="450" y="377" text-anchor="middle" class="mono">b | ~b</text>
+  <text x="590" y="377" text-anchor="middle" class="body">结论</text>
+  <text x="170" y="417" text-anchor="middle" class="mono">0</text>
+  <text x="310" y="417" text-anchor="middle" class="mono">1</text>
+  <text x="450" y="417" text-anchor="middle" class="mono">1</text>
+  <text x="590" y="417" text-anchor="middle" class="ok">恒真</text>
+  <text x="170" y="457" text-anchor="middle" class="mono">1</text>
+  <text x="310" y="457" text-anchor="middle" class="mono">0</text>
+  <text x="450" y="457" text-anchor="middle" class="mono">1</text>
+  <text x="590" y="457" text-anchor="middle" class="ok">恒真</text>
+  <text x="380" y="510" text-anchor="middle" class="mono">sat -prove always_one 1</text>
+  <text x="380" y="543" text-anchor="middle" class="ok">SUCCESS：不存在 0/1 反例</text>
+
+  <!-- Undef panel -->
+  <rect x="35" y="595" width="690" height="390" class="panel"/>
+  <rect x="55" y="615" width="650" height="58" class="undef"/>
+  <text x="380" y="652" text-anchor="middle" class="head">B. flatten 后、第二次 opt 前的网络</text>
+  <text x="380" y="704" text-anchor="middle" class="body">b | ~b：输入 X/Z 时结果未知；-enable_undef 建模 X/undef</text>
+  <rect x="100" y="730" width="560" height="120" class="cell"/>
+  <line x1="100" y1="770" x2="660" y2="770" class="rule"/>
+  <line x1="100" y1="810" x2="660" y2="810" class="rule"/>
+  <line x1="240" y1="730" x2="240" y2="850" class="rule"/>
+  <line x1="380" y1="730" x2="380" y2="850" class="rule"/>
+  <line x1="520" y1="730" x2="520" y2="850" class="rule"/>
+  <text x="170" y="757" text-anchor="middle" class="mono">b</text>
+  <text x="310" y="757" text-anchor="middle" class="mono">~b</text>
+  <text x="450" y="757" text-anchor="middle" class="mono">b | ~b</text>
+  <text x="590" y="757" text-anchor="middle" class="body">结论</text>
+  <text x="170" y="797" text-anchor="middle" class="mono">X</text>
+  <text x="310" y="797" text-anchor="middle" class="mono">X</text>
+  <text x="450" y="797" text-anchor="middle" class="mono">X</text>
+  <text x="590" y="797" text-anchor="middle" class="warn">未知</text>
+  <text x="170" y="837" text-anchor="middle" class="mono">Z</text>
+  <text x="310" y="837" text-anchor="middle" class="mono">X</text>
+  <text x="450" y="837" text-anchor="middle" class="mono">X</text>
+  <text x="590" y="837" text-anchor="middle" class="warn">未知</text>
+  <text x="380" y="892" text-anchor="middle" class="mono">sat -enable_undef -prove always_one 1</text>
+  <text x="380" y="925" text-anchor="middle" class="warn">FAIL：value[0] = X 时 always_one = X</text>
+  <text x="380" y="953" text-anchor="middle" class="small">X 反例来自上述网络；Z 行表示 Verilog RTL 语义</text>
+  <text x="380" y="978" text-anchor="middle" class="small">Yosys undef 抽象不单独区分 Z、驱动强度或事件调度</text>
+
+  <rect x="35" y="1015" width="690" height="62" fill="#e8eef3" stroke="#96a7b5" stroke-width="2" rx="7"/>
+  <text x="380" y="1042" text-anchor="middle" class="small">最终网表已是常量 1；此时再启用 undef 仍会 SUCCESS，</text>
+  <text x="380" y="1066" text-anchor="middle" class="small">因为已经删除的 X 传播不能靠 SAT 选项恢复。</text>
+</svg>

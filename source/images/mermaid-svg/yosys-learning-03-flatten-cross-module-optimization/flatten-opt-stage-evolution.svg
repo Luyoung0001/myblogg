@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="1685" viewBox="0 0 760 1685" role="img" aria-labelledby="title desc">
+  <title id="title">flatten 与 opt 的五阶段结构演化</title>
+  <desc id="desc">纵向展示设计从保留 odd_detector 和 even_detector 层次，经过 flatten 暴露同一模块内的互补逻辑，再由 opt 化简为常量一，最后由 clean purge 清除 scope 元数据并变成零个功能单元。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#53697d"/>
+    </marker>
+    <style>
+      .title { font: 700 30px Arial, 'Noto Sans SC', sans-serif; fill: #172033; }
+      .subtitle { font: 20px Arial, 'Noto Sans SC', sans-serif; fill: #53616f; }
+      .stage { font: 700 25px Arial, 'Noto Sans SC', sans-serif; fill: #172033; }
+      .label { font: 600 20px Arial, 'Noto Sans SC', sans-serif; fill: #243447; }
+      .small { font: 18px Arial, 'Noto Sans SC', sans-serif; fill: #53616f; }
+      .mono { font: 600 19px 'DejaVu Sans Mono', Consolas, monospace; fill: #172033; }
+      .pass { font: 700 19px 'DejaVu Sans Mono', Consolas, monospace; fill: #2b4a5f; }
+      .panel { fill: #ffffff; stroke: #9aabb9; stroke-width: 2; rx: 8; }
+      .module { fill: #edf6fa; stroke: #2f6f8f; stroke-width: 2; rx: 7; }
+      .logic { fill: #fff4dc; stroke: #c78516; stroke-width: 2; rx: 6; }
+      .meta { fill: #f3f5f7; stroke: #7c8a96; stroke-width: 2; stroke-dasharray: 7 5; rx: 6; }
+      .constant { fill: #e9f7ef; stroke: #2e8b57; stroke-width: 2; rx: 6; }
+      .muted { fill: #f3f5f7; stroke: #9aa6b0; stroke-width: 1.5; rx: 6; }
+      .wire { stroke: #526575; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .branch { stroke: #526575; stroke-width: 2.2; fill: none; }
+      .flow { stroke: #53697d; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="760" height="1685" fill="#f7f9fc"/>
+  <text x="380" y="42" text-anchor="middle" class="title">从模块边界到常量输出</text>
+  <text x="380" y="72" text-anchor="middle" class="subtitle">每个箭头只标执行该结构变换的 pass</text>
+
+  <!-- Stage 1 -->
+  <rect x="30" y="95" width="700" height="245" class="panel"/>
+  <text x="50" y="128" class="stage">1. hierarchy</text>
+  <text x="50" y="156" class="small">三个 module 已建立关系，两个子模块实例仍是边界</text>
+  <rect x="55" y="174" width="650" height="132" class="module"/>
+  <text x="72" y="200" class="label">parity_cover</text>
+  <text x="78" y="246" class="mono">b</text>
+  <text x="70" y="270" class="small">value[0]</text>
+  <rect x="220" y="192" width="200" height="40" class="module"/>
+  <text x="320" y="218" text-anchor="middle" class="small">odd_detector: b</text>
+  <rect x="220" y="249" width="200" height="40" class="module"/>
+  <text x="320" y="275" text-anchor="middle" class="small">even_detector: ~b</text>
+  <rect x="440" y="219" width="80" height="48" class="logic"/>
+  <text x="480" y="250" text-anchor="middle" class="mono">$or</text>
+  <path d="M120 240 L190 240 L190 212 L220 212" class="wire"/>
+  <path d="M120 240 L190 240 L190 269 L220 269" class="wire"/>
+  <path d="M420 212 L430 212 L430 231 L440 231" class="wire"/>
+  <path d="M420 269 L430 269 L430 255 L440 255" class="wire"/>
+  <path d="M520 243 L565 243" class="wire"/>
+  <text x="578" y="250" class="mono">always_one</text>
+  <text x="50" y="327" class="small">全设计功能 cell：$not + $or；子模块实例：2</text>
+
+  <path d="M380 340 L380 388" class="flow"/>
+  <text x="402" y="371" class="pass">opt</text>
+
+  <!-- Stage 2 -->
+  <rect x="30" y="395" width="700" height="245" class="panel"/>
+  <text x="50" y="428" class="stage">2. opt</text>
+  <text x="50" y="456" class="small">模块内部更干净，但跨实例的互补关系仍不可见</text>
+  <rect x="55" y="474" width="650" height="132" class="module"/>
+  <text x="72" y="500" class="label">parity_cover</text>
+  <text x="78" y="546" class="mono">b</text>
+  <text x="70" y="570" class="small">value[0]</text>
+  <rect x="220" y="492" width="200" height="40" class="module"/>
+  <text x="320" y="518" text-anchor="middle" class="small">odd_detector: b</text>
+  <rect x="220" y="549" width="200" height="40" class="module"/>
+  <text x="320" y="575" text-anchor="middle" class="small">even_detector: ~b</text>
+  <rect x="440" y="519" width="80" height="48" class="logic"/>
+  <text x="480" y="550" text-anchor="middle" class="mono">$or</text>
+  <path d="M120 540 L190 540 L190 512 L220 512" class="wire"/>
+  <path d="M120 540 L190 540 L190 569 L220 569" class="wire"/>
+  <path d="M420 512 L430 512 L430 531 L440 531" class="wire"/>
+  <path d="M420 569 L430 569 L430 555 L440 555" class="wire"/>
+  <path d="M520 543 L565 543" class="wire"/>
+  <text x="578" y="550" class="mono">always_one</text>
+  <text x="50" y="627" class="small">只清理别名 wire；$not、$or 和两个实例仍在</text>
+
+  <path d="M380 640 L380 688" class="flow"/>
+  <text x="402" y="671" class="pass">flatten</text>
+
+  <!-- Stage 3 -->
+  <rect x="30" y="695" width="700" height="260" class="panel"/>
+  <text x="50" y="728" class="stage">3. flatten</text>
+  <text x="50" y="756" class="small">子模块实现被复制到顶层；边界消失，功能逻辑尚未化简</text>
+  <rect x="55" y="774" width="650" height="142" class="module"/>
+  <text x="72" y="800" class="label">parity_cover</text>
+  <text x="80" y="850" class="mono">b</text>
+  <rect x="225" y="848" width="100" height="42" class="logic"/>
+  <text x="275" y="875" text-anchor="middle" class="mono">$not</text>
+  <rect x="445" y="818" width="80" height="58" class="logic"/>
+  <text x="485" y="854" text-anchor="middle" class="mono">$or</text>
+  <path d="M115 844 L395 844 L395 832 L445 832" class="wire"/>
+  <path d="M115 844 L180 844 L180 869 L225 869" class="wire"/>
+  <path d="M325 869 L395 869 L395 862 L445 862" class="wire"/>
+  <path d="M525 847 L565 847" class="wire"/>
+  <text x="578" y="854" class="mono">always_one</text>
+  <rect x="542" y="880" width="143" height="27" class="meta"/>
+  <text x="613" y="899" text-anchor="middle" class="small">$scopeinfo × 2</text>
+  <text x="50" y="942" class="small">0 个子模块实例；$not + $or + 2 个元数据 cell</text>
+
+  <path d="M380 955 L380 1003" class="flow"/>
+  <text x="402" y="986" class="pass">opt</text>
+
+  <!-- Stage 4 -->
+  <rect x="30" y="1010" width="700" height="240" class="panel"/>
+  <text x="50" y="1043" class="stage">4. opt</text>
+  <text x="50" y="1071" class="small">opt_expr 化简 b | ~b，opt_clean 删除失去用途的门</text>
+  <rect x="55" y="1088" width="650" height="125" class="module"/>
+  <text x="72" y="1114" class="label">parity_cover</text>
+  <rect x="78" y="1134" width="165" height="53" class="muted"/>
+  <text x="160" y="1157" text-anchor="middle" class="mono">value[7:0]</text>
+  <text x="160" y="1179" text-anchor="middle" class="small">未使用的顶层端口</text>
+  <rect x="300" y="1128" width="85" height="46" class="constant"/>
+  <text x="342" y="1158" text-anchor="middle" class="mono">1'1</text>
+  <path d="M385 1151 L448 1151" class="wire"/>
+  <text x="462" y="1158" class="mono">always_one</text>
+  <rect x="300" y="1182" width="238" height="24" class="meta"/>
+  <text x="419" y="1200" text-anchor="middle" class="small">无用内部 wire × 4</text>
+  <rect x="554" y="1182" width="136" height="24" class="meta"/>
+  <text x="622" y="1200" text-anchor="middle" class="small">$scopeinfo × 2</text>
+  <text x="50" y="1237" class="small">0 个功能 cell；仍有 2 个来源元数据 cell</text>
+
+  <path d="M380 1250 L380 1298" class="flow"/>
+  <text x="402" y="1281" class="pass">clean -purge</text>
+
+  <!-- Stage 5 -->
+  <rect x="30" y="1305" width="700" height="230" class="panel"/>
+  <text x="50" y="1338" class="stage">5. clean -purge</text>
+  <text x="50" y="1366" class="small">清除无用公开内部线网，并取消对 scope 元数据的保留</text>
+  <rect x="55" y="1383" width="650" height="115" class="module"/>
+  <text x="72" y="1409" class="label">parity_cover</text>
+  <rect x="78" y="1426" width="165" height="53" class="muted"/>
+  <text x="160" y="1449" text-anchor="middle" class="mono">value[7:0]</text>
+  <text x="160" y="1471" text-anchor="middle" class="small">保留但未使用</text>
+  <rect x="300" y="1430" width="85" height="46" class="constant"/>
+  <text x="342" y="1460" text-anchor="middle" class="mono">1'1</text>
+  <path d="M385 1453 L448 1453" class="wire"/>
+  <text x="462" y="1460" class="mono">always_one</text>
+  <text x="50" y="1522" class="small">0 cells；顶层端口仍完整，输出直接连接常量</text>
+
+  <rect x="30" y="1575" width="700" height="72" fill="#e8eef3" stroke="#9aabb9" stroke-width="2" rx="7"/>
+  <text x="380" y="1605" text-anchor="middle" class="label">flatten 负责暴露关系，opt 负责化简关系</text>
+  <text x="380" y="1635" text-anchor="middle" class="small">模块定义被删除，不等于其中的功能逻辑已立即消失</text>
+</svg>
