@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="860" viewBox="0 0 1500 860" role="img" aria-labelledby="title desc">
+  <title id="title">seq_counter 从 always process 到 adff 再到 adffe 的结构演化</title>
+  <desc id="desc">展示 proc 将 process 降为多路器和异步复位触发器，opt 再提取 load 或 en 作为寄存器使能。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 30px sans-serif;fill:#111827}
+      .subtitle{font:16px sans-serif;fill:#475569}
+      .head{font:700 20px sans-serif;fill:#111827;text-anchor:middle}
+      .box{stroke-width:2;rx:8;ry:8}
+      .t{font:700 17px sans-serif;fill:#111827;text-anchor:middle}
+      .s{font:14px sans-serif;fill:#475569;text-anchor:middle}
+      .mono{font:15px monospace;fill:#1f2937}
+      .small{font:13px sans-serif;fill:#475569}
+      .arrow{stroke:#475569;stroke-width:2.4;fill:none;marker-end:url(#arrow)}
+      .data{stroke:#2563eb;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+      .ctrl{stroke:#dc2626;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1500" height="860" fill="#f8fafc"/>
+  <text x="54" y="52" class="title">从 process 到 $adffe：proc 和 opt 各自改变了什么</text>
+  <text x="54" y="82" class="subtitle">源代码是行为入口；综合后的真实硬件由组合数据路径、控制路径和状态单元共同组成。</text>
+
+  <rect x="50" y="120" width="400" height="548" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="250" y="158" class="head">1. read_verilog 后</text>
+  <text x="250" y="184" class="s">RTLIL 仍保留 process / switch / sync</text>
+
+  <rect x="78" y="222" width="344" height="194" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="100" y="254" class="mono">always @(posedge clk or posedge rst)</text>
+  <text x="100" y="286" class="mono">  if (rst)       count &lt;= 8'h00;</text>
+  <text x="100" y="318" class="mono">  else if (load) count &lt;= load_value;</text>
+  <text x="100" y="350" class="mono">  else if (en)   count &lt;= count + 8'h01;</text>
+  <text x="100" y="382" class="mono">  else           /* hold */;</text>
+
+  <rect x="78" y="460" width="344" height="154" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="250" y="493" class="t">RTLIL process</text>
+  <text x="250" y="522" class="s">switch rst → switch load → switch en</text>
+  <text x="250" y="548" class="s">sync posedge clk · sync posedge rst</text>
+  <text x="250" y="574" class="s">默认赋值：next_count = count</text>
+  <text x="250" y="598" class="s">还没有普通 FF cell</text>
+
+  <rect x="550" y="120" width="400" height="548" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="750" y="158" class="head">2. proc 后</text>
+  <text x="750" y="184" class="s">process 消失，得到 mux 网络与 $adff</text>
+
+  <rect x="590" y="235" width="130" height="72" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="655" y="265" class="t">count + 1</text>
+  <text x="655" y="288" class="s">$add</text>
+
+  <rect x="770" y="220" width="136" height="102" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="838" y="251" class="t">MUX en</text>
+  <text x="838" y="278" class="s">0: count</text>
+  <text x="838" y="300" class="s">1: count + 1</text>
+
+  <rect x="676" y="370" width="162" height="108" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="757" y="402" class="t">MUX load</text>
+  <text x="757" y="430" class="s">0: en_mux</text>
+  <text x="757" y="452" class="s">1: load_value</text>
+
+  <rect x="646" y="526" width="210" height="98" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="751" y="558" class="t">$adff</text>
+  <text x="751" y="584" class="s">D = load_mux · Q = count</text>
+  <text x="751" y="606" class="s">ARST = rst · CLK = clk</text>
+
+  <path d="M720 271 H770" class="data"/>
+  <path d="M838 322 C838 344 757 344 757 370" class="data"/>
+  <path d="M757 478 V526" class="data"/>
+  <path d="M856 575 H930 V646 H530 V271 H590" class="data"/>
+  <path d="M530 334 H744 V286 H770" class="data"/>
+  <text x="566" y="420" class="small">count(Q) 反馈</text>
+  <text x="574" y="450" class="small">load_value</text>
+  <path d="M654 446 H676" class="data"/>
+
+  <rect x="1050" y="120" width="400" height="548" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="1250" y="158" class="head">3. opt 后</text>
+  <text x="1250" y="184" class="s">opt_dff 将“保持 Q”提取成显式 EN</text>
+
+  <rect x="1082" y="232" width="132" height="72" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="1148" y="262" class="t">count + 1</text>
+  <text x="1148" y="285" class="s">$add</text>
+
+  <rect x="1262" y="217" width="148" height="102" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="1336" y="248" class="t">MUX en</text>
+  <text x="1336" y="275" class="s">0: X</text>
+  <text x="1336" y="297" class="s">1: count + 1</text>
+
+  <rect x="1166" y="370" width="168" height="108" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="1250" y="402" class="t">MUX load</text>
+  <text x="1250" y="430" class="s">0: en_mux</text>
+  <text x="1250" y="452" class="s">1: load_value</text>
+
+  <rect x="1082" y="520" width="152" height="78" class="box" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="1158" y="551" class="t">$reduce_bool</text>
+  <text x="1158" y="577" class="s">load | en</text>
+
+  <rect x="1270" y="516" width="152" height="108" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="1346" y="548" class="t">$adffe</text>
+  <text x="1346" y="574" class="s">D = load_mux</text>
+  <text x="1346" y="596" class="s">EN = load | en</text>
+  <text x="1346" y="618" class="s">ARST = rst</text>
+
+  <path d="M1214 268 H1262" class="data"/>
+  <path d="M1336 319 C1336 344 1250 344 1250 370" class="data"/>
+  <path d="M1250 478 V490 H1346 V516" class="data"/>
+  <path d="M1422 606 H1436 V650 H1034 V268 H1082" class="data"/>
+  <text x="1038" y="414" class="small">count(Q) 反馈</text>
+  <text x="1054" y="450" class="small">load_value</text>
+  <path d="M1144 446 H1166" class="data"/>
+  <text x="1054" y="563" class="small">{load,en}</text>
+  <path d="M1070 571 H1082" class="ctrl"/>
+  <path d="M1234 559 H1270" class="ctrl"/>
+
+  <path d="M450 394 H550" class="arrow"/>
+  <rect x="474" y="354" width="52" height="28" fill="#f8fafc"/>
+  <text x="500" y="374" class="t">proc</text>
+  <path d="M950 394 H1050" class="arrow"/>
+  <rect x="978" y="354" width="48" height="28" fill="#f8fafc"/>
+  <text x="1002" y="374" class="t">opt</text>
+
+  <rect x="50" y="706" width="1400" height="106" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="78" y="741" class="mono">原状态方程：count' = load ? load_value : en ? count+1 : count</text>
+  <text x="78" y="778" class="mono">opt 后等价分解：EN = load | en；EN=1 时 D = load ? load_value : count+1；EN=0 时 $adffe 保持 Q，D 不可观察</text>
+</svg>

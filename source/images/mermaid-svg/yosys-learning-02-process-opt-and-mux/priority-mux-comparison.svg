@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="850" viewBox="0 0 1500 850" role="img" aria-labelledby="title desc">
+  <title id="title">load 优先与 en 优先的多路器结构比较</title>
+  <desc id="desc">两种设计具有相同的单元数量和寄存器使能，但最靠近 D 端的外层多路器选择信号不同。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 30px sans-serif;fill:#111827}
+      .subtitle{font:16px sans-serif;fill:#475569}
+      .head{font:700 22px sans-serif;fill:#111827;text-anchor:middle}
+      .box{stroke-width:2;rx:8;ry:8}
+      .t{font:700 17px sans-serif;fill:#111827;text-anchor:middle}
+      .s{font:14px sans-serif;fill:#475569;text-anchor:middle}
+      .mono{font:15px monospace;fill:#1f2937}
+      .note{font:14px sans-serif;fill:#475569}
+      .wire{stroke:#475569;stroke-width:2.4;fill:none;marker-end:url(#arrow)}
+      .high{stroke:#dc2626;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1500" height="850" fill="#f8fafc"/>
+  <text x="54" y="52" class="title">交换 if / else if：cell 数量不变，MUX 的输入关系改变</text>
+  <text x="54" y="82" class="subtitle">在本例当前粗粒度 RTLIL 中，Y = S ? B : A；最高优先级同步条件控制最靠近 D 的外层 MUX。</text>
+
+  <rect x="50" y="120" width="680" height="548" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="390" y="160" class="head">原设计：load 优先</text>
+  <text x="90" y="202" class="mono">if (load) count &lt;= load_value;</text>
+  <text x="90" y="232" class="mono">else if (en) count &lt;= count + 8'h01;</text>
+
+  <rect x="88" y="294" width="140" height="66" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="158" y="323" class="t">count + 1</text>
+  <text x="158" y="346" class="s">$add</text>
+
+  <rect x="290" y="272" width="154" height="110" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="367" y="304" class="t">内层 MUX</text>
+  <text x="367" y="332" class="s">S = en</text>
+  <text x="367" y="356" class="s">A = X · B = add</text>
+
+  <rect x="500" y="350" width="164" height="116" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="582" y="382" class="t">外层 MUX</text>
+  <text x="582" y="410" class="s">S = load</text>
+  <text x="582" y="434" class="s">A = inner</text>
+  <text x="582" y="456" class="s">B = load_value</text>
+
+  <rect x="500" y="520" width="164" height="82" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="582" y="551" class="t">$adffe.D</text>
+  <text x="582" y="578" class="s">最终数据输入</text>
+
+  <path d="M228 327 H290" class="wire"/>
+  <path d="M444 327 C472 327 472 390 500 390" class="wire"/>
+  <path d="M582 466 V520" class="high"/>
+  <text x="466" y="495" class="note">load 在最后一级覆盖 en</text>
+
+  <rect x="770" y="120" width="680" height="548" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="1110" y="160" class="head">修改后：en 优先</text>
+  <text x="810" y="202" class="mono">if (en) count &lt;= count + 8'h01;</text>
+  <text x="810" y="232" class="mono">else if (load) count &lt;= load_value;</text>
+
+  <rect x="808" y="294" width="150" height="66" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="883" y="323" class="t">load_value</text>
+  <text x="883" y="346" class="s">加载数据</text>
+
+  <rect x="1010" y="272" width="154" height="110" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="1087" y="304" class="t">内层 MUX</text>
+  <text x="1087" y="332" class="s">S = load</text>
+  <text x="1087" y="356" class="s">A = X · B = load_value</text>
+
+  <rect x="1220" y="350" width="164" height="116" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="1302" y="382" class="t">外层 MUX</text>
+  <text x="1302" y="410" class="s">S = en</text>
+  <text x="1302" y="434" class="s">A = inner</text>
+  <text x="1302" y="456" class="s">B = count + 1</text>
+
+  <rect x="1220" y="520" width="164" height="82" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="1302" y="551" class="t">$adffe.D</text>
+  <text x="1302" y="578" class="s">最终数据输入</text>
+
+  <path d="M958 327 H1010" class="wire"/>
+  <path d="M1164 327 C1192 327 1192 390 1220 390" class="wire"/>
+  <path d="M1302 466 V520" class="high"/>
+  <text x="1188" y="495" class="note">en 在最后一级覆盖 load</text>
+
+  <rect x="50" y="704" width="1400" height="104" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="78" y="738" class="mono">两者共同点：6 cells = $add + $eq + 2×$mux + $adffe + $reduce_bool；EN = load | en</text>
+  <text x="78" y="775" class="mono">唯一可能暴露差异的控制组合：load=en=1；两种优先级选择不同数据，也会交换两条路径的 MUX 深度。</text>
+</svg>

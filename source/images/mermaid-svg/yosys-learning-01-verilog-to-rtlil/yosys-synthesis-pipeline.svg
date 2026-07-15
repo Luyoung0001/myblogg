@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="820" viewBox="0 0 1440 820" role="img" aria-labelledby="title desc">
+  <title id="title">从 Verilog 到物理实现的 Yosys 综合流水线</title>
+  <desc id="desc">区分 Yosys 软件前端后端与 IC 设计前端后端，并展示 RTLIL、通用网表、技术映射网表的关系。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 30px sans-serif;fill:#111827}
+      .subtitle{font:16px sans-serif;fill:#475569}
+      .lane{font:700 17px sans-serif;fill:#334155}
+      .box{stroke-width:2;rx:8;ry:8}
+      .box-title{font:700 18px sans-serif;fill:#111827;text-anchor:middle}
+      .box-sub{font:14px sans-serif;fill:#475569;text-anchor:middle}
+      .small{font:13px sans-serif;fill:#475569}
+      .strong{font:700 14px sans-serif;fill:#1f2937}
+      .arrow{stroke:#475569;stroke-width:2.3;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#94a3b8;stroke-width:1.8;fill:none;stroke-dasharray:7 7}
+    </style>
+  </defs>
+
+  <rect width="1440" height="820" fill="#f8fafc"/>
+  <text x="54" y="52" class="title">从 Verilog 到物理实现：先分清两种“前端 / 后端”</text>
+  <text x="54" y="82" class="subtitle">Yosys 的 frontend/backend 是软件输入输出模块；IC 前端/后端是芯片设计阶段的行业划分。</text>
+
+  <rect x="44" y="112" width="1352" height="405" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="70" y="145" class="lane">Yosys 内部：所有主要 pass 都围绕内存中的 RTLIL design 工作</text>
+
+  <rect x="70" y="190" width="180" height="102" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="160" y="227" class="box-title">Verilog / SV</text>
+  <text x="160" y="253" class="box-sub">行为与结构描述</text>
+  <text x="160" y="274" class="box-sub">*.v / *.sv</text>
+
+  <rect x="300" y="190" width="180" height="102" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="390" y="227" class="box-title">read_verilog</text>
+  <text x="390" y="253" class="box-sub">Yosys frontend</text>
+  <text x="390" y="274" class="box-sub">解析、展开、生成 IR</text>
+
+  <rect x="530" y="175" width="205" height="132" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="632" y="218" class="box-title">RTLIL design</text>
+  <text x="632" y="245" class="box-sub">module / wire / cell</text>
+  <text x="632" y="267" class="box-sub">process / memory / connect</text>
+  <text x="632" y="289" class="box-sub">内存中的统一中间表示</text>
+
+  <rect x="785" y="175" width="225" height="132" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="897" y="210" class="box-title">pass 序列</text>
+  <text x="897" y="238" class="box-sub">hierarchy · proc · opt</text>
+  <text x="897" y="260" class="box-sub">fsm · memory · techmap</text>
+  <text x="897" y="282" class="box-sub">持续修改 RTLIL</text>
+
+  <rect x="1060" y="190" width="260" height="102" class="box" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="1190" y="227" class="box-title">write_* backend</text>
+  <text x="1190" y="253" class="box-sub">RTLIL / Verilog / JSON / BLIF</text>
+  <text x="1190" y="274" class="box-sub">把当前 design 序列化</text>
+
+  <path d="M250 241 H300" class="arrow"/>
+  <path d="M480 241 H530" class="arrow"/>
+  <path d="M735 241 H785" class="arrow"/>
+  <path d="M1010 241 H1060" class="arrow"/>
+
+  <rect x="72" y="350" width="350" height="118" class="box" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="247" y="384" class="box-title">通用 RTL / 通用网表</text>
+  <text x="247" y="411" class="box-sub">$add · $mux · $adff · $eq</text>
+  <text x="247" y="435" class="box-sub">像 IR：描述功能，还未绑定具体标准单元</text>
+  <text x="247" y="457" class="box-sub">tiny_adder.il / *_netlist.v 都可表达它</text>
+
+  <rect x="500" y="350" width="390" height="118" class="box" fill="#fff7ed" stroke="#ea580c"/>
+  <text x="695" y="384" class="box-title">技术映射</text>
+  <text x="695" y="411" class="box-sub">techmap：消费映射模板 / 规则</text>
+  <text x="695" y="435" class="box-sub">dfflibmap / abc：消费 Liberty</text>
+  <text x="695" y="457" class="box-sub">ABC 可选使用延迟、驱动与负载目标</text>
+
+  <rect x="968" y="350" width="352" height="118" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="1144" y="384" class="box-title">工艺单元网表</text>
+  <text x="1144" y="411" class="box-sub">NAND2_X1 · AOI21_X2 · DFFRQ_X1 ...</text>
+  <text x="1144" y="435" class="box-sub">像“目标相关代码”，但本质仍是并行电路图</text>
+  <text x="1144" y="457" class="box-sub">尚未包含真实布局布线寄生参数</text>
+
+  <path d="M422 409 H500" class="arrow"/>
+  <path d="M890 409 H968" class="arrow"/>
+
+  <rect x="44" y="552" width="1352" height="212" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="70" y="587" class="lane">IC 设计流程：逻辑综合处在前端后半段，物理实现从技术网表继续向 GDS 推进</text>
+
+  <rect x="76" y="626" width="240" height="84" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="196" y="658" class="box-title">规格 / 架构 / RTL</text>
+  <text x="196" y="684" class="box-sub">仿真 · lint · CDC · formal</text>
+
+  <rect x="366" y="626" width="240" height="84" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="486" y="658" class="box-title">逻辑综合</text>
+  <text x="486" y="684" class="box-sub">Yosys 可覆盖这一阶段</text>
+
+  <rect x="656" y="626" width="240" height="84" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="776" y="658" class="box-title">物理实现</text>
+  <text x="776" y="684" class="box-sub">floorplan · place · CTS · route</text>
+
+  <rect x="946" y="626" width="374" height="84" class="box" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="1133" y="658" class="box-title">寄生提取与签核</text>
+  <text x="1133" y="684" class="box-sub">RCX · STA · DRC · LVS → GDSII</text>
+
+  <path d="M316 668 H366" class="arrow"/>
+  <path d="M606 668 H656" class="arrow"/>
+  <path d="M896 668 H946" class="arrow"/>
+  <path d="M486 710 V742 H776 V710" class="dash"/>
+  <text x="580" y="750" class="small">行业边界因团队而异；综合通常仍归 IC 前端</text>
+</svg>

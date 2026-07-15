@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="700" viewBox="0 0 1500 700" role="img" aria-labelledby="title desc">
+  <title id="title">同步电路中的组合传播与时钟采样</title>
+  <desc id="desc">寄存器 Q 在一个时钟沿后改变，信号经过加法器和多路器传播并在下一个时钟沿前满足建立时间，异步复位直接连接触发器复位端。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <marker id="blue-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2563eb"/>
+    </marker>
+    <style>
+      .title{font:700 30px sans-serif;fill:#111827}
+      .subtitle{font:16px sans-serif;fill:#475569}
+      .box{stroke-width:2;rx:8;ry:8}
+      .t{font:700 18px sans-serif;fill:#111827;text-anchor:middle}
+      .s{font:14px sans-serif;fill:#475569;text-anchor:middle}
+      .mono{font:16px monospace;fill:#1f2937}
+      .label{font:700 15px sans-serif;fill:#334155}
+      .small{font:14px sans-serif;fill:#475569}
+      .clk{stroke:#111827;stroke-width:3;fill:none}
+      .guide{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:6 6}
+      .data{stroke:#2563eb;stroke-width:3;fill:none;marker-end:url(#blue-arrow)}
+      .ctrl{stroke:#dc2626;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+      .dim{stroke:#475569;stroke-width:1.8;fill:none;marker-start:url(#arrow);marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1500" height="700" fill="#f8fafc"/>
+  <text x="54" y="52" class="title">组合逻辑一直传播，时钟只决定寄存器何时采样</text>
+  <text x="54" y="82" class="subtitle">显式写出 next_count 不会增加一个周期；只有新增寄存器才会增加流水级。</text>
+
+  <rect x="50" y="116" width="1400" height="210" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="78" y="151" class="label">时钟与稳定窗口</text>
+  <path d="M100 244 H190 V174 H270 V244 H440 V174 H520 V244 H690 V174 H770 V244 H940 V174 H1020 V244 H1190 V174 H1270 V244 H1390" class="clk"/>
+  <line x1="690" y1="164" x2="690" y2="300" class="guide"/>
+  <line x1="940" y1="164" x2="940" y2="300" class="guide"/>
+  <text x="670" y="292" class="label">t0</text>
+  <text x="920" y="292" class="label">t1</text>
+  <path d="M706 278 H760" class="dim"/>
+  <text x="733" y="269" class="small" text-anchor="middle">Tcq</text>
+  <path d="M770 278 H850" class="dim"/>
+  <text x="810" y="269" class="small" text-anchor="middle">Tcomb</text>
+  <rect x="860" y="164" width="80" height="92" fill="#fee2e2" fill-opacity="0.72" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="900" y="214" class="small" text-anchor="middle">setup</text>
+  <text x="1060" y="292" class="small">t0 后 Q 改变；组合网络随后收敛；t1 前必须稳定</text>
+
+  <rect x="50" y="360" width="1400" height="264" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="78" y="395" class="label">原始 seq_counter 在一个周期内的时间展开</text>
+
+  <rect x="78" y="438" width="170" height="94" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="163" y="470" class="t">同一 $adffe</text>
+  <text x="163" y="496" class="s">Q(t0) = count</text>
+  <text x="163" y="518" class="s">时钟沿后经过 Tcq</text>
+
+  <rect x="304" y="446" width="142" height="78" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="375" y="477" class="t">$add</text>
+  <text x="375" y="503" class="s">count + 1</text>
+
+  <rect x="502" y="430" width="164" height="110" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="584" y="462" class="t">内层 MUX</text>
+  <text x="584" y="490" class="s">S=en · A=X</text>
+  <text x="584" y="516" class="s">B=count+1</text>
+
+  <rect x="722" y="430" width="172" height="110" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="808" y="462" class="t">外层 MUX</text>
+  <text x="808" y="490" class="s">S=load · A=inner</text>
+  <text x="808" y="516" class="s">B=load_value</text>
+
+  <rect x="950" y="420" width="200" height="130" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="1050" y="453" class="t">同一 $adffe.D</text>
+  <text x="1050" y="481" class="s">D = outer_mux</text>
+  <text x="1050" y="505" class="s">EN = load | en</text>
+  <text x="1050" y="529" class="s">ARST = rst</text>
+
+  <rect x="1210" y="438" width="190" height="94" class="box" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="1305" y="470" class="t">t1 时钟沿</text>
+  <text x="1305" y="496" class="s">EN=1：Q ← D</text>
+  <text x="1305" y="518" class="s">EN=0：Q 保持</text>
+
+  <path d="M248 485 H304" class="data"/>
+  <path d="M446 485 H502" class="data"/>
+  <path d="M666 485 H722" class="data"/>
+  <path d="M894 485 H950" class="data"/>
+  <path d="M1150 485 H1210" class="data"/>
+
+  <text x="304" y="586" class="small">这是同一寄存器从 Q(t0) 经组合网络回到 D(t1) 的时间展开，没有额外的 Q→D 直连。</text>
+
+  <text x="1054" y="392" class="label">rst</text>
+  <path d="M1078 398 V420" class="ctrl"/>
+  <text x="1135" y="414" class="small">异步进入 ARST；释放需检查 recovery/removal</text>
+
+  <text x="78" y="664" class="mono">Tclk ≥ Tcq + Tcomb(max) + Tsetup + clock uncertainty</text>
+</svg>

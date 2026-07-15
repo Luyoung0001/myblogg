@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="800" viewBox="0 0 1440 800" role="img" aria-labelledby="title desc">
+  <title id="title">tiny_adder 从 Verilog 表达式到 RTLIL cell 网络</title>
+  <desc id="desc">展示四位输入扩展后并行进入加法器和减法器，再由 sub 控制多路器输出五位 y，并解释 RTLIL 标识符。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 30px sans-serif;fill:#111827}
+      .subtitle{font:16px sans-serif;fill:#475569}
+      .box{stroke-width:2;rx:8;ry:8}
+      .t{font:700 18px sans-serif;fill:#111827;text-anchor:middle}
+      .s{font:14px sans-serif;fill:#475569;text-anchor:middle}
+      .mono{font:15px monospace;fill:#1f2937}
+      .label{font:700 15px sans-serif;fill:#334155}
+      .note{font:14px sans-serif;fill:#475569}
+      .wire{stroke:#475569;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+      .control{stroke:#dc2626;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1440" height="800" fill="#f8fafc"/>
+  <text x="54" y="52" class="title">tiny_adder：一行 Verilog，展开成三个并行 cell</text>
+  <text x="54" y="82" class="subtitle">网表是否简单取决于电路本身；write_verilog 还能把 cell 重新打印成表达式，所以“看起来像 RTL”并不等于它不是网表。</text>
+
+  <rect x="54" y="112" width="1332" height="94" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="80" y="145" class="label">源表达式</text>
+  <text x="80" y="180" class="mono">assign y = sub ? ({1'b0, a} - {1'b0, b}) : ({1'b0, a} + {1'b0, b});</text>
+
+  <rect x="72" y="286" width="150" height="72" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="147" y="316" class="t">a[3:0]</text>
+  <text x="147" y="340" class="s">公开 wire \a</text>
+
+  <rect x="72" y="424" width="150" height="72" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="147" y="454" class="t">b[3:0]</text>
+  <text x="147" y="478" class="s">公开 wire \b</text>
+
+  <rect x="274" y="276" width="172" height="78" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="360" y="306" class="t">a_ext[4:0]</text>
+  <text x="360" y="334" class="s">{ 1'0 \a }</text>
+
+  <rect x="274" y="428" width="172" height="78" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="360" y="458" class="t">b_ext[4:0]</text>
+  <text x="360" y="486" class="s">{ 1'0 \b }</text>
+
+  <rect x="526" y="264" width="210" height="102" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="631" y="298" class="t">$add</text>
+  <text x="631" y="326" class="s">A_WIDTH = B_WIDTH = 5</text>
+  <text x="631" y="348" class="s">Y_WIDTH = 5</text>
+
+  <rect x="526" y="412" width="210" height="102" class="box" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="631" y="446" class="t">$sub</text>
+  <text x="631" y="474" class="s">A_WIDTH = B_WIDTH = 5</text>
+  <text x="631" y="496" class="s">Y_WIDTH = 5</text>
+
+  <rect x="838" y="320" width="226" height="128" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="951" y="354" class="t">$mux</text>
+  <text x="951" y="382" class="s">Y = S ? B : A</text>
+  <text x="951" y="406" class="s">A = add_Y · B = sub_Y</text>
+  <text x="951" y="430" class="s">S = \sub</text>
+
+  <rect x="1166" y="348" width="154" height="72" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="1243" y="378" class="t">y[4:0]</text>
+  <text x="1243" y="402" class="s">公开 wire \y</text>
+
+  <path d="M222 322 H274" class="wire"/>
+  <path d="M222 460 H274" class="wire"/>
+  <path d="M446 304 H526" class="wire"/>
+  <path d="M446 335 C486 335 486 440 526 440" class="wire"/>
+  <path d="M446 447 C486 447 486 340 526 340" class="wire"/>
+  <path d="M446 476 H526" class="wire"/>
+  <text x="474" y="296" class="note">A</text>
+  <text x="482" y="385" class="note">A</text>
+  <text x="482" y="420" class="note">B</text>
+  <text x="474" y="498" class="note">B</text>
+  <path d="M736 315 H786 V358 H838" class="wire"/>
+  <path d="M736 463 H786 V410 H838" class="wire"/>
+  <path d="M1064 384 H1166" class="wire"/>
+
+  <rect x="838" y="500" width="226" height="66" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="951" y="528" class="t">sub</text>
+  <text x="951" y="551" class="s">MUX 选择信号 S</text>
+  <path d="M951 500 V448" class="control"/>
+
+  <rect x="54" y="620" width="1332" height="124" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+  <text x="80" y="654" class="label">读 RTLIL 名字时只抓住四件事</text>
+  <text x="80" y="685" class="mono">\a, \y</text>
+  <text x="215" y="685" class="note">反斜杠开头：公开标识符，通常保留源码名字</text>
+  <text x="700" y="685" class="mono">$sub$...:8$1_Y</text>
+  <text x="902" y="685" class="note">自动名字；$1 是唯一编号，_Y 表示该 cell 的 Y 输出 wire</text>
+  <text x="80" y="718" class="mono">attribute \src</text>
+  <text x="250" y="718" class="note">源位置追踪信息，不是运行 RTLIL 所必需的外部依赖</text>
+  <text x="700" y="718" class="mono">autoidx 4</text>
+  <text x="815" y="718" class="note">后续生成内部对象时使用的编号起点</text>
+</svg>
