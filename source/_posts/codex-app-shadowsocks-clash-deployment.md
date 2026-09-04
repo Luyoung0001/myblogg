@@ -48,15 +48,132 @@ SSH 端口：<默认 22>
 
 ## 3. 配置 VPS 上的 Shadowsocks 服务
 
-在已建立的密钥 SSH 会话中部署，目标状态如下：
+以下命令都在已经完成密钥登录的 VPS 会话中执行。不要运行第三方一键脚本；只安装官方 sing-box core，并使用用户级 systemd。
 
-- 系统为 Debian/Ubuntu LTS；按实际 CPU 架构安装 sing-box core。示例固定版本为 `1.13.19`，不得运行第三方仓库的默认 `install.sh`。
-- 二进制位于 `~/.local/bin/sing-box`，运行目录为 `~/sing-box-runtime`。
-- 服务端配置为 Shadowsocks 入站：监听 `0.0.0.0:40088`，加密方式 `chacha20-ietf-poly1305`，同时支持 TCP 和 UDP，出站为 direct。
-- Shadowsocks 密码由 Codex 在 VPS 本地高熵生成，写入权限为 `600` 的文件和配置；不能出现在输出、日志或回答。
-- 创建用户级 `sing-box-proxy.service`，启用 linger、开机启动和异常自动重启。
-- 实际运行 `sing-box check`，确认服务 active，并确认 `40088/tcp`、`40088/udp` 正在监听。
-- 配置 VPS 防火墙放行 `40088/tcp`、`40088/udp` 和订阅服务的 `18080/tcp`。云安全组若无法由 Codex 操作，则提示用户手动放行。
+### 3.1 安装依赖和确定架构
+
+```bash
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl tar openssl python3 ufw
+
+case "$(uname -m)" in
+  x86_64) SB_ARCH=amd64 ;;
+  aarch64|arm64) SB_ARCH=arm64 ;;
+  *) echo "unsupported architecture" >&2; exit 1 ;;
+esac
+
+SB_VERSION=1.13.19
+SB_ROOT="$HOME/.local/opt"
+SB_TARBALL="$SB_ROOT/sing-box-linux-$SB_ARCH.tar.gz"
+SB_URL="https://github.com/SagerNet/sing-box/releases/download/v$SB_VERSION/sing-box-$SB_VERSION-linux-$SB_ARCH.tar.gz"
+mkdir -p "$HOME/.local/bin" "$SB_ROOT" "$HOME/sing-box-runtime"
+curl -fL --retry 3 -o "$SB_TARBALL" "$SB_URL"
+tar -xzf "$SB_TARBALL" -C "$SB_ROOT"
+ln -sfn "$SB_ROOT/sing-box-$SB_VERSION-linux-$SB_ARCH/sing-box" "$HOME/.local/bin/sing-box"
+"$HOME/.local/bin/sing-box" version
+```
+
+下载后根据 sing-box 发布页提供的 SHA-256 文件校验压缩包。校验失败立即停止，不运行二进制。不要使用 `233boy/sing-box` 仓库的默认 `install.sh`，它的默认服务端布局和协议不是本配置的目标。
+
+### 3.2 生成密码和 `server.json`
+
+密码只保存在 VPS 本地：
+
+```bash
+umask 077
+openssl rand -hex 18 > "$HOME/sing-box-runtime/password"
+chmod 600 "$HOME/sing-box-runtime/password"
+```
+
+从密码文件读取内容，在内存中生成配置。不要把密码放进命令参数、shell 历史、日志或终端输出：
+
+```bash
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+root = Path.home() / "sing-box-runtime"
+password = (root / "password").read_text(encoding="utf-8").strip()
+config = {
+    "log": {"level": "info", "timestamp": True},
+    "inbounds": [{
+        "type": "shadowsocks",
+        "tag": "ss-in",
+        "listen": "0.0.0.0",
+        "listen_port": 40088,
+        "method": "chacha20-ietf-poly1305",
+        "password": password,
+    }],
+    "outbounds": [{"type": "direct", "tag": "direct"}],
+}
+(root / "server.json").write_text(
+    json.dumps(config, ensure_ascii=False, indent=2) + "\n",
+    encoding="utf-8",
+)
+PY
+chmod 600 "$HOME/sing-box-runtime/server.json"
+"$HOME/.local/bin/sing-box" check -c "$HOME/sing-box-runtime/server.json"
+```
+
+服务端配置的固定值是：Shadowsocks、`0.0.0.0:40088`、`chacha20-ietf-poly1305`、TCP/UDP、direct 出站。Clash/Mihomo 的个人节点密码必须与该文件一致，但不要在回答中显示密码。
+
+### 3.3 创建用户级 systemd 服务
+
+保存为 `~/.config/systemd/user/sing-box-proxy.service`：
+
+```ini
+[Unit]
+Description=User sing-box Shadowsocks proxy
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/sing-box-runtime
+ExecStart=%h/.local/bin/sing-box run -c %h/sing-box-runtime/server.json
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=default.target
+```
+
+启动并设为开机运行：
+
+```bash
+mkdir -p "$HOME/.config/systemd/user"
+sudo loginctl enable-linger "$(id -un)"
+systemctl --user daemon-reload
+systemctl --user enable --now sing-box-proxy.service
+systemctl --user is-active sing-box-proxy.service
+systemctl --user is-enabled sing-box-proxy.service
+```
+
+`enable-linger` 用于没有登录终端时继续运行用户服务。服务异常退出时 systemd 会按 `Restart=on-failure` 自动重启。
+
+### 3.4 防火墙和云安全组
+
+先确保 SSH 端口已放行，再添加代理和订阅端口；不要直接启用会阻断 SSH 的防火墙配置：
+
+```bash
+sudo ufw allow <SSH_PORT>/tcp
+sudo ufw allow 40088/tcp
+sudo ufw allow 40088/udp
+sudo ufw allow 18080/tcp
+sudo ufw status verbose
+```
+
+如果 UFW 原本未启用，确认 SSH 规则存在后再由 Codex 询问用户是否执行 `sudo ufw --force enable`。云厂商安全组也必须放行 `40088/tcp`、`40088/udp`、`18080/tcp`；Codex 无法操作云控制台时，明确提示用户手动完成。
+
+### 3.5 服务验证
+
+```bash
+"$HOME/.local/bin/sing-box" check -c "$HOME/sing-box-runtime/server.json"
+systemctl --user status sing-box-proxy.service --no-pager
+ss -ltnup 'sport = :40088'
+journalctl --user -u sing-box-proxy.service -n 30 --no-pager
+```
+
+验证目标：service 状态为 `active (running)`，`40088` 同时有 TCP/UDP 监听，日志没有启动错误。日志只用于确认状态，不要输出配置文件或密码。
 
 ## 4. 修改本地 Clash/Mihomo 配置
 
